@@ -124,7 +124,7 @@ class b2Shape
 {
 public:
 	virtual bool TestPoint(const b2Vec2& p) = 0;
-	
+
 	void* GetUserData();
 
 	b2ShapeType GetType() const;
@@ -220,11 +220,11 @@ class b2PolyShape : public b2Shape
 {
 public:
 	bool TestPoint(const b2Vec2& p);
-	
+
 	void ResetProxy(b2BroadPhase* broadPhase);
 
 	//--------------- Internals Below -------------------
-	
+
 	b2PolyShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& newOrigin);
 
 	void Synchronize(	const b2Vec2& position1, const b2Mat22& R1,

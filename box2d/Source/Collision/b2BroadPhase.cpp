@@ -59,7 +59,7 @@ static int32 BinarySearch(b2Bound* bounds, int32 count, uint16 value)
 			return (uint16)mid;
 		}
 	}
-	
+
 	return low;
 }
 

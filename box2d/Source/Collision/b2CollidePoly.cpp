@@ -291,7 +291,7 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	b2Vec2 sideNormal = b2Mul(poly1->m_R, v12 - v11);
 	sideNormal.Normalize();
 	b2Vec2 frontNormal = b2Cross(sideNormal, 1.0f);
-	
+
 	v11 = poly1->m_position + b2Mul(poly1->m_R, v11);
 	v12 = poly1->m_position + b2Mul(poly1->m_R, v12);
 

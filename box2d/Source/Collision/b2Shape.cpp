@@ -318,7 +318,7 @@ void b2CircleShape::Synchronize(const b2Vec2& position1, const b2Mat22& R1,
 	m_position = position2 + b2Mul(m_R, m_localPosition);
 
 	if (m_proxyId == b2_nullProxy)
-	{	
+	{
 		return;
 	}
 
@@ -365,7 +365,7 @@ bool b2CircleShape::TestPoint(const b2Vec2& p)
 void b2CircleShape::ResetProxy(b2BroadPhase* broadPhase)
 {
 	if (m_proxyId == b2_nullProxy)
-	{	
+	{
 		return;
 	}
 
@@ -442,7 +442,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 			{
 				u *= 1.0f / length;
 			}
-			
+
 			m_coreVertices[i] = m_vertices[i] - 2.0f * b2_linearSlop * u;
 		}
 	}
@@ -518,7 +518,7 @@ void b2PolyShape::Synchronize(	const b2Vec2& position1, const b2Mat22& R1,
 	m_position = position2 + b2Mul(R2, m_localCentroid);
 
 	if (m_proxyId == b2_nullProxy)
-	{	
+	{
 		return;
 	}
 
@@ -601,7 +601,7 @@ bool b2PolyShape::TestPoint(const b2Vec2& p)
 void b2PolyShape::ResetProxy(b2BroadPhase* broadPhase)
 {
 	if (m_proxyId == b2_nullProxy)
-	{	
+	{
 		return;
 	}
 

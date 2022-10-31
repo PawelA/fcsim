@@ -41,7 +41,7 @@ void b2Contact::AddType(b2ContactCreateFcn* createFcn, b2ContactDestroyFcn* dest
 {
 	b2Assert(e_unknownShape < type1 && type1 < e_shapeTypeCount);
 	b2Assert(e_unknownShape < type2 && type2 < e_shapeTypeCount);
-	
+
 	s_registers[type1][type2].createFcn = createFcn;
 	s_registers[type1][type2].destroyFcn = destoryFcn;
 	s_registers[type1][type2].primary = true;
@@ -67,7 +67,7 @@ b2Contact* b2Contact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator*
 
 	b2Assert(e_unknownShape < type1 && type1 < e_shapeTypeCount);
 	b2Assert(e_unknownShape < type2 && type2 < e_shapeTypeCount);
-	
+
 	b2ContactCreateFcn* createFcn = s_registers[type1][type2].createFcn;
 	if (createFcn)
 	{

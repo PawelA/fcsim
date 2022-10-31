@@ -188,7 +188,7 @@ float32 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 			*p2Out = p2s[0];
 			++pointCount;
 			break;
-			
+
 		case 1:
 			p1s[1] = w1;
 			p2s[1] = w2;

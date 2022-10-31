@@ -165,7 +165,7 @@ void* b2PairManager::RemovePair(int32 proxyId1, int32 proxyId2)
 		{
 			uint16 index = *node;
 			*node = m_pairs[*node].next;
-			
+
 			b2Pair* pair = m_pairs + index;
 			void* userData = pair->userData;
 

@@ -88,10 +88,10 @@ public:
 
 	b2Vec2 m_u1;
 	b2Vec2 m_u2;
-	
+
 	float32 m_constant;
 	float32 m_ratio;
-	
+
 	float32 m_maxLength1;
 	float32 m_maxLength2;
 

@@ -79,7 +79,7 @@ public:
 	b2Jacobian m_linearJacobian;
 	float32 m_linearMass;				// effective mass for point-to-line constraint.
 	float32 m_linearImpulse;
-	
+
 	float32 m_angularMass;			// effective mass for angular constraint.
 	float32 m_angularImpulse;
 
@@ -93,7 +93,7 @@ public:
 	float32 m_upperTranslation;
 	float32 m_maxMotorForce;
 	float32 m_motorSpeed;
-	
+
 	bool m_enableLimit;
 	bool m_enableMotor;
 	b2LimitState m_limitState;

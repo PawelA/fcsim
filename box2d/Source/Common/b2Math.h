@@ -55,7 +55,7 @@ struct b2Vec2
 	void Set(float32 x_, float32 y_) { x = x_; y = y_; }
 
 	b2Vec2 operator -() { b2Vec2 v; v.Set(-x, -y); return v; }
-	
+
 	static b2Vec2 Make(float32 x_, float32 y_)
 	{
 		b2Vec2 v;
@@ -67,7 +67,7 @@ struct b2Vec2
 	{
 		x += v.x; y += v.y;
 	}
-	
+
 	void operator -= (const b2Vec2& v)
 	{
 		x -= v.x; y -= v.y;

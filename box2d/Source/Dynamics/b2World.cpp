@@ -78,7 +78,7 @@ b2Body* b2World::CreateBody(const b2BodyDef* def)
 	void* mem = m_blockAllocator.Allocate(sizeof(b2Body));
 	b2Body* b = new (mem) b2Body(def, this);
 	b->m_prev = NULL;
-	
+
 	b->m_next = m_bodyList;
 	if (m_bodyList)
 	{
@@ -301,7 +301,7 @@ void b2World::Step(float32 dt, int32 iterations)
 	{
 		step.inv_dt = 0.0f;
 	}
-	
+
 	m_positionIterationCount = 0;
 
 	// Handle deferred contact destruction.
@@ -329,7 +329,7 @@ void b2World::Step(float32 dt, int32 iterations)
 	{
 		j->m_islandFlag = false;
 	}
-	
+
 	// Build and simulate all awake islands.
 	int32 stackSize = m_bodyCount;
 	b2Body** stack = (b2Body**)m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
@@ -411,7 +411,7 @@ void b2World::Step(float32 dt, int32 iterations)
 		island.Solve(&step, m_gravity);
 
 		m_positionIterationCount = b2Max(m_positionIterationCount, island.m_positionIterationCount);
-		
+
 		if (m_allowSleep)
 		{
 			island.UpdateSleep(dt);
