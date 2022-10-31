@@ -19,6 +19,7 @@
 #include "b2PolyContact.h"
 #include "../../Common/b2BlockAllocator.h"
 
+#include <cstring>
 #include <memory>
 #include <new>
 
