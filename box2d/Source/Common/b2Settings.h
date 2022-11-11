@@ -38,7 +38,7 @@ const float32 b2_pi = 3.14159265359f;
 // meters-kilograms-seconds. For the tuning to work well,
 // your dynamic objects should be bigger than a pebble and smaller
 // than a house.
-const float32 b2_lengthUnitsPerMeter = 1.0f;
+const float32 b2_lengthUnitsPerMeter = 30.0f;
 const float32 b2_massUnitsPerKilogram = 1.0f;
 const float32 b2_timeUnitsPerSecond = 1.0f;
 
@@ -53,21 +53,21 @@ const float32 b2_timeUnitsPerSecond = 1.0f;
 const int32 b2_maxManifoldPoints = 2;
 const int32 b2_maxShapesPerBody = 64;
 const int32 b2_maxPolyVertices = 8;
-const int32 b2_maxProxies = 512;				// this must be a power of two
-const int32 b2_maxPairs = 8 * b2_maxProxies;	// this must be a power of two
+const int32 b2_maxProxies = 4096;				// this must be a power of two
+const int32 b2_maxPairs = 32768;	// this must be a power of two
 
 // Dynamics
-const float32 b2_linearSlop = 0.005f * b2_lengthUnitsPerMeter;	// 0.5 cm
-const float32 b2_angularSlop = 2.0f / 180.0f * b2_pi;			// 2 degrees
-const float32 b2_velocityThreshold = 1.0f * b2_lengthUnitsPerMeter / b2_timeUnitsPerSecond;		// 1 m/s
-const float32 b2_maxLinearCorrection = 0.2f * b2_lengthUnitsPerMeter;	// 20 cm
-const float32 b2_maxAngularCorrection = 8.0f / 180.0f * b2_pi;			// 8 degrees
+const float32 b2_linearSlop = 0.15f;
+const float32 b2_angularSlop = 0.03490658503988659f;
+const float32 b2_velocityThreshold = 30.0f;
+const float32 b2_maxLinearCorrection = 6.0f;
+const float32 b2_maxAngularCorrection = 0.13962634015954636f;
 const float32 b2_contactBaumgarte = 0.2f;
 
 // Sleep
-const float32 b2_timeToSleep = 0.5f * b2_timeUnitsPerSecond;	// half a second
-const float32 b2_linearSleepTolerance = 0.01f * b2_lengthUnitsPerMeter / b2_timeUnitsPerSecond;	// 1 cm/s
-const float32 b2_angularSleepTolerance = 2.0f / 180.0f / b2_timeUnitsPerSecond;					// 2 degrees/s
+const float32 b2_timeToSleep = 0.5f;
+const float32 b2_linearSleepTolerance = 0.3f;
+const float32 b2_angularSleepTolerance = 0.011111111111111112f;
 
 
 // Memory Allocation
