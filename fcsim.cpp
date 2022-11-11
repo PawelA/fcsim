@@ -10,26 +10,31 @@
 #define TIME_STEP	0.03333333333333333
 #define ITERATIONS	10
 
+struct block_descr;
+
 struct joint_collection {
 	float x, y;
-	int top_block_idx;
+	block_descr *top_block;
 	int cnt;
 };
 
-struct block_info {
-	struct fcsim_block *block;
+struct joint_collection_list {
+	joint_collection *jc;
+	joint_collection_list *next;
+};
+
+struct block_descr {
+	fcsim_block *block;
 	b2Body *body;
-	std::vector<int> joint_idxs;
+	joint_collection_list *jcs;
 };
 
-struct fcsim_world {
-	b2World world;
-	std::vector<struct joint_collection> joints;
-	std::vector<struct block_info> blocks;
+b2World *the_world;
 
-	fcsim_world(b2AABB aabb, b2Vec2 gravity) :
-		world(aabb, gravity, true) {}
-};
+joint_collection the_joints[1000];
+block_descr      the_blocks[1000];
+int the_joint_cnt;
+int the_block_cnt;
 
 static float distance(float x1, float y1, float x2, float y2)
 {
@@ -39,30 +44,19 @@ static float distance(float x1, float y1, float x2, float y2)
 	return sqrtf(dx * dx + dy * dy);
 }
 
-struct fcsim_world *g_world;
-
-class fcsim_collision_filter : public b2CollisionFilter
-{
+class fcsim_collision_filter : public b2CollisionFilter {
 public:
-	bool ShouldCollide(b2Shape *shape1, b2Shape *shape2)
+	bool ShouldCollide(b2Shape *s1, b2Shape *s2)
 	{
-		if (!b2_defaultFilter.ShouldCollide(shape1, shape2))
-			return false;
-		int b_idx1 = reinterpret_cast<long>(shape1->GetUserData());
-		int b_idx2 = reinterpret_cast<long>(shape2->GetUserData());
-
-		if (b_idx1 >= g_world->blocks.size())
-			return false;
-		if (b_idx2 >= g_world->blocks.size())
+		if (!b2_defaultFilter.ShouldCollide(s1, s2))
 			return false;
 
-		printf(">> %d %d\n", b_idx1, b_idx2);
+		block_descr *b1 = (block_descr *)s1->GetUserData();
+		block_descr *b2 = (block_descr *)s2->GetUserData();
 
-		for (int j1 : g_world->blocks[b_idx1].joint_idxs) {
-			printf("[%d]\n", j1);
-			for (int j2 : g_world->blocks[b_idx2].joint_idxs) {
-				printf("[%d %d]\n", j1, j2);
-				if (j1 == j2)
+		for (joint_collection_list *j1 = b1->jcs; j1; j1 = j1->next) {
+			for (joint_collection_list *j2 = b2->jcs; j2; j2 = j2->next) {
+				if (j1->jc == j2->jc)
 					return false;
 			}
 		}
@@ -71,23 +65,17 @@ public:
 	}
 };
 
-static fcsim_collision_filter collision_filter;
+static fcsim_collision_filter the_collision_filter;
 
-fcsim_world *fcsim_create_world(void)
+void fcsim_create_world(void)
 {
-	struct fcsim_world *world;
-	b2AABB aabb;
 	b2Vec2 gravity(0, 300);
-
+	b2AABB aabb;
 	aabb.minVertex.Set(-ARENA_WIDTH, -ARENA_HEIGHT);
 	aabb.maxVertex.Set( ARENA_WIDTH,  ARENA_HEIGHT);
 
-	world = new fcsim_world(aabb, gravity);
-	world->world.SetFilter(&collision_filter);
-
-	g_world = world;
-
-	return world;
+	the_world = new b2World(aabb, gravity, true);
+	the_world->SetFilter(&the_collision_filter);
 }
 
 struct block_physics {
@@ -116,10 +104,10 @@ static struct block_physics block_physics_tbl[] = {
 	{  0, 1.0f, 0.7f, 0.2f, 256, -17, 0.009f, 0.2f }, /* SOLID_ROD */
 };
 
-static b2Body *create_block_body(b2World *world, struct block_info *bi)
+static void create_block_body(block_descr *bd)
 {
-	struct fcsim_block *block = bi->block;
-	struct block_physics phys = block_physics_tbl[block->type];
+	fcsim_block *block = bd->block;
+	block_physics phys = block_physics_tbl[block->type];
 	b2BoxDef box_def;
 	b2CircleDef circle_def;
 	b2ShapeDef *shape_def;
@@ -137,34 +125,30 @@ static b2Body *create_block_body(b2World *world, struct block_info *bi)
 	shape_def->restitution = phys.restitution;
 	shape_def->categoryBits = phys.categoryBits;
 	shape_def->maskBits = phys.maskBits;
-	shape_def->userData = reinterpret_cast<void *>(g_world->blocks.size());
+	shape_def->userData = bd;
 	body_def.position.Set(block->x, block->y);
 	body_def.rotation = block->angle;
 	body_def.linearDamping = phys.linearDamping;
 	body_def.angularDamping = phys.angularDamping;
 	body_def.AddShape(shape_def);
-	return world->CreateBody(&body_def);
+	bd->body = the_world->CreateBody(&body_def);
 }
 
-static int get_closest_joint_collection(struct fcsim_world *world, float x,
-					float y, int block_idxs[2])
+static joint_collection *get_closest_jc(float x, float y, int joints[2])
 {
 	float best_dist = 10.0f;
-	int res = -1;
+	joint_collection *res = NULL;
 
 	for (int i = 0; i < 2; i++) {
-		int block_idx = block_idxs[i];
+		int block_idx = joints[i];
 		if (block_idx < 0)
 			continue;
-		printf(".\n");
-		for (int joint_idx : world->blocks[block_idx].joint_idxs) {
-			struct joint_collection *joint = &world->joints[joint_idx];
-			float jx = joint->x, jy = joint->y;
-			printf("%f %f %f %f\n", x, y, jx, jy);
-			float dist = distance(x, y, jx, jy);
+		block_descr *bd = &the_blocks[block_idx];
+		for (joint_collection_list *j = bd->jcs; j; j = j->next) {
+			float dist = distance(x, y, j->jc->x, j->jc->y);
 			if (dist < best_dist) {
 				best_dist = dist;
-				res = joint_idx;
+				res = j->jc;
 			}
 		}
 	}
@@ -172,7 +156,7 @@ static int get_closest_joint_collection(struct fcsim_world *world, float x,
 	return res;
 }
 
-void get_rod_endpoints(struct fcsim_block *block, float *x0, float *y0, float *x1, float *y1)
+void get_rod_endpoints(fcsim_block *block, float *x0, float *y0, float *x1, float *y1)
 {
 	float cw = cosf(block->angle) * block->w / 2;
 	float sw = sinf(block->angle) * block->w / 2;
@@ -183,18 +167,15 @@ void get_rod_endpoints(struct fcsim_block *block, float *x0, float *y0, float *x
 	*y1 = block->y + sw;
 }
 
-int share_block(struct fcsim_world *world, int j0_idx, int j1_idx)
+int share_block(joint_collection *j0, joint_collection *j1)
 {
-	for (struct block_info bi : world->blocks) {
+	for (int i = 0; i < the_block_cnt; i++) {
 		bool f0 = false, f1 = false;
-		for (int j_idx : bi.joint_idxs) {
-			if (j0_idx == j_idx)
-				f0 = true;
-			if (j1_idx == j_idx)
-				f1 = true;
+		for (joint_collection_list *l = the_blocks[i].jcs; l; l = l->next) {
+			if (l->jc == j0) f0 = true;
+			if (l->jc == j1) f1 = true;
 		}
-		if (f0 && f1)
-			return true;
+		if (f0 && f1) return true;
 	}
 	return false;
 }
@@ -224,11 +205,9 @@ static int is_wheel(int block_type)
 	return false;
 }
 
-static void create_joint(b2World *world, b2Body *b1, b2Body *b2, float x, float y, int type)
+static void create_joint(b2Body *b1, b2Body *b2, float x, float y, int type)
 {
 	b2RevoluteJointDef joint_def;
-
-	printf("Peekaboo!\n");
 
 	joint_def.body1 = b1;
 	joint_def.body2 = b2;
@@ -239,147 +218,149 @@ static void create_joint(b2World *world, b2Body *b1, b2Body *b2, float x, float 
 		joint_def.motorSpeed = -5 * type;
 		joint_def.enableMotor = true;
 	}
-	world->CreateJoint(&joint_def);
+	the_world->CreateJoint(&joint_def);
 }
 
-static void connect_joint(struct fcsim_world *world, struct block_info *bi, int j_idx)
+static void add_joint(struct block_descr *bd, joint_collection *j)
 {
-	struct joint_collection *j = &world->joints[j_idx];
-	struct block_info *bi2 = &world->blocks[j->top_block_idx];
+	joint_collection_list *l = new joint_collection_list;
+	l->jc = j;
+	l->next = bd->jcs;
+	bd->jcs = l;
+}
 
-	int j_type = joint_type(bi->block->type);
-	if (j->cnt == 1 && is_wheel(bi2->block->type))
-		j_type = joint_type(bi2->block->type);
-	if (j_type != FCSIM_JOINT_PIN && is_wheel(bi->block->type))
+static void connect_joint(struct block_descr *bd, joint_collection *j)
+{
+	struct block_descr *top = j->top_block;
+
+	int j_type = joint_type(bd->block->type);
+	if (j->cnt == 1 && is_wheel(top->block->type))
+		j_type = joint_type(top->block->type);
+	if (j_type != FCSIM_JOINT_PIN && is_wheel(bd->block->type))
 		j_type = -j_type;
 
-	create_joint(&world->world, bi2->body, bi->body, j->x, j->y, j_type);
-
-	j->top_block_idx = world->blocks.size();
+	create_joint(top->body, bd->body, j->x, j->y, j_type);
+	add_joint(bd, j);
+	j->top_block = bd;
 	j->cnt++;
-
-	bi->joint_idxs.push_back(j_idx);
 }
 
-static void new_joint_collection(struct fcsim_world *world, float x, float y, struct block_info *bi)
+static void new_joint_collection(float x, float y, struct block_descr *bd)
 {
-	struct joint_collection j;
-	printf("new_joint_collection(%f, %f)\n", x, y);
-	j.x = x;
-	j.y = y;
-	j.top_block_idx = world->blocks.size();
-	j.cnt = 1;
-	bi->joint_idxs.push_back(world->joints.size());
-	world->joints.push_back(j);
+	struct joint_collection *j = &the_joints[the_joint_cnt++];
+
+	j->x = x;
+	j->y = y;
+	j->top_block = bd;
+	j->cnt = 1;
+	add_joint(bd, j);
 }
 
-static void do_rod_joints(struct fcsim_world *world, struct block_info *bi)
+static void do_rod_joints(struct block_descr *bd)
 {
-	struct fcsim_block *block = bi->block;
+	fcsim_block *block = bd->block;
 	float x0, y0, x1, y1;
 
 	get_rod_endpoints(block, &x0, &y0, &x1, &y1);
-	int j0_idx = get_closest_joint_collection(world, x0, y0, block->joints);
-	int j1_idx = get_closest_joint_collection(world, x1, y1, block->joints);
+	joint_collection *j0 = get_closest_jc(x0, y0, block->joints);
+	joint_collection *j1 = get_closest_jc(x1, y1, block->joints);
 
-	if (j0_idx == j1_idx)
-		j1_idx = -1;
-	if (j0_idx >= 0 && j1_idx >= 0 && share_block(world, j0_idx, j1_idx))
-		j1_idx = -1;
+	if (j0 == j1)
+		j1 = NULL;
+	if (j0 && j1 && share_block(j0, j1))
+		j1 = NULL;
 
-	if (j0_idx >= 0)
-		connect_joint(world, bi, j0_idx);
+	if (j0)
+		connect_joint(bd, j0);
 	else
-		new_joint_collection(world, x0, y0, bi);
+		new_joint_collection(x0, y0, bd);
 	
-	if (j1_idx >= 0)
-		connect_joint(world, bi, j1_idx);
+	if (j1)
+		connect_joint(bd, j1);
 	else
-		new_joint_collection(world, x1, y1, bi);
+		new_joint_collection(x1, y1, bd);
 }
 		
-static void do_wheel_joints(struct fcsim_world *world, struct block_info *bi)
+static void do_wheel_joints(struct block_descr *bd)
 {
-	struct fcsim_block *block = bi->block;
+	fcsim_block *block = bd->block;
 	float x = block->x;
 	float y = block->y;
-	int j_idx = get_closest_joint_collection(world, x, y, block->joints);
+	joint_collection *j = get_closest_jc(x, y, block->joints);
 
-	if (j_idx >= 0)
-		connect_joint(world, bi, j_idx);
+	if (j)
+		connect_joint(bd, j);
 	else
-		new_joint_collection(world, x, y, bi);
-	new_joint_collection(world, x + block->w/2, y, bi);
-	new_joint_collection(world, x - block->w/2, y, bi);
-	new_joint_collection(world, x, y + block->w/2, bi);
-	new_joint_collection(world, x, y - block->w/2, bi);
+		new_joint_collection(x, y, bd);
+	new_joint_collection(x + block->w/2, y, bd);
+	new_joint_collection(x - block->w/2, y, bd);
+	new_joint_collection(x, y + block->w/2, bd);
+	new_joint_collection(x, y - block->w/2, bd);
 }
 
-static void do_goal_rect_joints(struct fcsim_world *world, struct block_info *bi)
+static void do_goal_rect_joints(struct block_descr *bd)
 {
-	struct fcsim_block *block = bi->block;
+	fcsim_block *block = bd->block;
 	float x = block->x;
 	float y = block->y;
 	float w = block->w/2;
 	float h = block->h/2;
 
-	new_joint_collection(world, x, y, bi);
-	new_joint_collection(world, x + w, y + w, bi);
-	new_joint_collection(world, x + w, y - w, bi);
-	new_joint_collection(world, x - w, y + w, bi);
-	new_joint_collection(world, x - w, y - w, bi);
+	new_joint_collection(x, y, bd);
+	new_joint_collection(x + w, y + w, bd);
+	new_joint_collection(x + w, y - w, bd);
+	new_joint_collection(x - w, y + w, bd);
+	new_joint_collection(x - w, y - w, bd);
 }
 
-static void do_joints(struct fcsim_world *world, struct block_info *block)
+static void do_joints(struct block_descr *bd)
 {
-	switch (block->block->type) {
+	switch (bd->block->type) {
 	case FCSIM_GOAL_RECT:
-		do_goal_rect_joints(world, block);
+		do_goal_rect_joints(bd);
+		return;
 	case FCSIM_GOAL_CIRCLE:
 	case FCSIM_WHEEL:
 	case FCSIM_CW_WHEEL:
 	case FCSIM_CCW_WHEEL:
-		do_wheel_joints(world, block);
+		do_wheel_joints(bd);
 		return;
 	case FCSIM_ROD:
 	case FCSIM_SOLID_ROD:
-		do_rod_joints(world, block);
+		do_rod_joints(bd);
 		return;
 	}
 }
 
-int fcsim_add_block(struct fcsim_world *world, struct fcsim_block *block)
+void fcsim_add_block(struct fcsim_block *block)
 {
-	struct joint_collection joint;
-	struct block_info block_info;
+	block_descr *bd = &the_blocks[the_block_cnt++];
 
 	assert(block->type >= 0 && block->type <= FCSIM_TYPE_MAX);
-	assert(block->joints[0] < (int)world->joints.size());
-	assert(block->joints[1] < (int)world->joints.size());
+	assert(block->joints[0] < the_block_cnt);
+	assert(block->joints[1] < the_block_cnt);
 
 	if (block->type == FCSIM_STAT_CIRCLE || block->type == FCSIM_DYN_CIRCLE) {
 		block->w *= 2;
 		block->h *= 2;
 	}
 
-	block_info.block = block;
-	block_info.body = create_block_body(&world->world, &block_info);
-	do_joints(world, &block_info);
-	world->blocks.push_back(block_info);
-
-	return 1;
+	bd->block = block;
+	create_block_body(bd);
+	do_joints(bd);
 }
 
-void fcsim_step(struct fcsim_world *world)
+void fcsim_step(void)
 {
-	world->world.Step(TIME_STEP, ITERATIONS);
+	the_world->Step(TIME_STEP, ITERATIONS);
 
-	for (auto block_info : world->blocks) {
-		b2Vec2 pos = block_info.body->GetOriginPosition();
-		float angle = block_info.body->GetRotation();
+	for (int i = 0; i < the_block_cnt; i++) {
+		block_descr *bd = &the_blocks[i];
+		b2Vec2 pos  = bd->body->GetOriginPosition();
+		float angle = bd->body->GetRotation();
 
-		block_info.block->x = pos.x;
-		block_info.block->y = pos.y;
-		block_info.block->angle = angle;
+		bd->block->x = pos.x;
+		bd->block->y = pos.y;
+		bd->block->angle = angle;
 	}
 }

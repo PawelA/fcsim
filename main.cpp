@@ -25,29 +25,28 @@ void add_world(struct fcsim_world *world)
 	struct fcsim_block *block;
 
 	for (block = blocks; block->type; block++)
-		fcsim_add_block(world, block);
+		fcsim_add_block(block);
 }
 
 int main(void)
 {
 	int block_count = sizeof(blocks) / sizeof(blocks[0]);
-	struct fcsim_world *world;
 	int f = 0;
 	int i;
 
 	glwindow_create(800, 800);
 
-	world = fcsim_create_world();
+	fcsim_create_world();
 	for (i = 0; i < block_count; i++)
-		fcsim_add_block(world, &blocks[i]);
+		fcsim_add_block(&blocks[i]);
 
 	setup_draw();
 	while (1) {
 		draw_world(blocks, block_count);
 		glwindow_get_event();
 		glwindow_swap_buffers();
-		if (f++ % 4 == 0)
-			fcsim_step(world);
+		//if (f++ % 4 == 0)
+			fcsim_step();
 	}
 
 	return 0;

@@ -1,5 +1,3 @@
-struct fcsim_world;
-
 #define FCSIM_STAT_RECT   0
 #define FCSIM_STAT_CIRCLE 1
 #define FCSIM_DYN_RECT    2
@@ -21,8 +19,8 @@ struct fcsim_block {
 	int joints[2];
 };
 
-struct fcsim_world *fcsim_create_world(void);
+void fcsim_create_world(void);
 
-int fcsim_add_block(struct fcsim_world *world, fcsim_block *block);
+void fcsim_add_block(fcsim_block *block);
 
-void fcsim_step(struct fcsim_world *world);
+void fcsim_step(void);

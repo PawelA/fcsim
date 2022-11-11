@@ -46,9 +46,28 @@ int window_should_close(void)
 
 void setup_draw(void)
 {
-	glClearColor(1, 1, 1, 0);
+	glClearColor(0.529f, 0.741f, 0.945f, 0);
 	glOrtho(-500, 500, 500, -500, -1, 1);
 }
+
+struct draw_info {
+	int circle;
+	float r, g, b;
+};
+
+draw_info draw_info_tbl[] = {
+	{ 0, 0.000f, 0.745f, 0.004f }, /* FCSIM_STAT_RECT */
+	{ 1, 0.000f, 0.745f, 0.004f }, /* FCSIM_STAT_CIRCLE */
+	{ 0, 0.976f, 0.855f, 0.184f }, /* FCSIM_DYN_RECT */
+	{ 1, 0.976f, 0.537f, 0.184f }, /* FCSIM_DYN_CIRCLE */
+	{ 0, 1.000f, 0.400f, 0.400f }, /* FCSIM_GOAL_RECT */
+	{ 1, 1.000f, 0.400f, 0.400f }, /* FCSIM_GOAL_CIRCLE */
+	{ 1, 0.537f, 0.980f, 0.890f }, /* FCSIM_WHEEL */
+	{ 1, 1.000f, 0.925f, 0.000f }, /* FCSIM_CW_WHEEL */
+	{ 1, 1.000f, 0.800f, 0.800f }, /* FCSIM_CCW_WHEEL */
+	{ 0, 0.000f, 0.000f, 1.000f }, /* FCSIM_ROD */
+	{ 0, 0.420f, 0.204f, 0.000f }, /* FCSIM_SOLID_ROD */
+};
 
 static void draw_rect(struct fcsim_block *block, float r, float g, float b)
 {
@@ -70,7 +89,7 @@ static void draw_rect(struct fcsim_block *block, float r, float g, float b)
 	glEnd();
 }
 
-static void draw_circle(struct fcsim_block *block, bool wheel, float r, float g, float b)
+static void draw_circle(struct fcsim_block *block, float r, float g, float b)
 {
 	int i;
 	float ra = block->w/2;
@@ -86,43 +105,11 @@ static void draw_circle(struct fcsim_block *block, bool wheel, float r, float g,
 
 static void draw_block(struct fcsim_block *block)
 {
-	switch (block->type) {
-	case FCSIM_STAT_RECT:
-		draw_rect(block, 0, 0.9, 0);
-		break;
-	case FCSIM_STAT_CIRCLE:
-		draw_circle(block, false, 0, 0.9, 0);
-		break;
-	case FCSIM_DYN_RECT:
-		draw_rect(block, 1, 0.8, 0);
-		break;
-	case FCSIM_DYN_CIRCLE:
-		draw_circle(block, false, 1, 0.5, 0);
-		break;
-	case FCSIM_GOAL_CIRCLE:
-		draw_circle(block, true, 1, 0, 0.1);
-		break;
-	case FCSIM_GOAL_RECT:
-		draw_rect(block, 1, 0, 0.1);
-		break;
-	case FCSIM_WHEEL:
-		draw_circle(block, true, 0, 0.6, 1);
-		break;
-	case FCSIM_CW_WHEEL:
-		draw_circle(block, true, 1, 0.9, 0);
-		break;
-	case FCSIM_CCW_WHEEL:
-		draw_circle(block, true, 0.8, 0, 0.9);
-		break;
-	case FCSIM_ROD:
-		block->h = 4;
-		draw_rect(block, 0, 0, 1);
-		break;
-	case FCSIM_SOLID_ROD:
-		block->h = 8;
-		draw_rect(block, 0.5, 0.3, 0);
-		break;
-	}
+	draw_info info = draw_info_tbl[block->type];
+	if (info.circle)
+		draw_circle(block, info.r, info.g, info.b);
+	else
+		draw_rect(block, info.r, info.g, info.b);
 }
  
 void draw_world(struct fcsim_block *blocks, int block_cnt)
