@@ -1,26 +1,28 @@
 struct fcsim_world;
 
-struct fcsim_body {
+#define FCSIM_STAT_RECT   0
+#define FCSIM_STAT_CIRCLE 1
+#define FCSIM_DYN_RECT    2
+#define FCSIM_DYN_CIRCLE  3
+#define FCSIM_GOAL_RECT   4
+#define FCSIM_GOAL_CIRCLE 5
+#define FCSIM_WHEEL       6
+#define FCSIM_CW_WHEEL    7
+#define FCSIM_CCW_WHEEL   8
+#define FCSIM_ROD         9
+#define FCSIM_SOLID_ROD   10
+#define FCSIM_TYPE_MAX    10
+
+struct fcsim_block {
+	int type;
 	float x, y;
+	float w, h;
 	float angle;
+	int joints[2];
 };
 
 struct fcsim_world *fcsim_create_world(void);
 
-void fcsim_add_stat_rect(struct fcsim_world *world,
-			 struct fcsim_body *body,
-			 float w, float h);
-
-void fcsim_add_dyn_rect(struct fcsim_world *world,
-			struct fcsim_body *body,
-			float w, float h);
-
-void fcsim_add_stat_circ(struct fcsim_world *world,
-			 struct fcsim_body *body,
-			 float r);
-
-void fcsim_add_dyn_circ(struct fcsim_world *world,
-			struct fcsim_body *body,
-			float r);
+int fcsim_add_block(struct fcsim_world *world, fcsim_block *block);
 
 void fcsim_step(struct fcsim_world *world);

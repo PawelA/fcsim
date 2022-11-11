@@ -1,84 +1,54 @@
 #include "fcsim.h"
-#include "fc.h"
 #include "draw.h"
+#include "glwindow.h"
 
-struct fc_rect stat_rects[] = {
-	{ { 100, 0, 0 }, 300, 100 },
-	{ { -200, -120, 0.2 }, 200, 100 },
+#if 0
+struct fcsim_block blocks[] = {
+	/*       type          x     y    w    h    a      j0  j1  */
+	{ FCSIM_STAT_RECT  ,  150,    0, 300, 100,  0  , { -1, -1 } },
+	{ FCSIM_STAT_RECT  , -200, -120, 200, 100,  0.2, { -1, -1 } },
+	{ FCSIM_STAT_CIRCLE, -350, -300,  40,  40,  0  , { -1, -1 } },
+	{ FCSIM_DYN_RECT   , -300, -400,  80,  80, -0.1, { -1, -1 } },
+	{ FCSIM_DYN_CIRCLE , -270, -270,  30,  30,  0  , { -1, -1 } },
+	{ FCSIM_WHEEL      ,  100, -200,  40,  40,  0  , { -1, -1 } },
+	{ FCSIM_CW_WHEEL   ,  200, -200,  40,  40,  0  , { -1, -1 } },
+	{ FCSIM_CCW_WHEEL  ,  300, -200,  40,  40,  0  , { -1, -1 } },
+	{ FCSIM_ROD        ,  150, -200, 100,   0,  0  , { -1, -1 } },
+	{ FCSIM_SOLID_ROD  ,  250, -200, 100,   0,  0  , { -1, -1 } },
 };
+#else
+#include "level.h"
+#endif
 
-struct fc_circ stat_circs[] = {
-	{ { -350, -300, 0 }, 40 },
-};
-
-struct fc_rect dyn_rects[] = {
-	{ { -300, -400, -0.1 }, 80, 80 },
-};
-
-struct fc_circ dyn_circs[] = {
-	{ { -270, -270, 0 }, 30 },
-};
-
-struct fc_world world = {
-	.stat_rects = stat_rects,
-	.stat_rect_cnt = 2,
-
-	.stat_circs = stat_circs,
-	.stat_circ_cnt = 1,
-
-	.dyn_rects = dyn_rects,
-	.dyn_rect_cnt = 1,
-	
-	.dyn_circs = dyn_circs,
-	.dyn_circ_cnt = 1,
-};
-
-void add_world(struct fcsim_world *sim_world, struct fc_world *world)
+void add_world(struct fcsim_world *world)
 {
-	int i;
+	struct fcsim_block *block;
 
-	for (i = 0; i < world->stat_rect_cnt; i++) {
-		fcsim_add_stat_rect(sim_world,
-				    &world->stat_rects[i].body,
-				    world->stat_rects[i].w,
-				    world->stat_rects[i].h);
-	}
-	
-	for (i = 0; i < world->stat_circ_cnt; i++) {
-		fcsim_add_stat_circ(sim_world,
-				    &world->stat_circs[i].body,
-				    world->stat_circs[i].r);
-	}
-	
-	for (i = 0; i < world->dyn_rect_cnt; i++) {
-		fcsim_add_dyn_rect(sim_world,
-				   &world->dyn_rects[i].body,
-				   world->dyn_rects[i].w,
-				   world->dyn_rects[i].h);
-	}
-	
-	for (i = 0; i < world->dyn_circ_cnt; i++) {
-		fcsim_add_dyn_circ(sim_world,
-				   &world->dyn_circs[i].body,
-				   world->dyn_circs[i].r);
-	}
+	for (block = blocks; block->type; block++)
+		fcsim_add_block(world, block);
 }
 
 int main(void)
 {
-	struct fcsim_world *sim_world;
+	int block_count = sizeof(blocks) / sizeof(blocks[0]);
+	struct fcsim_world *world;
+	int f = 0;
+	int i;
 
-	create_window(600, 600, "window");
+	glwindow_create(800, 800);
 
-	sim_world = fcsim_create_world();
-	add_world(sim_world, &world);
+	world = fcsim_create_world();
+	for (i = 0; i < block_count; i++)
+		fcsim_add_block(world, &blocks[i]);
 
-	while (!window_should_close()) {
-		draw_world(&world);
-		fcsim_step(sim_world);
+	setup_draw();
+	while (1) {
+		draw_world(blocks, block_count);
+		glwindow_get_event();
+		glwindow_swap_buffers();
+		if (f++ % 4 == 0)
+			fcsim_step(world);
 	}
-
-	destroy_window();
 
 	return 0;
 }
