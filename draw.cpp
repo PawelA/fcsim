@@ -69,7 +69,7 @@ draw_info draw_info_tbl[] = {
 	{ 0, 0.420f, 0.204f, 0.000f }, /* FCSIM_SOLID_ROD */
 };
 
-static void draw_rect(struct fcsim_block *block, float r, float g, float b)
+static void draw_rect(struct fcsim_block *block, float cr, float cg, float cb)
 {
 	float sina = sinf(block->angle);
 	float cosa = cosf(block->angle);
@@ -81,7 +81,7 @@ static void draw_rect(struct fcsim_block *block, float r, float g, float b)
 	float y = block->y;
 
 	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(r, g, b);
+	glColor3f(cr, cg, cb);
 	glVertex2f( wc - hs + x,  ws + hc + y);
 	glVertex2f(-wc - hs + x, -ws + hc + y);
 	glVertex2f(-wc + hs + x, -ws - hc + y);
@@ -89,16 +89,18 @@ static void draw_rect(struct fcsim_block *block, float r, float g, float b)
 	glEnd();
 }
 
-static void draw_circle(struct fcsim_block *block, float r, float g, float b)
+#define CIRCLE_SEGMENTS 40
+
+static void draw_circle(struct fcsim_block *block, float cr, float cg, float cb)
 {
 	int i;
-	float ra = block->w/2;
+	float r = block->w/2;
 
 	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(r, g, b);
-	for (i = 0; i < 40; i++) {
-		glVertex2f(cosf(6.28 * i / 40.0) * ra + block->x,
-			   sinf(6.28 * i / 40.0) * ra + block->y);
+	glColor3f(cr, cg, cb);
+	for (i = 0; i < CIRCLE_SEGMENTS; i++) {
+		glVertex2f(cosf(6.28 * i / CIRCLE_SEGMENTS) * r + block->x,
+			   sinf(6.28 * i / CIRCLE_SEGMENTS) * r + block->y);
 	}
 	glEnd();
 }

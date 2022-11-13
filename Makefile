@@ -1,7 +1,8 @@
 OBJS = \
 	draw.o \
 	fcsim.o \
-	main.o
+	main.o \
+	glwindow.o
 
 B2_OBJS = \
 	box2d/Source/Collision/b2BroadPhase.o \
@@ -32,10 +33,14 @@ B2_OBJS = \
 	box2d/Source/Dynamics/Joints/b2PulleyJoint.o \
 	box2d/Source/Dynamics/Joints/b2RevoluteJoint.o
 
-LDFLAGS = -lglfw -lGL
+CXXFLAGS = -g
+LDFLAGS = -lGL -lX11
 
 main: $(OBJS) box2d.a
-	$(CXX) $(LDFLAGS) -o $@ $^
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
 box2d.a: $(B2_OBJS)
 	ar rc $@ $^
+
+clean:
+	rm -f main $(OBJS) $(B2_OBJS)

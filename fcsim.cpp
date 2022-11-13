@@ -48,6 +48,7 @@ class fcsim_collision_filter : public b2CollisionFilter {
 public:
 	bool ShouldCollide(b2Shape *s1, b2Shape *s2)
 	{
+		printf("ShouldCollide\n");
 		if (!b2_defaultFilter.ShouldCollide(s1, s2))
 			return false;
 
@@ -131,7 +132,9 @@ static void create_block_body(block_descr *bd)
 	body_def.linearDamping = phys.linearDamping;
 	body_def.angularDamping = phys.angularDamping;
 	body_def.AddShape(shape_def);
+	printf("CreateBody <\n");
 	bd->body = the_world->CreateBody(&body_def);
+	printf("CreateBody >\n");
 }
 
 static joint_collection *get_closest_jc(float x, float y, int joints[2])
@@ -239,8 +242,8 @@ static void connect_joint(struct block_descr *bd, joint_collection *j)
 	if (j_type != FCSIM_JOINT_PIN && is_wheel(bd->block->type))
 		j_type = -j_type;
 
-	create_joint(top->body, bd->body, j->x, j->y, j_type);
 	add_joint(bd, j);
+	create_joint(top->body, bd->body, j->x, j->y, j_type);
 	j->top_block = bd;
 	j->cnt++;
 }
@@ -336,6 +339,8 @@ void fcsim_add_block(struct fcsim_block *block)
 {
 	block_descr *bd = &the_blocks[the_block_cnt++];
 
+	printf("fcsim_add_block <\n");
+
 	assert(block->type >= 0 && block->type <= FCSIM_TYPE_MAX);
 	assert(block->joints[0] < the_block_cnt);
 	assert(block->joints[1] < the_block_cnt);
@@ -347,11 +352,14 @@ void fcsim_add_block(struct fcsim_block *block)
 
 	bd->block = block;
 	create_block_body(bd);
+	printf(".\n");
 	do_joints(bd);
+	printf("fcsim_add_block >\n");
 }
 
 void fcsim_step(void)
 {
+	printf("Step <\n");
 	the_world->Step(TIME_STEP, ITERATIONS);
 
 	for (int i = 0; i < the_block_cnt; i++) {
