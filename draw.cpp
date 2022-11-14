@@ -47,7 +47,7 @@ int window_should_close(void)
 void setup_draw(void)
 {
 	glClearColor(0.529f, 0.741f, 0.945f, 0);
-	glOrtho(-500, 500, 500, -500, -1, 1);
+	glOrtho(-1100, 1100, 1100, -1100, -1, 1);
 }
 
 struct draw_info {

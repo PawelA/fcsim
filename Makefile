@@ -4,6 +4,12 @@ OBJS = \
 	main.o \
 	glwindow.o
 
+HDRS = \
+	draw.h \
+	fcsim.h \
+	glwindow.h \
+	level.h
+
 B2_OBJS = \
 	box2d/Source/Collision/b2BroadPhase.o \
 	box2d/Source/Collision/b2CollideCircle.o \
@@ -33,11 +39,13 @@ B2_OBJS = \
 	box2d/Source/Dynamics/Joints/b2PulleyJoint.o \
 	box2d/Source/Dynamics/Joints/b2RevoluteJoint.o
 
-CXXFLAGS = -g
+CXXFLAGS = -g -DNDEBUG
 LDFLAGS = -lGL -lX11
 
 main: $(OBJS) box2d.a
 	$(CXX) -o $@ $^ $(LDFLAGS)
+
+$(OBJS): $(HDRS)
 
 box2d.a: $(B2_OBJS)
 	ar rc $@ $^
