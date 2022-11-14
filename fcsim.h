@@ -13,9 +13,9 @@
 
 struct fcsim_block {
 	int type;
-	float x, y;
-	float w, h;
-	float angle;
+	double x, y;
+	double w, h;
+	double angle;
 	int joints[2];
 };
 

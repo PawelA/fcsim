@@ -13,7 +13,7 @@
 struct block_descr;
 
 struct joint_collection {
-	float x, y;
+	double x, y;
 	int cnt;
 	block_descr *top_block;
 };
@@ -37,10 +37,10 @@ block_descr      the_blocks[1000];
 int the_joint_cnt;
 int the_block_cnt;
 
-static float distance(float x1, float y1, float x2, float y2)
+static double distance(double x1, double y1, double x2, double y2)
 {
-	float dx = x2 - x1;
-	float dy = y2 - y1;
+	double dx = x2 - x1;
+	double dy = y2 - y1;
 
 	return sqrtf(dx * dx + dy * dy);
 }
@@ -80,13 +80,13 @@ void fcsim_create_world(void)
 
 struct block_physics {
 	int circle;
-	float density;
-	float friction;
-	float restitution;
+	double density;
+	double friction;
+	double restitution;
 	int categoryBits;
 	int maskBits;
-	float linearDamping;
-	float angularDamping;
+	double linearDamping;
+	double angularDamping;
 };
 
 static struct block_physics block_physics_tbl[] = {
@@ -134,9 +134,9 @@ static void create_block_body(block_descr *bd)
 	bd->body = the_world->CreateBody(&body_def);
 }
 
-static joint_collection *get_closest_jc(float x, float y, int joints[2])
+static joint_collection *get_closest_jc(double x, double y, int joints[2])
 {
-	float best_dist = 10.0f;
+	double best_dist = 10.0f;
 	joint_collection *res = NULL;
 
 	for (int i = 0; i < 2; i++) {
@@ -145,7 +145,7 @@ static joint_collection *get_closest_jc(float x, float y, int joints[2])
 			continue;
 		block_descr *bd = &the_blocks[block_idx];
 		for (joint_descr *j = bd->joints; j; j = j->next) {
-			float dist = distance(x, y, j->jc->x, j->jc->y);
+			double dist = distance(x, y, j->jc->x, j->jc->y);
 			if (dist < best_dist) {
 				best_dist = dist;
 				res = j->jc;
@@ -156,10 +156,10 @@ static joint_collection *get_closest_jc(float x, float y, int joints[2])
 	return res;
 }
 
-void get_rod_endpoints(fcsim_block *block, float *x0, float *y0, float *x1, float *y1)
+void get_rod_endpoints(fcsim_block *block, double *x0, double *y0, double *x1, double *y1)
 {
-	float cw = cosf(block->angle) * block->w / 2;
-	float sw = sinf(block->angle) * block->w / 2;
+	double cw = cosf(block->angle) * block->w / 2;
+	double sw = sinf(block->angle) * block->w / 2;
 
 	*x0 = block->x - cw;
 	*y0 = block->y - sw;
@@ -205,7 +205,7 @@ static int is_wheel(int block_type)
 	return false;
 }
 
-static void create_joint(b2Body *b1, b2Body *b2, float x, float y, int type)
+static void create_joint(b2Body *b1, b2Body *b2, double x, double y, int type)
 {
 	b2RevoluteJointDef joint_def;
 
@@ -254,7 +254,7 @@ static void connect_joint(block_descr *bd, joint_collection *jc)
 	bd->joints = j;
 }
 
-static void make_block_joint(block_descr *bd, float x, float y)
+static void make_block_joint(block_descr *bd, double x, double y)
 {
 	joint_collection *jc = &the_joints[the_joint_cnt++];
 
@@ -266,7 +266,7 @@ static void make_block_joint(block_descr *bd, float x, float y)
 	connect_joint(bd, jc);
 }
 
-static void make_connecting_block_joint(block_descr *bd, joint_collection *jc, float *x, float *y)
+static void make_connecting_block_joint(block_descr *bd, joint_collection *jc, double *x, double *y)
 {
 	if (jc) {
 		*x = jc->x;
@@ -280,7 +280,7 @@ static void make_connecting_block_joint(block_descr *bd, joint_collection *jc, f
 static void do_rod_joints(struct block_descr *bd)
 {
 	fcsim_block *block = bd->block;
-	float x0, y0, x1, y1;
+	double x0, y0, x1, y1;
 
 	get_rod_endpoints(block, &x0, &y0, &x1, &y1);
 	joint_collection *j0 = get_closest_jc(x0, y0, block->joints);
@@ -298,9 +298,9 @@ static void do_rod_joints(struct block_descr *bd)
 static void do_wheel_joints(struct block_descr *bd)
 {
 	fcsim_block *block = bd->block;
-	float x = block->x;
-	float y = block->y;
-	float r = block->w/2;
+	double x = block->x;
+	double y = block->y;
+	double r = block->w/2;
 	joint_collection *j = get_closest_jc(x, y, block->joints);
 
 	make_connecting_block_joint(bd, j, &x, &y);
@@ -315,10 +315,10 @@ static void do_wheel_joints(struct block_descr *bd)
 static void do_goal_rect_joints(struct block_descr *bd)
 {
 	fcsim_block *block = bd->block;
-	float x = block->x;
-	float y = block->y;
-	float w = block->w/2;
-	float h = block->h/2;
+	double x = block->x;
+	double y = block->y;
+	double w = block->w/2;
+	double h = block->h/2;
 
 	/* todo: take rotation into account */
 	make_block_joint(bd, x, y);
@@ -373,7 +373,7 @@ void fcsim_step(void)
 	for (int i = 0; i < the_block_cnt; i++) {
 		block_descr *bd = &the_blocks[i];
 		b2Vec2 pos  = bd->body->GetOriginPosition();
-		float angle = bd->body->GetRotation();
+		double angle = bd->body->GetRotation();
 
 		bd->block->x = pos.x;
 		bd->block->y = pos.y;
