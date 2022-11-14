@@ -25,7 +25,7 @@
 #include <cstdlib>
 
 
-inline bool b2IsValid(float32 x)
+inline bool b2IsValid(float64 x)
 {
 #ifdef _MSC_VER
 	return _finite(x) != 0;
@@ -34,7 +34,7 @@ inline bool b2IsValid(float32 x)
 #endif
 }
 
-inline float32 b2InvSqrt(float32 x)
+inline float64 b2InvSqrt(float64 x)
 {
 	return 1.0f / sqrtf(x);
 }
@@ -44,14 +44,14 @@ inline float32 b2InvSqrt(float32 x)
 struct b2Vec2
 {
 	b2Vec2() {}
-	b2Vec2(float32 x, float32 y) : x(x), y(y) {}
+	b2Vec2(float64 x, float64 y) : x(x), y(y) {}
 
 	void SetZero() { x = 0.0f; y = 0.0f; }
-	void Set(float32 x_, float32 y_) { x = x_; y = y_; }
+	void Set(float64 x_, float64 y_) { x = x_; y = y_; }
 
 	b2Vec2 operator -() { b2Vec2 v; v.Set(-x, -y); return v; }
 
-	static b2Vec2 Make(float32 x_, float32 y_)
+	static b2Vec2 Make(float64 x_, float64 y_)
 	{
 		b2Vec2 v;
 		v.Set(x_, y_);
@@ -68,24 +68,24 @@ struct b2Vec2
 		x -= v.x; y -= v.y;
 	}
 
-	void operator *= (float32 a)
+	void operator *= (float64 a)
 	{
 		x *= a; y *= a;
 	}
 
-	float32 Length() const
+	float64 Length() const
 	{
 		return sqrtf(x * x + y * y);
 	}
 
-	float32 Normalize()
+	float64 Normalize()
 	{
-		float32 length = Length();
+		float64 length = Length();
 		if (length < FLT_EPSILON)
 		{
 			return 0.0f;
 		}
-		float32 invLength = 1.0f / length;
+		float64 invLength = 1.0f / length;
 		x *= invLength;
 		y *= invLength;
 
@@ -97,7 +97,7 @@ struct b2Vec2
 		return b2IsValid(x) && b2IsValid(y);
 	}
 
-	float32 x, y;
+	float64 x, y;
 };
 
 struct b2Mat22
@@ -109,9 +109,9 @@ struct b2Mat22
 		col2 = c2;
 	}
 
-	explicit b2Mat22(float32 angle)
+	explicit b2Mat22(float64 angle)
 	{
-		float32 c = cosf(angle), s = sinf(angle);
+		float64 c = cosf(angle), s = sinf(angle);
 		col1.x = c; col2.x = -s;
 		col1.y = s; col2.y = c;
 	}
@@ -122,9 +122,9 @@ struct b2Mat22
 		col2 = c2;
 	}
 
-	void Set(float32 angle)
+	void Set(float64 angle)
 	{
-		float32 c = cosf(angle), s = sinf(angle);
+		float64 c = cosf(angle), s = sinf(angle);
 		col1.x = c; col2.x = -s;
 		col1.y = s; col2.y = c;
 	}
@@ -143,9 +143,9 @@ struct b2Mat22
 
 	b2Mat22 Invert() const
 	{
-		float32 a = col1.x, b = col2.x, c = col1.y, d = col2.y;
+		float64 a = col1.x, b = col2.x, c = col1.y, d = col2.y;
 		b2Mat22 B;
-		float32 det = a * d - b * c;
+		float64 det = a * d - b * c;
 		b2Assert(det != 0.0f);
 		det = 1.0f / det;
 		B.col1.x =  det * d;	B.col2.x = -det * b;
@@ -156,8 +156,8 @@ struct b2Mat22
 	// Solve A * x = b
 	b2Vec2 Solve(const b2Vec2& b) const
 	{
-		float32 a11 = col1.x, a12 = col2.x, a21 = col1.y, a22 = col2.y;
-		float32 det = a11 * a22 - a12 * a21;
+		float64 a11 = col1.x, a12 = col2.x, a21 = col1.y, a22 = col2.y;
+		float64 det = a11 * a22 - a12 * a21;
 		b2Assert(det != 0.0f);
 		det = 1.0f / det;
 		b2Vec2 x;
@@ -169,23 +169,23 @@ struct b2Mat22
 	b2Vec2 col1, col2;
 };
 
-inline float32 b2Dot(const b2Vec2& a, const b2Vec2& b)
+inline float64 b2Dot(const b2Vec2& a, const b2Vec2& b)
 {
 	return a.x * b.x + a.y * b.y;
 }
 
-inline float32 b2Cross(const b2Vec2& a, const b2Vec2& b)
+inline float64 b2Cross(const b2Vec2& a, const b2Vec2& b)
 {
 	return a.x * b.y - a.y * b.x;
 }
 
-inline b2Vec2 b2Cross(const b2Vec2& a, float32 s)
+inline b2Vec2 b2Cross(const b2Vec2& a, float64 s)
 {
 	b2Vec2 v; v.Set(s * a.y, -s * a.x);
 	return v;
 }
 
-inline b2Vec2 b2Cross(float32 s, const b2Vec2& a)
+inline b2Vec2 b2Cross(float64 s, const b2Vec2& a)
 {
 	b2Vec2 v; v.Set(-s * a.y, s * a.x);
 	return v;
@@ -217,7 +217,7 @@ inline b2Vec2 operator - (const b2Vec2& a, const b2Vec2& b)
 	return v;
 }
 
-inline b2Vec2 operator * (float32 s, const b2Vec2& a)
+inline b2Vec2 operator * (float64 s, const b2Vec2& a)
 {
 	b2Vec2 v; v.Set(s * a.x, s * a.y);
 	return v;
@@ -253,7 +253,7 @@ inline b2Mat22 b2MulT(const b2Mat22& A, const b2Mat22& B)
 	return C;
 }
 
-inline float32 b2Abs(float32 a)
+inline float64 b2Abs(float64 a)
 {
 	return a > 0.0f ? a : -a;
 }
@@ -318,17 +318,17 @@ template<typename T> inline void b2Swap(T& a, T& b)
 }
 
 // b2Random number in range [-1,1]
-inline float32 b2Random()
+inline float64 b2Random()
 {
-	float32 r = (float32)rand();
+	float64 r = (float64)rand();
 	r /= RAND_MAX;
 	r = 2.0f * r - 1.0f;
 	return r;
 }
 
-inline float32 b2Random(float32 lo, float32 hi)
+inline float64 b2Random(float64 lo, float64 hi)
 {
-	float32 r = (float32)rand();
+	float64 r = (float64)rand();
 	r /= RAND_MAX;
 	r = (hi - lo) * r + lo;
 	return r;

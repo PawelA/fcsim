@@ -288,7 +288,7 @@ void b2World::DestroyJoint(b2Joint* j)
 	}
 }
 
-void b2World::Step(float32 dt, int32 iterations)
+void b2World::Step(float64 dt, int32 iterations)
 {
 	b2TimeStep step;
 	step.dt = dt;

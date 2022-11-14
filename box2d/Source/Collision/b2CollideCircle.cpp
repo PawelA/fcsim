@@ -24,14 +24,14 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 	manifold->pointCount = 0;
 
 	b2Vec2 d = circle2->m_position - circle1->m_position;
-	float32 distSqr = b2Dot(d, d);
-	float32 radiusSum = circle1->m_radius + circle2->m_radius;
+	float64 distSqr = b2Dot(d, d);
+	float64 radiusSum = circle1->m_radius + circle2->m_radius;
 	if (distSqr > radiusSum * radiusSum && conservative == false)
 	{
 		return;
 	}
 
-	float32 separation;
+	float64 separation;
 	if (distSqr < FLT_EPSILON)
 	{
 		separation = -radiusSum;
@@ -39,9 +39,9 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 	}
 	else
 	{
-		float32 dist = sqrtf(distSqr);
+		float64 dist = sqrtf(distSqr);
 		separation = dist - radiusSum;
-		float32 a = 1.0f / dist;
+		float64 a = 1.0f / dist;
 		manifold->normal.x = a * d.x;
 		manifold->normal.y = a * d.y;
 	}
@@ -63,11 +63,11 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 
 	// Find the min separating edge.
 	int32 normalIndex = 0;
-	float32 separation = -FLT_MAX;
-	const float32 radius = circle->m_radius;
+	float64 separation = -FLT_MAX;
+	const float64 radius = circle->m_radius;
 	for (int32 i = 0; i < poly->m_vertexCount; ++i)
 	{
-		float32 s = b2Dot(poly->m_normals[i], xLocal - poly->m_vertices[i]);
+		float64 s = b2Dot(poly->m_normals[i], xLocal - poly->m_vertices[i]);
 		if (s > radius)
 		{
 			// Early out.
@@ -99,13 +99,13 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	int32 vertIndex1 = normalIndex;
 	int32 vertIndex2 = vertIndex1 + 1 < poly->m_vertexCount ? vertIndex1 + 1 : 0;
 	b2Vec2 e = poly->m_vertices[vertIndex2] - poly->m_vertices[vertIndex1];
-	float32 length = e.Normalize();
+	float64 length = e.Normalize();
 
 	// If the edge length is zero ...
 	if (length < FLT_EPSILON)
 	{
 		b2Vec2 d = xLocal - poly->m_vertices[vertIndex1];
-		float32 dist = d.Normalize();
+		float64 dist = d.Normalize();
 		if (dist > radius)
 		{
 			return;
@@ -123,7 +123,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	}
 
 	// Project the center onto the edge.
-	float32 u = b2Dot(xLocal - poly->m_vertices[vertIndex1], e);
+	float64 u = b2Dot(xLocal - poly->m_vertices[vertIndex1], e);
 	manifold->points[0].id.features.incidentEdge = b2_nullFeature;
 	manifold->points[0].id.features.incidentVertex = b2_nullFeature;
 	manifold->points[0].id.features.referenceFace = b2_nullFeature;
@@ -146,7 +146,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	}
 
 	b2Vec2 d = xLocal - p;
-	float32 dist = d.Normalize();
+	float64 dist = d.Normalize();
 	if (dist > radius)
 	{
 		return;

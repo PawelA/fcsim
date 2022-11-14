@@ -52,11 +52,11 @@ struct b2BodyDef
 	void* userData;
 	b2ShapeDef* shapes[b2_maxShapesPerBody];
 	b2Vec2 position;
-	float32 rotation;
+	float64 rotation;
 	b2Vec2 linearVelocity;
-	float32 angularVelocity;
-	float32 linearDamping;
-	float32 angularDamping;
+	float64 angularVelocity;
+	float64 linearDamping;
+	float64 angularDamping;
 	bool allowSleep;
 	bool isSleeping;
 	bool preventRotation;
@@ -72,7 +72,7 @@ class b2Body
 public:
 	// Set the position of the body's origin and rotation (radians).
 	// This breaks any contacts and wakes the other bodies.
-	void SetOriginPosition(const b2Vec2& position, float32 rotation);
+	void SetOriginPosition(const b2Vec2& position, float64 rotation);
 
 	// Get the position of the body's origin. The body's origin does not
 	// necessarily coincide with the center of mass. It depends on how the
@@ -81,7 +81,7 @@ public:
 
 	// Set the position of the body's center of mass and rotation (radians).
 	// This breaks any contacts and wakes the other bodies.
-	void SetCenterPosition(const b2Vec2& position, float32 rotation);
+	void SetCenterPosition(const b2Vec2& position, float64 rotation);
 
 	// Get the position of the body's center of mass. The body's center of mass
 	// does not necessarily coincide with the body's origin. It depends on how the
@@ -89,7 +89,7 @@ public:
 	b2Vec2 GetCenterPosition() const;
 
 	// Get the rotation in radians.
-	float32 GetRotation() const;
+	float64 GetRotation() const;
 
 	const b2Mat22& GetRotationMatrix() const;
 
@@ -98,21 +98,21 @@ public:
 	b2Vec2 GetLinearVelocity() const;
 
 	// Set/Get the angular velocity.
-	void SetAngularVelocity(float32 w);
-	float32 GetAngularVelocity() const;
+	void SetAngularVelocity(float64 w);
+	float64 GetAngularVelocity() const;
 
 	// Apply a force at a world point. Additive.
 	void ApplyForce(const b2Vec2& force, const b2Vec2& point);
 
 	// Apply a torque. Additive.
-	void ApplyTorque(float32 torque);
+	void ApplyTorque(float64 torque);
 
 	// Apply an impulse at a point. This immediately modifies the velocity.
 	void ApplyImpulse(const b2Vec2& impulse, const b2Vec2& point);
 
-	float32 GetMass() const;
+	float64 GetMass() const;
 
-	float32 GetInertia() const;
+	float64 GetInertia() const;
 
 	// Get the world coordinates of a point give the local coordinates
 	// relative to the body's center of mass.
@@ -185,18 +185,18 @@ public:
 	uint32 m_flags;
 
 	b2Vec2 m_position;	// center of mass position
-	float32 m_rotation;
+	float64 m_rotation;
 	b2Mat22 m_R;
 
 	// Conservative advancement data.
 	b2Vec2 m_position0;
-	float32 m_rotation0;
+	float64 m_rotation0;
 
 	b2Vec2 m_linearVelocity;
-	float32 m_angularVelocity;
+	float64 m_angularVelocity;
 
 	b2Vec2 m_force;
-	float32 m_torque;
+	float64 m_torque;
 
 	b2Vec2 m_center;	// local vector from client origin to center of mass
 
@@ -210,13 +210,13 @@ public:
 	b2JointNode* m_jointList;
 	b2ContactNode* m_contactList;
 
-	float32 m_mass, m_invMass;
-	float32 m_I, m_invI;
+	float64 m_mass, m_invMass;
+	float64 m_I, m_invI;
 
-	float32 m_linearDamping;
-	float32 m_angularDamping;
+	float64 m_linearDamping;
+	float64 m_angularDamping;
 
-	float32 m_sleepTime;
+	float64 m_sleepTime;
 
 	void* m_userData;
 };
@@ -243,7 +243,7 @@ inline b2Vec2 b2Body::GetCenterPosition() const
 	return m_position;
 }
 
-inline float32 b2Body::GetRotation() const
+inline float64 b2Body::GetRotation() const
 {
 	return m_rotation;
 }
@@ -263,12 +263,12 @@ inline b2Vec2 b2Body::GetLinearVelocity() const
 	return m_linearVelocity;
 }
 
-inline void b2Body::SetAngularVelocity(float32 w)
+inline void b2Body::SetAngularVelocity(float64 w)
 {
 	m_angularVelocity = w;
 }
 
-inline float32 b2Body::GetAngularVelocity() const
+inline float64 b2Body::GetAngularVelocity() const
 {
 	return m_angularVelocity;
 }
@@ -282,7 +282,7 @@ inline void b2Body::ApplyForce(const b2Vec2& force, const b2Vec2& point)
 	}
 }
 
-inline void b2Body::ApplyTorque(float32 torque)
+inline void b2Body::ApplyTorque(float64 torque)
 {
 	if (IsSleeping() == false)
 	{
@@ -299,12 +299,12 @@ inline void b2Body::ApplyImpulse(const b2Vec2& impulse, const b2Vec2& point)
 	}
 }
 
-inline float32 b2Body::GetMass() const
+inline float64 b2Body::GetMass() const
 {
 	return m_mass;
 }
 
-inline float32 b2Body::GetInertia() const
+inline float64 b2Body::GetInertia() const
 {
 	return m_I;
 }

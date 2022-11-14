@@ -36,8 +36,8 @@ class b2BroadPhase;
 
 struct b2TimeStep
 {
-	float32 dt;			// time step
-	float32 inv_dt;		// inverse time step (0 if dt == 0).
+	float64 dt;			// time step
+	float64 inv_dt;		// inverse time step (0 if dt == 0).
 	int32 iterations;
 };
 
@@ -68,7 +68,7 @@ public:
 	// can use this to simplify the creation of joints.
 	b2Body* GetGroundBody();
 
-	void Step(float32 timeStep, int32 iterations);
+	void Step(float64 timeStep, int32 iterations);
 
 	// Query the world for all shapes that potentially overlap the
 	// provided AABB. You provide a shape pointer buffer of specified

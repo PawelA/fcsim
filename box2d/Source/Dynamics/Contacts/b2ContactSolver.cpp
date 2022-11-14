@@ -42,13 +42,13 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 		b2Body* b2 = contact->m_shape2->m_body;
 		int32 manifoldCount = contact->GetManifoldCount();
 		b2Manifold* manifolds = contact->GetManifolds();
-		float32 friction = contact->m_friction;
-		float32 restitution = contact->m_restitution;
+		float64 friction = contact->m_friction;
+		float64 restitution = contact->m_restitution;
 
 		b2Vec2 v1 = b1->m_linearVelocity;
 		b2Vec2 v2 = b2->m_linearVelocity;
-		float32 w1 = b1->m_angularVelocity;
-		float32 w2 = b2->m_angularVelocity;
+		float64 w1 = b1->m_angularVelocity;
+		float64 w2 = b2->m_angularVelocity;
 
 		for (int32 j = 0; j < manifoldCount; ++j)
 		{
@@ -83,21 +83,21 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 				ccp->localAnchor1 = b2MulT(b1->m_R, r1);
 				ccp->localAnchor2 = b2MulT(b2->m_R, r2);
 
-				float32 r1Sqr = b2Dot(r1, r1);
-				float32 r2Sqr = b2Dot(r2, r2);
+				float64 r1Sqr = b2Dot(r1, r1);
+				float64 r2Sqr = b2Dot(r2, r2);
 
-				float32 rn1 = b2Dot(r1, normal);
-				float32 rn2 = b2Dot(r2, normal);
-				float32 kNormal = b1->m_invMass + b2->m_invMass;
+				float64 rn1 = b2Dot(r1, normal);
+				float64 rn2 = b2Dot(r2, normal);
+				float64 kNormal = b1->m_invMass + b2->m_invMass;
 				kNormal += b1->m_invI * (r1Sqr - rn1 * rn1) + b2->m_invI * (r2Sqr - rn2 * rn2);
 				b2Assert(kNormal > FLT_EPSILON);
 				ccp->normalMass = 1.0f / kNormal;
 
 				b2Vec2 tangent = b2Cross(normal, 1.0f);
 
-				float32 rt1 = b2Dot(r1, tangent);
-				float32 rt2 = b2Dot(r2, tangent);
-				float32 kTangent = b1->m_invMass + b2->m_invMass;
+				float64 rt1 = b2Dot(r1, tangent);
+				float64 rt2 = b2Dot(r2, tangent);
+				float64 kTangent = b1->m_invMass + b2->m_invMass;
 				kTangent += b1->m_invI * (r1Sqr - rt1 * rt1) + b2->m_invI * (r2Sqr - rt2 * rt2);
 				b2Assert(kTangent > FLT_EPSILON);
 				ccp->tangentMass = 1.0f /  kTangent;
@@ -109,7 +109,7 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 					ccp->velocityBias = -60.0f * ccp->separation; // TODO_ERIN b2TimeStep
 				}
 
-				float32 vRel = b2Dot(c->normal, v2 + b2Cross(w2, r2) - v1 - b2Cross(w1, r1));
+				float64 vRel = b2Dot(c->normal, v2 + b2Cross(w2, r2) - v1 - b2Cross(w1, r1));
 				if (vRel < -b2_velocityThreshold)
 				{
 					ccp->velocityBias += -c->restitution * vRel;
@@ -137,10 +137,10 @@ void b2ContactSolver::PreSolve()
 
 		b2Body* b1 = c->body1;
 		b2Body* b2 = c->body2;
-		float32 invMass1 = b1->m_invMass;
-		float32 invI1 = b1->m_invI;
-		float32 invMass2 = b2->m_invMass;
-		float32 invI2 = b2->m_invI;
+		float64 invMass1 = b1->m_invMass;
+		float64 invI1 = b1->m_invI;
+		float64 invMass2 = b2->m_invMass;
+		float64 invI2 = b2->m_invI;
 		b2Vec2 normal = c->normal;
 		b2Vec2 tangent = b2Cross(normal, 1.0f);
 
@@ -181,10 +181,10 @@ void b2ContactSolver::SolveVelocityConstraints()
 		b2ContactConstraint* c = m_constraints + i;
 		b2Body* b1 = c->body1;
 		b2Body* b2 = c->body2;
-		float32 invMass1 = b1->m_invMass;
-		float32 invI1 = b1->m_invI;
-		float32 invMass2 = b2->m_invMass;
-		float32 invI2 = b2->m_invI;
+		float64 invMass1 = b1->m_invMass;
+		float64 invI1 = b1->m_invI;
+		float64 invMass2 = b2->m_invMass;
+		float64 invI2 = b2->m_invI;
 		b2Vec2 normal = c->normal;
 		b2Vec2 tangent = b2Cross(normal, 1.0f);
 
@@ -200,11 +200,11 @@ void b2ContactSolver::SolveVelocityConstraints()
 			b2Vec2 dv = b2->m_linearVelocity + b2Cross(b2->m_angularVelocity, r2) - b1->m_linearVelocity - b2Cross(b1->m_angularVelocity, r1);
 
 			// Compute normal impulse
-			float32 vn = b2Dot(dv, normal);
-			float32 lambda = -ccp->normalMass * (vn - ccp->velocityBias);
+			float64 vn = b2Dot(dv, normal);
+			float64 lambda = -ccp->normalMass * (vn - ccp->velocityBias);
 
 			// b2Clamp the accumulated impulse
-			float32 newImpulse = b2Max(ccp->normalImpulse + lambda, 0.0f);
+			float64 newImpulse = b2Max(ccp->normalImpulse + lambda, 0.0f);
 			lambda = newImpulse - ccp->normalImpulse;
 
 			// Apply contact impulse
@@ -231,12 +231,12 @@ void b2ContactSolver::SolveVelocityConstraints()
 			b2Vec2 dv = b2->m_linearVelocity + b2Cross(b2->m_angularVelocity, r2) - b1->m_linearVelocity - b2Cross(b1->m_angularVelocity, r1);
 
 			// Compute tangent impulse
-			float32 vt = b2Dot(dv, tangent);
-			float32 lambda = ccp->tangentMass * (-vt);
+			float64 vt = b2Dot(dv, tangent);
+			float64 lambda = ccp->tangentMass * (-vt);
 
 			// b2Clamp the accumulated impulse
-			float32 maxFriction = c->friction * ccp->normalImpulse;
-			float32 newImpulse = b2Clamp(ccp->tangentImpulse + lambda, -maxFriction, maxFriction);
+			float64 maxFriction = c->friction * ccp->normalImpulse;
+			float64 newImpulse = b2Clamp(ccp->tangentImpulse + lambda, -maxFriction, maxFriction);
 			lambda = newImpulse - ccp->tangentImpulse;
 
 			// Apply contact impulse
@@ -253,19 +253,19 @@ void b2ContactSolver::SolveVelocityConstraints()
 	}
 }
 
-bool b2ContactSolver::SolvePositionConstraints(float32 beta)
+bool b2ContactSolver::SolvePositionConstraints(float64 beta)
 {
-	float32 minSeparation = 0.0f;
+	float64 minSeparation = 0.0f;
 
 	for (int32 i = 0; i < m_constraintCount; ++i)
 	{
 		b2ContactConstraint* c = m_constraints + i;
 		b2Body* b1 = c->body1;
 		b2Body* b2 = c->body2;
-		float32 invMass1 = b1->m_invMass;
-		float32 invI1 = b1->m_invI;
-		float32 invMass2 = b2->m_invMass;
-		float32 invI2 = b2->m_invI;
+		float64 invMass1 = b1->m_invMass;
+		float64 invI1 = b1->m_invI;
+		float64 invMass2 = b2->m_invMass;
+		float64 invI2 = b2->m_invI;
 		b2Vec2 normal = c->normal;
 		b2Vec2 tangent = b2Cross(normal, 1.0f);
 
@@ -282,19 +282,19 @@ bool b2ContactSolver::SolvePositionConstraints(float32 beta)
 			b2Vec2 dp = p2 - p1;
 
 			// Approximate the current separation.
-			float32 separation = b2Dot(dp, normal) + ccp->separation;
+			float64 separation = b2Dot(dp, normal) + ccp->separation;
 
 			// Track max constraint error.
 			minSeparation = b2Min(minSeparation, separation);
 
 			// Prevent large corrections and allow slop.
-			float32 C = beta * b2Clamp(separation + b2_linearSlop, -b2_maxLinearCorrection, 0.0f);
+			float64 C = beta * b2Clamp(separation + b2_linearSlop, -b2_maxLinearCorrection, 0.0f);
 
 			// Compute normal impulse
-			float32 dImpulse = -ccp->normalMass * C;
+			float64 dImpulse = -ccp->normalMass * C;
 
 			// b2Clamp the accumulated impulse
-			float32 impulse0 = ccp->positionImpulse;
+			float64 impulse0 = ccp->positionImpulse;
 			ccp->positionImpulse = b2Max(impulse0 + dImpulse, 0.0f);
 			dImpulse = ccp->positionImpulse - impulse0;
 

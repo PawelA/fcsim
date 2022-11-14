@@ -46,13 +46,13 @@
 // Simplification: triangle centroid = (1/3) * (p1 + p2 + p3)
 //
 // The rest of the derivation is handled by computer algebra.
-static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float32 rho)
+static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float64 rho)
 {
 	b2Assert(count >= 3);
 
 	b2Vec2 center; center.Set(0.0f, 0.0f);
-	float32 area = 0.0f;
-	float32 I = 0.0f;
+	float64 area = 0.0f;
+	float64 I = 0.0f;
 
 	// pRef is the reference point for forming triangles.
 	// It's location doesn't change the result (except for rounding error).
@@ -66,7 +66,7 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float3
 	pRef *= 1.0f / count;
 #endif
 
-	const float32 inv3 = 1.0f / 3.0f;
+	const float64 inv3 = 1.0f / 3.0f;
 
 	for (int32 i = 0; i < count; ++i)
 	{
@@ -78,20 +78,20 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float3
 		b2Vec2 e1 = p2 - p1;
 		b2Vec2 e2 = p3 - p1;
 
-		float32 D = b2Cross(e1, e2);
+		float64 D = b2Cross(e1, e2);
 
-		float32 triangleArea = 0.5f * D;
+		float64 triangleArea = 0.5f * D;
 		area += triangleArea;
 
 		// Area weighted centroid
 		center += triangleArea * inv3 * (p1 + p2 + p3);
 
-		float32 px = p1.x, py = p1.y;
-		float32 ex1 = e1.x, ey1 = e1.y;
-		float32 ex2 = e2.x, ey2 = e2.y;
+		float64 px = p1.x, py = p1.y;
+		float64 ex1 = e1.x, ey1 = e1.y;
+		float64 ex2 = e2.x, ey2 = e2.y;
 
-		float32 intx2 = inv3 * (0.25f * (ex1*ex1 + ex2*ex1 + ex2*ex2) + (px*ex1 + px*ex2)) + 0.5f*px*px;
-		float32 inty2 = inv3 * (0.25f * (ey1*ey1 + ey2*ey1 + ey2*ey2) + (py*ey1 + py*ey2)) + 0.5f*py*py;
+		float64 intx2 = inv3 * (0.25f * (ex1*ex1 + ex2*ex1 + ex2*ex2) + (px*ex1 + px*ex2)) + 0.5f*px*px;
+		float64 inty2 = inv3 * (0.25f * (ey1*ey1 + ey2*ey1 + ey2*ey2) + (py*ey1 + py*ey2)) + 0.5f*py*py;
 
 		I += D * (intx2 + inty2);
 	}
@@ -114,7 +114,7 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 	b2Assert(count >= 3);
 
 	b2Vec2 c; c.Set(0.0f, 0.0f);
-	float32 area = 0.0f;
+	float64 area = 0.0f;
 
 	// pRef is the reference point for forming triangles.
 	// It's location doesn't change the result (except for rounding error).
@@ -128,7 +128,7 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 	pRef *= 1.0f / count;
 #endif
 
-	const float32 inv3 = 1.0f / 3.0f;
+	const float64 inv3 = 1.0f / 3.0f;
 
 	for (int32 i = 0; i < count; ++i)
 	{
@@ -140,9 +140,9 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 		b2Vec2 e1 = p2 - p1;
 		b2Vec2 e2 = p3 - p1;
 
-		float32 D = b2Cross(e1, e2);
+		float64 D = b2Cross(e1, e2);
 
-		float32 triangleArea = 0.5f * D;
+		float64 triangleArea = 0.5f * D;
 		area += triangleArea;
 
 		// Area weighted centroid
@@ -352,7 +352,7 @@ b2Vec2 b2CircleShape::Support(const b2Vec2& d) const
 {
 	b2Vec2 u = d;
 	u.Normalize();
-	float32 r = b2Max(0.0f, m_radius - 2.0f * b2_linearSlop);
+	float64 r = b2Max(0.0f, m_radius - 2.0f * b2_linearSlop);
 	return m_position + r * u;
 }
 
@@ -437,7 +437,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 			m_vertices[i] = b2Mul(localR, poly->vertices[i] - centroid);
 
 			b2Vec2 u = m_vertices[i];
-			float32 length = u.Length();
+			float64 length = u.Length();
 			if (length > FLT_EPSILON)
 			{
 				u *= 1.0f / length;
@@ -568,10 +568,10 @@ b2Vec2 b2PolyShape::Support(const b2Vec2& d) const
 	b2Vec2 dLocal = b2MulT(m_R, d);
 
 	int32 bestIndex = 0;
-	float32 bestValue = b2Dot(m_coreVertices[0], dLocal);
+	float64 bestValue = b2Dot(m_coreVertices[0], dLocal);
 	for (int32 i = 1; i < m_vertexCount; ++i)
 	{
-		float32 value = b2Dot(m_coreVertices[i], dLocal);
+		float64 value = b2Dot(m_coreVertices[i], dLocal);
 		if (value > bestValue)
 		{
 			bestIndex = i;
@@ -588,7 +588,7 @@ bool b2PolyShape::TestPoint(const b2Vec2& p)
 
 	for (int32 i = 0; i < m_vertexCount; ++i)
 	{
-		float32 dot = b2Dot(m_normals[i], pLocal - m_vertices[i]);
+		float64 dot = b2Dot(m_normals[i], pLocal - m_vertices[i]);
 		if (dot > 0.0f)
 		{
 			return false;

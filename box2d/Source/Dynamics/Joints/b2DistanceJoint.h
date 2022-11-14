@@ -40,8 +40,8 @@ public:
 	b2Vec2 GetAnchor1() const;
 	b2Vec2 GetAnchor2() const;
 
-	b2Vec2 GetReactionForce(float32 invTimeStep) const;
-	float32 GetReactionTorque(float32 invTimeStep) const;
+	b2Vec2 GetReactionForce(float64 invTimeStep) const;
+	float64 GetReactionTorque(float64 invTimeStep) const;
 
 	//--------------- Internals Below -------------------
 
@@ -54,9 +54,9 @@ public:
 	b2Vec2 m_localAnchor1;
 	b2Vec2 m_localAnchor2;
 	b2Vec2 m_u;
-	float32 m_impulse;
-	float32 m_mass;	// effective mass for the constraint.
-	float32 m_length;
+	float64 m_impulse;
+	float64 m_mass;	// effective mass for the constraint.
+	float64 m_length;
 };
 
 #endif

@@ -34,10 +34,10 @@ struct b2MouseJointDef : public b2JointDef
 	}
 
 	b2Vec2 target;
-	float32 maxForce;
-	float32 frequencyHz;
-	float32 dampingRatio;
-	float32 timeStep;
+	float64 maxForce;
+	float64 frequencyHz;
+	float64 dampingRatio;
+	float64 timeStep;
 };
 
 class b2MouseJoint : public b2Joint
@@ -46,8 +46,8 @@ public:
 	b2Vec2 GetAnchor1() const;
 	b2Vec2 GetAnchor2() const;
 
-	b2Vec2 GetReactionForce(float32 invTimeStep) const;
-	float32 GetReactionTorque(float32 invTimeStep) const;
+	b2Vec2 GetReactionForce(float64 invTimeStep) const;
+	float64 GetReactionTorque(float64 invTimeStep) const;
 
 	void SetTarget(const b2Vec2& target);
 
@@ -68,9 +68,9 @@ public:
 
 	b2Mat22 m_ptpMass;		// effective mass for point-to-point constraint.
 	b2Vec2 m_C;				// position error
-	float32 m_maxForce;
-	float32 m_beta;			// bias factor
-	float32 m_gamma;		// softness
+	float64 m_maxForce;
+	float64 m_beta;			// bias factor
+	float64 m_gamma;		// softness
 };
 
 #endif

@@ -27,9 +27,9 @@ class b2BroadPhase;
 
 struct b2MassData
 {
-	float32 mass;
+	float64 mass;
 	b2Vec2 center;
-	float32 I;
+	float64 I;
 };
 
 enum b2ShapeType
@@ -65,10 +65,10 @@ struct b2ShapeDef
 	b2ShapeType type;
 	void* userData;
 	b2Vec2 localPosition;
-	float32 localRotation;
-	float32 friction;
-	float32 restitution;
-	float32 density;
+	float64 localRotation;
+	float64 friction;
+	float64 restitution;
+	float64 density;
 
 	// The collision category bits. Normally you would just set one bit.
 	uint16 categoryBits;
@@ -91,7 +91,7 @@ struct b2CircleDef : public b2ShapeDef
 		radius = 1.0f;
 	}
 
-	float32 radius;
+	float64 radius;
 };
 
 struct b2BoxDef : public b2ShapeDef
@@ -161,7 +161,7 @@ public:
 	virtual void QuickSync(const b2Vec2& position, const b2Mat22& R) = 0;
 
 	virtual b2Vec2 Support(const b2Vec2& d) const = 0;
-	float32 GetMaxRadius() const;
+	float64 GetMaxRadius() const;
 
 	void DestroyProxy();
 
@@ -176,10 +176,10 @@ public:
 
 	b2Body* m_body;
 
-	float32 m_friction;
-	float32 m_restitution;
+	float64 m_friction;
+	float64 m_restitution;
 
-	float32 m_maxRadius;
+	float64 m_maxRadius;
 
 	uint16 m_proxyId;
 	uint16 m_categoryBits;
@@ -206,7 +206,7 @@ public:
 
 	// Local position in parent body
 	b2Vec2 m_localPosition;
-	float32 m_radius;
+	float64 m_radius;
 };
 
 // A convex polygon. The position of the polygon (m_position) is the
@@ -275,7 +275,7 @@ inline const b2Mat22& b2Shape::GetRotationMatrix() const
 	return m_R;
 }
 
-inline float32 b2Shape::GetMaxRadius() const
+inline float64 b2Shape::GetMaxRadius() const
 {
 	return m_maxRadius;
 }

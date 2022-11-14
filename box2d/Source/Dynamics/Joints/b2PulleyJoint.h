@@ -29,7 +29,7 @@
 // useful to prevent one side of the pulley hitting the top.
 
 // We need a minimum pulley length to help prevent one side going to zero.
-const float32 b2_minPulleyLength = b2_lengthUnitsPerMeter;
+const float64 b2_minPulleyLength = b2_lengthUnitsPerMeter;
 
 struct b2PulleyJointDef : public b2JointDef
 {
@@ -50,9 +50,9 @@ struct b2PulleyJointDef : public b2JointDef
 	b2Vec2 groundPoint2;
 	b2Vec2 anchorPoint1;
 	b2Vec2 anchorPoint2;
-	float32 maxLength1;
-	float32 maxLength2;
-	float32 ratio;
+	float64 maxLength1;
+	float64 maxLength2;
+	float64 ratio;
 };
 
 class b2PulleyJoint : public b2Joint
@@ -64,13 +64,13 @@ public:
 	b2Vec2 GetGroundPoint1() const;
 	b2Vec2 GetGroundPoint2() const;
 
-	b2Vec2 GetReactionForce(float32 invTimeStep) const;
-	float32 GetReactionTorque(float32 invTimeStep) const;
+	b2Vec2 GetReactionForce(float64 invTimeStep) const;
+	float64 GetReactionTorque(float64 invTimeStep) const;
 
-	float32 GetLength1() const;
-	float32 GetLength2() const;
+	float64 GetLength1() const;
+	float64 GetLength2() const;
 
-	float32 GetRatio() const;
+	float64 GetRatio() const;
 
 	//--------------- Internals Below -------------------
 
@@ -89,25 +89,25 @@ public:
 	b2Vec2 m_u1;
 	b2Vec2 m_u2;
 
-	float32 m_constant;
-	float32 m_ratio;
+	float64 m_constant;
+	float64 m_ratio;
 
-	float32 m_maxLength1;
-	float32 m_maxLength2;
+	float64 m_maxLength1;
+	float64 m_maxLength2;
 
 	// Effective masses
-	float32 m_pulleyMass;
-	float32 m_limitMass1;
-	float32 m_limitMass2;
+	float64 m_pulleyMass;
+	float64 m_limitMass1;
+	float64 m_limitMass2;
 
 	// Impulses for accumulation/warm starting.
-	float32 m_pulleyImpulse;
-	float32 m_limitImpulse1;
-	float32 m_limitImpulse2;
+	float64 m_pulleyImpulse;
+	float64 m_limitImpulse1;
+	float64 m_limitImpulse2;
 
 	// Position impulses for accumulation.
-	float32 m_limitPositionImpulse1;
-	float32 m_limitPositionImpulse2;
+	float64 m_limitPositionImpulse1;
+	float64 m_limitPositionImpulse2;
 
 	b2LimitState m_limitState1;
 	b2LimitState m_limitState2;

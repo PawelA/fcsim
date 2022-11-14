@@ -47,7 +47,7 @@ struct b2GearJointDef : public b2JointDef
 
 	b2Joint* joint1;
 	b2Joint* joint2;
-	float32 ratio;
+	float64 ratio;
 };
 
 class b2GearJoint : public b2Joint
@@ -56,10 +56,10 @@ public:
 	b2Vec2 GetAnchor1() const;
 	b2Vec2 GetAnchor2() const;
 
-	b2Vec2 GetReactionForce(float32 invTimeStep) const;
-	float32 GetReactionTorque(float32 invTimeStep) const;
+	b2Vec2 GetReactionForce(float64 invTimeStep) const;
+	float64 GetReactionTorque(float64 invTimeStep) const;
 
-	float32 GetRatio() const;
+	float64 GetRatio() const;
 
 	//--------------- Internals Below -------------------
 
@@ -88,14 +88,14 @@ public:
 
 	b2Jacobian m_J;
 
-	float32 m_constant;
-	float32 m_ratio;
+	float64 m_constant;
+	float64 m_ratio;
 
 	// Effective mass
-	float32 m_mass;
+	float64 m_mass;
 
 	// Impulse for accumulation/warm starting.
-	float32 m_impulse;
+	float64 m_impulse;
 };
 
 #endif

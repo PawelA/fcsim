@@ -100,8 +100,8 @@ public:
 	int32 m_manifoldCount;
 
 	// Combined friction
-	float32 m_friction;
-	float32 m_restitution;
+	float64 m_friction;
+	float64 m_restitution;
 };
 
 inline b2Contact* b2Contact::GetNext()

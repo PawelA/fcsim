@@ -37,7 +37,7 @@ public:
 
 	void Solve(const b2TimeStep* step, const b2Vec2& gravity);
 
-	void UpdateSleep(float32 dt);
+	void UpdateSleep(float64 dt);
 
 	void Add(b2Body* body)
 	{
@@ -72,7 +72,7 @@ public:
 	int32 m_jointCapacity;
 
 	static int32 m_positionIterationCount;
-	float32 m_positionError;
+	float64 m_positionError;
 };
 
 #endif

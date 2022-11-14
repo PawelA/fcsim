@@ -68,8 +68,8 @@ void b2RevoluteJoint::PrepareVelocitySolver()
 	// K    = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
 	//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
 	//        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
-	float32 invMass1 = b1->m_invMass, invMass2 = b2->m_invMass;
-	float32 invI1 = b1->m_invI, invI2 = b2->m_invI;
+	float64 invMass1 = b1->m_invMass, invMass2 = b2->m_invMass;
+	float64 invI1 = b1->m_invI, invI2 = b2->m_invI;
 
 	b2Mat22 K1;
 	K1.col1.x = invMass1 + invMass2;	K1.col2.x = 0.0f;
@@ -95,7 +95,7 @@ void b2RevoluteJoint::PrepareVelocitySolver()
 
 	if (m_enableLimit)
 	{
-		float32 jointAngle = b2->m_rotation - b1->m_rotation - m_intialAngle;
+		float64 jointAngle = b2->m_rotation - b1->m_rotation - m_intialAngle;
 		if (b2Abs(m_upperAngle - m_lowerAngle) < 2.0f * b2_angularSlop)
 		{
 			m_limitState = e_equalLimits;
@@ -166,9 +166,9 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2TimeStep* step)
 
 	if (m_enableMotor && m_limitState != e_equalLimits)
 	{
-		float32 motorCdot = b2->m_angularVelocity - b1->m_angularVelocity - m_motorSpeed;
-		float32 motorImpulse = -m_motorMass * motorCdot;
-		float32 oldMotorImpulse = m_motorImpulse;
+		float64 motorCdot = b2->m_angularVelocity - b1->m_angularVelocity - m_motorSpeed;
+		float64 motorImpulse = -m_motorMass * motorCdot;
+		float64 oldMotorImpulse = m_motorImpulse;
 		m_motorImpulse = b2Clamp(m_motorImpulse + motorImpulse, -step->dt * m_maxMotorTorque, step->dt * m_maxMotorTorque);
 		motorImpulse = m_motorImpulse - oldMotorImpulse;
 		b1->m_angularVelocity -= b1->m_invI * motorImpulse;
@@ -177,8 +177,8 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2TimeStep* step)
 
 	if (m_enableLimit && m_limitState != e_inactiveLimit)
 	{
-		float32 limitCdot = b2->m_angularVelocity - b1->m_angularVelocity;
-		float32 limitImpulse = -m_motorMass * limitCdot;
+		float64 limitCdot = b2->m_angularVelocity - b1->m_angularVelocity;
+		float64 limitImpulse = -m_motorMass * limitCdot;
 
 		if (m_limitState == e_equalLimits)
 		{
@@ -186,13 +186,13 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2TimeStep* step)
 		}
 		else if (m_limitState == e_atLowerLimit)
 		{
-			float32 oldLimitImpulse = m_limitImpulse;
+			float64 oldLimitImpulse = m_limitImpulse;
 			m_limitImpulse = b2Max(m_limitImpulse + limitImpulse, 0.0f);
 			limitImpulse = m_limitImpulse - oldLimitImpulse;
 		}
 		else if (m_limitState == e_atUpperLimit)
 		{
-			float32 oldLimitImpulse = m_limitImpulse;
+			float64 oldLimitImpulse = m_limitImpulse;
 			m_limitImpulse = b2Min(m_limitImpulse + limitImpulse, 0.0f);
 			limitImpulse = m_limitImpulse - oldLimitImpulse;
 		}
@@ -207,7 +207,7 @@ bool b2RevoluteJoint::SolvePositionConstraints()
 	b2Body* b1 = m_body1;
 	b2Body* b2 = m_body2;
 
-	float32 positionError = 0.0f;
+	float64 positionError = 0.0f;
 
 	// Solve point-to-point position error.
 	b2Vec2 r1 = b2Mul(b1->m_R, m_localAnchor1);
@@ -223,8 +223,8 @@ bool b2RevoluteJoint::SolvePositionConstraints()
 	//b2Vec2 dpMax(b2_maxLinearCorrection, b2_maxLinearCorrection);
 	//ptpC = b2Clamp(ptpC, -dpMax, dpMax);
 
-	float32 invMass1 = b1->m_invMass, invMass2 = b2->m_invMass;
-	float32 invI1 = b1->m_invI, invI2 = b2->m_invI;
+	float64 invMass1 = b1->m_invMass, invMass2 = b2->m_invMass;
+	float64 invI1 = b1->m_invI, invI2 = b2->m_invI;
 
 	b2Mat22 K1;
 	K1.col1.x = invMass1 + invMass2;	K1.col2.x = 0.0f;
@@ -250,41 +250,41 @@ bool b2RevoluteJoint::SolvePositionConstraints()
 	b2->m_R.Set(b2->m_rotation);
 
 	// Handle limits.
-	float32 angularError = 0.0f;
+	float64 angularError = 0.0f;
 
 	if (m_enableLimit && m_limitState != e_inactiveLimit)
 	{
-		float32 angle = b2->m_rotation - b1->m_rotation - m_intialAngle;
-		float32 limitImpulse = 0.0f;
+		float64 angle = b2->m_rotation - b1->m_rotation - m_intialAngle;
+		float64 limitImpulse = 0.0f;
 
 		if (m_limitState == e_equalLimits)
 		{
 			// Prevent large angular corrections
-			float32 limitC = b2Clamp(angle, -b2_maxAngularCorrection, b2_maxAngularCorrection);
+			float64 limitC = b2Clamp(angle, -b2_maxAngularCorrection, b2_maxAngularCorrection);
 			limitImpulse = -m_motorMass * limitC;
 			angularError = b2Abs(limitC);
 		}
 		else if (m_limitState == e_atLowerLimit)
 		{
-			float32 limitC = angle - m_lowerAngle;
+			float64 limitC = angle - m_lowerAngle;
 			angularError = b2Max(0.0f, -limitC);
 
 			// Prevent large angular corrections and allow some slop.
 			limitC = b2Clamp(limitC + b2_angularSlop, -b2_maxAngularCorrection, 0.0f);
 			limitImpulse = -m_motorMass * limitC;
-			float32 oldLimitImpulse = m_limitPositionImpulse;
+			float64 oldLimitImpulse = m_limitPositionImpulse;
 			m_limitPositionImpulse = b2Max(m_limitPositionImpulse + limitImpulse, 0.0f);
 			limitImpulse = m_limitPositionImpulse - oldLimitImpulse;
 		}
 		else if (m_limitState == e_atUpperLimit)
 		{
-			float32 limitC = angle - m_upperAngle;
+			float64 limitC = angle - m_upperAngle;
 			angularError = b2Max(0.0f, limitC);
 
 			// Prevent large angular corrections and allow some slop.
 			limitC = b2Clamp(limitC - b2_angularSlop, 0.0f, b2_maxAngularCorrection);
 			limitImpulse = -m_motorMass * limitC;
-			float32 oldLimitImpulse = m_limitPositionImpulse;
+			float64 oldLimitImpulse = m_limitPositionImpulse;
 			m_limitPositionImpulse = b2Min(m_limitPositionImpulse + limitImpulse, 0.0f);
 			limitImpulse = m_limitPositionImpulse - oldLimitImpulse;
 		}
@@ -310,41 +310,41 @@ b2Vec2 b2RevoluteJoint::GetAnchor2() const
 	return b2->m_position + b2Mul(b2->m_R, m_localAnchor2);
 }
 
-float32 b2RevoluteJoint::GetJointAngle() const
+float64 b2RevoluteJoint::GetJointAngle() const
 {
 	b2Body* b1 = m_body1;
 	b2Body* b2 = m_body2;
 	return b2->m_rotation - b1->m_rotation;
 }
 
-float32 b2RevoluteJoint::GetJointSpeed() const
+float64 b2RevoluteJoint::GetJointSpeed() const
 {
 	b2Body* b1 = m_body1;
 	b2Body* b2 = m_body2;
 	return b2->m_angularVelocity - b1->m_angularVelocity;
 }
 
-float32 b2RevoluteJoint::GetMotorTorque(float32 invTimeStep) const
+float64 b2RevoluteJoint::GetMotorTorque(float64 invTimeStep) const
 {
 	return invTimeStep * m_motorImpulse;
 }
 
-void b2RevoluteJoint::SetMotorSpeed(float32 speed)
+void b2RevoluteJoint::SetMotorSpeed(float64 speed)
 {
 	m_motorSpeed = speed;
 }
 
-void b2RevoluteJoint::SetMotorTorque(float32 torque)
+void b2RevoluteJoint::SetMotorTorque(float64 torque)
 {
 	m_maxMotorTorque = torque;
 }
 
-b2Vec2 b2RevoluteJoint::GetReactionForce(float32 invTimeStep) const
+b2Vec2 b2RevoluteJoint::GetReactionForce(float64 invTimeStep) const
 {
 	return invTimeStep * m_ptpImpulse;
 }
 
-float32 b2RevoluteJoint::GetReactionTorque(float32 invTimeStep) const
+float64 b2RevoluteJoint::GetReactionTorque(float64 invTimeStep) const
 {
 	return invTimeStep * m_limitImpulse;
 }

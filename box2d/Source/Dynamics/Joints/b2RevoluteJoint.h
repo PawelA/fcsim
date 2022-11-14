@@ -36,10 +36,10 @@ struct b2RevoluteJointDef : public b2JointDef
 	}
 
 	b2Vec2 anchorPoint;
-	float32 lowerAngle;
-	float32 upperAngle;
-	float32 motorTorque;
-	float32 motorSpeed;
+	float64 lowerAngle;
+	float64 upperAngle;
+	float64 motorTorque;
+	float64 motorSpeed;
 	bool enableLimit;
 	bool enableMotor;
 };
@@ -50,15 +50,15 @@ public:
 	b2Vec2 GetAnchor1() const;
 	b2Vec2 GetAnchor2() const;
 
-	b2Vec2 GetReactionForce(float32 invTimeStep) const;
-	float32 GetReactionTorque(float32 invTimeStep) const;
+	b2Vec2 GetReactionForce(float64 invTimeStep) const;
+	float64 GetReactionTorque(float64 invTimeStep) const;
 
-	float32 GetJointAngle() const;
-	float32 GetJointSpeed() const;
-	float32 GetMotorTorque(float32 invTimeStep) const;
+	float64 GetJointAngle() const;
+	float64 GetJointSpeed() const;
+	float64 GetMotorTorque(float64 invTimeStep) const;
 
-	void SetMotorSpeed(float32 speed);
-	void SetMotorTorque(float32 torque);
+	void SetMotorSpeed(float64 speed);
+	void SetMotorTorque(float64 torque);
 
 	//--------------- Internals Below -------------------
 
@@ -72,17 +72,17 @@ public:
 	b2Vec2 m_localAnchor1;
 	b2Vec2 m_localAnchor2;
 	b2Vec2 m_ptpImpulse;
-	float32 m_motorImpulse;
-	float32 m_limitImpulse;
-	float32 m_limitPositionImpulse;
+	float64 m_motorImpulse;
+	float64 m_limitImpulse;
+	float64 m_limitPositionImpulse;
 
 	b2Mat22 m_ptpMass;		// effective mass for point-to-point constraint.
-	float32 m_motorMass;	// effective mass for motor/limit angular constraint.
-	float32 m_intialAngle;
-	float32 m_lowerAngle;
-	float32 m_upperAngle;
-	float32 m_maxMotorTorque;
-	float32 m_motorSpeed;
+	float64 m_motorMass;	// effective mass for motor/limit angular constraint.
+	float64 m_intialAngle;
+	float64 m_lowerAngle;
+	float64 m_upperAngle;
+	float64 m_maxMotorTorque;
+	float64 m_motorSpeed;
 
 	bool m_enableLimit;
 	bool m_enableMotor;

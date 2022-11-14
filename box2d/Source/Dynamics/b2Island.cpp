@@ -236,12 +236,12 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	}
 }
 
-void b2Island::UpdateSleep(float32 dt)
+void b2Island::UpdateSleep(float64 dt)
 {
-	float32 minSleepTime = FLT_MAX;
+	float64 minSleepTime = FLT_MAX;
 
-	const float32 linTolSqr = b2_linearSleepTolerance * b2_linearSleepTolerance;
-	const float32 angTolSqr = b2_angularSleepTolerance * b2_angularSleepTolerance;
+	const float64 linTolSqr = b2_linearSleepTolerance * b2_linearSleepTolerance;
+	const float64 angTolSqr = b2_angularSleepTolerance * b2_angularSleepTolerance;
 
 	for (int32 i = 0; i < m_bodyCount; ++i)
 	{

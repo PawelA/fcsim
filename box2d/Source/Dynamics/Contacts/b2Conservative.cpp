@@ -28,39 +28,39 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 	b2Body* body2 = shape2->GetBody();
 
 	b2Vec2 v1 = body1->m_position - body1->m_position0;
-	float32 omega1 = body1->m_rotation - body1->m_rotation0;
+	float64 omega1 = body1->m_rotation - body1->m_rotation0;
 	b2Vec2 v2 = body2->m_position - body2->m_position0;
-	float32 omega2 = body2->m_rotation - body2->m_rotation0;
+	float64 omega2 = body2->m_rotation - body2->m_rotation0;
 
-	float32 r1 = shape1->GetMaxRadius();
-	float32 r2 = shape2->GetMaxRadius();
+	float64 r1 = shape1->GetMaxRadius();
+	float64 r2 = shape2->GetMaxRadius();
 
 	b2Vec2 p1Start = body1->m_position0;
-	float32 a1Start = body1->m_rotation0;
+	float64 a1Start = body1->m_rotation0;
 
 	b2Vec2 p2Start = body2->m_position0;
-	float32 a2Start = body2->m_rotation0;
+	float64 a2Start = body2->m_rotation0;
 
 	b2Vec2 p1 = p1Start;
-	float32 a1 = a1Start;
+	float64 a1 = a1Start;
 	b2Vec2 p2 = p2Start;
-	float32 a2 = a2Start;
+	float64 a2 = a2Start;
 
 	b2Mat22 R1(a1), R2(a2);
 
 	shape1->QuickSync(p1, R1);
 	shape2->QuickSync(p2, R2);
 
-	float32 s1 = 0.0f;
+	float64 s1 = 0.0f;
 	const int32 maxIterations = 10;
 	b2Vec2 d;
-	float32 invRelativeVelocity = 0.0f;
+	float64 invRelativeVelocity = 0.0f;
 	bool hit = true;
 	b2Vec2 x1, x2;
 	for (int32 iter = 0; iter < maxIterations; ++iter)
 	{
 		// Get the accurate distance between shapes.
-		float32 distance = b2Distance(&x1, &x2, shape1, shape2);
+		float64 distance = b2Distance(&x1, &x2, shape1, shape2);
 		if (distance < b2_linearSlop)
 		{
 			if (iter == 0)
@@ -78,7 +78,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 		{
 			b2Vec2 d = x2 - x1;
 			d.Normalize();
-			float32 relativeVelocity = b2Dot(d, v1 - v2) + b2Abs(omega1) * r1 + b2Abs(omega2) * r2;
+			float64 relativeVelocity = b2Dot(d, v1 - v2) + b2Abs(omega1) * r1 + b2Abs(omega2) * r2;
 			if (b2Abs(relativeVelocity) < FLT_EPSILON)
 			{
 				hit = false;
@@ -89,8 +89,8 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 		}
 
 		// Get the conservative movement.
-		float32 ds = distance * invRelativeVelocity;
-		float32 s2 = s1 + ds;
+		float64 ds = distance * invRelativeVelocity;
+		float64 s2 = s1 + ds;
 
 		if (s2 < 0.0f || 1.0f < s2)
 		{
@@ -122,7 +122,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 	{
 		// Hit, move bodies to safe position and re-sync shapes.
 		b2Vec2 d = x2 - x1;
-		float32 length = d.Length();
+		float64 length = d.Length();
 		if (length > FLT_EPSILON)
 		{
 			d *= b2_linearSlop / length;

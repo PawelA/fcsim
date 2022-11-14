@@ -26,14 +26,14 @@ struct ClipVertex
 };
 
 static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
-					  const b2Vec2& normal, float32 offset)
+					  const b2Vec2& normal, float64 offset)
 {
 	// Start with no output points
 	int32 numOut = 0;
 
 	// Calculate the distance of end points to the line
-	float32 distance0 = b2Dot(normal, vIn[0].v) - offset;
-	float32 distance1 = b2Dot(normal, vIn[1].v) - offset;
+	float64 distance0 = b2Dot(normal, vIn[0].v) - offset;
+	float64 distance1 = b2Dot(normal, vIn[1].v) - offset;
 
 	// If the points are behind the plane
 	if (distance0 <= 0.0f) vOut[numOut++] = vIn[0];
@@ -43,7 +43,7 @@ static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
 	if (distance0 * distance1 < 0.0f)
 	{
 		// Find intersection point of edge and plane
-		float32 interp = distance0 / (distance0 - distance1);
+		float64 interp = distance0 / (distance0 - distance1);
 		vOut[numOut].v = vIn[0].v + interp * (vIn[1].v - vIn[0].v);
 		if (distance0 > 0.0f)
 		{
@@ -60,7 +60,7 @@ static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
 }
 
 // Find the separation between poly1 and poly2 for a give edge normal on poly1.
-static float32 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2PolyShape* poly2)
+static float64 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2PolyShape* poly2)
 {
 	const b2Vec2* vert1s = poly1->m_vertices;
 	int32 count2 = poly2->m_vertexCount;
@@ -73,10 +73,10 @@ static float32 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2Pol
 
 	// Find support vertex on poly2 for -normal.
 	int32 vertexIndex2 = 0;
-	float32 minDot = FLT_MAX;
+	float64 minDot = FLT_MAX;
 	for (int32 i = 0; i < count2; ++i)
 	{
-		float32 dot = b2Dot(vert2s[i], normalLocal2);
+		float64 dot = b2Dot(vert2s[i], normalLocal2);
 		if (dot < minDot)
 		{
 			minDot = dot;
@@ -86,12 +86,12 @@ static float32 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2Pol
 
 	b2Vec2 v1 = poly1->m_position + b2Mul(poly1->m_R, vert1s[edge1]);
 	b2Vec2 v2 = poly2->m_position + b2Mul(poly2->m_R, vert2s[vertexIndex2]);
-	float32 separation = b2Dot(v2 - v1, normal);
+	float64 separation = b2Dot(v2 - v1, normal);
 	return separation;
 }
 
 // Find the max separation between poly1 and poly2 using edge normals from poly1.
-static float32 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, const b2PolyShape* poly2, bool conservative)
+static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, const b2PolyShape* poly2, bool conservative)
 {
 	int32 count1 = poly1->m_vertexCount;
 
@@ -101,10 +101,10 @@ static float32 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 
 	// Find edge normal on poly1 that has the largest projection onto d.
 	int32 edge = 0;
-	float32 maxDot = -FLT_MAX;
+	float64 maxDot = -FLT_MAX;
 	for (int32 i = 0; i < count1; ++i)
 	{
-		float32 dot = b2Dot(poly1->m_normals[i], dLocal1);
+		float64 dot = b2Dot(poly1->m_normals[i], dLocal1);
 		if (dot > maxDot)
 		{
 			maxDot = dot;
@@ -113,7 +113,7 @@ static float32 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 	}
 
 	// Get the separation for the edge normal.
-	float32 s = EdgeSeparation(poly1, edge, poly2);
+	float64 s = EdgeSeparation(poly1, edge, poly2);
 	if (s > 0.0f && conservative == false)
 	{
 		return s;
@@ -121,14 +121,14 @@ static float32 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 
 	// Check the separation for the neighboring edges.
 	int32 prevEdge = edge - 1 >= 0 ? edge - 1 : count1 - 1;
-	float32 sPrev = EdgeSeparation(poly1, prevEdge, poly2);
+	float64 sPrev = EdgeSeparation(poly1, prevEdge, poly2);
 	if (sPrev > 0.0f && conservative == false)
 	{
 		return sPrev;
 	}
 
 	int32 nextEdge = edge + 1 < count1 ? edge + 1 : 0;
-	float32 sNext = EdgeSeparation(poly1, nextEdge, poly2);
+	float64 sNext = EdgeSeparation(poly1, nextEdge, poly2);
 	if (sNext > 0.0f && conservative == false)
 	{
 		return sNext;
@@ -136,7 +136,7 @@ static float32 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 
 	// Find the best edge and the search direction.
 	int32 bestEdge;
-	float32 bestSeparation;
+	float64 bestSeparation;
 	int32 increment;
 	if (sPrev > s && sPrev > sNext)
 	{
@@ -203,7 +203,7 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 
 	// Find the incident edge on poly2.
 	int32 vertex21 = 0, vertex22 = 0;
-	float32 minDot = FLT_MAX;
+	float64 minDot = FLT_MAX;
 	for (int32 i = 0; i < count2; ++i)
 	{
 		int32 i1 = i;
@@ -211,7 +211,7 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 
 		b2Vec2 normal2Local2 = b2Cross(vert2s[i2] - vert2s[i1], 1.0f);
 		normal2Local2.Normalize();
-		float32 dot = b2Dot(normal2Local2, normal1Local2);
+		float64 dot = b2Dot(normal2Local2, normal1Local2);
 		if (dot < minDot)
 		{
 			minDot = dot;
@@ -246,12 +246,12 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	manifold->pointCount = 0;
 
 	int32 edgeA = 0;
-	float32 separationA = FindMaxSeparation(&edgeA, polyA, polyB, conservative);
+	float64 separationA = FindMaxSeparation(&edgeA, polyA, polyB, conservative);
 	if (separationA > 0.0f && conservative == false)
 		return;
 
 	int32 edgeB = 0;
-	float32 separationB = FindMaxSeparation(&edgeB, polyB, polyA, conservative);
+	float64 separationB = FindMaxSeparation(&edgeB, polyB, polyA, conservative);
 	if (separationB > 0.0f && conservative == false)
 		return;
 
@@ -259,8 +259,8 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	const b2PolyShape* poly2;	// incident poly
 	int32 edge1;		// reference edge
 	uint8 flip;
-	const float32 k_relativeTol = 0.98f;
-	const float32 k_absoluteTol = 0.001f;
+	const float64 k_relativeTol = 0.98f;
+	const float64 k_absoluteTol = 0.001f;
 
 	// TODO_ERIN use "radius" of poly for absolute tolerance.
 	if (separationB > k_relativeTol * separationA + k_absoluteTol)
@@ -295,9 +295,9 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	v11 = poly1->m_position + b2Mul(poly1->m_R, v11);
 	v12 = poly1->m_position + b2Mul(poly1->m_R, v12);
 
-	float32 frontOffset = b2Dot(frontNormal, v11);
-	float32 sideOffset1 = -b2Dot(sideNormal, v11);
-	float32 sideOffset2 = b2Dot(sideNormal, v12);
+	float64 frontOffset = b2Dot(frontNormal, v11);
+	float64 sideOffset1 = -b2Dot(sideNormal, v11);
+	float64 sideOffset2 = b2Dot(sideNormal, v12);
 
 	// Clip incident edge against extruded edge1 side edges.
 	ClipVertex clipPoints1[2];
@@ -322,7 +322,7 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	int32 pointCount = 0;
 	for (int32 i = 0; i < b2_maxManifoldPoints; ++i)
 	{
-		float32 separation = b2Dot(frontNormal, clipPoints2[i].v) - frontOffset;
+		float64 separation = b2Dot(frontNormal, clipPoints2[i].v) - frontOffset;
 
 		if (separation <= 0.0f || conservative == true)
 		{

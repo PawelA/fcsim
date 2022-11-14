@@ -44,9 +44,9 @@ union b2ContactID
 struct b2ContactPoint
 {
 	b2Vec2 position;
-	float32 separation;
-	float32 normalImpulse;
-	float32 tangentImpulse;
+	float64 separation;
+	float64 normalImpulse;
+	float64 tangentImpulse;
 	b2ContactID id;
 };
 
@@ -76,7 +76,7 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const b2CircleShape* circle, bool conservative);
 void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* poly1, const b2PolyShape* poly2, bool conservative);
 
-float32 b2Distance(b2Vec2* x1, b2Vec2* x2, const b2Shape* shape1, const b2Shape* shape2);
+float64 b2Distance(b2Vec2* x1, b2Vec2* x2, const b2Shape* shape1, const b2Shape* shape2);
 
 inline bool b2AABB::IsValid() const
 {

@@ -55,7 +55,7 @@ b2GearJoint::b2GearJoint(const b2GearJointDef* def)
 	m_revolute2 = NULL;
 	m_prismatic2 = NULL;
 
-	float32 coordinate1, coordinate2;
+	float64 coordinate1, coordinate2;
 
 	m_ground1 = def->joint1->m_body1;
 	m_body1 = def->joint1->m_body2;
@@ -105,7 +105,7 @@ void b2GearJoint::PrepareVelocitySolver()
 	b2Body* b1 = m_body1;
 	b2Body* b2 = m_body2;
 
-	float32 K = 0.0f;
+	float64 K = 0.0f;
 	m_J.SetZero();
 
 	if (m_revolute1)
@@ -117,7 +117,7 @@ void b2GearJoint::PrepareVelocitySolver()
 	{
 		b2Vec2 ug = b2Mul(g1->m_R, m_prismatic1->m_localXAxis1);
 		b2Vec2 r = b2Mul(b1->m_R, m_localAnchor1);
-		float32 crug = b2Cross(r, ug);
+		float64 crug = b2Cross(r, ug);
 		m_J.linear1 = -ug;
 		m_J.angular1 = -crug;
 		K += b1->m_invMass + b1->m_invI * crug * crug;
@@ -132,7 +132,7 @@ void b2GearJoint::PrepareVelocitySolver()
 	{
 		b2Vec2 ug = b2Mul(g2->m_R, m_prismatic2->m_localXAxis1);
 		b2Vec2 r = b2Mul(b2->m_R, m_localAnchor2);
-		float32 crug = b2Cross(r, ug);
+		float64 crug = b2Cross(r, ug);
 		m_J.linear2 = -m_ratio * ug;
 		m_J.angular2 = -m_ratio * crug;
 		K += m_ratio * m_ratio * (b2->m_invMass + b2->m_invI * crug * crug);
@@ -156,10 +156,10 @@ void b2GearJoint::SolveVelocityConstraints(const b2TimeStep* step)
 	b2Body* b1 = m_body1;
 	b2Body* b2 = m_body2;
 
-	float32 Cdot = m_J.Compute(	b1->m_linearVelocity, b1->m_angularVelocity,
+	float64 Cdot = m_J.Compute(	b1->m_linearVelocity, b1->m_angularVelocity,
 								b2->m_linearVelocity, b2->m_angularVelocity);
 
-	float32 impulse = -m_mass * Cdot;
+	float64 impulse = -m_mass * Cdot;
 	m_impulse += impulse;
 
 	b1->m_linearVelocity += b1->m_invMass * impulse * m_J.linear1;
@@ -170,12 +170,12 @@ void b2GearJoint::SolveVelocityConstraints(const b2TimeStep* step)
 
 bool b2GearJoint::SolvePositionConstraints()
 {
-	float32 linearError = 0.0f;
+	float64 linearError = 0.0f;
 
 	b2Body* b1 = m_body1;
 	b2Body* b2 = m_body2;
 
-	float32 coordinate1, coordinate2;
+	float64 coordinate1, coordinate2;
 	if (m_revolute1)
 	{
 		coordinate1 = m_revolute1->GetJointAngle();
@@ -194,9 +194,9 @@ bool b2GearJoint::SolvePositionConstraints()
 		coordinate2 = m_prismatic2->GetJointTranslation();
 	}
 
-	float32 C = m_constant - (coordinate1 + m_ratio * coordinate2);
+	float64 C = m_constant - (coordinate1 + m_ratio * coordinate2);
 
-	float32 impulse = -m_mass * C;
+	float64 impulse = -m_mass * C;
 
 	b1->m_position += b1->m_invMass * impulse * m_J.linear1;
 	b1->m_rotation += b1->m_invI * impulse * m_J.angular1;
@@ -218,20 +218,20 @@ b2Vec2 b2GearJoint::GetAnchor2() const
 	return m_body2->m_position + b2Mul(m_body2->m_R, m_localAnchor2);
 }
 
-b2Vec2 b2GearJoint::GetReactionForce(float32 invTimeStep) const
+b2Vec2 b2GearJoint::GetReactionForce(float64 invTimeStep) const
 {
 	NOT_USED(invTimeStep);
 	b2Vec2 F(0.0f, 0.0f); // = (m_pulleyImpulse * invTimeStep) * m_u;
 	return F;
 }
 
-float32 b2GearJoint::GetReactionTorque(float32 invTimeStep) const
+float64 b2GearJoint::GetReactionTorque(float64 invTimeStep) const
 {
 	NOT_USED(invTimeStep);
 	return 0.0f;
 }
 
-float32 b2GearJoint::GetRatio() const
+float64 b2GearJoint::GetRatio() const
 {
 	return m_ratio;
 }

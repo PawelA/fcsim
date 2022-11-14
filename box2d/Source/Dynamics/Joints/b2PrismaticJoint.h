@@ -38,10 +38,10 @@ struct b2PrismaticJointDef : public b2JointDef
 
 	b2Vec2 anchorPoint;
 	b2Vec2 axis;
-	float32 lowerTranslation;
-	float32 upperTranslation;
-	float32 motorForce;
-	float32 motorSpeed;
+	float64 lowerTranslation;
+	float64 upperTranslation;
+	float64 motorForce;
+	float64 motorSpeed;
 	bool enableLimit;
 	bool enableMotor;
 };
@@ -52,15 +52,15 @@ public:
 	b2Vec2 GetAnchor1() const;
 	b2Vec2 GetAnchor2() const;
 
-	b2Vec2 GetReactionForce(float32 invTimeStep) const;
-	float32 GetReactionTorque(float32 invTimeStep) const;
+	b2Vec2 GetReactionForce(float64 invTimeStep) const;
+	float64 GetReactionTorque(float64 invTimeStep) const;
 
-	float32 GetJointTranslation() const;
-	float32 GetJointSpeed() const;
-	float32 GetMotorForce(float32 invTimeStep) const;
+	float64 GetJointTranslation() const;
+	float64 GetJointSpeed() const;
+	float64 GetMotorForce(float64 invTimeStep) const;
 
-	void SetMotorSpeed(float32 speed);
-	void SetMotorForce(float32 force);
+	void SetMotorSpeed(float64 speed);
+	void SetMotorForce(float64 force);
 
 	//--------------- Internals Below -------------------
 
@@ -74,25 +74,25 @@ public:
 	b2Vec2 m_localAnchor2;
 	b2Vec2 m_localXAxis1;
 	b2Vec2 m_localYAxis1;
-	float32 m_initialAngle;
+	float64 m_initialAngle;
 
 	b2Jacobian m_linearJacobian;
-	float32 m_linearMass;				// effective mass for point-to-line constraint.
-	float32 m_linearImpulse;
+	float64 m_linearMass;				// effective mass for point-to-line constraint.
+	float64 m_linearImpulse;
 
-	float32 m_angularMass;			// effective mass for angular constraint.
-	float32 m_angularImpulse;
+	float64 m_angularMass;			// effective mass for angular constraint.
+	float64 m_angularImpulse;
 
 	b2Jacobian m_motorJacobian;
-	float32 m_motorMass;			// effective mass for motor/limit translational constraint.
-	float32 m_motorImpulse;
-	float32 m_limitImpulse;
-	float32 m_limitPositionImpulse;
+	float64 m_motorMass;			// effective mass for motor/limit translational constraint.
+	float64 m_motorImpulse;
+	float64 m_limitImpulse;
+	float64 m_limitPositionImpulse;
 
-	float32 m_lowerTranslation;
-	float32 m_upperTranslation;
-	float32 m_maxMotorForce;
-	float32 m_motorSpeed;
+	float64 m_lowerTranslation;
+	float64 m_upperTranslation;
+	float64 m_maxMotorForce;
+	float64 m_motorSpeed;
 
 	bool m_enableLimit;
 	bool m_enableMotor;
