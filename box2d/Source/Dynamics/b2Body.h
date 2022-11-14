@@ -38,12 +38,12 @@ struct b2BodyDef
 	{
 		userData = NULL;
 		memset(shapes, 0, sizeof(shapes));
-		position.Set(0.0f, 0.0f);
-		rotation = 0.0f;
-		linearVelocity.Set(0.0f, 0.0f);
-		angularVelocity = 0.0f;
-		linearDamping = 0.0f;
-		angularDamping = 0.0f;
+		position.Set(0.0, 0.0);
+		rotation = 0.0;
+		linearVelocity.Set(0.0, 0.0);
+		angularVelocity = 0.0;
+		linearDamping = 0.0;
+		angularDamping = 0.0;
 		allowSleep = true;
 		isSleeping = false;
 		preventRotation = false;
@@ -360,7 +360,7 @@ inline void b2Body::AllowSleeping(bool flag)
 inline void b2Body::WakeUp()
 {
 	m_flags &= ~e_sleepFlag;
-	m_sleepTime = 0.0f;
+	m_sleepTime = 0.0;
 }
 
 inline b2Shape* b2Body::GetShapeList()

@@ -95,7 +95,7 @@ b2GearJoint::b2GearJoint(const b2GearJointDef* def)
 
 	m_constant = coordinate1 + m_ratio * coordinate2;
 
-	m_impulse = 0.0f;
+	m_impulse = 0.0;
 }
 
 void b2GearJoint::PrepareVelocitySolver()
@@ -105,12 +105,12 @@ void b2GearJoint::PrepareVelocitySolver()
 	b2Body* b1 = m_body1;
 	b2Body* b2 = m_body2;
 
-	float64 K = 0.0f;
+	float64 K = 0.0;
 	m_J.SetZero();
 
 	if (m_revolute1)
 	{
-		m_J.angular1 = -1.0f;
+		m_J.angular1 = -1.0;
 		K += b1->m_invI;
 	}
 	else
@@ -139,8 +139,8 @@ void b2GearJoint::PrepareVelocitySolver()
 	}
 
 	// Compute effective mass.
-	b2Assert(K > 0.0f);
-	m_mass = 1.0f / K;
+	b2Assert(K > 0.0);
+	m_mass = 1.0 / K;
 
 	// Warm starting.
 	b1->m_linearVelocity += b1->m_invMass * m_impulse * m_J.linear1;
@@ -170,7 +170,7 @@ void b2GearJoint::SolveVelocityConstraints(const b2TimeStep* step)
 
 bool b2GearJoint::SolvePositionConstraints()
 {
-	float64 linearError = 0.0f;
+	float64 linearError = 0.0;
 
 	b2Body* b1 = m_body1;
 	b2Body* b2 = m_body2;
@@ -221,14 +221,14 @@ b2Vec2 b2GearJoint::GetAnchor2() const
 b2Vec2 b2GearJoint::GetReactionForce(float64 invTimeStep) const
 {
 	NOT_USED(invTimeStep);
-	b2Vec2 F(0.0f, 0.0f); // = (m_pulleyImpulse * invTimeStep) * m_u;
+	b2Vec2 F(0.0, 0.0); // = (m_pulleyImpulse * invTimeStep) * m_u;
 	return F;
 }
 
 float64 b2GearJoint::GetReactionTorque(float64 invTimeStep) const
 {
 	NOT_USED(invTimeStep);
-	return 0.0f;
+	return 0.0;
 }
 
 float64 b2GearJoint::GetRatio() const

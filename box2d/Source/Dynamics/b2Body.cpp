@@ -32,19 +32,19 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 	m_rotation0 = m_rotation;
 	m_world = world;
 
-	m_linearDamping = b2Clamp(1.0f - bd->linearDamping, 0.0f, 1.0f);
-	m_angularDamping = b2Clamp(1.0f - bd->angularDamping, 0.0f, 1.0f);
+	m_linearDamping = b2Clamp(1.0 - bd->linearDamping, 0.0, 1.0);
+	m_angularDamping = b2Clamp(1.0 - bd->angularDamping, 0.0, 1.0);
 
-	m_force.Set(0.0f, 0.0f);
-	m_torque = 0.0f;
+	m_force.Set(0.0, 0.0);
+	m_torque = 0.0;
 
-	m_mass = 0.0f;
+	m_mass = 0.0;
 
 	b2MassData massDatas[b2_maxShapesPerBody];
 
 	// Compute the shape mass properties, the bodies total mass and COM.
 	m_shapeCount = 0;
-	m_center.Set(0.0f, 0.0f);
+	m_center.Set(0.0, 0.0);
 	for (int32 i = 0; i < b2_maxShapesPerBody; ++i)
 	{
 		const b2ShapeDef* sd = bd->shapes[i];
@@ -57,9 +57,9 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 	}
 
 	// Compute center of mass, and shift the origin to the COM.
-	if (m_mass > 0.0f)
+	if (m_mass > 0.0)
 	{
-		m_center *= 1.0f / m_mass;
+		m_center *= 1.0 / m_mass;
 		m_position += b2Mul(m_R, m_center);
 	}
 	else
@@ -68,7 +68,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 	}
 
 	// Compute the moment of inertia.
-	m_I = 0.0f;
+	m_I = 0.0;
 	for (int32 i = 0; i < m_shapeCount; ++i)
 	{
 		const b2ShapeDef* sd = bd->shapes[i];
@@ -78,23 +78,23 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 		m_I += massData->mass * b2Dot(r, r);
 	}
 
-	if (m_mass > 0.0f)
+	if (m_mass > 0.0)
 	{
-		m_invMass = 1.0f / m_mass;
+		m_invMass = 1.0 / m_mass;
 	}
 	else
 	{
-		m_invMass = 0.0f;
+		m_invMass = 0.0;
 	}
 
-	if (m_I > 0.0f && bd->preventRotation == false)
+	if (m_I > 0.0 && bd->preventRotation == false)
 	{
-		m_invI = 1.0f / m_I;
+		m_invI = 1.0 / m_I;
 	}
 	else
 	{
-		m_I = 0.0f;
-		m_invI = 0.0f;
+		m_I = 0.0;
+		m_invI = 0.0;
 	}
 
 	// Compute the center of mass velocity.
@@ -116,7 +116,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 		m_shapeList = shape;
 	}
 
-	m_sleepTime = 0.0f;
+	m_sleepTime = 0.0;
 	if (bd->allowSleep)
 	{
 		m_flags |= e_allowSleepFlag;
@@ -126,10 +126,10 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 		m_flags |= e_sleepFlag;
 	}
 
-	if ((m_flags & e_sleepFlag)  || m_invMass == 0.0f)
+	if ((m_flags & e_sleepFlag)  || m_invMass == 0.0)
 	{
-		m_linearVelocity.Set(0.0f, 0.0f);
-		m_angularVelocity = 0.0f;
+		m_linearVelocity.Set(0.0, 0.0);
+		m_angularVelocity = 0.0;
 	}
 
 	m_userData = bd->userData;
@@ -212,7 +212,7 @@ void b2Body::Freeze()
 {
 	m_flags |= e_frozenFlag;
 	m_linearVelocity.SetZero();
-	m_angularVelocity = 0.0f;
+	m_angularVelocity = 0.0;
 	for (b2Shape* s = m_shapeList; s; s = s->m_next)
 	{
 		s->DestroyProxy();

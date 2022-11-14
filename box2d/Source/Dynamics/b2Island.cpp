@@ -142,7 +142,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	{
 		b2Body* b = m_bodies[i];
 
-		if (b->m_invMass == 0.0f)
+		if (b->m_invMass == 0.0)
 			continue;
 
 		b->m_linearVelocity += step->dt * (gravity + b->m_invMass * b->m_force);
@@ -182,7 +182,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	{
 		b2Body* b = m_bodies[i];
 
-		if (b->m_invMass == 0.0f)
+		if (b->m_invMass == 0.0)
 			continue;
 
 		b->m_position += step->dt * b->m_linearVelocity;
@@ -225,14 +225,14 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	{
 		b2Body* b = m_bodies[i];
 
-		if (b->m_invMass == 0.0f)
+		if (b->m_invMass == 0.0)
 			continue;
 
 		b->m_R.Set(b->m_rotation);
 
 		b->SynchronizeShapes();
-		b->m_force.Set(0.0f, 0.0f);
-		b->m_torque = 0.0f;
+		b->m_force.Set(0.0, 0.0);
+		b->m_torque = 0.0;
 	}
 }
 
@@ -246,23 +246,23 @@ void b2Island::UpdateSleep(float64 dt)
 	for (int32 i = 0; i < m_bodyCount; ++i)
 	{
 		b2Body* b = m_bodies[i];
-		if (b->m_invMass == 0.0f)
+		if (b->m_invMass == 0.0)
 		{
 			continue;
 		}
 
 		if ((b->m_flags & b2Body::e_allowSleepFlag) == 0)
 		{
-			b->m_sleepTime = 0.0f;
-			minSleepTime = 0.0f;
+			b->m_sleepTime = 0.0;
+			minSleepTime = 0.0;
 		}
 
 		if ((b->m_flags & b2Body::e_allowSleepFlag) == 0 ||
 			b->m_angularVelocity * b->m_angularVelocity > angTolSqr ||
 			b2Dot(b->m_linearVelocity, b->m_linearVelocity) > linTolSqr)
 		{
-			b->m_sleepTime = 0.0f;
-			minSleepTime = 0.0f;
+			b->m_sleepTime = 0.0;
+			minSleepTime = 0.0;
 		}
 		else
 		{

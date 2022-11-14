@@ -26,11 +26,11 @@ struct b2MouseJointDef : public b2JointDef
 	b2MouseJointDef()
 	{
 		type = e_mouseJoint;
-		target.Set(0.0f, 0.0f);
-		maxForce = 0.0f;
-		frequencyHz = 5.0f;
-		dampingRatio = 0.7f;
-		timeStep = 1.0f / 60.0f;
+		target.Set(0.0, 0.0);
+		maxForce = 0.0;
+		frequencyHz = 5.0;
+		dampingRatio = 0.7;
+		timeStep = 1.0 / 60.0;
 	}
 
 	b2Vec2 target;

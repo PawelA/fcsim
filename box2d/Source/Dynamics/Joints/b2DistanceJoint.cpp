@@ -36,7 +36,7 @@ b2DistanceJoint::b2DistanceJoint(const b2DistanceJointDef* def)
 
 	b2Vec2 d = def->anchorPoint2 - def->anchorPoint1;
 	m_length = d.Length();
-	m_impulse = 0.0f;
+	m_impulse = 0.0;
 }
 
 void b2DistanceJoint::PrepareVelocitySolver()
@@ -50,18 +50,18 @@ void b2DistanceJoint::PrepareVelocitySolver()
 	float64 length = m_u.Length();
 	if (length > b2_linearSlop)
 	{
-		m_u *= 1.0f / length;
+		m_u *= 1.0 / length;
 	}
 	else
 	{
-		m_u.Set(0.0f, 0.0f);
+		m_u.Set(0.0, 0.0);
 	}
 
 	float64 cr1u = b2Cross(r1, m_u);
 	float64 cr2u = b2Cross(r2, m_u);
 	m_mass = m_body1->m_invMass + m_body1->m_invI * cr1u * cr1u + m_body2->m_invMass + m_body2->m_invI * cr2u * cr2u;
 	b2Assert(m_mass > FLT_EPSILON);
-	m_mass = 1.0f / m_mass;
+	m_mass = 1.0 / m_mass;
 
 	if (b2World::s_enableWarmStarting)
 	{
@@ -73,7 +73,7 @@ void b2DistanceJoint::PrepareVelocitySolver()
 	}
 	else
 	{
-		m_impulse = 0.0f;
+		m_impulse = 0.0;
 	}
 }
 
@@ -142,5 +142,5 @@ b2Vec2 b2DistanceJoint::GetReactionForce(float64 invTimeStep) const
 float64 b2DistanceJoint::GetReactionTorque(float64 invTimeStep) const
 {
 	NOT_USED(invTimeStep);
-	return 0.0f;
+	return 0.0;
 }

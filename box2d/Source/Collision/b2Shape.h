@@ -48,11 +48,11 @@ struct b2ShapeDef
 	{
 		type = e_unknownShape;
 		userData = NULL;
-		localPosition.Set(0.0f, 0.0f);
-		localRotation = 0.0f;
-		friction = 0.2f;
-		restitution = 0.0f;
-		density = 0.0f;
+		localPosition.Set(0.0, 0.0);
+		localRotation = 0.0;
+		friction = 0.2;
+		restitution = 0.0;
+		density = 0.0;
 		categoryBits = 0x0001;
 		maskBits = 0xFFFF;
 		groupIndex = 0;
@@ -88,7 +88,7 @@ struct b2CircleDef : public b2ShapeDef
 	b2CircleDef()
 	{
 		type = e_circleShape;
-		radius = 1.0f;
+		radius = 1.0;
 	}
 
 	float64 radius;
@@ -99,7 +99,7 @@ struct b2BoxDef : public b2ShapeDef
 	b2BoxDef()
 	{
 		type = e_boxShape;
-		extents.Set(1.0f, 1.0f);
+		extents.Set(1.0, 1.0);
 	}
 
 	b2Vec2 extents;

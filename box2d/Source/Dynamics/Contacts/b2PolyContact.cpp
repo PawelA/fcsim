@@ -60,8 +60,8 @@ void b2PolyContact::Evaluate()
 		for (int32 i = 0; i < m_manifold.pointCount; ++i)
 		{
 			b2ContactPoint* cp = m_manifold.points + i;
-			cp->normalImpulse = 0.0f;
-			cp->tangentImpulse = 0.0f;
+			cp->normalImpulse = 0.0;
+			cp->tangentImpulse = 0.0;
 			b2ContactID id = cp->id;
 
 			for (int32 j = 0; j < m0.pointCount; ++j)

@@ -51,7 +51,7 @@ void* b2ContactManager::PairAdded(void* proxyUserData1, void* proxyUserData2)
 	}
 
 	// Ensure that body2 is dynamic (body1 is static or dynamic).
-	if (body2->m_invMass == 0.0f)
+	if (body2->m_invMass == 0.0)
 	{
 		b2Swap(shape1, shape2);
 		b2Swap(body1, body2);

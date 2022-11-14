@@ -40,16 +40,16 @@ b2MouseJoint::b2MouseJoint(const b2MouseJointDef* def)
 	float64 mass = m_body2->m_mass;
 
 	// Frequency
-	float64 omega = 2.0f * b2_pi * def->frequencyHz;
+	float64 omega = 2.0 * b2_pi * def->frequencyHz;
 
 	// Damping coefficient
-	float64 d = 2.0f * mass * def->dampingRatio * omega;
+	float64 d = 2.0 * mass * def->dampingRatio * omega;
 
 	// Spring stiffness
 	float64 k = mass * omega * omega;
 
 	// magic formulas
-	m_gamma = 1.0f / (d + def->timeStep * k);
+	m_gamma = 1.0 / (d + def->timeStep * k);
 	m_beta = def->timeStep * k / (d + def->timeStep * k);
 }
 
@@ -73,8 +73,8 @@ void b2MouseJoint::PrepareVelocitySolver()
 	float64 invI = b->m_invI;
 
 	b2Mat22 K1;
-	K1.col1.x = invMass;	K1.col2.x = 0.0f;
-	K1.col1.y = 0.0f;		K1.col2.y = invMass;
+	K1.col1.x = invMass;	K1.col2.x = 0.0;
+	K1.col1.y = 0.0;		K1.col2.y = invMass;
 
 	b2Mat22 K2;
 	K2.col1.x =  invI * r.y * r.y;	K2.col2.x = -invI * r.x * r.y;
@@ -89,7 +89,7 @@ void b2MouseJoint::PrepareVelocitySolver()
 	m_C = b->m_position + r - m_target;
 
 	// Cheat with some damping
-	b->m_angularVelocity *= 0.98f;
+	b->m_angularVelocity *= 0.98;
 
 	// Warm starting.
 	b2Vec2 P = m_impulse;
@@ -139,5 +139,5 @@ b2Vec2 b2MouseJoint::GetReactionForce(float64 invTimeStep) const
 float64 b2MouseJoint::GetReactionTorque(float64 invTimeStep) const
 {
 	NOT_USED(invTimeStep);
-	return 0.0f;
+	return 0.0;
 }

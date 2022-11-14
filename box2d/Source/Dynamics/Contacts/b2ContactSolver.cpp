@@ -91,22 +91,22 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 				float64 kNormal = b1->m_invMass + b2->m_invMass;
 				kNormal += b1->m_invI * (r1Sqr - rn1 * rn1) + b2->m_invI * (r2Sqr - rn2 * rn2);
 				b2Assert(kNormal > FLT_EPSILON);
-				ccp->normalMass = 1.0f / kNormal;
+				ccp->normalMass = 1.0 / kNormal;
 
-				b2Vec2 tangent = b2Cross(normal, 1.0f);
+				b2Vec2 tangent = b2Cross(normal, 1.0);
 
 				float64 rt1 = b2Dot(r1, tangent);
 				float64 rt2 = b2Dot(r2, tangent);
 				float64 kTangent = b1->m_invMass + b2->m_invMass;
 				kTangent += b1->m_invI * (r1Sqr - rt1 * rt1) + b2->m_invI * (r2Sqr - rt2 * rt2);
 				b2Assert(kTangent > FLT_EPSILON);
-				ccp->tangentMass = 1.0f /  kTangent;
+				ccp->tangentMass = 1.0 /  kTangent;
 
 				// Setup a velocity bias for restitution.
-				ccp->velocityBias = 0.0f;
-				if (ccp->separation > 0.0f)
+				ccp->velocityBias = 0.0;
+				if (ccp->separation > 0.0)
 				{
-					ccp->velocityBias = -60.0f * ccp->separation; // TODO_ERIN b2TimeStep
+					ccp->velocityBias = -60.0 * ccp->separation; // TODO_ERIN b2TimeStep
 				}
 
 				float64 vRel = b2Dot(c->normal, v2 + b2Cross(w2, r2) - v1 - b2Cross(w1, r1));
@@ -142,7 +142,7 @@ void b2ContactSolver::PreSolve()
 		float64 invMass2 = b2->m_invMass;
 		float64 invI2 = b2->m_invI;
 		b2Vec2 normal = c->normal;
-		b2Vec2 tangent = b2Cross(normal, 1.0f);
+		b2Vec2 tangent = b2Cross(normal, 1.0);
 
 		if (b2World::s_enableWarmStarting)
 		{
@@ -157,7 +157,7 @@ void b2ContactSolver::PreSolve()
 				b2->m_angularVelocity += invI2 * b2Cross(r2, P);
 				b2->m_linearVelocity += invMass2 * P;
 
-				ccp->positionImpulse = 0.0f;
+				ccp->positionImpulse = 0.0;
 			}
 		}
 		else
@@ -165,10 +165,10 @@ void b2ContactSolver::PreSolve()
 			for (int32 j = 0; j < c->pointCount; ++j)
 			{
 				b2ContactConstraintPoint* ccp = c->points + j;
-				ccp->normalImpulse = 0.0f;
-				ccp->tangentImpulse = 0.0f;
+				ccp->normalImpulse = 0.0;
+				ccp->tangentImpulse = 0.0;
 
-				ccp->positionImpulse = 0.0f;
+				ccp->positionImpulse = 0.0;
 			}
 		}
 	}
@@ -186,7 +186,7 @@ void b2ContactSolver::SolveVelocityConstraints()
 		float64 invMass2 = b2->m_invMass;
 		float64 invI2 = b2->m_invI;
 		b2Vec2 normal = c->normal;
-		b2Vec2 tangent = b2Cross(normal, 1.0f);
+		b2Vec2 tangent = b2Cross(normal, 1.0);
 
 		// Solver normal constraints
 		for (int32 j = 0; j < c->pointCount; ++j)
@@ -204,7 +204,7 @@ void b2ContactSolver::SolveVelocityConstraints()
 			float64 lambda = -ccp->normalMass * (vn - ccp->velocityBias);
 
 			// b2Clamp the accumulated impulse
-			float64 newImpulse = b2Max(ccp->normalImpulse + lambda, 0.0f);
+			float64 newImpulse = b2Max(ccp->normalImpulse + lambda, 0.0);
 			lambda = newImpulse - ccp->normalImpulse;
 
 			// Apply contact impulse
@@ -255,7 +255,7 @@ void b2ContactSolver::SolveVelocityConstraints()
 
 bool b2ContactSolver::SolvePositionConstraints(float64 beta)
 {
-	float64 minSeparation = 0.0f;
+	float64 minSeparation = 0.0;
 
 	for (int32 i = 0; i < m_constraintCount; ++i)
 	{
@@ -267,7 +267,7 @@ bool b2ContactSolver::SolvePositionConstraints(float64 beta)
 		float64 invMass2 = b2->m_invMass;
 		float64 invI2 = b2->m_invI;
 		b2Vec2 normal = c->normal;
-		b2Vec2 tangent = b2Cross(normal, 1.0f);
+		b2Vec2 tangent = b2Cross(normal, 1.0);
 
 		// Solver normal constraints
 		for (int32 j = 0; j < c->pointCount; ++j)
@@ -288,14 +288,14 @@ bool b2ContactSolver::SolvePositionConstraints(float64 beta)
 			minSeparation = b2Min(minSeparation, separation);
 
 			// Prevent large corrections and allow slop.
-			float64 C = beta * b2Clamp(separation + b2_linearSlop, -b2_maxLinearCorrection, 0.0f);
+			float64 C = beta * b2Clamp(separation + b2_linearSlop, -b2_maxLinearCorrection, 0.0);
 
 			// Compute normal impulse
 			float64 dImpulse = -ccp->normalMass * C;
 
 			// b2Clamp the accumulated impulse
 			float64 impulse0 = ccp->positionImpulse;
-			ccp->positionImpulse = b2Max(impulse0 + dImpulse, 0.0f);
+			ccp->positionImpulse = b2Max(impulse0 + dImpulse, 0.0);
 			dImpulse = ccp->positionImpulse - impulse0;
 
 			b2Vec2 impulse = dImpulse * normal;

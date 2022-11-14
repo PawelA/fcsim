@@ -132,8 +132,8 @@ public:
 
 inline void b2Jacobian::SetZero()
 {
-	linear1.SetZero(); angular1 = 0.0f;
-	linear2.SetZero(); angular2 = 0.0f;
+	linear1.SetZero(); angular1 = 0.0;
+	linear2.SetZero(); angular2 = 0.0;
 }
 
 inline void b2Jacobian::Set(const b2Vec2& x1, float64 a1, const b2Vec2& x2, float64 a2)

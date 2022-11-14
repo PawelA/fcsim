@@ -32,18 +32,18 @@ typedef unsigned short uint16;
 typedef unsigned int uint32;
 typedef double float64;
 
-const float64 b2_pi = 3.14159265359f;
+const float64 b2_pi = 3.14159265359;
 
 // Define your unit system here. The default system is
 // meters-kilograms-seconds. For the tuning to work well,
 // your dynamic objects should be bigger than a pebble and smaller
 // than a house.
-const float64 b2_lengthUnitsPerMeter = 30.0f;
-const float64 b2_massUnitsPerKilogram = 1.0f;
-const float64 b2_timeUnitsPerSecond = 1.0f;
+const float64 b2_lengthUnitsPerMeter = 30.0;
+const float64 b2_massUnitsPerKilogram = 1.0;
+const float64 b2_timeUnitsPerSecond = 1.0;
 
 // Use this for pixels:
-//const float64 b2_lengthUnitsPerMeter = 50.0f;
+//const float64 b2_lengthUnitsPerMeter = 50.0;
 
 
 
@@ -57,17 +57,17 @@ const int32 b2_maxProxies = 4096;				// this must be a power of two
 const int32 b2_maxPairs = 32768;	// this must be a power of two
 
 // Dynamics
-const float64 b2_linearSlop = 0.15f;
-const float64 b2_angularSlop = 0.03490658503988659f;
-const float64 b2_velocityThreshold = 30.0f;
-const float64 b2_maxLinearCorrection = 6.0f;
-const float64 b2_maxAngularCorrection = 0.13962634015954636f;
-const float64 b2_contactBaumgarte = 0.2f;
+const float64 b2_linearSlop = 0.15;
+const float64 b2_angularSlop = 0.03490658503988659;
+const float64 b2_velocityThreshold = 30.0;
+const float64 b2_maxLinearCorrection = 6.0;
+const float64 b2_maxAngularCorrection = 0.13962634015954636;
+const float64 b2_contactBaumgarte = 0.2;
 
 // Sleep
-const float64 b2_timeToSleep = 0.5f;
-const float64 b2_linearSleepTolerance = 0.3f;
-const float64 b2_angularSleepTolerance = 0.011111111111111112f;
+const float64 b2_timeToSleep = 0.5;
+const float64 b2_linearSleepTolerance = 0.3;
+const float64 b2_angularSleepTolerance = 0.011111111111111112;
 
 
 // Memory Allocation

@@ -33,7 +33,7 @@ static int32 ProcessTwo(b2Vec2* p1Out, b2Vec2* p2Out, b2Vec2* p1s, b2Vec2* p2s, 
 	b2Vec2 d = points[0] - points[1];
 	float64 length = d.Normalize();
 	float64 lambda = b2Dot(r, d);
-	if (lambda <= 0.0f || length < FLT_EPSILON)
+	if (lambda <= 0.0 || length < FLT_EPSILON)
 	{
 		// The simplex is reduced to a point.
 		*p1Out = p1s[1];
@@ -71,7 +71,7 @@ static int32 ProcessThree(b2Vec2* p1Out, b2Vec2* p2Out, b2Vec2* p1s, b2Vec2* p2s
 	float64 un = -b2Dot(b, bc), ud = b2Dot(c, bc);
 
 	// In vertex c region?
-	if (td <= 0.0f && ud <= 0.0f)
+	if (td <= 0.0 && ud <= 0.0)
 	{
 		// Single point
 		*p1Out = p1s[2];
@@ -85,20 +85,20 @@ static int32 ProcessThree(b2Vec2* p1Out, b2Vec2* p2Out, b2Vec2* p1s, b2Vec2* p2s
 	// Should not be in vertex a or b region.
 	NOT_USED(sd);
 	NOT_USED(sn);
-	b2Assert(sn > 0.0f || tn > 0.0f);
-	b2Assert(sd > 0.0f || un > 0.0f);
+	b2Assert(sn > 0.0 || tn > 0.0);
+	b2Assert(sd > 0.0 || un > 0.0);
 
 	float64 n = b2Cross(ab, ac);
 
 	// Should not be in edge ab region.
 	float64 vc = n * b2Cross(a, b);
-	b2Assert(vc > 0.0f || sn > 0.0f || sd > 0.0f);
+	b2Assert(vc > 0.0 || sn > 0.0 || sd > 0.0);
 
 	// In edge bc region?
 	float64 va = n * b2Cross(b, c);
-	if (va <= 0.0f && un >= 0.0f && ud >= 0.0f)
+	if (va <= 0.0 && un >= 0.0 && ud >= 0.0)
 	{
-		b2Assert(un + ud > 0.0f);
+		b2Assert(un + ud > 0.0);
 		float64 lambda = un / (un + ud);
 		*p1Out = p1s[1] + lambda * (p1s[2] - p1s[1]);
 		*p2Out = p2s[1] + lambda * (p2s[2] - p2s[1]);
@@ -110,9 +110,9 @@ static int32 ProcessThree(b2Vec2* p1Out, b2Vec2* p2Out, b2Vec2* p1s, b2Vec2* p2s
 
 	// In edge ac region?
 	float64 vb = n * b2Cross(c, a);
-	if (vb <= 0.0f && tn >= 0.0f && td >= 0.0f)
+	if (vb <= 0.0 && tn >= 0.0 && td >= 0.0)
 	{
-		b2Assert(tn + td > 0.0f);
+		b2Assert(tn + td > 0.0);
 		float64 lambda = tn / (tn + td);
 		*p1Out = p1s[0] + lambda * (p1s[2] - p1s[0]);
 		*p2Out = p2s[0] + lambda * (p2s[2] - p2s[0]);
@@ -124,11 +124,11 @@ static int32 ProcessThree(b2Vec2* p1Out, b2Vec2* p2Out, b2Vec2* p1s, b2Vec2* p2s
 
 	// Inside the triangle, compute barycentric coordinates
 	float64 denom = va + vb + vc;
-	b2Assert(denom > 0.0f);
-	denom = 1.0f / denom;
+	b2Assert(denom > 0.0);
+	denom = 1.0 / denom;
 	float64 u = va * denom;
 	float64 v = vb * denom;
-	float64 w = 1.0f - u - v;
+	float64 w = 1.0 - u - v;
 	*p1Out = u * p1s[0] + v * p1s[1] + w * p1s[2];
 	*p2Out = u * p2s[0] + v * p2s[1] + w * p2s[2];
 	return 3;
@@ -156,7 +156,7 @@ float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 	*p1Out = shape1->m_position;
 	*p2Out = shape2->m_position;
 
-	float64 vSqr = 0.0f;
+	float64 vSqr = 0.0;
 	const int32 maxIterations = 20;
 	for (int32 iter = 0; iter < maxIterations; ++iter)
 	{
@@ -167,7 +167,7 @@ float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 		vSqr = b2Dot(v, v);
 		b2Vec2 w = w2 - w1;
 		float64 vw = b2Dot(v, w);
-		if (vSqr - vw <= 0.01f * vSqr || InPoints(w, points, pointCount)) // or w in points
+		if (vSqr - vw <= 0.01 * vSqr || InPoints(w, points, pointCount)) // or w in points
 		{
 			if (pointCount == 0)
 			{
@@ -208,7 +208,7 @@ float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 		if (pointCount == 3)
 		{
 			g_GJK_Iterations = iter;
-			return 0.0f;
+			return 0.0;
 		}
 
 		float64 maxSqr = -FLT_MAX;
@@ -217,7 +217,7 @@ float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 			maxSqr = b2Max(maxSqr, b2Dot(points[i], points[i]));
 		}
 
-		if (pointCount == 3 || vSqr <= 100.0f * FLT_EPSILON * maxSqr)
+		if (pointCount == 3 || vSqr <= 100.0 * FLT_EPSILON * maxSqr)
 		{
 			g_GJK_Iterations = iter;
 			return sqrtf(vSqr);

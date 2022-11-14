@@ -51,10 +51,10 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 	shape1->QuickSync(p1, R1);
 	shape2->QuickSync(p2, R2);
 
-	float64 s1 = 0.0f;
+	float64 s1 = 0.0;
 	const int32 maxIterations = 10;
 	b2Vec2 d;
-	float64 invRelativeVelocity = 0.0f;
+	float64 invRelativeVelocity = 0.0;
 	bool hit = true;
 	b2Vec2 x1, x2;
 	for (int32 iter = 0; iter < maxIterations; ++iter)
@@ -85,20 +85,20 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 				break;
 			}
 
-			invRelativeVelocity = 1.0f / relativeVelocity;
+			invRelativeVelocity = 1.0 / relativeVelocity;
 		}
 
 		// Get the conservative movement.
 		float64 ds = distance * invRelativeVelocity;
 		float64 s2 = s1 + ds;
 
-		if (s2 < 0.0f || 1.0f < s2)
+		if (s2 < 0.0 || 1.0 < s2)
 		{
 			hit = false;
 			break;
 		}
 
-		if (s2 < (1.0f + 100.0f * FLT_EPSILON) * s1)
+		if (s2 < (1.0 + 100.0 * FLT_EPSILON) * s1)
 		{
 			hit = true;
 			break;

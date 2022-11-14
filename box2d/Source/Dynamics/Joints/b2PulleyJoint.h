@@ -36,13 +36,13 @@ struct b2PulleyJointDef : public b2JointDef
 	b2PulleyJointDef()
 	{
 		type = e_pulleyJoint;
-		groundPoint1.Set(-1.0f, 1.0f);
-		groundPoint2.Set(1.0f, 1.0f);
-		anchorPoint1.Set(-1.0f, 0.0f);
-		anchorPoint2.Set(1.0f, 0.0f);
-		maxLength1 = 0.5f * b2_minPulleyLength;
-		maxLength2 = 0.5f * b2_minPulleyLength;
-		ratio = 1.0f;
+		groundPoint1.Set(-1.0, 1.0);
+		groundPoint2.Set(1.0, 1.0);
+		anchorPoint1.Set(-1.0, 0.0);
+		anchorPoint2.Set(1.0, 0.0);
+		maxLength1 = 0.5 * b2_minPulleyLength;
+		maxLength2 = 0.5 * b2_minPulleyLength;
+		ratio = 1.0;
 		collideConnected = true;
 	}
 

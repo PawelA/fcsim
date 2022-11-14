@@ -50,23 +50,23 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float6
 {
 	b2Assert(count >= 3);
 
-	b2Vec2 center; center.Set(0.0f, 0.0f);
-	float64 area = 0.0f;
-	float64 I = 0.0f;
+	b2Vec2 center; center.Set(0.0, 0.0);
+	float64 area = 0.0;
+	float64 I = 0.0;
 
 	// pRef is the reference point for forming triangles.
 	// It's location doesn't change the result (except for rounding error).
-	b2Vec2 pRef(0.0f, 0.0f);
+	b2Vec2 pRef(0.0, 0.0);
 #if 0
 	// This code would put the reference point inside the polygon.
 	for (int32 i = 0; i < count; ++i)
 	{
 		pRef += vs[i];
 	}
-	pRef *= 1.0f / count;
+	pRef *= 1.0 / count;
 #endif
 
-	const float64 inv3 = 1.0f / 3.0f;
+	const float64 inv3 = 1.0 / 3.0;
 
 	for (int32 i = 0; i < count; ++i)
 	{
@@ -80,7 +80,7 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float6
 
 		float64 D = b2Cross(e1, e2);
 
-		float64 triangleArea = 0.5f * D;
+		float64 triangleArea = 0.5 * D;
 		area += triangleArea;
 
 		// Area weighted centroid
@@ -90,8 +90,8 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float6
 		float64 ex1 = e1.x, ey1 = e1.y;
 		float64 ex2 = e2.x, ey2 = e2.y;
 
-		float64 intx2 = inv3 * (0.25f * (ex1*ex1 + ex2*ex1 + ex2*ex2) + (px*ex1 + px*ex2)) + 0.5f*px*px;
-		float64 inty2 = inv3 * (0.25f * (ey1*ey1 + ey2*ey1 + ey2*ey2) + (py*ey1 + py*ey2)) + 0.5f*py*py;
+		float64 intx2 = inv3 * (0.25 * (ex1*ex1 + ex2*ex1 + ex2*ex2) + (px*ex1 + px*ex2)) + 0.5*px*px;
+		float64 inty2 = inv3 * (0.25 * (ey1*ey1 + ey2*ey1 + ey2*ey2) + (py*ey1 + py*ey2)) + 0.5*py*py;
 
 		I += D * (intx2 + inty2);
 	}
@@ -101,7 +101,7 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float6
 
 	// Center of mass
 	b2Assert(area > FLT_EPSILON);
-	center *= 1.0f / area;
+	center *= 1.0 / area;
 	massData->center = center;
 
 	// Inertia tensor relative to the center.
@@ -113,22 +113,22 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 {
 	b2Assert(count >= 3);
 
-	b2Vec2 c; c.Set(0.0f, 0.0f);
-	float64 area = 0.0f;
+	b2Vec2 c; c.Set(0.0, 0.0);
+	float64 area = 0.0;
 
 	// pRef is the reference point for forming triangles.
 	// It's location doesn't change the result (except for rounding error).
-	b2Vec2 pRef(0.0f, 0.0f);
+	b2Vec2 pRef(0.0, 0.0);
 #if 0
 	// This code would put the reference point inside the polygon.
 	for (int32 i = 0; i < count; ++i)
 	{
 		pRef += vs[i];
 	}
-	pRef *= 1.0f / count;
+	pRef *= 1.0 / count;
 #endif
 
-	const float64 inv3 = 1.0f / 3.0f;
+	const float64 inv3 = 1.0 / 3.0;
 
 	for (int32 i = 0; i < count; ++i)
 	{
@@ -142,7 +142,7 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 
 		float64 D = b2Cross(e1, e2);
 
-		float64 triangleArea = 0.5f * D;
+		float64 triangleArea = 0.5 * D;
 		area += triangleArea;
 
 		// Area weighted centroid
@@ -151,17 +151,17 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 
 	// Centroid
 	b2Assert(area > FLT_EPSILON);
-	c *= 1.0f / area;
+	c *= 1.0 / area;
 	return c;
 }
 
 void b2ShapeDef::ComputeMass(b2MassData* massData) const
 {
-	if (density == 0.0f)
+	if (density == 0.0)
 	{
-		massData->mass = 0.0f;
-		massData->center.Set(0.0f, 0.0f);
-		massData->I = 0.0f;
+		massData->mass = 0.0;
+		massData->center.Set(0.0, 0.0);
+		massData->I = 0.0;
 	}
 
 	switch (type)
@@ -170,17 +170,17 @@ void b2ShapeDef::ComputeMass(b2MassData* massData) const
 		{
 			b2CircleDef* circle = (b2CircleDef*)this;
 			massData->mass = density * b2_pi * circle->radius * circle->radius;
-			massData->center.Set(0.0f, 0.0f);
-			massData->I = 0.5f * (massData->mass) * circle->radius * circle->radius;
+			massData->center.Set(0.0, 0.0);
+			massData->I = 0.5 * (massData->mass) * circle->radius * circle->radius;
 		}
 		break;
 
 	case e_boxShape:
 		{
 			b2BoxDef* box = (b2BoxDef*)this;
-			massData->mass = 4.0f * density * box->extents.x * box->extents.y;
-			massData->center.Set(0.0f, 0.0f);
-			massData->I = massData->mass / 3.0f * b2Dot(box->extents, box->extents);
+			massData->mass = 4.0 * density * box->extents.x * box->extents.y;
+			massData->center.Set(0.0, 0.0);
+			massData->I = massData->mass / 3.0 * b2Dot(box->extents, box->extents);
 		}
 		break;
 
@@ -192,9 +192,9 @@ void b2ShapeDef::ComputeMass(b2MassData* massData) const
 		break;
 
 	default:
-		massData->mass = 0.0f;
-		massData->center.Set(0.0f, 0.0f);
-		massData->I = 0.0f;
+		massData->mass = 0.0;
+		massData->center.Set(0.0, 0.0);
+		massData->I = 0.0;
 		break;
 	}
 }
@@ -252,7 +252,7 @@ b2Shape::b2Shape(const b2ShapeDef* def, b2Body* body)
 	m_body = body;
 
 	m_proxyId = b2_nullProxy;
-	m_maxRadius = 0.0f;
+	m_maxRadius = 0.0;
 
 	m_categoryBits = def->categoryBits;
 	m_maskBits = def->maskBits;
@@ -352,7 +352,7 @@ b2Vec2 b2CircleShape::Support(const b2Vec2& d) const
 {
 	b2Vec2 u = d;
 	u.Normalize();
-	float64 r = b2Max(0.0f, m_radius - 2.0f * b2_linearSlop);
+	float64 r = b2Max(0.0, m_radius - 2.0 * b2_linearSlop);
 	return m_position + r * u;
 }
 
@@ -413,8 +413,8 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 		m_vertexCount = 4;
 		b2Vec2 h = box->extents;
 		b2Vec2 hc = h;
-		hc.x = b2Max(0.0f, h.x - 2.0f * b2_linearSlop);
-		hc.y = b2Max(0.0f, h.y - 2.0f * b2_linearSlop);
+		hc.x = b2Max(0.0, h.x - 2.0 * b2_linearSlop);
+		hc.y = b2Max(0.0, h.y - 2.0 * b2_linearSlop);
 		m_vertices[0] = b2Mul(localR, b2Vec2(h.x, h.y));
 		m_vertices[1] = b2Mul(localR, b2Vec2(-h.x, h.y));
 		m_vertices[2] = b2Mul(localR, b2Vec2(-h.x, -h.y));
@@ -440,17 +440,17 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 			float64 length = u.Length();
 			if (length > FLT_EPSILON)
 			{
-				u *= 1.0f / length;
+				u *= 1.0 / length;
 			}
 
-			m_coreVertices[i] = m_vertices[i] - 2.0f * b2_linearSlop * u;
+			m_coreVertices[i] = m_vertices[i] - 2.0 * b2_linearSlop * u;
 		}
 	}
 
 	// Compute bounding box. TODO_ERIN optimize OBB
 	b2Vec2 minVertex(FLT_MAX, FLT_MAX);
 	b2Vec2 maxVertex(-FLT_MAX, -FLT_MAX);
-	m_maxRadius = 0.0f;
+	m_maxRadius = 0.0;
 	for (int32 i = 0; i < m_vertexCount; ++i)
 	{
 		b2Vec2 v = m_vertices[i];
@@ -460,8 +460,8 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 	}
 
 	m_localOBB.R.SetIdentity();
-	m_localOBB.center = 0.5f * (minVertex + maxVertex);
-	m_localOBB.extents = 0.5f * (maxVertex - minVertex);
+	m_localOBB.center = 0.5 * (minVertex + maxVertex);
+	m_localOBB.extents = 0.5 * (maxVertex - minVertex);
 
 	// Compute the edge normals and next index map.
 	for (int32 i = 0; i < m_vertexCount; ++i)
@@ -469,7 +469,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 		int32 i1 = i;
 		int32 i2 = i + 1 < m_vertexCount ? i + 1 : 0;
 		b2Vec2 edge = m_vertices[i2] - m_vertices[i1];
-		m_normals[i] = b2Cross(edge, 1.0f);
+		m_normals[i] = b2Cross(edge, 1.0);
 		m_normals[i].Normalize();
 	}
 
@@ -589,7 +589,7 @@ bool b2PolyShape::TestPoint(const b2Vec2& p)
 	for (int32 i = 0; i < m_vertexCount; ++i)
 	{
 		float64 dot = b2Dot(m_normals[i], pLocal - m_vertices[i]);
-		if (dot > 0.0f)
+		if (dot > 0.0)
 		{
 			return false;
 		}

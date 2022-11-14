@@ -43,21 +43,21 @@ b2PrismaticJoint::b2PrismaticJoint(const b2PrismaticJointDef* def)
 	m_localAnchor1 = b2MulT(m_body1->m_R, def->anchorPoint - m_body1->m_position);
 	m_localAnchor2 = b2MulT(m_body2->m_R, def->anchorPoint - m_body2->m_position);
 	m_localXAxis1 = b2MulT(m_body1->m_R, def->axis);
-	m_localYAxis1 = b2Cross(1.0f, m_localXAxis1);
+	m_localYAxis1 = b2Cross(1.0, m_localXAxis1);
 	m_initialAngle = m_body2->m_rotation - m_body1->m_rotation;
 
 	m_linearJacobian.SetZero();
-	m_linearMass = 0.0f;
-	m_linearImpulse = 0.0f;
+	m_linearMass = 0.0;
+	m_linearImpulse = 0.0;
 
-	m_angularMass = 0.0f;
-	m_angularImpulse = 0.0f;
+	m_angularMass = 0.0;
+	m_angularImpulse = 0.0;
 
 	m_motorJacobian.SetZero();
 	m_motorMass = 0.0;
-	m_motorImpulse = 0.0f;
-	m_limitImpulse = 0.0f;
-	m_limitPositionImpulse = 0.0f;
+	m_motorImpulse = 0.0;
+	m_limitImpulse = 0.0;
+	m_limitPositionImpulse = 0.0;
 
 	m_lowerTranslation = def->lowerTranslation;
 	m_upperTranslation = def->upperTranslation;
@@ -88,10 +88,10 @@ void b2PrismaticJoint::PrepareVelocitySolver()
 	m_linearMass =	invMass1 + invI1 * m_linearJacobian.angular1 * m_linearJacobian.angular1 +
 					invMass2 + invI2 * m_linearJacobian.angular2 * m_linearJacobian.angular2;
 	b2Assert(m_linearMass > FLT_EPSILON);
-	m_linearMass = 1.0f / m_linearMass;
+	m_linearMass = 1.0 / m_linearMass;
 
 	// Compute angular constraint effective mass.
-	m_angularMass = 1.0f / (invI1 + invI2);
+	m_angularMass = 1.0 / (invI1 + invI2);
 
 	// Compute motor and limit terms.
 	if (m_enableLimit || m_enableMotor)
@@ -102,13 +102,13 @@ void b2PrismaticJoint::PrepareVelocitySolver()
 		m_motorMass =	invMass1 + invI1 * m_motorJacobian.angular1 * m_motorJacobian.angular1 +
 						invMass2 + invI2 * m_motorJacobian.angular2 * m_motorJacobian.angular2;
 		b2Assert(m_motorMass > FLT_EPSILON);
-		m_motorMass = 1.0f / m_motorMass;
+		m_motorMass = 1.0 / m_motorMass;
 
 		if (m_enableLimit)
 		{
 			b2Vec2 d = e - r1;	// p2 - p1
 			float64 jointTranslation = b2Dot(ax1, d);
-			if (b2Abs(m_upperTranslation - m_lowerTranslation) < 2.0f * b2_linearSlop)
+			if (b2Abs(m_upperTranslation - m_lowerTranslation) < 2.0 * b2_linearSlop)
 			{
 				m_limitState = e_equalLimits;
 			}
@@ -116,7 +116,7 @@ void b2PrismaticJoint::PrepareVelocitySolver()
 			{
 				if (m_limitState != e_atLowerLimit)
 				{
-					m_limitImpulse = 0.0f;
+					m_limitImpulse = 0.0;
 				}
 				m_limitState = e_atLowerLimit;
 			}
@@ -124,26 +124,26 @@ void b2PrismaticJoint::PrepareVelocitySolver()
 			{
 				if (m_limitState != e_atUpperLimit)
 				{
-					m_limitImpulse = 0.0f;
+					m_limitImpulse = 0.0;
 				}
 				m_limitState = e_atUpperLimit;
 			}
 			else
 			{
 				m_limitState = e_inactiveLimit;
-				m_limitImpulse = 0.0f;
+				m_limitImpulse = 0.0;
 			}
 		}
 	}
 
 	if (m_enableMotor == false)
 	{
-		m_motorImpulse = 0.0f;
+		m_motorImpulse = 0.0;
 	}
 
 	if (m_enableLimit == false)
 	{
-		m_limitImpulse = 0.0f;
+		m_limitImpulse = 0.0;
 	}
 
 	if (b2World::s_enableWarmStarting)
@@ -161,13 +161,13 @@ void b2PrismaticJoint::PrepareVelocitySolver()
 	}
 	else
 	{
-		m_linearImpulse = 0.0f;
-		m_angularImpulse = 0.0f;
-		m_limitImpulse = 0.0f;
-		m_motorImpulse = 0.0f;
+		m_linearImpulse = 0.0;
+		m_angularImpulse = 0.0;
+		m_limitImpulse = 0.0;
+		m_motorImpulse = 0.0;
 	}
 
-	m_limitPositionImpulse = 0.0f;
+	m_limitPositionImpulse = 0.0;
 }
 
 void b2PrismaticJoint::SolveVelocityConstraints(const b2TimeStep* step)
@@ -226,13 +226,13 @@ void b2PrismaticJoint::SolveVelocityConstraints(const b2TimeStep* step)
 		else if (m_limitState == e_atLowerLimit)
 		{
 			float64 oldLimitImpulse = m_limitImpulse;
-			m_limitImpulse = b2Max(m_limitImpulse + limitImpulse, 0.0f);
+			m_limitImpulse = b2Max(m_limitImpulse + limitImpulse, 0.0);
 			limitImpulse = m_limitImpulse - oldLimitImpulse;
 		}
 		else if (m_limitState == e_atUpperLimit)
 		{
 			float64 oldLimitImpulse = m_limitImpulse;
-			m_limitImpulse = b2Min(m_limitImpulse + limitImpulse, 0.0f);
+			m_limitImpulse = b2Min(m_limitImpulse + limitImpulse, 0.0);
 			limitImpulse = m_limitImpulse - oldLimitImpulse;
 		}
 
@@ -298,7 +298,7 @@ bool b2PrismaticJoint::SolvePositionConstraints()
 		b2Vec2 ax1 = b2Mul(b1->m_R, m_localXAxis1);
 
 		float64 translation = b2Dot(ax1, d);
-		float64 limitImpulse = 0.0f;
+		float64 limitImpulse = 0.0;
 
 		if (m_limitState == e_equalLimits)
 		{
@@ -313,10 +313,10 @@ bool b2PrismaticJoint::SolvePositionConstraints()
 			positionError = b2Max(positionError, -limitC);
 
 			// Prevent large linear corrections and allow some slop.
-			limitC = b2Clamp(limitC + b2_linearSlop, -b2_maxLinearCorrection, 0.0f);
+			limitC = b2Clamp(limitC + b2_linearSlop, -b2_maxLinearCorrection, 0.0);
 			limitImpulse = -m_motorMass * limitC;
 			float64 oldLimitImpulse = m_limitPositionImpulse;
-			m_limitPositionImpulse = b2Max(m_limitPositionImpulse + limitImpulse, 0.0f);
+			m_limitPositionImpulse = b2Max(m_limitPositionImpulse + limitImpulse, 0.0);
 			limitImpulse = m_limitPositionImpulse - oldLimitImpulse;
 		}
 		else if (m_limitState == e_atUpperLimit)
@@ -325,10 +325,10 @@ bool b2PrismaticJoint::SolvePositionConstraints()
 			positionError = b2Max(positionError, limitC);
 
 			// Prevent large linear corrections and allow some slop.
-			limitC = b2Clamp(limitC - b2_linearSlop, 0.0f, b2_maxLinearCorrection);
+			limitC = b2Clamp(limitC - b2_linearSlop, 0.0, b2_maxLinearCorrection);
 			limitImpulse = -m_motorMass * limitC;
 			float64 oldLimitImpulse = m_limitPositionImpulse;
-			m_limitPositionImpulse = b2Min(m_limitPositionImpulse + limitImpulse, 0.0f);
+			m_limitPositionImpulse = b2Min(m_limitPositionImpulse + limitImpulse, 0.0);
 			limitImpulse = m_limitPositionImpulse - oldLimitImpulse;
 		}
 

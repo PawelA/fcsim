@@ -36,7 +36,7 @@ inline bool b2IsValid(float64 x)
 
 inline float64 b2InvSqrt(float64 x)
 {
-	return 1.0f / sqrtf(x);
+	return 1.0 / sqrtf(x);
 }
 
 // b2Vec2 has no constructor so that it
@@ -46,7 +46,7 @@ struct b2Vec2
 	b2Vec2() {}
 	b2Vec2(float64 x, float64 y) : x(x), y(y) {}
 
-	void SetZero() { x = 0.0f; y = 0.0f; }
+	void SetZero() { x = 0.0; y = 0.0; }
 	void Set(float64 x_, float64 y_) { x = x_; y = y_; }
 
 	b2Vec2 operator -() { b2Vec2 v; v.Set(-x, -y); return v; }
@@ -83,9 +83,9 @@ struct b2Vec2
 		float64 length = Length();
 		if (length < FLT_EPSILON)
 		{
-			return 0.0f;
+			return 0.0;
 		}
-		float64 invLength = 1.0f / length;
+		float64 invLength = 1.0 / length;
 		x *= invLength;
 		y *= invLength;
 
@@ -131,14 +131,14 @@ struct b2Mat22
 
 	void SetIdentity()
 	{
-		col1.x = 1.0f; col2.x = 0.0f;
-		col1.y = 0.0f; col2.y = 1.0f;
+		col1.x = 1.0; col2.x = 0.0;
+		col1.y = 0.0; col2.y = 1.0;
 	}
 
 	void SetZero()
 	{
-		col1.x = 0.0f; col2.x = 0.0f;
-		col1.y = 0.0f; col2.y = 0.0f;
+		col1.x = 0.0; col2.x = 0.0;
+		col1.y = 0.0; col2.y = 0.0;
 	}
 
 	b2Mat22 Invert() const
@@ -146,8 +146,8 @@ struct b2Mat22
 		float64 a = col1.x, b = col2.x, c = col1.y, d = col2.y;
 		b2Mat22 B;
 		float64 det = a * d - b * c;
-		b2Assert(det != 0.0f);
-		det = 1.0f / det;
+		b2Assert(det != 0.0);
+		det = 1.0 / det;
 		B.col1.x =  det * d;	B.col2.x = -det * b;
 		B.col1.y = -det * c;	B.col2.y =  det * a;
 		return B;
@@ -158,8 +158,8 @@ struct b2Mat22
 	{
 		float64 a11 = col1.x, a12 = col2.x, a21 = col1.y, a22 = col2.y;
 		float64 det = a11 * a22 - a12 * a21;
-		b2Assert(det != 0.0f);
-		det = 1.0f / det;
+		b2Assert(det != 0.0);
+		det = 1.0 / det;
 		b2Vec2 x;
 		x.x = det * (a22 * b.x - a12 * b.y);
 		x.y = det * (a11 * b.y - a21 * b.x);
@@ -255,7 +255,7 @@ inline b2Mat22 b2MulT(const b2Mat22& A, const b2Mat22& B)
 
 inline float64 b2Abs(float64 a)
 {
-	return a > 0.0f ? a : -a;
+	return a > 0.0 ? a : -a;
 }
 
 inline b2Vec2 b2Abs(const b2Vec2& a)
@@ -322,7 +322,7 @@ inline float64 b2Random()
 {
 	float64 r = (float64)rand();
 	r /= RAND_MAX;
-	r = 2.0f * r - 1.0f;
+	r = 2.0 * r - 1.0;
 	return r;
 }
 

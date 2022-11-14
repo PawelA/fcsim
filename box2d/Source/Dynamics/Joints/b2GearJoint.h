@@ -42,7 +42,7 @@ struct b2GearJointDef : public b2JointDef
 		type = e_gearJoint;
 		joint1 = NULL;
 		joint2 = NULL;
-		ratio = 1.0f;
+		ratio = 1.0;
 	}
 
 	b2Joint* joint1;

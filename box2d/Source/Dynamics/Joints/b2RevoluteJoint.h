@@ -26,11 +26,11 @@ struct b2RevoluteJointDef : public b2JointDef
 	b2RevoluteJointDef()
 	{
 		type = e_revoluteJoint;
-		anchorPoint.Set(0.0f, 0.0f);
-		lowerAngle = 0.0f;
-		upperAngle = 0.0f;
-		motorTorque = 0.0f;
-		motorSpeed = 0.0f;
+		anchorPoint.Set(0.0, 0.0);
+		lowerAngle = 0.0;
+		upperAngle = 0.0;
+		motorTorque = 0.0;
+		motorSpeed = 0.0;
 		enableLimit = false;
 		enableMotor = false;
 	}

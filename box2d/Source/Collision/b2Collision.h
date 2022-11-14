@@ -81,7 +81,7 @@ float64 b2Distance(b2Vec2* x1, b2Vec2* x2, const b2Shape* shape1, const b2Shape*
 inline bool b2AABB::IsValid() const
 {
 	b2Vec2 d = maxVertex - minVertex;
-	bool valid = d.x >= 0.0f && d.y >= 0;
+	bool valid = d.x >= 0.0 && d.y >= 0;
 	valid = valid && minVertex.IsValid() && maxVertex.IsValid();
 	return valid;
 }
@@ -92,10 +92,10 @@ inline bool b2TestOverlap(const b2AABB& a, const b2AABB& b)
 	d1 = b.minVertex - a.maxVertex;
 	d2 = a.minVertex - b.maxVertex;
 
-	if (d1.x > 0.0f || d1.y > 0.0f)
+	if (d1.x > 0.0 || d1.y > 0.0)
 		return false;
 
-	if (d2.x > 0.0f || d2.y > 0.0f)
+	if (d2.x > 0.0 || d2.y > 0.0)
 		return false;
 
 	return true;

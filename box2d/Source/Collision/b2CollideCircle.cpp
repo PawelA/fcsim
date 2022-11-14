@@ -35,13 +35,13 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 	if (distSqr < FLT_EPSILON)
 	{
 		separation = -radiusSum;
-		manifold->normal.Set(0.0f, 1.0f);
+		manifold->normal.Set(0.0, 1.0);
 	}
 	else
 	{
 		float64 dist = sqrtf(distSqr);
 		separation = dist - radiusSum;
-		float64 a = 1.0f / dist;
+		float64 a = 1.0 / dist;
 		manifold->normal.x = a * d.x;
 		manifold->normal.y = a * d.y;
 	}
@@ -129,7 +129,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	manifold->points[0].id.features.referenceFace = b2_nullFeature;
 	manifold->points[0].id.features.flip = 0;
 	b2Vec2 p;
-	if (u <= 0.0f)
+	if (u <= 0.0)
 	{
 		p = poly->m_vertices[vertIndex1];
 		manifold->points[0].id.features.incidentVertex = (uint8)vertIndex1;

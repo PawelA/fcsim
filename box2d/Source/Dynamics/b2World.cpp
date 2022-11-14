@@ -293,13 +293,13 @@ void b2World::Step(float64 dt, int32 iterations)
 	b2TimeStep step;
 	step.dt = dt;
 	step.iterations	= iterations;
-	if (dt > 0.0f)
+	if (dt > 0.0)
 	{
-		step.inv_dt = 1.0f / dt;
+		step.inv_dt = 1.0 / dt;
 	}
 	else
 	{
-		step.inv_dt = 0.0f;
+		step.inv_dt = 0.0;
 	}
 
 	m_positionIterationCount = 0;

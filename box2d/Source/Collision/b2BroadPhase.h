@@ -123,7 +123,7 @@ public:
 inline bool b2BroadPhase::InRange(const b2AABB& aabb) const
 {
 	b2Vec2 d = b2Max(aabb.minVertex - m_worldAABB.maxVertex, m_worldAABB.minVertex - aabb.maxVertex);
-	return b2Max(d.x, d.y) < 0.0f;
+	return b2Max(d.x, d.y) < 0.0;
 }
 
 inline b2Proxy* b2BroadPhase::GetProxy(int32 proxyId)
