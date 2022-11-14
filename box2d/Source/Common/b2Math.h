@@ -25,7 +25,7 @@
 #include <cstdlib>
 
 
-inline bool b2IsValid(float x)
+inline bool b2IsValid(float32 x)
 {
 #ifdef _MSC_VER
 	return _finite(x) != 0;
@@ -36,12 +36,7 @@ inline bool b2IsValid(float x)
 
 inline float32 b2InvSqrt(float32 x)
 {
-	float32 xhalf = 0.5f * x;
-	int32 i = *(int32*)&x;
-	i = 0x5f3759df - (i >> 1);
-	x = *(float32*)&i;
-	x = x * (1.5f - xhalf * x * x);
-	return x;
+	return 1.0f / sqrtf(x);
 }
 
 // b2Vec2 has no constructor so that it

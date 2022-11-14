@@ -147,7 +147,7 @@ b2Body::~b2Body()
 	}
 }
 
-void b2Body::SetOriginPosition(const b2Vec2& position, float rotation)
+void b2Body::SetOriginPosition(const b2Vec2& position, float32 rotation)
 {
 	if (IsFrozen())
 	{
@@ -169,7 +169,7 @@ void b2Body::SetOriginPosition(const b2Vec2& position, float rotation)
 	m_world->m_broadPhase->Commit();
 }
 
-void b2Body::SetCenterPosition(const b2Vec2& position, float rotation)
+void b2Body::SetCenterPosition(const b2Vec2& position, float32 rotation)
 {
 	if (IsFrozen())
 	{
