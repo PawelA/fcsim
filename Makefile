@@ -1,12 +1,10 @@
+include config.mk
 include box2d.mk
 
 OBJS = \
 	draw.o \
 	fcsim.o \
 	main.o
-
-CXXFLAGS = -O2 -DNDEBUG
-LDFLAGS = -lGL -lglfw
 
 main: $(OBJS) box2d.a
 	$(CXX) -o $@ $^ $(LDFLAGS)
