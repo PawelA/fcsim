@@ -20,5 +20,13 @@ box2d.a: $(BOX2D_OBJS)
 
 $(BOX2D_OBJS): $(BOX2D_HDRS)
 
+parse: parse.o yxml.a
+
+yxml/yxml.o: yxml/yxml.c
+	$(CC) -I yxml -c -o $@ $^
+
+yxml.a: yxml/yxml.o
+	ar rc $@ $^
+
 clean:
 	rm -f main box2d.a $(OBJS) $(BOX2D_OBJS)
