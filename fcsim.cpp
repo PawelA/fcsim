@@ -1,8 +1,4 @@
-#include <vector>
-#include <stdio.h>
-
 #include "box2d/Include/Box2D.h"
-
 #include "fcsim.h"
 
 #define ARENA_WIDTH	2000

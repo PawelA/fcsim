@@ -1,49 +1,7 @@
-#include <GLFW/glfw3.h>
 #include <GL/gl.h>
-
-#include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
-
 #include "fcsim.h"
 	
-GLFWwindow* window;
-
-/*
-int create_window(int w, int h, const char *title)
-{
-	if (!glfwInit())
-		return -1;
- 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
- 
-	window = glfwCreateWindow(w, h, title, NULL, NULL);
-	if (!window) {
-		glfwTerminate();
-		return -1;
-	}
- 
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
-	glClearColor(1, 1, 1, 0);
-	glOrtho(-400, 400, 400, -400, -1, 1);
-
-	return 0;
-}
-int destroy_window(void)
-{
-	glfwDestroyWindow(window);
-	glfwTerminate();
-	return 0;
-}
-
-int window_should_close(void)
-{
-	return glfwWindowShouldClose(window);
-}
-*/
-
 void setup_draw(void)
 {
 	glClearColor(0.529f, 0.741f, 0.945f, 0);
@@ -55,7 +13,7 @@ struct draw_info {
 	float r, g, b;
 };
 
-draw_info draw_info_tbl[] = {
+static draw_info draw_info_tbl[] = {
 	{ 0, 0.000f, 0.745f, 0.004f }, /* FCSIM_STAT_RECT */
 	{ 1, 0.000f, 0.745f, 0.004f }, /* FCSIM_STAT_CIRCLE */
 	{ 0, 0.976f, 0.855f, 0.184f }, /* FCSIM_DYN_RECT */
@@ -89,16 +47,15 @@ static void draw_rect(struct fcsim_block *block, float cr, float cg, float cb)
 	glEnd();
 }
 
-#define CIRCLE_SEGMENTS 40
+#define CIRCLE_SEGMENTS 32
 
 static void draw_circle(struct fcsim_block *block, float cr, float cg, float cb)
 {
-	int i;
 	float r = block->w/2;
 
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(cr, cg, cb);
-	for (i = 0; i < CIRCLE_SEGMENTS; i++) {
+	for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
 		glVertex2f(cosf(6.28 * i / CIRCLE_SEGMENTS) * r + block->x,
 			   sinf(6.28 * i / CIRCLE_SEGMENTS) * r + block->y);
 	}
@@ -116,13 +73,7 @@ static void draw_block(struct fcsim_block *block)
  
 void draw_world(struct fcsim_block *blocks, int block_cnt)
 {
-	int i;
-
 	glClear(GL_COLOR_BUFFER_BIT);
-	for (i = 0; i < block_cnt; i++)
+	for (int i = 0; i < block_cnt; i++)
 		draw_block(&blocks[i]);
-	/*
-	glfwSwapBuffers(window);
-	glfwPollEvents();
-	*/
 }
