@@ -12,9 +12,6 @@ level = retrieve_level.find('level')
 level_blocks = level.find('levelBlocks')
 player_blocks = level.find('playerBlocks')
 
-print(resp.text)
-sys.exit(0)
-
 def fcsim_type(tag, goal_block):
 	if goal_block == 'true':
 		if tag == 'NoSpinWheel':
