@@ -26,5 +26,8 @@ yxml/yxml.o: yxml/yxml.c
 yxml.a: yxml/yxml.o
 	ar rc $@ $^
 
+config.mk:
+	cp config.def.mk config.mk
+
 clean:
 	rm -f main box2d.a $(OBJS) $(BOX2D_OBJS)
