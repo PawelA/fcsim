@@ -2,3 +2,5 @@
 *.a
 main
 config.mk
+parse
+level.xml
