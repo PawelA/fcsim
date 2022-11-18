@@ -6,7 +6,7 @@ OBJS = \
 	fcsim.o \
 	main.o
 
-main: $(OBJS) box2d.a
+$(TARGET): $(OBJS) box2d.a
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 draw.o:  fcsim.h
@@ -26,8 +26,8 @@ yxml/yxml.o: yxml/yxml.c
 yxml.a: yxml/yxml.o
 	ar rc $@ $^
 
-config.mk:
-	cp config.def.mk config.mk
+config.mk: config.def.mk
+	cp $< $@
 
 clean:
-	rm -f main box2d.a $(OBJS) $(BOX2D_OBJS)
+	rm -f $(TARGET) box2d.a $(OBJS) $(BOX2D_OBJS)
