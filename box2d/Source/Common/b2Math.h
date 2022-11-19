@@ -36,7 +36,7 @@ inline bool b2IsValid(float64 x)
 
 inline float64 b2InvSqrt(float64 x)
 {
-	return 1.0 / sqrtf(x);
+	return 1.0 / sqrt(x);
 }
 
 // b2Vec2 has no constructor so that it
@@ -75,7 +75,7 @@ struct b2Vec2
 
 	float64 Length() const
 	{
-		return sqrtf(x * x + y * y);
+		return sqrt(x * x + y * y);
 	}
 
 	float64 Normalize()
@@ -111,7 +111,7 @@ struct b2Mat22
 
 	explicit b2Mat22(float64 angle)
 	{
-		float64 c = cosf(angle), s = sinf(angle);
+		float64 c = cos(angle), s = sin(angle);
 		col1.x = c; col2.x = -s;
 		col1.y = s; col2.y = c;
 	}
@@ -124,7 +124,7 @@ struct b2Mat22
 
 	void Set(float64 angle)
 	{
-		float64 c = cosf(angle), s = sinf(angle);
+		float64 c = cos(angle), s = sin(angle);
 		col1.x = c; col2.x = -s;
 		col1.y = s; col2.y = c;
 	}
@@ -260,7 +260,7 @@ inline float64 b2Abs(float64 a)
 
 inline b2Vec2 b2Abs(const b2Vec2& a)
 {
-	b2Vec2 b; b.Set(fabsf(a.x), fabsf(a.y));
+	b2Vec2 b; b.Set(fabs(a.x), fabs(a.y));
 	return b;
 }
 

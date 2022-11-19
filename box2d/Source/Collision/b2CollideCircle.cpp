@@ -39,7 +39,7 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 	}
 	else
 	{
-		float64 dist = sqrtf(distSqr);
+		float64 dist = sqrt(distSqr);
 		separation = dist - radiusSum;
 		float64 a = 1.0 / dist;
 		manifold->normal.x = a * d.x;

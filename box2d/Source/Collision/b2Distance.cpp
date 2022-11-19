@@ -175,7 +175,7 @@ float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 				*p2Out = w2;
 			}
 			g_GJK_Iterations = iter;
-			return sqrtf(vSqr);
+			return sqrt(vSqr);
 		}
 
 		switch (pointCount)
@@ -220,10 +220,10 @@ float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 		if (pointCount == 3 || vSqr <= 100.0 * FLT_EPSILON * maxSqr)
 		{
 			g_GJK_Iterations = iter;
-			return sqrtf(vSqr);
+			return sqrt(vSqr);
 		}
 	}
 
 	g_GJK_Iterations = maxIterations;
-	return sqrtf(vSqr);
+	return sqrt(vSqr);
 }

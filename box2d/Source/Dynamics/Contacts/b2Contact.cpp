@@ -121,7 +121,7 @@ b2Contact::b2Contact(b2Shape* s1, b2Shape* s2)
 
 	m_manifoldCount = 0;
 
-	m_friction = sqrtf(m_shape1->m_friction * m_shape2->m_friction);
+	m_friction = sqrt(m_shape1->m_friction * m_shape2->m_friction);
 	m_restitution = b2Max(m_shape1->m_restitution, m_shape2->m_restitution);
 	m_prev = NULL;
 	m_next = NULL;
