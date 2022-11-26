@@ -156,6 +156,8 @@ public:
 
 	void* GetUserData();
 
+	void dump(const char *tag);
+
 	//--------------- Internals Below -------------------
 
 	// m_flags

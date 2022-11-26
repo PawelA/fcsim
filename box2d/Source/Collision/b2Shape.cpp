@@ -100,7 +100,7 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float6
 	massData->mass = rho * area;
 
 	// Center of mass
-	b2Assert(area > FLT_EPSILON);
+	b2Assert(area > MIN_VALUE);
 	center *= 1.0 / area;
 	massData->center = center;
 
@@ -150,7 +150,7 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 	}
 
 	// Centroid
-	b2Assert(area > FLT_EPSILON);
+	b2Assert(area > MIN_VALUE);
 	c *= 1.0 / area;
 	return c;
 }
@@ -438,7 +438,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 
 			b2Vec2 u = m_vertices[i];
 			float64 length = u.Length();
-			if (length > FLT_EPSILON)
+			if (length > MIN_VALUE)
 			{
 				u *= 1.0 / length;
 			}
@@ -480,7 +480,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 		int32 i2 = i + 1 < m_vertexCount ? i + 1 : 0;
 		NOT_USED(i1);
 		NOT_USED(i2);
-		b2Assert(b2Cross(m_normals[i1], m_normals[i2]) > FLT_EPSILON);
+		b2Assert(b2Cross(m_normals[i1], m_normals[i2]) > MIN_VALUE);
 	}
 
 	m_R = m_body->m_R;

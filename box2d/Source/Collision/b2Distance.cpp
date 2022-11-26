@@ -33,7 +33,7 @@ static int32 ProcessTwo(b2Vec2* p1Out, b2Vec2* p2Out, b2Vec2* p1s, b2Vec2* p2s, 
 	b2Vec2 d = points[0] - points[1];
 	float64 length = d.Normalize();
 	float64 lambda = b2Dot(r, d);
-	if (lambda <= 0.0 || length < FLT_EPSILON)
+	if (lambda <= 0.0 || length < MIN_VALUE)
 	{
 		// The simplex is reduced to a point.
 		*p1Out = p1s[1];
@@ -217,7 +217,7 @@ float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 			maxSqr = b2Max(maxSqr, b2Dot(points[i], points[i]));
 		}
 
-		if (pointCount == 3 || vSqr <= 100.0 * FLT_EPSILON * maxSqr)
+		if (pointCount == 3 || vSqr <= 100.0 * MIN_VALUE * maxSqr)
 		{
 			g_GJK_Iterations = iter;
 			return sqrt(vSqr);

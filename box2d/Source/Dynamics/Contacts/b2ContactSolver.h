@@ -21,6 +21,7 @@
 
 #include "../../Common/b2Math.h"
 #include "../../Collision/b2Collision.h"
+#include <net.h>
 
 class b2Contact;
 class b2Body;
@@ -38,6 +39,20 @@ struct b2ContactConstraintPoint
 	float64 tangentMass;
 	float64 separation;
 	float64 velocityBias;
+
+	void dump(const char *tag)
+	{
+		mw(tag, 11,
+			localAnchor1.x, localAnchor1.y,
+			localAnchor2.x, localAnchor2.y,
+			normalImpulse,
+			tangentImpulse,
+			positionImpulse,
+			normalMass,
+			tangentMass,
+			separation,
+			velocityBias);
+	}
 };
 
 struct b2ContactConstraint
@@ -50,6 +65,13 @@ struct b2ContactConstraint
 	float64 friction;
 	float64 restitution;
 	int32 pointCount;
+
+	void dump(const char *tag)
+	{
+		for (int i = 0; i < pointCount; i++)
+			points[i].dump(tag);
+		mw(tag, 4, normal.x, normal.y, friction, restitution);
+	}
 };
 
 class b2ContactSolver
@@ -62,6 +84,7 @@ public:
 	void SolveVelocityConstraints();
 	bool SolvePositionConstraints(float64 beta);
 	void PostSolve();
+	void dump(const char *tag);
 
 	b2StackAllocator* m_allocator;
 	b2ContactConstraint* m_constraints;

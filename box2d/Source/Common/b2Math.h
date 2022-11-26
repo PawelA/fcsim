@@ -24,6 +24,7 @@
 #include <cfloat>
 #include <cstdlib>
 
+#define MIN_VALUE 5e-324
 
 inline bool b2IsValid(float64 x)
 {
@@ -81,7 +82,7 @@ struct b2Vec2
 	float64 Normalize()
 	{
 		float64 length = Length();
-		if (length < FLT_EPSILON)
+		if (length < MIN_VALUE)
 		{
 			return 0.0;
 		}

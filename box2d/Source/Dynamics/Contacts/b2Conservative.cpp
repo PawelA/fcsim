@@ -79,7 +79,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 			b2Vec2 d = x2 - x1;
 			d.Normalize();
 			float64 relativeVelocity = b2Dot(d, v1 - v2) + b2Abs(omega1) * r1 + b2Abs(omega2) * r2;
-			if (b2Abs(relativeVelocity) < FLT_EPSILON)
+			if (b2Abs(relativeVelocity) < MIN_VALUE)
 			{
 				hit = false;
 				break;
@@ -98,7 +98,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 			break;
 		}
 
-		if (s2 < (1.0 + 100.0 * FLT_EPSILON) * s1)
+		if (s2 < (1.0 + 100.0 * MIN_VALUE) * s1)
 		{
 			hit = true;
 			break;
@@ -123,7 +123,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 		// Hit, move bodies to safe position and re-sync shapes.
 		b2Vec2 d = x2 - x1;
 		float64 length = d.Length();
-		if (length > FLT_EPSILON)
+		if (length > MIN_VALUE)
 		{
 			d *= b2_linearSlop / length;
 		}

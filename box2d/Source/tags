@@ -1,0 +1,918 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/pawel/fc/fcsim/box2d/Source/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	/p5.9.20220828.0/
+Add	Dynamics/b2Island.h	/^	void Add(b2Body* body)$/;"	f	class:b2Island	typeref:typename:void
+Add	Dynamics/b2Island.h	/^	void Add(b2Contact* contact)$/;"	f	class:b2Island	typeref:typename:void
+Add	Dynamics/b2Island.h	/^	void Add(b2Joint* joint)$/;"	f	class:b2Island	typeref:typename:void
+AddBufferedPair	Collision/b2PairManager.cpp	/^void b2PairManager::AddBufferedPair(int32 id1, int32 id2)$/;"	f	class:b2PairManager	typeref:typename:void
+AddPair	Collision/b2PairManager.cpp	/^b2Pair* b2PairManager::AddPair(int32 proxyId1, int32 proxyId2)$/;"	f	class:b2PairManager	typeref:typename:b2Pair *
+AddShape	Dynamics/b2Body.h	/^inline void b2BodyDef::AddShape(b2ShapeDef* shape)$/;"	f	class:b2BodyDef	typeref:typename:void
+AddType	Dynamics/Contacts/b2Contact.cpp	/^void b2Contact::AddType(b2ContactCreateFcn* createFcn, b2ContactDestroyFcn* destoryFcn,$/;"	f	class:b2Contact	typeref:typename:void
+Allocate	Common/b2BlockAllocator.cpp	/^void* b2BlockAllocator::Allocate(int32 size)$/;"	f	class:b2BlockAllocator	typeref:typename:void *
+Allocate	Common/b2StackAllocator.cpp	/^void* b2StackAllocator::Allocate(int32 size)$/;"	f	class:b2StackAllocator	typeref:typename:void *
+AllowSleeping	Dynamics/b2Body.h	/^inline void b2Body::AllowSleeping(bool flag)$/;"	f	class:b2Body	typeref:typename:void
+ApplyForce	Dynamics/b2Body.h	/^inline void b2Body::ApplyForce(const b2Vec2& force, const b2Vec2& point)$/;"	f	class:b2Body	typeref:typename:void
+ApplyImpulse	Dynamics/b2Body.h	/^inline void b2Body::ApplyImpulse(const b2Vec2& impulse, const b2Vec2& point)$/;"	f	class:b2Body	typeref:typename:void
+ApplyTorque	Dynamics/b2Body.h	/^inline void b2Body::ApplyTorque(float64 torque)$/;"	f	class:b2Body	typeref:typename:void
+B2_BLOCK_ALLOCATOR_H	Common/b2BlockAllocator.h	/^#define B2_BLOCK_ALLOCATOR_H$/;"	d
+B2_BODY_H	Dynamics/b2Body.h	/^#define B2_BODY_H$/;"	d
+B2_BROAD_PHASE_H	Collision/b2BroadPhase.h	/^#define B2_BROAD_PHASE_H$/;"	d
+B2_COLLISION_H	Collision/b2Collision.h	/^#define B2_COLLISION_H$/;"	d
+B2_CONSERVATIVE_H	Dynamics/Contacts/b2Conservative.h	/^#define B2_CONSERVATIVE_H$/;"	d
+B2_CONTACT_MANAGER_H	Dynamics/b2ContactManager.h	/^#define B2_CONTACT_MANAGER_H$/;"	d
+B2_DISTANCE_JOINT_H	Dynamics/Joints/b2DistanceJoint.h	/^#define B2_DISTANCE_JOINT_H$/;"	d
+B2_GEAR_JOINT_H	Dynamics/Joints/b2GearJoint.h	/^#define B2_GEAR_JOINT_H$/;"	d
+B2_ISLAND_H	Dynamics/b2Island.h	/^#define B2_ISLAND_H$/;"	d
+B2_MATH_H	Common/b2Math.h	/^#define B2_MATH_H$/;"	d
+B2_MOUSE_JOINT_H	Dynamics/Joints/b2MouseJoint.h	/^#define B2_MOUSE_JOINT_H$/;"	d
+B2_NULL_CONTACT_H	Dynamics/Contacts/b2NullContact.h	/^#define B2_NULL_CONTACT_H$/;"	d
+B2_PAIR_MANAGER_H	Collision/b2PairManager.h	/^#define B2_PAIR_MANAGER_H$/;"	d
+B2_PRISMATIC_JOINT_H	Dynamics/Joints/b2PrismaticJoint.h	/^#define B2_PRISMATIC_JOINT_H$/;"	d
+B2_PULLEY_JOINT_H	Dynamics/Joints/b2PulleyJoint.h	/^#define B2_PULLEY_JOINT_H$/;"	d
+B2_REVOLUTE_JOINT_H	Dynamics/Joints/b2RevoluteJoint.h	/^#define B2_REVOLUTE_JOINT_H$/;"	d
+B2_SETTINGS_H	Common/b2Settings.h	/^#define B2_SETTINGS_H$/;"	d
+B2_SHAPE_H	Collision/b2Shape.h	/^#define B2_SHAPE_H$/;"	d
+B2_STACK_ALLOCATOR_H	Common/b2StackAllocator.h	/^#define B2_STACK_ALLOCATOR_H$/;"	d
+B2_WORLD_CALLBACKS_H	Dynamics/b2WorldCallbacks.h	/^#define B2_WORLD_CALLBACKS_H$/;"	d
+B2_WORLD_H	Dynamics/b2World.h	/^#define B2_WORLD_H$/;"	d
+BinarySearch	Collision/b2BroadPhase.cpp	/^static int32 BinarySearch(b2Bound* bounds, int32 count, uint16 value)$/;"	f	typeref:typename:int32	file:
+CIRCLE_CONTACT_H	Dynamics/Contacts/b2CircleContact.h	/^#define CIRCLE_CONTACT_H$/;"	d
+CONTACT_H	Dynamics/Contacts/b2Contact.h	/^#define CONTACT_H$/;"	d
+CONTACT_SOLVER_H	Dynamics/Contacts/b2ContactSolver.h	/^#define CONTACT_SOLVER_H$/;"	d
+CleanBodyList	Dynamics/b2World.cpp	/^void b2World::CleanBodyList()$/;"	f	class:b2World	typeref:typename:void
+CleanContactList	Dynamics/b2ContactManager.cpp	/^void b2ContactManager::CleanContactList()$/;"	f	class:b2ContactManager	typeref:typename:void
+Clear	Common/b2BlockAllocator.cpp	/^void b2BlockAllocator::Clear()$/;"	f	class:b2BlockAllocator	typeref:typename:void
+Clear	Dynamics/b2Island.cpp	/^void b2Island::Clear()$/;"	f	class:b2Island	typeref:typename:void
+ClearBuffered	Collision/b2PairManager.h	/^	void ClearBuffered()	{ status &= ~e_pairBuffered; }$/;"	f	struct:b2Pair	typeref:typename:void
+ClearRemoved	Collision/b2PairManager.h	/^	void ClearRemoved()		{ status &= ~e_pairRemoved; }$/;"	f	struct:b2Pair	typeref:typename:void
+ClipSegmentToLine	Collision/b2CollidePoly.cpp	/^static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],$/;"	f	typeref:typename:int32	file:
+ClipVertex	Collision/b2CollidePoly.cpp	/^struct ClipVertex$/;"	s	file:
+Collide	Dynamics/b2ContactManager.cpp	/^void b2ContactManager::Collide()$/;"	f	class:b2ContactManager	typeref:typename:void
+Commit	Collision/b2BroadPhase.cpp	/^void b2BroadPhase::Commit()$/;"	f	class:b2BroadPhase	typeref:typename:void
+Commit	Collision/b2PairManager.cpp	/^void b2PairManager::Commit()$/;"	f	class:b2PairManager	typeref:typename:void
+Compute	Dynamics/Joints/b2Joint.h	/^inline float64 b2Jacobian::Compute(const b2Vec2& x1, float64 a1, const b2Vec2& x2, float64 a2)$/;"	f	class:b2Jacobian	typeref:typename:float64
+ComputeBounds	Collision/b2BroadPhase.cpp	/^void b2BroadPhase::ComputeBounds(uint16* lowerValues, uint16* upperValues, const b2AABB& aabb)$/;"	f	class:b2BroadPhase	typeref:typename:void
+ComputeMass	Collision/b2Shape.cpp	/^void b2ShapeDef::ComputeMass(b2MassData* massData) const$/;"	f	class:b2ShapeDef	typeref:typename:void
+Create	Collision/b2Shape.cpp	/^b2Shape* b2Shape::Create(const b2ShapeDef* def,$/;"	f	class:b2Shape	typeref:typename:b2Shape *
+Create	Dynamics/Contacts/b2CircleContact.cpp	/^b2Contact* b2CircleContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator/;"	f	class:b2CircleContact	typeref:typename:b2Contact *
+Create	Dynamics/Contacts/b2Contact.cpp	/^b2Contact* b2Contact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)$/;"	f	class:b2Contact	typeref:typename:b2Contact *
+Create	Dynamics/Contacts/b2PolyAndCircleContact.cpp	/^b2Contact* b2PolyAndCircleContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* al/;"	f	class:b2PolyAndCircleContact	typeref:typename:b2Contact *
+Create	Dynamics/Contacts/b2PolyContact.cpp	/^b2Contact* b2PolyContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)$/;"	f	class:b2PolyContact	typeref:typename:b2Contact *
+Create	Dynamics/Joints/b2Joint.cpp	/^b2Joint* b2Joint::Create(const b2JointDef* def, b2BlockAllocator* allocator)$/;"	f	class:b2Joint	typeref:typename:b2Joint *
+CreateBody	Dynamics/b2World.cpp	/^b2Body* b2World::CreateBody(const b2BodyDef* def)$/;"	f	class:b2World	typeref:typename:b2Body *
+CreateJoint	Dynamics/b2World.cpp	/^b2Joint* b2World::CreateJoint(const b2JointDef* def)$/;"	f	class:b2World	typeref:typename:b2Joint *
+CreateProxy	Collision/b2BroadPhase.cpp	/^uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)$/;"	f	class:b2BroadPhase	typeref:typename:uint16
+Destroy	Collision/b2Shape.cpp	/^void b2Shape::Destroy(b2Shape*& shape)$/;"	f	class:b2Shape	typeref:typename:void
+Destroy	Dynamics/Contacts/b2CircleContact.cpp	/^void b2CircleContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)$/;"	f	class:b2CircleContact	typeref:typename:void
+Destroy	Dynamics/Contacts/b2Contact.cpp	/^void b2Contact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)$/;"	f	class:b2Contact	typeref:typename:void
+Destroy	Dynamics/Contacts/b2PolyAndCircleContact.cpp	/^void b2PolyAndCircleContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)$/;"	f	class:b2PolyAndCircleContact	typeref:typename:void
+Destroy	Dynamics/Contacts/b2PolyContact.cpp	/^void b2PolyContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)$/;"	f	class:b2PolyContact	typeref:typename:void
+Destroy	Dynamics/Joints/b2Joint.cpp	/^void b2Joint::Destroy(b2Joint* joint, b2BlockAllocator* allocator)$/;"	f	class:b2Joint	typeref:typename:void
+DestroyBody	Dynamics/b2World.cpp	/^void b2World::DestroyBody(b2Body* b)$/;"	f	class:b2World	typeref:typename:void
+DestroyContact	Dynamics/b2ContactManager.cpp	/^void b2ContactManager::DestroyContact(b2Contact* c)$/;"	f	class:b2ContactManager	typeref:typename:void
+DestroyJoint	Dynamics/b2World.cpp	/^void b2World::DestroyJoint(b2Joint* j)$/;"	f	class:b2World	typeref:typename:void
+DestroyProxy	Collision/b2BroadPhase.cpp	/^void b2BroadPhase::DestroyProxy(int32 proxyId)$/;"	f	class:b2BroadPhase	typeref:typename:void
+DestroyProxy	Collision/b2Shape.cpp	/^void b2Shape::DestroyProxy()$/;"	f	class:b2Shape	typeref:typename:void
+EdgeSeparation	Collision/b2CollidePoly.cpp	/^static float64 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2PolyShape* poly2)$/;"	f	typeref:typename:float64	file:
+Equals	Collision/b2PairManager.cpp	/^inline bool Equals(const b2BufferedPair& pair1, const b2BufferedPair& pair2)$/;"	f	typeref:typename:bool
+Equals	Collision/b2PairManager.cpp	/^inline bool Equals(const b2Pair& pair, int32 proxyId1, int32 proxyId2)$/;"	f	typeref:typename:bool
+Evaluate	Dynamics/Contacts/b2CircleContact.cpp	/^void b2CircleContact::Evaluate()$/;"	f	class:b2CircleContact	typeref:typename:void
+Evaluate	Dynamics/Contacts/b2NullContact.h	/^	void Evaluate() {}$/;"	f	class:b2NullContact	typeref:typename:void
+Evaluate	Dynamics/Contacts/b2PolyAndCircleContact.cpp	/^void b2PolyAndCircleContact::Evaluate()$/;"	f	class:b2PolyAndCircleContact	typeref:typename:void
+Evaluate	Dynamics/Contacts/b2PolyContact.cpp	/^void b2PolyContact::Evaluate()$/;"	f	class:b2PolyContact	typeref:typename:void
+Features	Collision/b2Collision.h	/^	struct Features$/;"	s	union:b2ContactID
+Find	Collision/b2PairManager.cpp	/^b2Pair* b2PairManager::Find(int32 proxyId1, int32 proxyId2)$/;"	f	class:b2PairManager	typeref:typename:b2Pair *
+Find	Collision/b2PairManager.cpp	/^b2Pair* b2PairManager::Find(int32 proxyId1, int32 proxyId2, uint32 hash)$/;"	f	class:b2PairManager	typeref:typename:b2Pair *
+FindIncidentEdge	Collision/b2CollidePoly.cpp	/^static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 edge1, const b2Pol/;"	f	typeref:typename:void	file:
+FindMaxSeparation	Collision/b2CollidePoly.cpp	/^static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, const b2PolyShape* /;"	f	typeref:typename:float64	file:
+Free	Common/b2BlockAllocator.cpp	/^void b2BlockAllocator::Free(void* p, int32 size)$/;"	f	class:b2BlockAllocator	typeref:typename:void
+Free	Common/b2StackAllocator.cpp	/^void b2StackAllocator::Free(void* p)$/;"	f	class:b2StackAllocator	typeref:typename:void
+Freeze	Dynamics/b2Body.cpp	/^void b2Body::Freeze()$/;"	f	class:b2Body	typeref:typename:void
+GetAnchor1	Dynamics/Joints/b2DistanceJoint.cpp	/^b2Vec2 b2DistanceJoint::GetAnchor1() const$/;"	f	class:b2DistanceJoint	typeref:typename:b2Vec2
+GetAnchor1	Dynamics/Joints/b2GearJoint.cpp	/^b2Vec2 b2GearJoint::GetAnchor1() const$/;"	f	class:b2GearJoint	typeref:typename:b2Vec2
+GetAnchor1	Dynamics/Joints/b2MouseJoint.cpp	/^b2Vec2 b2MouseJoint::GetAnchor1() const$/;"	f	class:b2MouseJoint	typeref:typename:b2Vec2
+GetAnchor1	Dynamics/Joints/b2PrismaticJoint.cpp	/^b2Vec2 b2PrismaticJoint::GetAnchor1() const$/;"	f	class:b2PrismaticJoint	typeref:typename:b2Vec2
+GetAnchor1	Dynamics/Joints/b2PulleyJoint.cpp	/^b2Vec2 b2PulleyJoint::GetAnchor1() const$/;"	f	class:b2PulleyJoint	typeref:typename:b2Vec2
+GetAnchor1	Dynamics/Joints/b2RevoluteJoint.cpp	/^b2Vec2 b2RevoluteJoint::GetAnchor1() const$/;"	f	class:b2RevoluteJoint	typeref:typename:b2Vec2
+GetAnchor2	Dynamics/Joints/b2DistanceJoint.cpp	/^b2Vec2 b2DistanceJoint::GetAnchor2() const$/;"	f	class:b2DistanceJoint	typeref:typename:b2Vec2
+GetAnchor2	Dynamics/Joints/b2GearJoint.cpp	/^b2Vec2 b2GearJoint::GetAnchor2() const$/;"	f	class:b2GearJoint	typeref:typename:b2Vec2
+GetAnchor2	Dynamics/Joints/b2MouseJoint.cpp	/^b2Vec2 b2MouseJoint::GetAnchor2() const$/;"	f	class:b2MouseJoint	typeref:typename:b2Vec2
+GetAnchor2	Dynamics/Joints/b2PrismaticJoint.cpp	/^b2Vec2 b2PrismaticJoint::GetAnchor2() const$/;"	f	class:b2PrismaticJoint	typeref:typename:b2Vec2
+GetAnchor2	Dynamics/Joints/b2PulleyJoint.cpp	/^b2Vec2 b2PulleyJoint::GetAnchor2() const$/;"	f	class:b2PulleyJoint	typeref:typename:b2Vec2
+GetAnchor2	Dynamics/Joints/b2RevoluteJoint.cpp	/^b2Vec2 b2RevoluteJoint::GetAnchor2() const$/;"	f	class:b2RevoluteJoint	typeref:typename:b2Vec2
+GetAngularVelocity	Dynamics/b2Body.h	/^inline float64 b2Body::GetAngularVelocity() const$/;"	f	class:b2Body	typeref:typename:float64
+GetBody	Collision/b2Shape.h	/^inline b2Body* b2Shape::GetBody()$/;"	f	class:b2Shape	typeref:typename:b2Body *
+GetBody1	Dynamics/Joints/b2Joint.h	/^inline b2Body* b2Joint::GetBody1()$/;"	f	class:b2Joint	typeref:typename:b2Body *
+GetBody2	Dynamics/Joints/b2Joint.h	/^inline b2Body* b2Joint::GetBody2()$/;"	f	class:b2Joint	typeref:typename:b2Body *
+GetBodyList	Dynamics/b2World.h	/^inline b2Body* b2World::GetBodyList()$/;"	f	class:b2World	typeref:typename:b2Body *
+GetCenterPosition	Dynamics/b2Body.h	/^inline b2Vec2 b2Body::GetCenterPosition() const$/;"	f	class:b2Body	typeref:typename:b2Vec2
+GetContactList	Dynamics/b2Body.h	/^inline b2ContactNode* b2Body::GetContactList()$/;"	f	class:b2Body	typeref:typename:b2ContactNode *
+GetContactList	Dynamics/b2World.h	/^inline b2Contact* b2World::GetContactList()$/;"	f	class:b2World	typeref:typename:b2Contact *
+GetGroundBody	Dynamics/b2World.h	/^inline b2Body* b2World::GetGroundBody()$/;"	f	class:b2World	typeref:typename:b2Body *
+GetGroundPoint1	Dynamics/Joints/b2PulleyJoint.cpp	/^b2Vec2 b2PulleyJoint::GetGroundPoint1() const$/;"	f	class:b2PulleyJoint	typeref:typename:b2Vec2
+GetGroundPoint2	Dynamics/Joints/b2PulleyJoint.cpp	/^b2Vec2 b2PulleyJoint::GetGroundPoint2() const$/;"	f	class:b2PulleyJoint	typeref:typename:b2Vec2
+GetInertia	Dynamics/b2Body.h	/^inline float64 b2Body::GetInertia() const$/;"	f	class:b2Body	typeref:typename:float64
+GetJointAngle	Dynamics/Joints/b2RevoluteJoint.cpp	/^float64 b2RevoluteJoint::GetJointAngle() const$/;"	f	class:b2RevoluteJoint	typeref:typename:float64
+GetJointList	Dynamics/b2Body.h	/^inline b2JointNode* b2Body::GetJointList()$/;"	f	class:b2Body	typeref:typename:b2JointNode *
+GetJointList	Dynamics/b2World.h	/^inline b2Joint* b2World::GetJointList()$/;"	f	class:b2World	typeref:typename:b2Joint *
+GetJointSpeed	Dynamics/Joints/b2PrismaticJoint.cpp	/^float64 b2PrismaticJoint::GetJointSpeed() const$/;"	f	class:b2PrismaticJoint	typeref:typename:float64
+GetJointSpeed	Dynamics/Joints/b2RevoluteJoint.cpp	/^float64 b2RevoluteJoint::GetJointSpeed() const$/;"	f	class:b2RevoluteJoint	typeref:typename:float64
+GetJointTranslation	Dynamics/Joints/b2PrismaticJoint.cpp	/^float64 b2PrismaticJoint::GetJointTranslation() const$/;"	f	class:b2PrismaticJoint	typeref:typename:float64
+GetLength1	Dynamics/Joints/b2PulleyJoint.cpp	/^float64 b2PulleyJoint::GetLength1() const$/;"	f	class:b2PulleyJoint	typeref:typename:float64
+GetLength2	Dynamics/Joints/b2PulleyJoint.cpp	/^float64 b2PulleyJoint::GetLength2() const$/;"	f	class:b2PulleyJoint	typeref:typename:float64
+GetLinearVelocity	Dynamics/b2Body.h	/^inline b2Vec2 b2Body::GetLinearVelocity() const$/;"	f	class:b2Body	typeref:typename:b2Vec2
+GetLocalPoint	Dynamics/b2Body.h	/^inline b2Vec2 b2Body::GetLocalPoint(const b2Vec2& worldPoint)$/;"	f	class:b2Body	typeref:typename:b2Vec2
+GetLocalVector	Dynamics/b2Body.h	/^inline b2Vec2 b2Body::GetLocalVector(const b2Vec2& worldVector)$/;"	f	class:b2Body	typeref:typename:b2Vec2
+GetManifoldCount	Dynamics/Contacts/b2Contact.h	/^	int32 GetManifoldCount() const$/;"	f	class:b2Contact	typeref:typename:int32
+GetManifolds	Dynamics/Contacts/b2CircleContact.h	/^	b2Manifold* GetManifolds()$/;"	f	class:b2CircleContact	typeref:typename:b2Manifold *
+GetManifolds	Dynamics/Contacts/b2NullContact.h	/^	b2Manifold* GetManifolds() { return NULL; }$/;"	f	class:b2NullContact	typeref:typename:b2Manifold *
+GetManifolds	Dynamics/Contacts/b2PolyAndCircleContact.h	/^	b2Manifold* GetManifolds()$/;"	f	class:b2PolyAndCircleContact	typeref:typename:b2Manifold *
+GetManifolds	Dynamics/Contacts/b2PolyContact.h	/^	b2Manifold* GetManifolds()$/;"	f	class:b2PolyContact	typeref:typename:b2Manifold *
+GetMass	Dynamics/b2Body.h	/^inline float64 b2Body::GetMass() const$/;"	f	class:b2Body	typeref:typename:float64
+GetMaxAllocation	Common/b2StackAllocator.cpp	/^int32 b2StackAllocator::GetMaxAllocation() const$/;"	f	class:b2StackAllocator	typeref:typename:int32
+GetMaxRadius	Collision/b2Shape.h	/^inline float64 b2Shape::GetMaxRadius() const$/;"	f	class:b2Shape	typeref:typename:float64
+GetMotorForce	Dynamics/Joints/b2PrismaticJoint.cpp	/^float64 b2PrismaticJoint::GetMotorForce(float64 invTimeStep) const$/;"	f	class:b2PrismaticJoint	typeref:typename:float64
+GetMotorTorque	Dynamics/Joints/b2RevoluteJoint.cpp	/^float64 b2RevoluteJoint::GetMotorTorque(float64 invTimeStep) const$/;"	f	class:b2RevoluteJoint	typeref:typename:float64
+GetNext	Collision/b2BroadPhase.h	/^	uint16 GetNext() const { return lowerBounds[0]; }$/;"	f	struct:b2Proxy	typeref:typename:uint16
+GetNext	Collision/b2Shape.h	/^inline b2Shape* b2Shape::GetNext()$/;"	f	class:b2Shape	typeref:typename:b2Shape *
+GetNext	Dynamics/Contacts/b2Contact.h	/^inline b2Contact* b2Contact::GetNext()$/;"	f	class:b2Contact	typeref:typename:b2Contact *
+GetNext	Dynamics/Joints/b2Joint.h	/^inline b2Joint* b2Joint::GetNext()$/;"	f	class:b2Joint	typeref:typename:b2Joint *
+GetNext	Dynamics/b2Body.h	/^inline b2Body* b2Body::GetNext()$/;"	f	class:b2Body	typeref:typename:b2Body *
+GetOriginPosition	Dynamics/b2Body.h	/^inline b2Vec2 b2Body::GetOriginPosition() const$/;"	f	class:b2Body	typeref:typename:b2Vec2
+GetPosition	Collision/b2Shape.h	/^inline const b2Vec2& b2Shape::GetPosition() const$/;"	f	class:b2Shape	typeref:typename:const b2Vec2 &
+GetProxy	Collision/b2BroadPhase.h	/^inline b2Proxy* b2BroadPhase::GetProxy(int32 proxyId)$/;"	f	class:b2BroadPhase	typeref:typename:b2Proxy *
+GetRatio	Dynamics/Joints/b2GearJoint.cpp	/^float64 b2GearJoint::GetRatio() const$/;"	f	class:b2GearJoint	typeref:typename:float64
+GetRatio	Dynamics/Joints/b2PulleyJoint.cpp	/^float64 b2PulleyJoint::GetRatio() const$/;"	f	class:b2PulleyJoint	typeref:typename:float64
+GetReactionForce	Dynamics/Joints/b2DistanceJoint.cpp	/^b2Vec2 b2DistanceJoint::GetReactionForce(float64 invTimeStep) const$/;"	f	class:b2DistanceJoint	typeref:typename:b2Vec2
+GetReactionForce	Dynamics/Joints/b2GearJoint.cpp	/^b2Vec2 b2GearJoint::GetReactionForce(float64 invTimeStep) const$/;"	f	class:b2GearJoint	typeref:typename:b2Vec2
+GetReactionForce	Dynamics/Joints/b2MouseJoint.cpp	/^b2Vec2 b2MouseJoint::GetReactionForce(float64 invTimeStep) const$/;"	f	class:b2MouseJoint	typeref:typename:b2Vec2
+GetReactionForce	Dynamics/Joints/b2PrismaticJoint.cpp	/^b2Vec2 b2PrismaticJoint::GetReactionForce(float64 invTimeStep) const$/;"	f	class:b2PrismaticJoint	typeref:typename:b2Vec2
+GetReactionForce	Dynamics/Joints/b2PulleyJoint.cpp	/^b2Vec2 b2PulleyJoint::GetReactionForce(float64 invTimeStep) const$/;"	f	class:b2PulleyJoint	typeref:typename:b2Vec2
+GetReactionForce	Dynamics/Joints/b2RevoluteJoint.cpp	/^b2Vec2 b2RevoluteJoint::GetReactionForce(float64 invTimeStep) const$/;"	f	class:b2RevoluteJoint	typeref:typename:b2Vec2
+GetReactionTorque	Dynamics/Joints/b2DistanceJoint.cpp	/^float64 b2DistanceJoint::GetReactionTorque(float64 invTimeStep) const$/;"	f	class:b2DistanceJoint	typeref:typename:float64
+GetReactionTorque	Dynamics/Joints/b2GearJoint.cpp	/^float64 b2GearJoint::GetReactionTorque(float64 invTimeStep) const$/;"	f	class:b2GearJoint	typeref:typename:float64
+GetReactionTorque	Dynamics/Joints/b2MouseJoint.cpp	/^float64 b2MouseJoint::GetReactionTorque(float64 invTimeStep) const$/;"	f	class:b2MouseJoint	typeref:typename:float64
+GetReactionTorque	Dynamics/Joints/b2PrismaticJoint.cpp	/^float64 b2PrismaticJoint::GetReactionTorque(float64 invTimeStep) const$/;"	f	class:b2PrismaticJoint	typeref:typename:float64
+GetReactionTorque	Dynamics/Joints/b2PulleyJoint.cpp	/^float64 b2PulleyJoint::GetReactionTorque(float64 invTimeStep) const$/;"	f	class:b2PulleyJoint	typeref:typename:float64
+GetReactionTorque	Dynamics/Joints/b2RevoluteJoint.cpp	/^float64 b2RevoluteJoint::GetReactionTorque(float64 invTimeStep) const$/;"	f	class:b2RevoluteJoint	typeref:typename:float64
+GetRotation	Dynamics/b2Body.h	/^inline float64 b2Body::GetRotation() const$/;"	f	class:b2Body	typeref:typename:float64
+GetRotationMatrix	Collision/b2Shape.h	/^inline const b2Mat22& b2Shape::GetRotationMatrix() const$/;"	f	class:b2Shape	typeref:typename:const b2Mat22 &
+GetRotationMatrix	Dynamics/b2Body.h	/^inline const b2Mat22& b2Body::GetRotationMatrix() const$/;"	f	class:b2Body	typeref:typename:const b2Mat22 &
+GetShape1	Dynamics/Contacts/b2Contact.h	/^inline b2Shape* b2Contact::GetShape1()$/;"	f	class:b2Contact	typeref:typename:b2Shape *
+GetShape2	Dynamics/Contacts/b2Contact.h	/^inline b2Shape* b2Contact::GetShape2()$/;"	f	class:b2Contact	typeref:typename:b2Shape *
+GetShapeList	Dynamics/b2Body.h	/^inline b2Shape* b2Body::GetShapeList()$/;"	f	class:b2Body	typeref:typename:b2Shape *
+GetType	Collision/b2Shape.h	/^inline b2ShapeType b2Shape::GetType() const$/;"	f	class:b2Shape	typeref:typename:b2ShapeType
+GetType	Dynamics/Joints/b2Joint.h	/^inline b2JointType b2Joint::GetType() const$/;"	f	class:b2Joint	typeref:typename:b2JointType
+GetUserData	Collision/b2Shape.h	/^inline void* b2Shape::GetUserData()$/;"	f	class:b2Shape	typeref:typename:void *
+GetUserData	Dynamics/Joints/b2Joint.h	/^inline void* b2Joint::GetUserData()$/;"	f	class:b2Joint	typeref:typename:void *
+GetUserData	Dynamics/b2Body.h	/^inline void* b2Body::GetUserData()$/;"	f	class:b2Body	typeref:typename:void *
+GetWorldPoint	Dynamics/b2Body.h	/^inline b2Vec2 b2Body::GetWorldPoint(const b2Vec2& localPoint)$/;"	f	class:b2Body	typeref:typename:b2Vec2
+GetWorldVector	Dynamics/b2Body.h	/^inline b2Vec2 b2Body::GetWorldVector(const b2Vec2& localVector)$/;"	f	class:b2Body	typeref:typename:b2Vec2
+Hash	Collision/b2PairManager.cpp	/^inline uint32 Hash(uint32 proxyId1, uint32 proxyId2)$/;"	f	typeref:typename:uint32
+I	Collision/b2Shape.h	/^	float64 I;$/;"	m	struct:b2MassData	typeref:typename:float64
+InPoints	Collision/b2Distance.cpp	/^static bool InPoints(const b2Vec2& w, const b2Vec2* points, int32 pointCount)$/;"	f	typeref:typename:bool	file:
+InRange	Collision/b2BroadPhase.h	/^inline bool b2BroadPhase::InRange(const b2AABB& aabb) const$/;"	f	class:b2BroadPhase	typeref:typename:bool
+IncrementOverlapCount	Collision/b2BroadPhase.cpp	/^void b2BroadPhase::IncrementOverlapCount(int32 proxyId)$/;"	f	class:b2BroadPhase	typeref:typename:void
+IncrementTimeStamp	Collision/b2BroadPhase.cpp	/^void b2BroadPhase::IncrementTimeStamp()$/;"	f	class:b2BroadPhase	typeref:typename:void
+Initialize	Collision/b2PairManager.cpp	/^void b2PairManager::Initialize(b2BroadPhase* broadPhase, b2PairCallback* callback)$/;"	f	class:b2PairManager	typeref:typename:void
+InitializeRegisters	Dynamics/Contacts/b2Contact.cpp	/^void b2Contact::InitializeRegisters()$/;"	f	class:b2Contact	typeref:typename:void
+Invert	Common/b2Math.h	/^	b2Mat22 Invert() const$/;"	f	struct:b2Mat22	typeref:typename:b2Mat22
+IsBuffered	Collision/b2PairManager.h	/^	bool IsBuffered()		{ return (status & e_pairBuffered) == e_pairBuffered; }$/;"	f	struct:b2Pair	typeref:typename:bool
+IsConnected	Dynamics/b2Body.h	/^inline bool b2Body::IsConnected(const b2Body* other) const$/;"	f	class:b2Body	typeref:typename:bool
+IsFinal	Collision/b2PairManager.h	/^	bool IsFinal()		{ return (status & e_pairFinal) == e_pairFinal; }$/;"	f	struct:b2Pair	typeref:typename:bool
+IsFrozen	Dynamics/b2Body.h	/^inline bool b2Body::IsFrozen() const$/;"	f	class:b2Body	typeref:typename:bool
+IsLower	Collision/b2BroadPhase.h	/^	bool IsLower() const { return (value & 1) == 0; }$/;"	f	struct:b2Bound	typeref:typename:bool
+IsRemoved	Collision/b2PairManager.h	/^	bool IsRemoved()		{ return (status & e_pairRemoved) == e_pairRemoved; }$/;"	f	struct:b2Pair	typeref:typename:bool
+IsSleeping	Dynamics/b2Body.h	/^inline bool b2Body::IsSleeping() const$/;"	f	class:b2Body	typeref:typename:bool
+IsStatic	Dynamics/b2Body.h	/^inline bool b2Body::IsStatic() const$/;"	f	class:b2Body	typeref:typename:bool
+IsUpper	Collision/b2BroadPhase.h	/^	bool IsUpper() const { return (value & 1) == 1; }$/;"	f	struct:b2Bound	typeref:typename:bool
+IsValid	Collision/b2BroadPhase.h	/^	bool IsValid() const { return overlapCount != b2_invalid; }$/;"	f	struct:b2Proxy	typeref:typename:bool
+IsValid	Collision/b2Collision.h	/^inline bool b2AABB::IsValid() const$/;"	f	class:b2AABB	typeref:typename:bool
+IsValid	Common/b2Math.h	/^	bool IsValid() const$/;"	f	struct:b2Vec2	typeref:typename:bool
+JOINT_H	Dynamics/Joints/b2Joint.h	/^#define JOINT_H$/;"	d
+Length	Common/b2Math.h	/^	float64 Length() const$/;"	f	struct:b2Vec2	typeref:typename:float64
+Make	Common/b2Math.h	/^	static b2Vec2 Make(float64 x_, float64 y_)$/;"	f	struct:b2Vec2	typeref:typename:b2Vec2
+MoveProxy	Collision/b2BroadPhase.cpp	/^void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)$/;"	f	class:b2BroadPhase	typeref:typename:void
+NOT_USED	Common/b2Settings.h	/^#define NOT_USED(/;"	d
+Normalize	Common/b2Math.h	/^	float64 Normalize()$/;"	f	struct:b2Vec2	typeref:typename:float64
+NotifyBoundaryViolated	Dynamics/b2WorldCallbacks.h	/^	virtual b2BoundaryResponse NotifyBoundaryViolated(b2Body* body)$/;"	f	class:b2WorldListener	typeref:typename:b2BoundaryResponse
+POLYCONTACT_H	Dynamics/Contacts/b2PolyContact.h	/^#define POLYCONTACT_H$/;"	d
+POLY_AND_CIRCLE_CONTACT_H	Dynamics/Contacts/b2PolyAndCircleContact.h	/^#define POLY_AND_CIRCLE_CONTACT_H$/;"	d
+PairAdded	Dynamics/b2ContactManager.cpp	/^void* b2ContactManager::PairAdded(void* proxyUserData1, void* proxyUserData2)$/;"	f	class:b2ContactManager	typeref:typename:void *
+PairRemoved	Dynamics/b2ContactManager.cpp	/^void b2ContactManager::PairRemoved(void* proxyUserData1, void* proxyUserData2, void* pairUserDat/;"	f	class:b2ContactManager	typeref:typename:void
+PolyCentroid	Collision/b2Shape.cpp	/^static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)$/;"	f	typeref:typename:b2Vec2	file:
+PolyMass	Collision/b2Shape.cpp	/^static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float64 rho)$/;"	f	typeref:typename:void	file:
+PostSolve	Dynamics/Contacts/b2ContactSolver.cpp	/^void b2ContactSolver::PostSolve()$/;"	f	class:b2ContactSolver	typeref:typename:void
+PreSolve	Dynamics/Contacts/b2ContactSolver.cpp	/^void b2ContactSolver::PreSolve()$/;"	f	class:b2ContactSolver	typeref:typename:void
+PreparePositionSolver	Dynamics/Joints/b2Joint.h	/^	virtual void PreparePositionSolver() {}$/;"	f	class:b2Joint	typeref:typename:void
+PrepareVelocitySolver	Dynamics/Joints/b2DistanceJoint.cpp	/^void b2DistanceJoint::PrepareVelocitySolver()$/;"	f	class:b2DistanceJoint	typeref:typename:void
+PrepareVelocitySolver	Dynamics/Joints/b2GearJoint.cpp	/^void b2GearJoint::PrepareVelocitySolver()$/;"	f	class:b2GearJoint	typeref:typename:void
+PrepareVelocitySolver	Dynamics/Joints/b2MouseJoint.cpp	/^void b2MouseJoint::PrepareVelocitySolver()$/;"	f	class:b2MouseJoint	typeref:typename:void
+PrepareVelocitySolver	Dynamics/Joints/b2PrismaticJoint.cpp	/^void b2PrismaticJoint::PrepareVelocitySolver()$/;"	f	class:b2PrismaticJoint	typeref:typename:void
+PrepareVelocitySolver	Dynamics/Joints/b2PulleyJoint.cpp	/^void b2PulleyJoint::PrepareVelocitySolver()$/;"	f	class:b2PulleyJoint	typeref:typename:void
+PrepareVelocitySolver	Dynamics/Joints/b2RevoluteJoint.cpp	/^void b2RevoluteJoint::PrepareVelocitySolver()$/;"	f	class:b2RevoluteJoint	typeref:typename:void
+ProcessThree	Collision/b2Distance.cpp	/^static int32 ProcessThree(b2Vec2* p1Out, b2Vec2* p2Out, b2Vec2* p1s, b2Vec2* p2s, b2Vec2* points/;"	f	typeref:typename:int32	file:
+ProcessTwo	Collision/b2Distance.cpp	/^static int32 ProcessTwo(b2Vec2* p1Out, b2Vec2* p2Out, b2Vec2* p1s, b2Vec2* p2s, b2Vec2* points)$/;"	f	typeref:typename:int32	file:
+Query	Collision/b2BroadPhase.cpp	/^int32 b2BroadPhase::Query(const b2AABB& aabb, void** userData, int32 maxCount)$/;"	f	class:b2BroadPhase	typeref:typename:int32
+Query	Collision/b2BroadPhase.cpp	/^void b2BroadPhase::Query(int32* lowerQueryOut, int32* upperQueryOut,$/;"	f	class:b2BroadPhase	typeref:typename:void
+Query	Dynamics/b2World.cpp	/^int32 b2World::Query(const b2AABB& aabb, b2Shape** shapes, int32 maxCount)$/;"	f	class:b2World	typeref:typename:int32
+QuickSync	Collision/b2Shape.cpp	/^void b2CircleShape::QuickSync(const b2Vec2& position, const b2Mat22& R)$/;"	f	class:b2CircleShape	typeref:typename:void
+QuickSync	Collision/b2Shape.cpp	/^void b2PolyShape::QuickSync(const b2Vec2& position, const b2Mat22& R)$/;"	f	class:b2PolyShape	typeref:typename:void
+QuickSyncShapes	Dynamics/b2Body.cpp	/^void b2Body::QuickSyncShapes()$/;"	f	class:b2Body	typeref:typename:void
+R	Collision/b2Collision.h	/^	b2Mat22 R;$/;"	m	struct:b2OBB	typeref:typename:b2Mat22
+RemoveBufferedPair	Collision/b2PairManager.cpp	/^void b2PairManager::RemoveBufferedPair(int32 id1, int32 id2)$/;"	f	class:b2PairManager	typeref:typename:void
+RemovePair	Collision/b2PairManager.cpp	/^void* b2PairManager::RemovePair(int32 proxyId1, int32 proxyId2)$/;"	f	class:b2PairManager	typeref:typename:void *
+ResetProxy	Collision/b2Shape.cpp	/^void b2CircleShape::ResetProxy(b2BroadPhase* broadPhase)$/;"	f	class:b2CircleShape	typeref:typename:void
+ResetProxy	Collision/b2Shape.cpp	/^void b2PolyShape::ResetProxy(b2BroadPhase* broadPhase)$/;"	f	class:b2PolyShape	typeref:typename:void
+Set	Common/b2Math.h	/^	void Set(const b2Vec2& c1, const b2Vec2& c2)$/;"	f	struct:b2Mat22	typeref:typename:void
+Set	Common/b2Math.h	/^	void Set(float64 angle)$/;"	f	struct:b2Mat22	typeref:typename:void
+Set	Common/b2Math.h	/^	void Set(float64 x_, float64 y_) { x = x_; y = y_; }$/;"	f	struct:b2Vec2	typeref:typename:void
+Set	Dynamics/Joints/b2Joint.h	/^inline void b2Jacobian::Set(const b2Vec2& x1, float64 a1, const b2Vec2& x2, float64 a2)$/;"	f	class:b2Jacobian	typeref:typename:void
+SetAngularVelocity	Dynamics/b2Body.h	/^inline void b2Body::SetAngularVelocity(float64 w)$/;"	f	class:b2Body	typeref:typename:void
+SetBuffered	Collision/b2PairManager.h	/^	void SetBuffered()		{ status |= e_pairBuffered; }$/;"	f	struct:b2Pair	typeref:typename:void
+SetCenterPosition	Dynamics/b2Body.cpp	/^void b2Body::SetCenterPosition(const b2Vec2& position, float64 rotation)$/;"	f	class:b2Body	typeref:typename:void
+SetFilter	Dynamics/b2World.cpp	/^void b2World::SetFilter(b2CollisionFilter* filter)$/;"	f	class:b2World	typeref:typename:void
+SetFinal	Collision/b2PairManager.h	/^	void SetFinal()		{ status |= e_pairFinal; }$/;"	f	struct:b2Pair	typeref:typename:void
+SetIdentity	Common/b2Math.h	/^	void SetIdentity()$/;"	f	struct:b2Mat22	typeref:typename:void
+SetLinearVelocity	Dynamics/b2Body.h	/^inline void b2Body::SetLinearVelocity(const b2Vec2& v)$/;"	f	class:b2Body	typeref:typename:void
+SetListener	Dynamics/b2World.cpp	/^void b2World::SetListener(b2WorldListener* listener)$/;"	f	class:b2World	typeref:typename:void
+SetMotorForce	Dynamics/Joints/b2PrismaticJoint.cpp	/^void b2PrismaticJoint::SetMotorForce(float64 force)$/;"	f	class:b2PrismaticJoint	typeref:typename:void
+SetMotorSpeed	Dynamics/Joints/b2PrismaticJoint.cpp	/^void b2PrismaticJoint::SetMotorSpeed(float64 speed)$/;"	f	class:b2PrismaticJoint	typeref:typename:void
+SetMotorSpeed	Dynamics/Joints/b2RevoluteJoint.cpp	/^void b2RevoluteJoint::SetMotorSpeed(float64 speed)$/;"	f	class:b2RevoluteJoint	typeref:typename:void
+SetMotorTorque	Dynamics/Joints/b2RevoluteJoint.cpp	/^void b2RevoluteJoint::SetMotorTorque(float64 torque)$/;"	f	class:b2RevoluteJoint	typeref:typename:void
+SetNext	Collision/b2BroadPhase.h	/^	void SetNext(uint16 next) { lowerBounds[0] = next; }$/;"	f	struct:b2Proxy	typeref:typename:void
+SetOriginPosition	Dynamics/b2Body.cpp	/^void b2Body::SetOriginPosition(const b2Vec2& position, float64 rotation)$/;"	f	class:b2Body	typeref:typename:void
+SetRemoved	Collision/b2PairManager.h	/^	void SetRemoved()		{ status |= e_pairRemoved; }$/;"	f	struct:b2Pair	typeref:typename:void
+SetTarget	Dynamics/Joints/b2MouseJoint.cpp	/^void b2MouseJoint::SetTarget(const b2Vec2& target)$/;"	f	class:b2MouseJoint	typeref:typename:void
+SetZero	Common/b2Math.h	/^	void SetZero() { x = 0.0; y = 0.0; }$/;"	f	struct:b2Vec2	typeref:typename:void
+SetZero	Common/b2Math.h	/^	void SetZero()$/;"	f	struct:b2Mat22	typeref:typename:void
+SetZero	Dynamics/Joints/b2Joint.h	/^inline void b2Jacobian::SetZero()$/;"	f	class:b2Jacobian	typeref:typename:void
+ShouldCollide	Dynamics/b2WorldCallbacks.cpp	/^bool b2CollisionFilter::ShouldCollide(b2Shape* shape1, b2Shape* shape2)$/;"	f	class:b2CollisionFilter	typeref:typename:bool
+Solve	Common/b2Math.h	/^	b2Vec2 Solve(const b2Vec2& b) const$/;"	f	struct:b2Mat22	typeref:typename:b2Vec2
+Solve	Dynamics/b2Island.cpp	/^void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)$/;"	f	class:b2Island	typeref:typename:void
+SolvePositionConstraints	Dynamics/Contacts/b2ContactSolver.cpp	/^bool b2ContactSolver::SolvePositionConstraints(float64 beta)$/;"	f	class:b2ContactSolver	typeref:typename:bool
+SolvePositionConstraints	Dynamics/Joints/b2DistanceJoint.cpp	/^bool b2DistanceJoint::SolvePositionConstraints()$/;"	f	class:b2DistanceJoint	typeref:typename:bool
+SolvePositionConstraints	Dynamics/Joints/b2GearJoint.cpp	/^bool b2GearJoint::SolvePositionConstraints()$/;"	f	class:b2GearJoint	typeref:typename:bool
+SolvePositionConstraints	Dynamics/Joints/b2MouseJoint.h	/^	bool SolvePositionConstraints()$/;"	f	class:b2MouseJoint	typeref:typename:bool
+SolvePositionConstraints	Dynamics/Joints/b2PrismaticJoint.cpp	/^bool b2PrismaticJoint::SolvePositionConstraints()$/;"	f	class:b2PrismaticJoint	typeref:typename:bool
+SolvePositionConstraints	Dynamics/Joints/b2PulleyJoint.cpp	/^bool b2PulleyJoint::SolvePositionConstraints()$/;"	f	class:b2PulleyJoint	typeref:typename:bool
+SolvePositionConstraints	Dynamics/Joints/b2RevoluteJoint.cpp	/^bool b2RevoluteJoint::SolvePositionConstraints()$/;"	f	class:b2RevoluteJoint	typeref:typename:bool
+SolveVelocityConstraints	Dynamics/Contacts/b2ContactSolver.cpp	/^void b2ContactSolver::SolveVelocityConstraints()$/;"	f	class:b2ContactSolver	typeref:typename:void
+SolveVelocityConstraints	Dynamics/Joints/b2DistanceJoint.cpp	/^void b2DistanceJoint::SolveVelocityConstraints(const b2TimeStep* step)$/;"	f	class:b2DistanceJoint	typeref:typename:void
+SolveVelocityConstraints	Dynamics/Joints/b2GearJoint.cpp	/^void b2GearJoint::SolveVelocityConstraints(const b2TimeStep* step)$/;"	f	class:b2GearJoint	typeref:typename:void
+SolveVelocityConstraints	Dynamics/Joints/b2MouseJoint.cpp	/^void b2MouseJoint::SolveVelocityConstraints(const b2TimeStep* step)$/;"	f	class:b2MouseJoint	typeref:typename:void
+SolveVelocityConstraints	Dynamics/Joints/b2PrismaticJoint.cpp	/^void b2PrismaticJoint::SolveVelocityConstraints(const b2TimeStep* step)$/;"	f	class:b2PrismaticJoint	typeref:typename:void
+SolveVelocityConstraints	Dynamics/Joints/b2PulleyJoint.cpp	/^void b2PulleyJoint::SolveVelocityConstraints(const b2TimeStep* step)$/;"	f	class:b2PulleyJoint	typeref:typename:void
+SolveVelocityConstraints	Dynamics/Joints/b2RevoluteJoint.cpp	/^void b2RevoluteJoint::SolveVelocityConstraints(const b2TimeStep* step)$/;"	f	class:b2RevoluteJoint	typeref:typename:void
+Step	Dynamics/b2World.cpp	/^void b2World::Step(float64 dt, int32 iterations)$/;"	f	class:b2World	typeref:typename:void
+Support	Collision/b2Shape.cpp	/^b2Vec2 b2CircleShape::Support(const b2Vec2& d) const$/;"	f	class:b2CircleShape	typeref:typename:b2Vec2
+Support	Collision/b2Shape.cpp	/^b2Vec2 b2PolyShape::Support(const b2Vec2& d) const$/;"	f	class:b2PolyShape	typeref:typename:b2Vec2
+Synchronize	Collision/b2Shape.cpp	/^void b2CircleShape::Synchronize(const b2Vec2& position1, const b2Mat22& R1,$/;"	f	class:b2CircleShape	typeref:typename:void
+Synchronize	Collision/b2Shape.cpp	/^void b2PolyShape::Synchronize(	const b2Vec2& position1, const b2Mat22& R1,$/;"	f	class:b2PolyShape	typeref:typename:void
+SynchronizeShapes	Dynamics/b2Body.cpp	/^void b2Body::SynchronizeShapes()$/;"	f	class:b2Body	typeref:typename:void
+TestOverlap	Collision/b2BroadPhase.cpp	/^bool b2BroadPhase::TestOverlap(b2Proxy* p1, b2Proxy* p2)$/;"	f	class:b2BroadPhase	typeref:typename:bool
+TestOverlap	Collision/b2BroadPhase.cpp	/^bool b2BroadPhase::TestOverlap(const b2BoundValues& b, b2Proxy* p)$/;"	f	class:b2BroadPhase	typeref:typename:bool
+TestPoint	Collision/b2Shape.cpp	/^bool b2CircleShape::TestPoint(const b2Vec2& p)$/;"	f	class:b2CircleShape	typeref:typename:bool
+TestPoint	Collision/b2Shape.cpp	/^bool b2PolyShape::TestPoint(const b2Vec2& p)$/;"	f	class:b2PolyShape	typeref:typename:bool
+UpdateSleep	Dynamics/b2Island.cpp	/^void b2Island::UpdateSleep(float64 dt)$/;"	f	class:b2Island	typeref:typename:void
+Validate	Collision/b2BroadPhase.cpp	/^void b2BroadPhase::Validate()$/;"	f	class:b2BroadPhase	typeref:typename:void
+ValidateBuffer	Collision/b2PairManager.cpp	/^void b2PairManager::ValidateBuffer()$/;"	f	class:b2PairManager	typeref:typename:void
+ValidateTable	Collision/b2PairManager.cpp	/^void b2PairManager::ValidateTable()$/;"	f	class:b2PairManager	typeref:typename:void
+WakeUp	Dynamics/b2Body.h	/^inline void b2Body::WakeUp()$/;"	f	class:b2Body	typeref:typename:void
+__anon84bfa7100103	Dynamics/Contacts/b2Contact.h	/^	{$/;"	g	class:b2Contact
+__anon9c1504440103	Dynamics/b2Body.h	/^	{$/;"	g	class:b2Body
+__anone6f338b10103	Collision/b2PairManager.h	/^	{$/;"	g	struct:b2Pair
+allowSleep	Dynamics/b2Body.h	/^	bool allowSleep;$/;"	m	struct:b2BodyDef	typeref:typename:bool
+anchorPoint	Dynamics/Joints/b2PrismaticJoint.h	/^	b2Vec2 anchorPoint;$/;"	m	struct:b2PrismaticJointDef	typeref:typename:b2Vec2
+anchorPoint	Dynamics/Joints/b2RevoluteJoint.h	/^	b2Vec2 anchorPoint;$/;"	m	struct:b2RevoluteJointDef	typeref:typename:b2Vec2
+anchorPoint1	Dynamics/Joints/b2DistanceJoint.h	/^	b2Vec2 anchorPoint1;$/;"	m	struct:b2DistanceJointDef	typeref:typename:b2Vec2
+anchorPoint1	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 anchorPoint1;$/;"	m	struct:b2PulleyJointDef	typeref:typename:b2Vec2
+anchorPoint2	Dynamics/Joints/b2DistanceJoint.h	/^	b2Vec2 anchorPoint2;$/;"	m	struct:b2DistanceJointDef	typeref:typename:b2Vec2
+anchorPoint2	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 anchorPoint2;$/;"	m	struct:b2PulleyJointDef	typeref:typename:b2Vec2
+angular1	Dynamics/Joints/b2Joint.h	/^	float64 angular1;$/;"	m	struct:b2Jacobian	typeref:typename:float64
+angular2	Dynamics/Joints/b2Joint.h	/^	float64 angular2;$/;"	m	struct:b2Jacobian	typeref:typename:float64
+angularDamping	Dynamics/b2Body.h	/^	float64 angularDamping;$/;"	m	struct:b2BodyDef	typeref:typename:float64
+angularVelocity	Dynamics/b2Body.h	/^	float64 angularVelocity;$/;"	m	struct:b2BodyDef	typeref:typename:float64
+axis	Dynamics/Joints/b2PrismaticJoint.h	/^	b2Vec2 axis;$/;"	m	struct:b2PrismaticJointDef	typeref:typename:b2Vec2
+b2AABB	Collision/b2Collision.h	/^struct b2AABB$/;"	s
+b2Abs	Common/b2Math.h	/^inline b2Mat22 b2Abs(const b2Mat22& A)$/;"	f	typeref:typename:b2Mat22
+b2Abs	Common/b2Math.h	/^inline b2Vec2 b2Abs(const b2Vec2& a)$/;"	f	typeref:typename:b2Vec2
+b2Abs	Common/b2Math.h	/^inline float64 b2Abs(float64 a)$/;"	f	typeref:typename:float64
+b2Alloc	Common/b2Settings.cpp	/^void* b2Alloc(int32 size)$/;"	f	typeref:typename:void *
+b2Assert	Common/b2Settings.h	/^#define b2Assert(/;"	d
+b2Block	Common/b2BlockAllocator.cpp	/^struct b2Block$/;"	s	file:
+b2BlockAllocator	Common/b2BlockAllocator.cpp	/^b2BlockAllocator::b2BlockAllocator()$/;"	f	class:b2BlockAllocator
+b2BlockAllocator	Common/b2BlockAllocator.h	/^class b2BlockAllocator$/;"	c
+b2Body	Dynamics/b2Body.cpp	/^b2Body::b2Body(const b2BodyDef* bd, b2World* world)$/;"	f	class:b2Body
+b2Body	Dynamics/b2Body.h	/^class b2Body$/;"	c
+b2BodyDef	Dynamics/b2Body.h	/^	b2BodyDef()$/;"	f	struct:b2BodyDef
+b2BodyDef	Dynamics/b2Body.h	/^struct b2BodyDef$/;"	s
+b2Bound	Collision/b2BroadPhase.h	/^struct b2Bound$/;"	s
+b2BoundValues	Collision/b2BroadPhase.cpp	/^struct b2BoundValues$/;"	s	file:
+b2BoundaryResponse	Dynamics/b2WorldCallbacks.h	/^enum b2BoundaryResponse$/;"	g
+b2BoxDef	Collision/b2Shape.h	/^	b2BoxDef()$/;"	f	struct:b2BoxDef
+b2BoxDef	Collision/b2Shape.h	/^struct b2BoxDef : public b2ShapeDef$/;"	s
+b2BroadPhase	Collision/b2BroadPhase.cpp	/^b2BroadPhase::b2BroadPhase(const b2AABB& worldAABB, b2PairCallback* callback)$/;"	f	class:b2BroadPhase
+b2BroadPhase	Collision/b2BroadPhase.h	/^class b2BroadPhase$/;"	c
+b2BufferedPair	Collision/b2PairManager.h	/^struct b2BufferedPair$/;"	s
+b2Chunk	Common/b2BlockAllocator.cpp	/^struct b2Chunk$/;"	s	file:
+b2CircleContact	Dynamics/Contacts/b2CircleContact.cpp	/^b2CircleContact::b2CircleContact(b2Shape* s1, b2Shape* s2)$/;"	f	class:b2CircleContact
+b2CircleContact	Dynamics/Contacts/b2CircleContact.h	/^class b2CircleContact : public b2Contact$/;"	c
+b2CircleDef	Collision/b2Shape.h	/^	b2CircleDef()$/;"	f	struct:b2CircleDef
+b2CircleDef	Collision/b2Shape.h	/^struct b2CircleDef : public b2ShapeDef$/;"	s
+b2CircleShape	Collision/b2Shape.cpp	/^b2CircleShape::b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& localCenter)$/;"	f	class:b2CircleShape
+b2CircleShape	Collision/b2Shape.h	/^class b2CircleShape : public b2Shape$/;"	c
+b2Clamp	Common/b2Math.h	/^inline T b2Clamp(T a, T low, T high)$/;"	f	typeref:typename:T
+b2Clamp	Common/b2Math.h	/^inline b2Vec2 b2Clamp(const b2Vec2& a, const b2Vec2& low, const b2Vec2& high)$/;"	f	typeref:typename:b2Vec2
+b2CollideCircle	Collision/b2CollideCircle.cpp	/^void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape* circle2, bool /;"	f	typeref:typename:void
+b2CollidePoly	Collision/b2CollidePoly.cpp	/^void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyShape* polyB, boo/;"	f	typeref:typename:void
+b2CollidePolyAndCircle	Collision/b2CollideCircle.cpp	/^void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const b2CircleShape* /;"	f	typeref:typename:void
+b2CollisionFilter	Dynamics/b2WorldCallbacks.h	/^class b2CollisionFilter$/;"	c
+b2Conservative	Dynamics/Contacts/b2Conservative.cpp	/^bool b2Conservative(b2Shape* shape1, b2Shape* shape2)$/;"	f	typeref:typename:bool
+b2Contact	Dynamics/Contacts/b2Contact.cpp	/^b2Contact::b2Contact(b2Shape* s1, b2Shape* s2)$/;"	f	class:b2Contact
+b2Contact	Dynamics/Contacts/b2Contact.h	/^	b2Contact() : m_shape1(NULL), m_shape2(NULL) {}$/;"	f	class:b2Contact
+b2Contact	Dynamics/Contacts/b2Contact.h	/^class b2Contact$/;"	c
+b2ContactConstraint	Dynamics/Contacts/b2ContactSolver.h	/^struct b2ContactConstraint$/;"	s
+b2ContactConstraintPoint	Dynamics/Contacts/b2ContactSolver.h	/^struct b2ContactConstraintPoint$/;"	s
+b2ContactCreateFcn	Dynamics/Contacts/b2Contact.h	/^typedef b2Contact* b2ContactCreateFcn(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* alloca/;"	t	typeref:typename:b2Contact * ()(b2Shape * shape1,b2Shape * shape2,b2BlockAllocator * allocator)
+b2ContactDestroyFcn	Dynamics/Contacts/b2Contact.h	/^typedef void b2ContactDestroyFcn(b2Contact* contact, b2BlockAllocator* allocator);$/;"	t	typeref:typename:void ()(b2Contact * contact,b2BlockAllocator * allocator)
+b2ContactID	Collision/b2Collision.h	/^union b2ContactID$/;"	u
+b2ContactManager	Dynamics/b2ContactManager.h	/^	b2ContactManager() : m_world(NULL), m_destroyImmediate(false) {}$/;"	f	class:b2ContactManager
+b2ContactManager	Dynamics/b2ContactManager.h	/^class b2ContactManager : public b2PairCallback$/;"	c
+b2ContactNode	Dynamics/Contacts/b2Contact.h	/^struct b2ContactNode$/;"	s
+b2ContactPoint	Collision/b2Collision.h	/^struct b2ContactPoint$/;"	s
+b2ContactRegister	Dynamics/Contacts/b2Contact.h	/^struct b2ContactRegister$/;"	s
+b2ContactSolver	Dynamics/Contacts/b2ContactSolver.cpp	/^b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2StackAllocator* all/;"	f	class:b2ContactSolver
+b2ContactSolver	Dynamics/Contacts/b2ContactSolver.h	/^class b2ContactSolver$/;"	c
+b2Cross	Common/b2Math.h	/^inline b2Vec2 b2Cross(const b2Vec2& a, float64 s)$/;"	f	typeref:typename:b2Vec2
+b2Cross	Common/b2Math.h	/^inline b2Vec2 b2Cross(float64 s, const b2Vec2& a)$/;"	f	typeref:typename:b2Vec2
+b2Cross	Common/b2Math.h	/^inline float64 b2Cross(const b2Vec2& a, const b2Vec2& b)$/;"	f	typeref:typename:float64
+b2Distance	Collision/b2Distance.cpp	/^float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2Shape* shape2)$/;"	f	typeref:typename:float64
+b2DistanceJoint	Dynamics/Joints/b2DistanceJoint.cpp	/^b2DistanceJoint::b2DistanceJoint(const b2DistanceJointDef* def)$/;"	f	class:b2DistanceJoint
+b2DistanceJoint	Dynamics/Joints/b2DistanceJoint.h	/^class b2DistanceJoint : public b2Joint$/;"	c
+b2DistanceJointDef	Dynamics/Joints/b2DistanceJoint.h	/^	b2DistanceJointDef()$/;"	f	struct:b2DistanceJointDef
+b2DistanceJointDef	Dynamics/Joints/b2DistanceJoint.h	/^struct b2DistanceJointDef : public b2JointDef$/;"	s
+b2Dot	Common/b2Math.h	/^inline float64 b2Dot(const b2Vec2& a, const b2Vec2& b)$/;"	f	typeref:typename:float64
+b2Free	Common/b2Settings.cpp	/^void b2Free(void* mem)$/;"	f	typeref:typename:void
+b2GearJoint	Dynamics/Joints/b2GearJoint.cpp	/^b2GearJoint::b2GearJoint(const b2GearJointDef* def)$/;"	f	class:b2GearJoint
+b2GearJoint	Dynamics/Joints/b2GearJoint.h	/^class b2GearJoint : public b2Joint$/;"	c
+b2GearJointDef	Dynamics/Joints/b2GearJoint.h	/^	b2GearJointDef()$/;"	f	struct:b2GearJointDef
+b2GearJointDef	Dynamics/Joints/b2GearJoint.h	/^struct b2GearJointDef : public b2JointDef$/;"	s
+b2InvSqrt	Common/b2Math.h	/^inline float64 b2InvSqrt(float64 x)$/;"	f	typeref:typename:float64
+b2IsPowerOfTwo	Common/b2Math.h	/^inline bool b2IsPowerOfTwo(uint32 x)$/;"	f	typeref:typename:bool
+b2IsValid	Common/b2Math.h	/^inline bool b2IsValid(float64 x)$/;"	f	typeref:typename:bool
+b2Island	Dynamics/b2Island.cpp	/^b2Island::b2Island(int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity, b2StackAlloca/;"	f	class:b2Island
+b2Island	Dynamics/b2Island.h	/^class b2Island$/;"	c
+b2Jacobian	Dynamics/Joints/b2Joint.h	/^struct b2Jacobian$/;"	s
+b2Joint	Dynamics/Joints/b2Joint.cpp	/^b2Joint::b2Joint(const b2JointDef* def)$/;"	f	class:b2Joint
+b2Joint	Dynamics/Joints/b2Joint.h	/^class b2Joint$/;"	c
+b2JointDef	Dynamics/Joints/b2Joint.h	/^	b2JointDef()$/;"	f	struct:b2JointDef
+b2JointDef	Dynamics/Joints/b2Joint.h	/^struct b2JointDef$/;"	s
+b2JointNode	Dynamics/Joints/b2Joint.h	/^struct b2JointNode$/;"	s
+b2JointType	Dynamics/Joints/b2Joint.h	/^enum b2JointType$/;"	g
+b2LimitState	Dynamics/Joints/b2Joint.h	/^enum b2LimitState$/;"	g
+b2Manifold	Collision/b2Collision.h	/^struct b2Manifold$/;"	s
+b2MassData	Collision/b2Shape.h	/^struct b2MassData$/;"	s
+b2Mat22	Common/b2Math.h	/^	b2Mat22() {}$/;"	f	struct:b2Mat22
+b2Mat22	Common/b2Math.h	/^	b2Mat22(const b2Vec2& c1, const b2Vec2& c2)$/;"	f	struct:b2Mat22
+b2Mat22	Common/b2Math.h	/^	explicit b2Mat22(float64 angle)$/;"	f	struct:b2Mat22
+b2Mat22	Common/b2Math.h	/^struct b2Mat22$/;"	s
+b2Max	Common/b2Math.h	/^inline T b2Max(T a, T b)$/;"	f	typeref:typename:T
+b2Max	Common/b2Math.h	/^inline b2Vec2 b2Max(const b2Vec2& a, const b2Vec2& b)$/;"	f	typeref:typename:b2Vec2
+b2Min	Common/b2Math.h	/^inline T b2Min(T a, T b)$/;"	f	typeref:typename:T
+b2Min	Common/b2Math.h	/^inline b2Vec2 b2Min(const b2Vec2& a, const b2Vec2& b)$/;"	f	typeref:typename:b2Vec2
+b2MouseJoint	Dynamics/Joints/b2MouseJoint.cpp	/^b2MouseJoint::b2MouseJoint(const b2MouseJointDef* def)$/;"	f	class:b2MouseJoint
+b2MouseJoint	Dynamics/Joints/b2MouseJoint.h	/^class b2MouseJoint : public b2Joint$/;"	c
+b2MouseJointDef	Dynamics/Joints/b2MouseJoint.h	/^	b2MouseJointDef()$/;"	f	struct:b2MouseJointDef
+b2MouseJointDef	Dynamics/Joints/b2MouseJoint.h	/^struct b2MouseJointDef : public b2JointDef$/;"	s
+b2Mul	Common/b2Math.h	/^inline b2Mat22 b2Mul(const b2Mat22& A, const b2Mat22& B)$/;"	f	typeref:typename:b2Mat22
+b2Mul	Common/b2Math.h	/^inline b2Vec2 b2Mul(const b2Mat22& A, const b2Vec2& v)$/;"	f	typeref:typename:b2Vec2
+b2MulT	Common/b2Math.h	/^inline b2Mat22 b2MulT(const b2Mat22& A, const b2Mat22& B)$/;"	f	typeref:typename:b2Mat22
+b2MulT	Common/b2Math.h	/^inline b2Vec2 b2MulT(const b2Mat22& A, const b2Vec2& v)$/;"	f	typeref:typename:b2Vec2
+b2NextPowerOfTwo	Common/b2Math.h	/^inline uint32 b2NextPowerOfTwo(uint32 x)$/;"	f	typeref:typename:uint32
+b2NullContact	Dynamics/Contacts/b2NullContact.h	/^	b2NullContact() {}$/;"	f	class:b2NullContact
+b2NullContact	Dynamics/Contacts/b2NullContact.h	/^class b2NullContact : public b2Contact$/;"	c
+b2OBB	Collision/b2Collision.h	/^struct b2OBB$/;"	s
+b2Pair	Collision/b2PairManager.h	/^struct b2Pair$/;"	s
+b2PairCallback	Collision/b2PairManager.h	/^class b2PairCallback$/;"	c
+b2PairManager	Collision/b2PairManager.cpp	/^b2PairManager::b2PairManager()$/;"	f	class:b2PairManager
+b2PairManager	Collision/b2PairManager.h	/^class b2PairManager$/;"	c
+b2PolyAndCircleContact	Dynamics/Contacts/b2PolyAndCircleContact.cpp	/^b2PolyAndCircleContact::b2PolyAndCircleContact(b2Shape* s1, b2Shape* s2)$/;"	f	class:b2PolyAndCircleContact
+b2PolyAndCircleContact	Dynamics/Contacts/b2PolyAndCircleContact.h	/^class b2PolyAndCircleContact : public b2Contact$/;"	c
+b2PolyContact	Dynamics/Contacts/b2PolyContact.cpp	/^b2PolyContact::b2PolyContact(b2Shape* s1, b2Shape* s2)$/;"	f	class:b2PolyContact
+b2PolyContact	Dynamics/Contacts/b2PolyContact.h	/^class b2PolyContact : public b2Contact$/;"	c
+b2PolyDef	Collision/b2Shape.h	/^	b2PolyDef()$/;"	f	struct:b2PolyDef
+b2PolyDef	Collision/b2Shape.h	/^struct b2PolyDef : public b2ShapeDef$/;"	s
+b2PolyShape	Collision/b2Shape.cpp	/^b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,$/;"	f	class:b2PolyShape
+b2PolyShape	Collision/b2Shape.h	/^class b2PolyShape : public b2Shape$/;"	c
+b2PrismaticJoint	Dynamics/Joints/b2PrismaticJoint.cpp	/^b2PrismaticJoint::b2PrismaticJoint(const b2PrismaticJointDef* def)$/;"	f	class:b2PrismaticJoint
+b2PrismaticJoint	Dynamics/Joints/b2PrismaticJoint.h	/^class b2PrismaticJoint : public b2Joint$/;"	c
+b2PrismaticJointDef	Dynamics/Joints/b2PrismaticJoint.h	/^	b2PrismaticJointDef()$/;"	f	struct:b2PrismaticJointDef
+b2PrismaticJointDef	Dynamics/Joints/b2PrismaticJoint.h	/^struct b2PrismaticJointDef : public b2JointDef$/;"	s
+b2Proxy	Collision/b2BroadPhase.h	/^struct b2Proxy$/;"	s
+b2PulleyJoint	Dynamics/Joints/b2PulleyJoint.cpp	/^b2PulleyJoint::b2PulleyJoint(const b2PulleyJointDef* def)$/;"	f	class:b2PulleyJoint
+b2PulleyJoint	Dynamics/Joints/b2PulleyJoint.h	/^class b2PulleyJoint : public b2Joint$/;"	c
+b2PulleyJointDef	Dynamics/Joints/b2PulleyJoint.h	/^	b2PulleyJointDef()$/;"	f	struct:b2PulleyJointDef
+b2PulleyJointDef	Dynamics/Joints/b2PulleyJoint.h	/^struct b2PulleyJointDef : public b2JointDef$/;"	s
+b2Random	Common/b2Math.h	/^inline float64 b2Random()$/;"	f	typeref:typename:float64
+b2Random	Common/b2Math.h	/^inline float64 b2Random(float64 lo, float64 hi)$/;"	f	typeref:typename:float64
+b2RevoluteJoint	Dynamics/Joints/b2RevoluteJoint.cpp	/^b2RevoluteJoint::b2RevoluteJoint(const b2RevoluteJointDef* def)$/;"	f	class:b2RevoluteJoint
+b2RevoluteJoint	Dynamics/Joints/b2RevoluteJoint.h	/^class b2RevoluteJoint : public b2Joint$/;"	c
+b2RevoluteJointDef	Dynamics/Joints/b2RevoluteJoint.h	/^	b2RevoluteJointDef()$/;"	f	struct:b2RevoluteJointDef
+b2RevoluteJointDef	Dynamics/Joints/b2RevoluteJoint.h	/^struct b2RevoluteJointDef : public b2JointDef$/;"	s
+b2Shape	Collision/b2Shape.cpp	/^b2Shape::b2Shape(const b2ShapeDef* def, b2Body* body)$/;"	f	class:b2Shape
+b2Shape	Collision/b2Shape.h	/^class b2Shape$/;"	c
+b2ShapeDef	Collision/b2Shape.h	/^	b2ShapeDef()$/;"	f	struct:b2ShapeDef
+b2ShapeDef	Collision/b2Shape.h	/^struct b2ShapeDef$/;"	s
+b2ShapeType	Collision/b2Shape.h	/^enum b2ShapeType$/;"	g
+b2StackAllocator	Common/b2StackAllocator.cpp	/^b2StackAllocator::b2StackAllocator()$/;"	f	class:b2StackAllocator
+b2StackAllocator	Common/b2StackAllocator.h	/^class b2StackAllocator$/;"	c
+b2StackEntry	Common/b2StackAllocator.h	/^struct b2StackEntry$/;"	s
+b2Swap	Common/b2Math.h	/^template<typename T> inline void b2Swap(T& a, T& b)$/;"	f	typeref:typename:void
+b2TestOverlap	Collision/b2Collision.h	/^inline bool b2TestOverlap(const b2AABB& a, const b2AABB& b)$/;"	f	typeref:typename:bool
+b2TimeStep	Dynamics/b2World.h	/^struct b2TimeStep$/;"	s
+b2Vec2	Common/b2Math.h	/^	b2Vec2() {}$/;"	f	struct:b2Vec2
+b2Vec2	Common/b2Math.h	/^	b2Vec2(float64 x, float64 y) : x(x), y(y) {}$/;"	f	struct:b2Vec2
+b2Vec2	Common/b2Math.h	/^struct b2Vec2$/;"	s
+b2World	Dynamics/b2World.cpp	/^b2World::b2World(const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep)$/;"	f	class:b2World
+b2World	Dynamics/b2World.h	/^class b2World$/;"	c
+b2WorldListener	Dynamics/b2WorldCallbacks.h	/^class b2WorldListener$/;"	c
+b2_angularSleepTolerance	Common/b2Settings.h	/^const float64 b2_angularSleepTolerance = 0.011111111111111112;$/;"	v	typeref:typename:const float64
+b2_angularSlop	Common/b2Settings.h	/^const float64 b2_angularSlop = 0.03490658503988659;$/;"	v	typeref:typename:const float64
+b2_blockSizes	Common/b2BlockAllocator.h	/^const int32 b2_blockSizes = 14;$/;"	v	typeref:typename:const int32
+b2_byteCount	Common/b2Settings.cpp	/^int32 b2_byteCount = 0;$/;"	v	typeref:typename:int32
+b2_chunkArrayIncrement	Common/b2BlockAllocator.h	/^const int32 b2_chunkArrayIncrement = 128;$/;"	v	typeref:typename:const int32
+b2_chunkSize	Common/b2BlockAllocator.h	/^const int32 b2_chunkSize = 4096;$/;"	v	typeref:typename:const int32
+b2_contactBaumgarte	Common/b2Settings.h	/^const float64 b2_contactBaumgarte = 0.2;$/;"	v	typeref:typename:const float64
+b2_defaultFilter	Dynamics/b2WorldCallbacks.cpp	/^b2CollisionFilter b2_defaultFilter;$/;"	v	typeref:typename:b2CollisionFilter
+b2_destroyBody	Dynamics/b2WorldCallbacks.h	/^	b2_destroyBody,$/;"	e	enum:b2BoundaryResponse
+b2_freezeBody	Dynamics/b2WorldCallbacks.h	/^	b2_freezeBody,$/;"	e	enum:b2BoundaryResponse
+b2_invalid	Collision/b2BroadPhase.h	/^const uint16 b2_invalid = USHRT_MAX;$/;"	v	typeref:typename:const uint16
+b2_lengthUnitsPerMeter	Common/b2Settings.h	/^const float64 b2_lengthUnitsPerMeter = 30.0;$/;"	v	typeref:typename:const float64
+b2_linearSleepTolerance	Common/b2Settings.h	/^const float64 b2_linearSleepTolerance = 0.3;$/;"	v	typeref:typename:const float64
+b2_linearSlop	Common/b2Settings.h	/^const float64 b2_linearSlop = 0.15;$/;"	v	typeref:typename:const float64
+b2_massUnitsPerKilogram	Common/b2Settings.h	/^const float64 b2_massUnitsPerKilogram = 1.0;$/;"	v	typeref:typename:const float64
+b2_maxAngularCorrection	Common/b2Settings.h	/^const float64 b2_maxAngularCorrection = 0.13962634015954636;$/;"	v	typeref:typename:const float64
+b2_maxBlockSize	Common/b2BlockAllocator.h	/^const int32 b2_maxBlockSize = 640;$/;"	v	typeref:typename:const int32
+b2_maxLinearCorrection	Common/b2Settings.h	/^const float64 b2_maxLinearCorrection = 6.0;$/;"	v	typeref:typename:const float64
+b2_maxManifoldPoints	Common/b2Settings.h	/^const int32 b2_maxManifoldPoints = 2;$/;"	v	typeref:typename:const int32
+b2_maxPairs	Common/b2Settings.h	/^const int32 b2_maxPairs = 32768;	\/\/ this must be a power of two$/;"	v	typeref:typename:const int32
+b2_maxPolyVertices	Common/b2Settings.h	/^const int32 b2_maxPolyVertices = 8;$/;"	v	typeref:typename:const int32
+b2_maxProxies	Common/b2Settings.h	/^const int32 b2_maxProxies = 4096;				\/\/ this must be a power of two$/;"	v	typeref:typename:const int32
+b2_maxShapesPerBody	Common/b2Settings.h	/^const int32 b2_maxShapesPerBody = 64;$/;"	v	typeref:typename:const int32
+b2_maxStackEntries	Common/b2StackAllocator.h	/^const int32 b2_maxStackEntries = 32;$/;"	v	typeref:typename:const int32
+b2_minPulleyLength	Dynamics/Joints/b2PulleyJoint.h	/^const float64 b2_minPulleyLength = b2_lengthUnitsPerMeter;$/;"	v	typeref:typename:const float64
+b2_nullEdge	Collision/b2BroadPhase.h	/^const uint16 b2_nullEdge = USHRT_MAX;$/;"	v	typeref:typename:const uint16
+b2_nullFeature	Collision/b2Collision.h	/^const uint8 b2_nullFeature = UCHAR_MAX;$/;"	v	typeref:typename:const uint8
+b2_nullPair	Collision/b2PairManager.h	/^const uint16 b2_nullPair = USHRT_MAX;$/;"	v	typeref:typename:const uint16
+b2_nullProxy	Collision/b2PairManager.h	/^const uint16 b2_nullProxy = USHRT_MAX;$/;"	v	typeref:typename:const uint16
+b2_pi	Common/b2Settings.h	/^const float64 b2_pi = 3.14159265359;$/;"	v	typeref:typename:const float64
+b2_stackSize	Common/b2StackAllocator.h	/^const int32 b2_stackSize = 100 * 1024;	\/\/ 100k$/;"	v	typeref:typename:const int32
+b2_tableCapacity	Collision/b2PairManager.h	/^const int32 b2_tableCapacity = b2_maxPairs;	\/\/ must be a power of two$/;"	v	typeref:typename:const int32
+b2_tableMask	Collision/b2PairManager.h	/^const int32 b2_tableMask = b2_tableCapacity - 1;$/;"	v	typeref:typename:const int32
+b2_timeToSleep	Common/b2Settings.h	/^const float64 b2_timeToSleep = 0.5;$/;"	v	typeref:typename:const float64
+b2_timeUnitsPerSecond	Common/b2Settings.h	/^const float64 b2_timeUnitsPerSecond = 1.0;$/;"	v	typeref:typename:const float64
+b2_velocityThreshold	Common/b2Settings.h	/^const float64 b2_velocityThreshold = 30.0;$/;"	v	typeref:typename:const float64
+blockSize	Common/b2BlockAllocator.cpp	/^	int32 blockSize;$/;"	m	struct:b2Chunk	typeref:typename:int32	file:
+blocks	Common/b2BlockAllocator.cpp	/^	b2Block* blocks;$/;"	m	struct:b2Chunk	typeref:typename:b2Block *	file:
+body1	Dynamics/Contacts/b2ContactSolver.h	/^	b2Body* body1;$/;"	m	struct:b2ContactConstraint	typeref:typename:b2Body *
+body1	Dynamics/Joints/b2Joint.h	/^	b2Body* body1;$/;"	m	struct:b2JointDef	typeref:typename:b2Body *
+body2	Dynamics/Contacts/b2ContactSolver.h	/^	b2Body* body2;$/;"	m	struct:b2ContactConstraint	typeref:typename:b2Body *
+body2	Dynamics/Joints/b2Joint.h	/^	b2Body* body2;$/;"	m	struct:b2JointDef	typeref:typename:b2Body *
+categoryBits	Collision/b2Shape.h	/^	uint16 categoryBits;$/;"	m	struct:b2ShapeDef	typeref:typename:uint16
+center	Collision/b2Collision.h	/^	b2Vec2 center;$/;"	m	struct:b2OBB	typeref:typename:b2Vec2
+center	Collision/b2Shape.h	/^	b2Vec2 center;$/;"	m	struct:b2MassData	typeref:typename:b2Vec2
+col1	Common/b2Math.h	/^	b2Vec2 col1, col2;$/;"	m	struct:b2Mat22	typeref:typename:b2Vec2
+col2	Common/b2Math.h	/^	b2Vec2 col1, col2;$/;"	m	struct:b2Mat22	typeref:typename:b2Vec2
+collideConnected	Dynamics/Joints/b2Joint.h	/^	bool collideConnected;$/;"	m	struct:b2JointDef	typeref:typename:bool
+contact	Dynamics/Contacts/b2Contact.h	/^	b2Contact* contact;$/;"	m	struct:b2ContactNode	typeref:typename:b2Contact *
+createFcn	Dynamics/Contacts/b2Contact.h	/^	b2ContactCreateFcn* createFcn;$/;"	m	struct:b2ContactRegister	typeref:typename:b2ContactCreateFcn *
+dampingRatio	Dynamics/Joints/b2MouseJoint.h	/^	float64 dampingRatio;$/;"	m	struct:b2MouseJointDef	typeref:typename:float64
+data	Common/b2StackAllocator.h	/^	char* data;$/;"	m	struct:b2StackEntry	typeref:typename:char *
+density	Collision/b2Shape.h	/^	float64 density;$/;"	m	struct:b2ShapeDef	typeref:typename:float64
+destroyFcn	Dynamics/Contacts/b2Contact.h	/^	b2ContactDestroyFcn* destroyFcn;$/;"	m	struct:b2ContactRegister	typeref:typename:b2ContactDestroyFcn *
+dt	Dynamics/b2World.h	/^	float64 dt;			\/\/ time step$/;"	m	struct:b2TimeStep	typeref:typename:float64
+e_allowSleepFlag	Dynamics/b2Body.h	/^		e_allowSleepFlag	= 0x0010,$/;"	e	enum:b2Body::__anon9c1504440103
+e_atLowerLimit	Dynamics/Joints/b2Joint.h	/^	e_atLowerLimit,$/;"	e	enum:b2LimitState
+e_atUpperLimit	Dynamics/Joints/b2Joint.h	/^	e_atUpperLimit,$/;"	e	enum:b2LimitState
+e_boxShape	Collision/b2Shape.h	/^	e_boxShape,$/;"	e	enum:b2ShapeType
+e_circleShape	Collision/b2Shape.h	/^	e_circleShape,$/;"	e	enum:b2ShapeType
+e_destroyFlag	Dynamics/Contacts/b2Contact.h	/^		e_destroyFlag		= 0x0002,$/;"	e	enum:b2Contact::__anon84bfa7100103
+e_destroyFlag	Dynamics/b2Body.h	/^		e_destroyFlag		= 0x0020,$/;"	e	enum:b2Body::__anon9c1504440103
+e_distanceJoint	Dynamics/Joints/b2Joint.h	/^	e_distanceJoint,$/;"	e	enum:b2JointType
+e_equalLimits	Dynamics/Joints/b2Joint.h	/^	e_equalLimits$/;"	e	enum:b2LimitState
+e_frozenFlag	Dynamics/b2Body.h	/^		e_frozenFlag		= 0x0002,$/;"	e	enum:b2Body::__anon9c1504440103
+e_gearJoint	Dynamics/Joints/b2Joint.h	/^	e_gearJoint$/;"	e	enum:b2JointType
+e_inactiveLimit	Dynamics/Joints/b2Joint.h	/^	e_inactiveLimit,$/;"	e	enum:b2LimitState
+e_islandFlag	Dynamics/Contacts/b2Contact.h	/^		e_islandFlag		= 0x0001,$/;"	e	enum:b2Contact::__anon84bfa7100103
+e_islandFlag	Dynamics/b2Body.h	/^		e_islandFlag		= 0x0004,$/;"	e	enum:b2Body::__anon9c1504440103
+e_meshShape	Collision/b2Shape.h	/^	e_meshShape,$/;"	e	enum:b2ShapeType
+e_mouseJoint	Dynamics/Joints/b2Joint.h	/^	e_mouseJoint,$/;"	e	enum:b2JointType
+e_pairBuffered	Collision/b2PairManager.h	/^		e_pairBuffered	= 0x0001,$/;"	e	enum:b2Pair::__anone6f338b10103
+e_pairFinal	Collision/b2PairManager.h	/^		e_pairFinal		= 0x0004,$/;"	e	enum:b2Pair::__anone6f338b10103
+e_pairRemoved	Collision/b2PairManager.h	/^		e_pairRemoved	= 0x0002,$/;"	e	enum:b2Pair::__anone6f338b10103
+e_polyShape	Collision/b2Shape.h	/^	e_polyShape,$/;"	e	enum:b2ShapeType
+e_prismaticJoint	Dynamics/Joints/b2Joint.h	/^	e_prismaticJoint,$/;"	e	enum:b2JointType
+e_pulleyJoint	Dynamics/Joints/b2Joint.h	/^	e_pulleyJoint,$/;"	e	enum:b2JointType
+e_revoluteJoint	Dynamics/Joints/b2Joint.h	/^	e_revoluteJoint,$/;"	e	enum:b2JointType
+e_shapeTypeCount	Collision/b2Shape.h	/^	e_shapeTypeCount,$/;"	e	enum:b2ShapeType
+e_sleepFlag	Dynamics/b2Body.h	/^		e_sleepFlag			= 0x0008,$/;"	e	enum:b2Body::__anon9c1504440103
+e_staticFlag	Dynamics/b2Body.h	/^		e_staticFlag		= 0x0001,$/;"	e	enum:b2Body::__anon9c1504440103
+e_unknownJoint	Dynamics/Joints/b2Joint.h	/^	e_unknownJoint,$/;"	e	enum:b2JointType
+e_unknownShape	Collision/b2Shape.h	/^	e_unknownShape = -1,$/;"	e	enum:b2ShapeType
+enableLimit	Dynamics/Joints/b2PrismaticJoint.h	/^	bool enableLimit;$/;"	m	struct:b2PrismaticJointDef	typeref:typename:bool
+enableLimit	Dynamics/Joints/b2RevoluteJoint.h	/^	bool enableLimit;$/;"	m	struct:b2RevoluteJointDef	typeref:typename:bool
+enableMotor	Dynamics/Joints/b2PrismaticJoint.h	/^	bool enableMotor;$/;"	m	struct:b2PrismaticJointDef	typeref:typename:bool
+enableMotor	Dynamics/Joints/b2RevoluteJoint.h	/^	bool enableMotor;$/;"	m	struct:b2RevoluteJointDef	typeref:typename:bool
+extents	Collision/b2Collision.h	/^	b2Vec2 extents;$/;"	m	struct:b2OBB	typeref:typename:b2Vec2
+extents	Collision/b2Shape.h	/^	b2Vec2 extents;$/;"	m	struct:b2BoxDef	typeref:typename:b2Vec2
+features	Collision/b2Collision.h	/^	} features;$/;"	m	union:b2ContactID	typeref:struct:b2ContactID::Features
+flip	Collision/b2Collision.h	/^		uint8 flip;$/;"	m	struct:b2ContactID::Features	typeref:typename:uint8
+float64	Common/b2Settings.h	/^typedef double float64;$/;"	t	typeref:typename:double
+frequencyHz	Dynamics/Joints/b2MouseJoint.h	/^	float64 frequencyHz;$/;"	m	struct:b2MouseJointDef	typeref:typename:float64
+friction	Collision/b2Shape.h	/^	float64 friction;$/;"	m	struct:b2ShapeDef	typeref:typename:float64
+friction	Dynamics/Contacts/b2ContactSolver.h	/^	float64 friction;$/;"	m	struct:b2ContactConstraint	typeref:typename:float64
+g_GJK_Iterations	Collision/b2Distance.cpp	/^int32 g_GJK_Iterations = 0;$/;"	v	typeref:typename:int32
+groundPoint1	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 groundPoint1;$/;"	m	struct:b2PulleyJointDef	typeref:typename:b2Vec2
+groundPoint2	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 groundPoint2;$/;"	m	struct:b2PulleyJointDef	typeref:typename:b2Vec2
+groupIndex	Collision/b2Shape.h	/^	int16 groupIndex;$/;"	m	struct:b2ShapeDef	typeref:typename:int16
+id	Collision/b2CollidePoly.cpp	/^	b2ContactID id;$/;"	m	struct:ClipVertex	typeref:typename:b2ContactID	file:
+id	Collision/b2Collision.h	/^	b2ContactID id;$/;"	m	struct:b2ContactPoint	typeref:typename:b2ContactID
+incidentEdge	Collision/b2Collision.h	/^		uint8 incidentEdge;$/;"	m	struct:b2ContactID::Features	typeref:typename:uint8
+incidentVertex	Collision/b2Collision.h	/^		uint8 incidentVertex;$/;"	m	struct:b2ContactID::Features	typeref:typename:uint8
+int16	Common/b2Settings.h	/^typedef signed short int16;$/;"	t	typeref:typename:signed short
+int32	Common/b2Settings.h	/^typedef signed int int32;$/;"	t	typeref:typename:signed int
+int8	Common/b2Settings.h	/^typedef signed char	int8;$/;"	t	typeref:typename:signed char
+inv_dt	Dynamics/b2World.h	/^	float64 inv_dt;		\/\/ inverse time step (0 if dt == 0).$/;"	m	struct:b2TimeStep	typeref:typename:float64
+isSleeping	Dynamics/b2Body.h	/^	bool isSleeping;$/;"	m	struct:b2BodyDef	typeref:typename:bool
+iterations	Dynamics/b2World.h	/^	int32 iterations;$/;"	m	struct:b2TimeStep	typeref:typename:int32
+joint	Dynamics/Joints/b2Joint.h	/^	b2Joint* joint;$/;"	m	struct:b2JointNode	typeref:typename:b2Joint *
+joint1	Dynamics/Joints/b2GearJoint.h	/^	b2Joint* joint1;$/;"	m	struct:b2GearJointDef	typeref:typename:b2Joint *
+joint2	Dynamics/Joints/b2GearJoint.h	/^	b2Joint* joint2;$/;"	m	struct:b2GearJointDef	typeref:typename:b2Joint *
+key	Collision/b2Collision.h	/^	uint32 key;$/;"	m	union:b2ContactID	typeref:typename:uint32
+linear1	Dynamics/Joints/b2Joint.h	/^	b2Vec2 linear1;$/;"	m	struct:b2Jacobian	typeref:typename:b2Vec2
+linear2	Dynamics/Joints/b2Joint.h	/^	b2Vec2 linear2;$/;"	m	struct:b2Jacobian	typeref:typename:b2Vec2
+linearDamping	Dynamics/b2Body.h	/^	float64 linearDamping;$/;"	m	struct:b2BodyDef	typeref:typename:float64
+linearVelocity	Dynamics/b2Body.h	/^	b2Vec2 linearVelocity;$/;"	m	struct:b2BodyDef	typeref:typename:b2Vec2
+localAnchor1	Dynamics/Contacts/b2ContactSolver.h	/^	b2Vec2 localAnchor1;$/;"	m	struct:b2ContactConstraintPoint	typeref:typename:b2Vec2
+localAnchor2	Dynamics/Contacts/b2ContactSolver.h	/^	b2Vec2 localAnchor2;$/;"	m	struct:b2ContactConstraintPoint	typeref:typename:b2Vec2
+localPosition	Collision/b2Shape.h	/^	b2Vec2 localPosition;$/;"	m	struct:b2ShapeDef	typeref:typename:b2Vec2
+localRotation	Collision/b2Shape.h	/^	float64 localRotation;$/;"	m	struct:b2ShapeDef	typeref:typename:float64
+lowerAngle	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 lowerAngle;$/;"	m	struct:b2RevoluteJointDef	typeref:typename:float64
+lowerBounds	Collision/b2BroadPhase.h	/^	uint16 lowerBounds[2], upperBounds[2];$/;"	m	struct:b2Proxy	typeref:typename:uint16[2]
+lowerTranslation	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 lowerTranslation;$/;"	m	struct:b2PrismaticJointDef	typeref:typename:float64
+lowerValues	Collision/b2BroadPhase.cpp	/^	uint16 lowerValues[2];$/;"	m	struct:b2BoundValues	typeref:typename:uint16[2]	file:
+m_C	Dynamics/Joints/b2MouseJoint.h	/^	b2Vec2 m_C;				\/\/ position error$/;"	m	class:b2MouseJoint	typeref:typename:b2Vec2
+m_I	Dynamics/b2Body.h	/^	float64 m_I, m_invI;$/;"	m	class:b2Body	typeref:typename:float64
+m_J	Dynamics/Joints/b2GearJoint.h	/^	b2Jacobian m_J;$/;"	m	class:b2GearJoint	typeref:typename:b2Jacobian
+m_R	Collision/b2Shape.h	/^	b2Mat22 m_R;$/;"	m	class:b2Shape	typeref:typename:b2Mat22
+m_R	Dynamics/b2Body.h	/^	b2Mat22 m_R;$/;"	m	class:b2Body	typeref:typename:b2Mat22
+m_allocation	Common/b2StackAllocator.h	/^	int32 m_allocation;$/;"	m	class:b2StackAllocator	typeref:typename:int32
+m_allocator	Dynamics/Contacts/b2ContactSolver.h	/^	b2StackAllocator* m_allocator;$/;"	m	class:b2ContactSolver	typeref:typename:b2StackAllocator *
+m_allocator	Dynamics/b2Island.h	/^	b2StackAllocator* m_allocator;$/;"	m	class:b2Island	typeref:typename:b2StackAllocator *
+m_allowSleep	Dynamics/b2World.h	/^	bool m_allowSleep;$/;"	m	class:b2World	typeref:typename:bool
+m_angularDamping	Dynamics/b2Body.h	/^	float64 m_angularDamping;$/;"	m	class:b2Body	typeref:typename:float64
+m_angularImpulse	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_angularImpulse;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_angularMass	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_angularMass;			\/\/ effective mass for angular constraint.$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_angularVelocity	Dynamics/b2Body.h	/^	float64 m_angularVelocity;$/;"	m	class:b2Body	typeref:typename:float64
+m_beta	Dynamics/Joints/b2MouseJoint.h	/^	float64 m_beta;			\/\/ bias factor$/;"	m	class:b2MouseJoint	typeref:typename:float64
+m_blockAllocator	Dynamics/b2World.h	/^	b2BlockAllocator m_blockAllocator;$/;"	m	class:b2World	typeref:typename:b2BlockAllocator
+m_bodies	Dynamics/b2Island.h	/^	b2Body** m_bodies;$/;"	m	class:b2Island	typeref:typename:b2Body **
+m_body	Collision/b2Shape.h	/^	b2Body* m_body;$/;"	m	class:b2Shape	typeref:typename:b2Body *
+m_body1	Dynamics/Joints/b2Joint.h	/^	b2Body* m_body1;$/;"	m	class:b2Joint	typeref:typename:b2Body *
+m_body2	Dynamics/Joints/b2Joint.h	/^	b2Body* m_body2;$/;"	m	class:b2Joint	typeref:typename:b2Body *
+m_bodyCapacity	Dynamics/b2Island.h	/^	int32 m_bodyCapacity;$/;"	m	class:b2Island	typeref:typename:int32
+m_bodyCount	Dynamics/b2Island.h	/^	int32 m_bodyCount;$/;"	m	class:b2Island	typeref:typename:int32
+m_bodyCount	Dynamics/b2World.h	/^	int32 m_bodyCount;$/;"	m	class:b2World	typeref:typename:int32
+m_bodyDestroyList	Dynamics/b2World.h	/^	b2Body* m_bodyDestroyList;$/;"	m	class:b2World	typeref:typename:b2Body *
+m_bodyList	Dynamics/b2World.h	/^	b2Body* m_bodyList;$/;"	m	class:b2World	typeref:typename:b2Body *
+m_bounds	Collision/b2BroadPhase.h	/^	b2Bound m_bounds[2][2*b2_maxProxies];$/;"	m	class:b2BroadPhase	typeref:typename:b2Bound[2][]
+m_broadPhase	Collision/b2PairManager.h	/^	b2BroadPhase *m_broadPhase;$/;"	m	class:b2PairManager	typeref:typename:b2BroadPhase *
+m_broadPhase	Dynamics/b2World.h	/^	b2BroadPhase* m_broadPhase;$/;"	m	class:b2World	typeref:typename:b2BroadPhase *
+m_callback	Collision/b2PairManager.h	/^	b2PairCallback *m_callback;$/;"	m	class:b2PairManager	typeref:typename:b2PairCallback *
+m_categoryBits	Collision/b2Shape.h	/^	uint16 m_categoryBits;$/;"	m	class:b2Shape	typeref:typename:uint16
+m_center	Dynamics/b2Body.h	/^	b2Vec2 m_center;	\/\/ local vector from client origin to center of mass$/;"	m	class:b2Body	typeref:typename:b2Vec2
+m_chunkCount	Common/b2BlockAllocator.h	/^	int32 m_chunkCount;$/;"	m	class:b2BlockAllocator	typeref:typename:int32
+m_chunkSpace	Common/b2BlockAllocator.h	/^	int32 m_chunkSpace;$/;"	m	class:b2BlockAllocator	typeref:typename:int32
+m_chunks	Common/b2BlockAllocator.h	/^	b2Chunk* m_chunks;$/;"	m	class:b2BlockAllocator	typeref:typename:b2Chunk *
+m_collideConnected	Dynamics/Joints/b2Joint.h	/^	bool m_collideConnected;$/;"	m	class:b2Joint	typeref:typename:bool
+m_constant	Dynamics/Joints/b2GearJoint.h	/^	float64 m_constant;$/;"	m	class:b2GearJoint	typeref:typename:float64
+m_constant	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_constant;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_constraintCount	Dynamics/Contacts/b2ContactSolver.h	/^	int m_constraintCount;$/;"	m	class:b2ContactSolver	typeref:typename:int
+m_constraints	Dynamics/Contacts/b2ContactSolver.h	/^	b2ContactConstraint* m_constraints;$/;"	m	class:b2ContactSolver	typeref:typename:b2ContactConstraint *
+m_contactCapacity	Dynamics/b2Island.h	/^	int32 m_contactCapacity;$/;"	m	class:b2Island	typeref:typename:int32
+m_contactCount	Dynamics/b2Island.h	/^	int32 m_contactCount;$/;"	m	class:b2Island	typeref:typename:int32
+m_contactCount	Dynamics/b2World.h	/^	int32 m_contactCount;$/;"	m	class:b2World	typeref:typename:int32
+m_contactList	Dynamics/b2Body.h	/^	b2ContactNode* m_contactList;$/;"	m	class:b2Body	typeref:typename:b2ContactNode *
+m_contactList	Dynamics/b2World.h	/^	b2Contact* m_contactList;$/;"	m	class:b2World	typeref:typename:b2Contact *
+m_contactManager	Dynamics/b2World.h	/^	b2ContactManager m_contactManager;$/;"	m	class:b2World	typeref:typename:b2ContactManager
+m_contacts	Dynamics/b2Island.h	/^	b2Contact** m_contacts;$/;"	m	class:b2Island	typeref:typename:b2Contact **
+m_coreVertices	Collision/b2Shape.h	/^	b2Vec2 m_coreVertices[b2_maxPolyVertices];$/;"	m	class:b2PolyShape	typeref:typename:b2Vec2[]
+m_data	Common/b2StackAllocator.h	/^	char m_data[b2_stackSize];$/;"	m	class:b2StackAllocator	typeref:typename:char[]
+m_destroyImmediate	Dynamics/b2ContactManager.h	/^	bool m_destroyImmediate;$/;"	m	class:b2ContactManager	typeref:typename:bool
+m_enableLimit	Dynamics/Joints/b2PrismaticJoint.h	/^	bool m_enableLimit;$/;"	m	class:b2PrismaticJoint	typeref:typename:bool
+m_enableLimit	Dynamics/Joints/b2RevoluteJoint.h	/^	bool m_enableLimit;$/;"	m	class:b2RevoluteJoint	typeref:typename:bool
+m_enableMotor	Dynamics/Joints/b2PrismaticJoint.h	/^	bool m_enableMotor;$/;"	m	class:b2PrismaticJoint	typeref:typename:bool
+m_enableMotor	Dynamics/Joints/b2RevoluteJoint.h	/^	bool m_enableMotor;$/;"	m	class:b2RevoluteJoint	typeref:typename:bool
+m_entries	Common/b2StackAllocator.h	/^	b2StackEntry m_entries[b2_maxStackEntries];$/;"	m	class:b2StackAllocator	typeref:typename:b2StackEntry[]
+m_entryCount	Common/b2StackAllocator.h	/^	int32 m_entryCount;$/;"	m	class:b2StackAllocator	typeref:typename:int32
+m_filter	Dynamics/b2World.h	/^	b2CollisionFilter* m_filter;$/;"	m	class:b2World	typeref:typename:b2CollisionFilter *
+m_flags	Dynamics/Contacts/b2Contact.h	/^	uint32 m_flags;$/;"	m	class:b2Contact	typeref:typename:uint32
+m_flags	Dynamics/b2Body.h	/^	uint32 m_flags;$/;"	m	class:b2Body	typeref:typename:uint32
+m_force	Dynamics/b2Body.h	/^	b2Vec2 m_force;$/;"	m	class:b2Body	typeref:typename:b2Vec2
+m_freeLists	Common/b2BlockAllocator.h	/^	b2Block* m_freeLists[b2_blockSizes];$/;"	m	class:b2BlockAllocator	typeref:typename:b2Block * []
+m_freePair	Collision/b2PairManager.h	/^	uint16 m_freePair;$/;"	m	class:b2PairManager	typeref:typename:uint16
+m_freeProxy	Collision/b2BroadPhase.h	/^	uint16 m_freeProxy;$/;"	m	class:b2BroadPhase	typeref:typename:uint16
+m_friction	Collision/b2Shape.h	/^	float64 m_friction;$/;"	m	class:b2Shape	typeref:typename:float64
+m_friction	Dynamics/Contacts/b2Contact.h	/^	float64 m_friction;$/;"	m	class:b2Contact	typeref:typename:float64
+m_gamma	Dynamics/Joints/b2MouseJoint.h	/^	float64 m_gamma;		\/\/ softness$/;"	m	class:b2MouseJoint	typeref:typename:float64
+m_gravity	Dynamics/b2World.h	/^	b2Vec2 m_gravity;$/;"	m	class:b2World	typeref:typename:b2Vec2
+m_ground	Dynamics/Joints/b2PulleyJoint.h	/^	b2Body* m_ground;$/;"	m	class:b2PulleyJoint	typeref:typename:b2Body *
+m_ground1	Dynamics/Joints/b2GearJoint.h	/^	b2Body* m_ground1;$/;"	m	class:b2GearJoint	typeref:typename:b2Body *
+m_ground2	Dynamics/Joints/b2GearJoint.h	/^	b2Body* m_ground2;$/;"	m	class:b2GearJoint	typeref:typename:b2Body *
+m_groundAnchor1	Dynamics/Joints/b2GearJoint.h	/^	b2Vec2 m_groundAnchor1;$/;"	m	class:b2GearJoint	typeref:typename:b2Vec2
+m_groundAnchor1	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 m_groundAnchor1;$/;"	m	class:b2PulleyJoint	typeref:typename:b2Vec2
+m_groundAnchor2	Dynamics/Joints/b2GearJoint.h	/^	b2Vec2 m_groundAnchor2;$/;"	m	class:b2GearJoint	typeref:typename:b2Vec2
+m_groundAnchor2	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 m_groundAnchor2;$/;"	m	class:b2PulleyJoint	typeref:typename:b2Vec2
+m_groundBody	Dynamics/b2World.h	/^	b2Body* m_groundBody;$/;"	m	class:b2World	typeref:typename:b2Body *
+m_groupIndex	Collision/b2Shape.h	/^	int16 m_groupIndex;$/;"	m	class:b2Shape	typeref:typename:int16
+m_hashTable	Collision/b2PairManager.h	/^	uint16 m_hashTable[b2_tableCapacity];$/;"	m	class:b2PairManager	typeref:typename:uint16[]
+m_impulse	Dynamics/Joints/b2DistanceJoint.h	/^	float64 m_impulse;$/;"	m	class:b2DistanceJoint	typeref:typename:float64
+m_impulse	Dynamics/Joints/b2GearJoint.h	/^	float64 m_impulse;$/;"	m	class:b2GearJoint	typeref:typename:float64
+m_impulse	Dynamics/Joints/b2MouseJoint.h	/^	b2Vec2 m_impulse;$/;"	m	class:b2MouseJoint	typeref:typename:b2Vec2
+m_index	Common/b2StackAllocator.h	/^	int32 m_index;$/;"	m	class:b2StackAllocator	typeref:typename:int32
+m_initialAngle	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_initialAngle;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_intialAngle	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 m_intialAngle;$/;"	m	class:b2RevoluteJoint	typeref:typename:float64
+m_invI	Dynamics/b2Body.h	/^	float64 m_I, m_invI;$/;"	m	class:b2Body	typeref:typename:float64
+m_invMass	Dynamics/b2Body.h	/^	float64 m_mass, m_invMass;$/;"	m	class:b2Body	typeref:typename:float64
+m_islandFlag	Dynamics/Joints/b2Joint.h	/^	bool m_islandFlag;$/;"	m	class:b2Joint	typeref:typename:bool
+m_jointCapacity	Dynamics/b2Island.h	/^	int32 m_jointCapacity;$/;"	m	class:b2Island	typeref:typename:int32
+m_jointCount	Dynamics/b2Island.h	/^	int32 m_jointCount;$/;"	m	class:b2Island	typeref:typename:int32
+m_jointCount	Dynamics/b2World.h	/^	int32 m_jointCount;$/;"	m	class:b2World	typeref:typename:int32
+m_jointList	Dynamics/b2Body.h	/^	b2JointNode* m_jointList;$/;"	m	class:b2Body	typeref:typename:b2JointNode *
+m_jointList	Dynamics/b2World.h	/^	b2Joint* m_jointList;$/;"	m	class:b2World	typeref:typename:b2Joint *
+m_joints	Dynamics/b2Island.h	/^	b2Joint** m_joints;$/;"	m	class:b2Island	typeref:typename:b2Joint **
+m_length	Dynamics/Joints/b2DistanceJoint.h	/^	float64 m_length;$/;"	m	class:b2DistanceJoint	typeref:typename:float64
+m_limitImpulse	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_limitImpulse;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_limitImpulse	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 m_limitImpulse;$/;"	m	class:b2RevoluteJoint	typeref:typename:float64
+m_limitImpulse1	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_limitImpulse1;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_limitImpulse2	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_limitImpulse2;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_limitMass1	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_limitMass1;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_limitMass2	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_limitMass2;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_limitPositionImpulse	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_limitPositionImpulse;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_limitPositionImpulse	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 m_limitPositionImpulse;$/;"	m	class:b2RevoluteJoint	typeref:typename:float64
+m_limitPositionImpulse1	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_limitPositionImpulse1;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_limitPositionImpulse2	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_limitPositionImpulse2;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_limitState	Dynamics/Joints/b2PrismaticJoint.h	/^	b2LimitState m_limitState;$/;"	m	class:b2PrismaticJoint	typeref:typename:b2LimitState
+m_limitState	Dynamics/Joints/b2RevoluteJoint.h	/^	b2LimitState m_limitState;$/;"	m	class:b2RevoluteJoint	typeref:typename:b2LimitState
+m_limitState1	Dynamics/Joints/b2PulleyJoint.h	/^	b2LimitState m_limitState1;$/;"	m	class:b2PulleyJoint	typeref:typename:b2LimitState
+m_limitState2	Dynamics/Joints/b2PulleyJoint.h	/^	b2LimitState m_limitState2;$/;"	m	class:b2PulleyJoint	typeref:typename:b2LimitState
+m_linearDamping	Dynamics/b2Body.h	/^	float64 m_linearDamping;$/;"	m	class:b2Body	typeref:typename:float64
+m_linearImpulse	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_linearImpulse;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_linearJacobian	Dynamics/Joints/b2PrismaticJoint.h	/^	b2Jacobian m_linearJacobian;$/;"	m	class:b2PrismaticJoint	typeref:typename:b2Jacobian
+m_linearMass	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_linearMass;				\/\/ effective mass for point-to-line constraint.$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_linearVelocity	Dynamics/b2Body.h	/^	b2Vec2 m_linearVelocity;$/;"	m	class:b2Body	typeref:typename:b2Vec2
+m_listener	Dynamics/b2World.h	/^	b2WorldListener* m_listener;$/;"	m	class:b2World	typeref:typename:b2WorldListener *
+m_localAnchor	Dynamics/Joints/b2MouseJoint.h	/^	b2Vec2 m_localAnchor;$/;"	m	class:b2MouseJoint	typeref:typename:b2Vec2
+m_localAnchor1	Dynamics/Joints/b2DistanceJoint.h	/^	b2Vec2 m_localAnchor1;$/;"	m	class:b2DistanceJoint	typeref:typename:b2Vec2
+m_localAnchor1	Dynamics/Joints/b2GearJoint.h	/^	b2Vec2 m_localAnchor1;$/;"	m	class:b2GearJoint	typeref:typename:b2Vec2
+m_localAnchor1	Dynamics/Joints/b2PrismaticJoint.h	/^	b2Vec2 m_localAnchor1;$/;"	m	class:b2PrismaticJoint	typeref:typename:b2Vec2
+m_localAnchor1	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 m_localAnchor1;$/;"	m	class:b2PulleyJoint	typeref:typename:b2Vec2
+m_localAnchor1	Dynamics/Joints/b2RevoluteJoint.h	/^	b2Vec2 m_localAnchor1;$/;"	m	class:b2RevoluteJoint	typeref:typename:b2Vec2
+m_localAnchor2	Dynamics/Joints/b2DistanceJoint.h	/^	b2Vec2 m_localAnchor2;$/;"	m	class:b2DistanceJoint	typeref:typename:b2Vec2
+m_localAnchor2	Dynamics/Joints/b2GearJoint.h	/^	b2Vec2 m_localAnchor2;$/;"	m	class:b2GearJoint	typeref:typename:b2Vec2
+m_localAnchor2	Dynamics/Joints/b2PrismaticJoint.h	/^	b2Vec2 m_localAnchor2;$/;"	m	class:b2PrismaticJoint	typeref:typename:b2Vec2
+m_localAnchor2	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 m_localAnchor2;$/;"	m	class:b2PulleyJoint	typeref:typename:b2Vec2
+m_localAnchor2	Dynamics/Joints/b2RevoluteJoint.h	/^	b2Vec2 m_localAnchor2;$/;"	m	class:b2RevoluteJoint	typeref:typename:b2Vec2
+m_localCentroid	Collision/b2Shape.h	/^	b2Vec2 m_localCentroid;$/;"	m	class:b2PolyShape	typeref:typename:b2Vec2
+m_localOBB	Collision/b2Shape.h	/^	b2OBB m_localOBB;$/;"	m	class:b2PolyShape	typeref:typename:b2OBB
+m_localPosition	Collision/b2Shape.h	/^	b2Vec2 m_localPosition;$/;"	m	class:b2CircleShape	typeref:typename:b2Vec2
+m_localXAxis1	Dynamics/Joints/b2PrismaticJoint.h	/^	b2Vec2 m_localXAxis1;$/;"	m	class:b2PrismaticJoint	typeref:typename:b2Vec2
+m_localYAxis1	Dynamics/Joints/b2PrismaticJoint.h	/^	b2Vec2 m_localYAxis1;$/;"	m	class:b2PrismaticJoint	typeref:typename:b2Vec2
+m_lowerAngle	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 m_lowerAngle;$/;"	m	class:b2RevoluteJoint	typeref:typename:float64
+m_lowerTranslation	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_lowerTranslation;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_manifold	Dynamics/Contacts/b2CircleContact.h	/^	b2Manifold m_manifold;$/;"	m	class:b2CircleContact	typeref:typename:b2Manifold
+m_manifold	Dynamics/Contacts/b2PolyAndCircleContact.h	/^	b2Manifold m_manifold;$/;"	m	class:b2PolyAndCircleContact	typeref:typename:b2Manifold
+m_manifold	Dynamics/Contacts/b2PolyContact.h	/^	b2Manifold m_manifold;$/;"	m	class:b2PolyContact	typeref:typename:b2Manifold
+m_manifoldCount	Dynamics/Contacts/b2Contact.h	/^	int32 m_manifoldCount;$/;"	m	class:b2Contact	typeref:typename:int32
+m_maskBits	Collision/b2Shape.h	/^	uint16 m_maskBits;$/;"	m	class:b2Shape	typeref:typename:uint16
+m_mass	Dynamics/Joints/b2DistanceJoint.h	/^	float64 m_mass;	\/\/ effective mass for the constraint.$/;"	m	class:b2DistanceJoint	typeref:typename:float64
+m_mass	Dynamics/Joints/b2GearJoint.h	/^	float64 m_mass;$/;"	m	class:b2GearJoint	typeref:typename:float64
+m_mass	Dynamics/b2Body.h	/^	float64 m_mass, m_invMass;$/;"	m	class:b2Body	typeref:typename:float64
+m_maxAllocation	Common/b2StackAllocator.h	/^	int32 m_maxAllocation;$/;"	m	class:b2StackAllocator	typeref:typename:int32
+m_maxForce	Dynamics/Joints/b2MouseJoint.h	/^	float64 m_maxForce;$/;"	m	class:b2MouseJoint	typeref:typename:float64
+m_maxLength1	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_maxLength1;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_maxLength2	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_maxLength2;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_maxMotorForce	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_maxMotorForce;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_maxMotorTorque	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 m_maxMotorTorque;$/;"	m	class:b2RevoluteJoint	typeref:typename:float64
+m_maxRadius	Collision/b2Shape.h	/^	float64 m_maxRadius;$/;"	m	class:b2Shape	typeref:typename:float64
+m_motorImpulse	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_motorImpulse;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_motorImpulse	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 m_motorImpulse;$/;"	m	class:b2RevoluteJoint	typeref:typename:float64
+m_motorJacobian	Dynamics/Joints/b2PrismaticJoint.h	/^	b2Jacobian m_motorJacobian;$/;"	m	class:b2PrismaticJoint	typeref:typename:b2Jacobian
+m_motorMass	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_motorMass;			\/\/ effective mass for motor\/limit translational constraint.$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_motorMass	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 m_motorMass;	\/\/ effective mass for motor\/limit angular constraint.$/;"	m	class:b2RevoluteJoint	typeref:typename:float64
+m_motorSpeed	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_motorSpeed;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_motorSpeed	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 m_motorSpeed;$/;"	m	class:b2RevoluteJoint	typeref:typename:float64
+m_next	Collision/b2Shape.h	/^	b2Shape* m_next;$/;"	m	class:b2Shape	typeref:typename:b2Shape *
+m_next	Dynamics/Contacts/b2Contact.h	/^	b2Contact* m_next;$/;"	m	class:b2Contact	typeref:typename:b2Contact *
+m_next	Dynamics/Joints/b2Joint.h	/^	b2Joint* m_next;$/;"	m	class:b2Joint	typeref:typename:b2Joint *
+m_next	Dynamics/b2Body.h	/^	b2Body* m_next;$/;"	m	class:b2Body	typeref:typename:b2Body *
+m_node1	Dynamics/Contacts/b2Contact.h	/^	b2ContactNode m_node1;$/;"	m	class:b2Contact	typeref:typename:b2ContactNode
+m_node1	Dynamics/Joints/b2Joint.h	/^	b2JointNode m_node1;$/;"	m	class:b2Joint	typeref:typename:b2JointNode
+m_node2	Dynamics/Contacts/b2Contact.h	/^	b2ContactNode m_node2;$/;"	m	class:b2Contact	typeref:typename:b2ContactNode
+m_node2	Dynamics/Joints/b2Joint.h	/^	b2JointNode m_node2;$/;"	m	class:b2Joint	typeref:typename:b2JointNode
+m_normals	Collision/b2Shape.h	/^	b2Vec2 m_normals[b2_maxPolyVertices];$/;"	m	class:b2PolyShape	typeref:typename:b2Vec2[]
+m_nullContact	Dynamics/b2ContactManager.h	/^	b2NullContact m_nullContact;$/;"	m	class:b2ContactManager	typeref:typename:b2NullContact
+m_pairBuffer	Collision/b2PairManager.h	/^	b2BufferedPair m_pairBuffer[b2_maxPairs];$/;"	m	class:b2PairManager	typeref:typename:b2BufferedPair[]
+m_pairBufferCount	Collision/b2PairManager.h	/^	int32 m_pairBufferCount;$/;"	m	class:b2PairManager	typeref:typename:int32
+m_pairCount	Collision/b2PairManager.h	/^	int32 m_pairCount;$/;"	m	class:b2PairManager	typeref:typename:int32
+m_pairManager	Collision/b2BroadPhase.h	/^	b2PairManager m_pairManager;$/;"	m	class:b2BroadPhase	typeref:typename:b2PairManager
+m_pairs	Collision/b2PairManager.h	/^	b2Pair m_pairs[b2_maxPairs];$/;"	m	class:b2PairManager	typeref:typename:b2Pair[]
+m_position	Collision/b2Shape.h	/^	b2Vec2 m_position;$/;"	m	class:b2Shape	typeref:typename:b2Vec2
+m_position	Dynamics/b2Body.h	/^	b2Vec2 m_position;	\/\/ center of mass position$/;"	m	class:b2Body	typeref:typename:b2Vec2
+m_position0	Dynamics/b2Body.h	/^	b2Vec2 m_position0;$/;"	m	class:b2Body	typeref:typename:b2Vec2
+m_positionError	Dynamics/b2Island.h	/^	float64 m_positionError;$/;"	m	class:b2Island	typeref:typename:float64
+m_positionIterationCount	Dynamics/b2Island.cpp	/^int32 b2Island::m_positionIterationCount = 0;$/;"	m	class:b2Island	typeref:typename:int32
+m_positionIterationCount	Dynamics/b2Island.h	/^	static int32 m_positionIterationCount;$/;"	m	class:b2Island	typeref:typename:int32
+m_positionIterationCount	Dynamics/b2World.h	/^	int32 m_positionIterationCount;$/;"	m	class:b2World	typeref:typename:int32
+m_prev	Dynamics/Contacts/b2Contact.h	/^	b2Contact* m_prev;$/;"	m	class:b2Contact	typeref:typename:b2Contact *
+m_prev	Dynamics/Joints/b2Joint.h	/^	b2Joint* m_prev;$/;"	m	class:b2Joint	typeref:typename:b2Joint *
+m_prev	Dynamics/b2Body.h	/^	b2Body* m_prev;$/;"	m	class:b2Body	typeref:typename:b2Body *
+m_prismatic1	Dynamics/Joints/b2GearJoint.h	/^	b2PrismaticJoint* m_prismatic1;$/;"	m	class:b2GearJoint	typeref:typename:b2PrismaticJoint *
+m_prismatic2	Dynamics/Joints/b2GearJoint.h	/^	b2PrismaticJoint* m_prismatic2;$/;"	m	class:b2GearJoint	typeref:typename:b2PrismaticJoint *
+m_proxyCount	Collision/b2BroadPhase.h	/^	int32 m_proxyCount;$/;"	m	class:b2BroadPhase	typeref:typename:int32
+m_proxyId	Collision/b2Shape.h	/^	uint16 m_proxyId;$/;"	m	class:b2Shape	typeref:typename:uint16
+m_proxyPool	Collision/b2BroadPhase.h	/^	b2Proxy m_proxyPool[b2_maxProxies];$/;"	m	class:b2BroadPhase	typeref:typename:b2Proxy[]
+m_ptpImpulse	Dynamics/Joints/b2RevoluteJoint.h	/^	b2Vec2 m_ptpImpulse;$/;"	m	class:b2RevoluteJoint	typeref:typename:b2Vec2
+m_ptpMass	Dynamics/Joints/b2MouseJoint.h	/^	b2Mat22 m_ptpMass;		\/\/ effective mass for point-to-point constraint.$/;"	m	class:b2MouseJoint	typeref:typename:b2Mat22
+m_ptpMass	Dynamics/Joints/b2RevoluteJoint.h	/^	b2Mat22 m_ptpMass;		\/\/ effective mass for point-to-point constraint.$/;"	m	class:b2RevoluteJoint	typeref:typename:b2Mat22
+m_pulleyImpulse	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_pulleyImpulse;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_pulleyMass	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_pulleyMass;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_quantizationFactor	Collision/b2BroadPhase.h	/^	b2Vec2 m_quantizationFactor;$/;"	m	class:b2BroadPhase	typeref:typename:b2Vec2
+m_queryResultCount	Collision/b2BroadPhase.h	/^	int32 m_queryResultCount;$/;"	m	class:b2BroadPhase	typeref:typename:int32
+m_queryResults	Collision/b2BroadPhase.h	/^	uint16 m_queryResults[b2_maxProxies];$/;"	m	class:b2BroadPhase	typeref:typename:uint16[]
+m_radius	Collision/b2Shape.h	/^	float64 m_radius;$/;"	m	class:b2CircleShape	typeref:typename:float64
+m_ratio	Dynamics/Joints/b2GearJoint.h	/^	float64 m_ratio;$/;"	m	class:b2GearJoint	typeref:typename:float64
+m_ratio	Dynamics/Joints/b2PulleyJoint.h	/^	float64 m_ratio;$/;"	m	class:b2PulleyJoint	typeref:typename:float64
+m_restitution	Collision/b2Shape.h	/^	float64 m_restitution;$/;"	m	class:b2Shape	typeref:typename:float64
+m_restitution	Dynamics/Contacts/b2Contact.h	/^	float64 m_restitution;$/;"	m	class:b2Contact	typeref:typename:float64
+m_revolute1	Dynamics/Joints/b2GearJoint.h	/^	b2RevoluteJoint* m_revolute1;$/;"	m	class:b2GearJoint	typeref:typename:b2RevoluteJoint *
+m_revolute2	Dynamics/Joints/b2GearJoint.h	/^	b2RevoluteJoint* m_revolute2;$/;"	m	class:b2GearJoint	typeref:typename:b2RevoluteJoint *
+m_rotation	Dynamics/b2Body.h	/^	float64 m_rotation;$/;"	m	class:b2Body	typeref:typename:float64
+m_rotation0	Dynamics/b2Body.h	/^	float64 m_rotation0;$/;"	m	class:b2Body	typeref:typename:float64
+m_shape1	Dynamics/Contacts/b2Contact.h	/^	b2Shape* m_shape1;$/;"	m	class:b2Contact	typeref:typename:b2Shape *
+m_shape2	Dynamics/Contacts/b2Contact.h	/^	b2Shape* m_shape2;$/;"	m	class:b2Contact	typeref:typename:b2Shape *
+m_shapeCount	Dynamics/b2Body.h	/^	int32 m_shapeCount;$/;"	m	class:b2Body	typeref:typename:int32
+m_shapeList	Dynamics/b2Body.h	/^	b2Shape* m_shapeList;$/;"	m	class:b2Body	typeref:typename:b2Shape *
+m_sleepTime	Dynamics/b2Body.h	/^	float64 m_sleepTime;$/;"	m	class:b2Body	typeref:typename:float64
+m_stackAllocator	Dynamics/b2World.h	/^	b2StackAllocator m_stackAllocator;$/;"	m	class:b2World	typeref:typename:b2StackAllocator
+m_target	Dynamics/Joints/b2MouseJoint.h	/^	b2Vec2 m_target;$/;"	m	class:b2MouseJoint	typeref:typename:b2Vec2
+m_timeStamp	Collision/b2BroadPhase.h	/^	uint16 m_timeStamp;$/;"	m	class:b2BroadPhase	typeref:typename:uint16
+m_torque	Dynamics/b2Body.h	/^	float64 m_torque;$/;"	m	class:b2Body	typeref:typename:float64
+m_type	Collision/b2Shape.h	/^	b2ShapeType m_type;$/;"	m	class:b2Shape	typeref:typename:b2ShapeType
+m_type	Dynamics/Joints/b2Joint.h	/^	b2JointType m_type;$/;"	m	class:b2Joint	typeref:typename:b2JointType
+m_u	Dynamics/Joints/b2DistanceJoint.h	/^	b2Vec2 m_u;$/;"	m	class:b2DistanceJoint	typeref:typename:b2Vec2
+m_u1	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 m_u1;$/;"	m	class:b2PulleyJoint	typeref:typename:b2Vec2
+m_u2	Dynamics/Joints/b2PulleyJoint.h	/^	b2Vec2 m_u2;$/;"	m	class:b2PulleyJoint	typeref:typename:b2Vec2
+m_upperAngle	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 m_upperAngle;$/;"	m	class:b2RevoluteJoint	typeref:typename:float64
+m_upperTranslation	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 m_upperTranslation;$/;"	m	class:b2PrismaticJoint	typeref:typename:float64
+m_userData	Collision/b2Shape.h	/^	void* m_userData;$/;"	m	class:b2Shape	typeref:typename:void *
+m_userData	Dynamics/Joints/b2Joint.h	/^	void* m_userData;$/;"	m	class:b2Joint	typeref:typename:void *
+m_userData	Dynamics/b2Body.h	/^	void* m_userData;$/;"	m	class:b2Body	typeref:typename:void *
+m_vertexCount	Collision/b2Shape.h	/^	int32 m_vertexCount;$/;"	m	class:b2PolyShape	typeref:typename:int32
+m_vertices	Collision/b2Shape.h	/^	b2Vec2 m_vertices[b2_maxPolyVertices];$/;"	m	class:b2PolyShape	typeref:typename:b2Vec2[]
+m_world	Dynamics/b2Body.h	/^	b2World* m_world;$/;"	m	class:b2Body	typeref:typename:b2World *
+m_world	Dynamics/b2ContactManager.h	/^	b2World* m_world;$/;"	m	class:b2ContactManager	typeref:typename:b2World *
+m_worldAABB	Collision/b2BroadPhase.h	/^	b2AABB m_worldAABB;$/;"	m	class:b2BroadPhase	typeref:typename:b2AABB
+manifold	Dynamics/Contacts/b2ContactSolver.h	/^	b2Manifold* manifold;$/;"	m	struct:b2ContactConstraint	typeref:typename:b2Manifold *
+maskBits	Collision/b2Shape.h	/^	uint16 maskBits;$/;"	m	struct:b2ShapeDef	typeref:typename:uint16
+mass	Collision/b2Shape.h	/^	float64 mass;$/;"	m	struct:b2MassData	typeref:typename:float64
+maxForce	Dynamics/Joints/b2MouseJoint.h	/^	float64 maxForce;$/;"	m	struct:b2MouseJointDef	typeref:typename:float64
+maxLength1	Dynamics/Joints/b2PulleyJoint.h	/^	float64 maxLength1;$/;"	m	struct:b2PulleyJointDef	typeref:typename:float64
+maxLength2	Dynamics/Joints/b2PulleyJoint.h	/^	float64 maxLength2;$/;"	m	struct:b2PulleyJointDef	typeref:typename:float64
+maxVertex	Collision/b2Collision.h	/^	b2Vec2 minVertex, maxVertex;$/;"	m	struct:b2AABB	typeref:typename:b2Vec2
+minVertex	Collision/b2Collision.h	/^	b2Vec2 minVertex, maxVertex;$/;"	m	struct:b2AABB	typeref:typename:b2Vec2
+motorForce	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 motorForce;$/;"	m	struct:b2PrismaticJointDef	typeref:typename:float64
+motorSpeed	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 motorSpeed;$/;"	m	struct:b2PrismaticJointDef	typeref:typename:float64
+motorSpeed	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 motorSpeed;$/;"	m	struct:b2RevoluteJointDef	typeref:typename:float64
+motorTorque	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 motorTorque;$/;"	m	struct:b2RevoluteJointDef	typeref:typename:float64
+next	Collision/b2PairManager.h	/^	uint16 next;$/;"	m	struct:b2Pair	typeref:typename:uint16
+next	Common/b2BlockAllocator.cpp	/^	b2Block* next;$/;"	m	struct:b2Block	typeref:typename:b2Block *	file:
+next	Dynamics/Contacts/b2Contact.h	/^	b2ContactNode* next;$/;"	m	struct:b2ContactNode	typeref:typename:b2ContactNode *
+next	Dynamics/Joints/b2Joint.h	/^	b2JointNode* next;$/;"	m	struct:b2JointNode	typeref:typename:b2JointNode *
+normal	Collision/b2Collision.h	/^	b2Vec2 normal;$/;"	m	struct:b2Manifold	typeref:typename:b2Vec2
+normal	Dynamics/Contacts/b2ContactSolver.h	/^	b2Vec2 normal;$/;"	m	struct:b2ContactConstraint	typeref:typename:b2Vec2
+normalImpulse	Collision/b2Collision.h	/^	float64 normalImpulse;$/;"	m	struct:b2ContactPoint	typeref:typename:float64
+normalImpulse	Dynamics/Contacts/b2ContactSolver.h	/^	float64 normalImpulse;$/;"	m	struct:b2ContactConstraintPoint	typeref:typename:float64
+normalMass	Dynamics/Contacts/b2ContactSolver.h	/^	float64 normalMass;$/;"	m	struct:b2ContactConstraintPoint	typeref:typename:float64
+operator *	Common/b2Math.h	/^inline b2Vec2 operator * (float64 s, const b2Vec2& a)$/;"	f	typeref:typename:b2Vec2
+operator *=	Common/b2Math.h	/^	void operator *= (float64 a)$/;"	f	struct:b2Vec2	typeref:typename:void
+operator +	Common/b2Math.h	/^inline b2Mat22 operator + (const b2Mat22& A, const b2Mat22& B)$/;"	f	typeref:typename:b2Mat22
+operator +	Common/b2Math.h	/^inline b2Vec2 operator + (const b2Vec2& a, const b2Vec2& b)$/;"	f	typeref:typename:b2Vec2
+operator +=	Common/b2Math.h	/^	void operator += (const b2Vec2& v)$/;"	f	struct:b2Vec2	typeref:typename:void
+operator -	Common/b2Math.h	/^	b2Vec2 operator -() { b2Vec2 v; v.Set(-x, -y); return v; }$/;"	f	struct:b2Vec2	typeref:typename:b2Vec2
+operator -	Common/b2Math.h	/^inline b2Vec2 operator - (const b2Vec2& a, const b2Vec2& b)$/;"	f	typeref:typename:b2Vec2
+operator -=	Common/b2Math.h	/^	void operator -= (const b2Vec2& v)$/;"	f	struct:b2Vec2	typeref:typename:void
+operator <	Collision/b2PairManager.cpp	/^inline bool operator < (const b2BufferedPair& pair1, const b2BufferedPair& pair2)$/;"	f	typeref:typename:bool
+operator ==	Common/b2Math.h	/^inline bool operator == (const b2Vec2& a, const b2Vec2& b)$/;"	f	typeref:typename:bool
+other	Dynamics/Contacts/b2Contact.h	/^	b2Body* other;$/;"	m	struct:b2ContactNode	typeref:typename:b2Body *
+other	Dynamics/Joints/b2Joint.h	/^	b2Body* other;$/;"	m	struct:b2JointNode	typeref:typename:b2Body *
+overlapCount	Collision/b2BroadPhase.h	/^	uint16 overlapCount;$/;"	m	struct:b2Proxy	typeref:typename:uint16
+pointCount	Collision/b2Collision.h	/^	int32 pointCount;$/;"	m	struct:b2Manifold	typeref:typename:int32
+pointCount	Dynamics/Contacts/b2ContactSolver.h	/^	int32 pointCount;$/;"	m	struct:b2ContactConstraint	typeref:typename:int32
+points	Collision/b2Collision.h	/^	b2ContactPoint points[b2_maxManifoldPoints];$/;"	m	struct:b2Manifold	typeref:typename:b2ContactPoint[]
+points	Dynamics/Contacts/b2ContactSolver.h	/^	b2ContactConstraintPoint points[b2_maxManifoldPoints];$/;"	m	struct:b2ContactConstraint	typeref:typename:b2ContactConstraintPoint[]
+position	Collision/b2Collision.h	/^	b2Vec2 position;$/;"	m	struct:b2ContactPoint	typeref:typename:b2Vec2
+position	Dynamics/b2Body.h	/^	b2Vec2 position;$/;"	m	struct:b2BodyDef	typeref:typename:b2Vec2
+positionImpulse	Dynamics/Contacts/b2ContactSolver.h	/^	float64 positionImpulse;$/;"	m	struct:b2ContactConstraintPoint	typeref:typename:float64
+prev	Dynamics/Contacts/b2Contact.h	/^	b2ContactNode* prev;$/;"	m	struct:b2ContactNode	typeref:typename:b2ContactNode *
+prev	Dynamics/Joints/b2Joint.h	/^	b2JointNode* prev;$/;"	m	struct:b2JointNode	typeref:typename:b2JointNode *
+preventRotation	Dynamics/b2Body.h	/^	bool preventRotation;$/;"	m	struct:b2BodyDef	typeref:typename:bool
+primary	Dynamics/Contacts/b2Contact.h	/^	bool primary;$/;"	m	struct:b2ContactRegister	typeref:typename:bool
+proxyId	Collision/b2BroadPhase.h	/^	uint16 proxyId;$/;"	m	struct:b2Bound	typeref:typename:uint16
+proxyId1	Collision/b2PairManager.h	/^	uint16 proxyId1;$/;"	m	struct:b2BufferedPair	typeref:typename:uint16
+proxyId1	Collision/b2PairManager.h	/^	uint16 proxyId1;$/;"	m	struct:b2Pair	typeref:typename:uint16
+proxyId2	Collision/b2PairManager.h	/^	uint16 proxyId2;$/;"	m	struct:b2BufferedPair	typeref:typename:uint16
+proxyId2	Collision/b2PairManager.h	/^	uint16 proxyId2;$/;"	m	struct:b2Pair	typeref:typename:uint16
+radius	Collision/b2Shape.h	/^	float64 radius;$/;"	m	struct:b2CircleDef	typeref:typename:float64
+ratio	Dynamics/Joints/b2GearJoint.h	/^	float64 ratio;$/;"	m	struct:b2GearJointDef	typeref:typename:float64
+ratio	Dynamics/Joints/b2PulleyJoint.h	/^	float64 ratio;$/;"	m	struct:b2PulleyJointDef	typeref:typename:float64
+referenceFace	Collision/b2Collision.h	/^		uint8 referenceFace;$/;"	m	struct:b2ContactID::Features	typeref:typename:uint8
+restitution	Collision/b2Shape.h	/^	float64 restitution;$/;"	m	struct:b2ShapeDef	typeref:typename:float64
+restitution	Dynamics/Contacts/b2ContactSolver.h	/^	float64 restitution;$/;"	m	struct:b2ContactConstraint	typeref:typename:float64
+rotation	Dynamics/b2Body.h	/^	float64 rotation;$/;"	m	struct:b2BodyDef	typeref:typename:float64
+s_blockSizeLookup	Common/b2BlockAllocator.cpp	/^uint8 b2BlockAllocator::s_blockSizeLookup[b2_maxBlockSize + 1];$/;"	m	class:b2BlockAllocator	typeref:typename:uint8[]
+s_blockSizeLookup	Common/b2BlockAllocator.h	/^	static uint8 s_blockSizeLookup[b2_maxBlockSize + 1];$/;"	m	class:b2BlockAllocator	typeref:typename:uint8[]
+s_blockSizeLookupInitialized	Common/b2BlockAllocator.cpp	/^bool b2BlockAllocator::s_blockSizeLookupInitialized;$/;"	m	class:b2BlockAllocator	typeref:typename:bool
+s_blockSizeLookupInitialized	Common/b2BlockAllocator.h	/^	static bool s_blockSizeLookupInitialized;$/;"	m	class:b2BlockAllocator	typeref:typename:bool
+s_blockSizes	Common/b2BlockAllocator.cpp	/^int32 b2BlockAllocator::s_blockSizes[b2_blockSizes] = $/;"	m	class:b2BlockAllocator	typeref:typename:int32[]
+s_blockSizes	Common/b2BlockAllocator.h	/^	static int32 s_blockSizes[b2_blockSizes];$/;"	m	class:b2BlockAllocator	typeref:typename:int32[]
+s_enablePositionCorrection	Dynamics/b2World.cpp	/^int32 b2World::s_enablePositionCorrection = 1;$/;"	m	class:b2World	typeref:typename:int32
+s_enablePositionCorrection	Dynamics/b2World.h	/^	static int32 s_enablePositionCorrection;$/;"	m	class:b2World	typeref:typename:int32
+s_enableWarmStarting	Dynamics/b2World.cpp	/^int32 b2World::s_enableWarmStarting = 1;$/;"	m	class:b2World	typeref:typename:int32
+s_enableWarmStarting	Dynamics/b2World.h	/^	static int32 s_enableWarmStarting;$/;"	m	class:b2World	typeref:typename:int32
+s_initialized	Dynamics/Contacts/b2Contact.cpp	/^bool b2Contact::s_initialized = false;$/;"	m	class:b2Contact	typeref:typename:bool
+s_initialized	Dynamics/Contacts/b2Contact.h	/^	static bool s_initialized;$/;"	m	class:b2Contact	typeref:typename:bool
+s_registers	Dynamics/Contacts/b2Contact.cpp	/^b2ContactRegister b2Contact::s_registers[e_shapeTypeCount][e_shapeTypeCount];$/;"	m	class:b2Contact	typeref:typename:b2ContactRegister[][]
+s_registers	Dynamics/Contacts/b2Contact.h	/^	static b2ContactRegister s_registers[e_shapeTypeCount][e_shapeTypeCount];$/;"	m	class:b2Contact	typeref:typename:b2ContactRegister[][]
+s_validate	Collision/b2BroadPhase.cpp	/^bool b2BroadPhase::s_validate = false;$/;"	m	class:b2BroadPhase	typeref:typename:bool
+s_validate	Collision/b2BroadPhase.h	/^	static bool s_validate;$/;"	m	class:b2BroadPhase	typeref:typename:bool
+separation	Collision/b2Collision.h	/^	float64 separation;$/;"	m	struct:b2ContactPoint	typeref:typename:float64
+separation	Dynamics/Contacts/b2ContactSolver.h	/^	float64 separation;$/;"	m	struct:b2ContactConstraintPoint	typeref:typename:float64
+shapes	Dynamics/b2Body.h	/^	b2ShapeDef* shapes[b2_maxShapesPerBody];$/;"	m	struct:b2BodyDef	typeref:typename:b2ShapeDef * []
+size	Common/b2StackAllocator.h	/^	int32 size;$/;"	m	struct:b2StackEntry	typeref:typename:int32
+stabbingCount	Collision/b2BroadPhase.h	/^	uint16 stabbingCount;$/;"	m	struct:b2Bound	typeref:typename:uint16
+status	Collision/b2PairManager.h	/^	uint16 status;$/;"	m	struct:b2Pair	typeref:typename:uint16
+tangentImpulse	Collision/b2Collision.h	/^	float64 tangentImpulse;$/;"	m	struct:b2ContactPoint	typeref:typename:float64
+tangentImpulse	Dynamics/Contacts/b2ContactSolver.h	/^	float64 tangentImpulse;$/;"	m	struct:b2ContactConstraintPoint	typeref:typename:float64
+tangentMass	Dynamics/Contacts/b2ContactSolver.h	/^	float64 tangentMass;$/;"	m	struct:b2ContactConstraintPoint	typeref:typename:float64
+target	Dynamics/Joints/b2MouseJoint.h	/^	b2Vec2 target;$/;"	m	struct:b2MouseJointDef	typeref:typename:b2Vec2
+timeStamp	Collision/b2BroadPhase.h	/^	uint16 timeStamp;$/;"	m	struct:b2Proxy	typeref:typename:uint16
+timeStep	Dynamics/Joints/b2MouseJoint.h	/^	float64 timeStep;$/;"	m	struct:b2MouseJointDef	typeref:typename:float64
+type	Collision/b2Shape.h	/^	b2ShapeType type;$/;"	m	struct:b2ShapeDef	typeref:typename:b2ShapeType
+type	Dynamics/Joints/b2Joint.h	/^	b2JointType type;$/;"	m	struct:b2JointDef	typeref:typename:b2JointType
+uint16	Common/b2Settings.h	/^typedef unsigned short uint16;$/;"	t	typeref:typename:unsigned short
+uint32	Common/b2Settings.h	/^typedef unsigned int uint32;$/;"	t	typeref:typename:unsigned int
+uint8	Common/b2Settings.h	/^typedef unsigned char uint8;$/;"	t	typeref:typename:unsigned char
+upperAngle	Dynamics/Joints/b2RevoluteJoint.h	/^	float64 upperAngle;$/;"	m	struct:b2RevoluteJointDef	typeref:typename:float64
+upperBounds	Collision/b2BroadPhase.h	/^	uint16 lowerBounds[2], upperBounds[2];$/;"	m	struct:b2Proxy	typeref:typename:uint16[2]
+upperTranslation	Dynamics/Joints/b2PrismaticJoint.h	/^	float64 upperTranslation;$/;"	m	struct:b2PrismaticJointDef	typeref:typename:float64
+upperValues	Collision/b2BroadPhase.cpp	/^	uint16 upperValues[2];$/;"	m	struct:b2BoundValues	typeref:typename:uint16[2]	file:
+usedMalloc	Common/b2StackAllocator.h	/^	bool usedMalloc;$/;"	m	struct:b2StackEntry	typeref:typename:bool
+userData	Collision/b2BroadPhase.h	/^	void* userData;$/;"	m	struct:b2Proxy	typeref:typename:void *
+userData	Collision/b2PairManager.h	/^	void* userData;$/;"	m	struct:b2Pair	typeref:typename:void *
+userData	Collision/b2Shape.h	/^	void* userData;$/;"	m	struct:b2ShapeDef	typeref:typename:void *
+userData	Dynamics/Joints/b2Joint.h	/^	void* userData;$/;"	m	struct:b2JointDef	typeref:typename:void *
+userData	Dynamics/b2Body.h	/^	void* userData;$/;"	m	struct:b2BodyDef	typeref:typename:void *
+v	Collision/b2CollidePoly.cpp	/^	b2Vec2 v;$/;"	m	struct:ClipVertex	typeref:typename:b2Vec2	file:
+value	Collision/b2BroadPhase.h	/^	uint16 value;$/;"	m	struct:b2Bound	typeref:typename:uint16
+velocityBias	Dynamics/Contacts/b2ContactSolver.h	/^	float64 velocityBias;$/;"	m	struct:b2ContactConstraintPoint	typeref:typename:float64
+vertexCount	Collision/b2Shape.h	/^	int32 vertexCount;$/;"	m	struct:b2PolyDef	typeref:typename:int32
+vertices	Collision/b2Shape.h	/^	b2Vec2 vertices[b2_maxPolyVertices];$/;"	m	struct:b2PolyDef	typeref:typename:b2Vec2[]
+x	Common/b2Math.h	/^	float64 x, y;$/;"	m	struct:b2Vec2	typeref:typename:float64
+y	Common/b2Math.h	/^	float64 x, y;$/;"	m	struct:b2Vec2	typeref:typename:float64
+~b2BlockAllocator	Common/b2BlockAllocator.cpp	/^b2BlockAllocator::~b2BlockAllocator()$/;"	f	class:b2BlockAllocator
+~b2Body	Dynamics/b2Body.cpp	/^b2Body::~b2Body()$/;"	f	class:b2Body
+~b2BroadPhase	Collision/b2BroadPhase.cpp	/^b2BroadPhase::~b2BroadPhase()$/;"	f	class:b2BroadPhase
+~b2CircleContact	Dynamics/Contacts/b2CircleContact.h	/^	~b2CircleContact() {}$/;"	f	class:b2CircleContact
+~b2CollisionFilter	Dynamics/b2WorldCallbacks.h	/^	virtual ~b2CollisionFilter() {}$/;"	f	class:b2CollisionFilter
+~b2Contact	Dynamics/Contacts/b2Contact.h	/^	virtual ~b2Contact() {}$/;"	f	class:b2Contact
+~b2ContactSolver	Dynamics/Contacts/b2ContactSolver.cpp	/^b2ContactSolver::~b2ContactSolver()$/;"	f	class:b2ContactSolver
+~b2Island	Dynamics/b2Island.cpp	/^b2Island::~b2Island()$/;"	f	class:b2Island
+~b2Joint	Dynamics/Joints/b2Joint.h	/^	virtual ~b2Joint() {}$/;"	f	class:b2Joint
+~b2PairCallback	Collision/b2PairManager.h	/^	virtual ~b2PairCallback() {}$/;"	f	class:b2PairCallback
+~b2PolyAndCircleContact	Dynamics/Contacts/b2PolyAndCircleContact.h	/^	~b2PolyAndCircleContact() {}$/;"	f	class:b2PolyAndCircleContact
+~b2PolyContact	Dynamics/Contacts/b2PolyContact.h	/^	~b2PolyContact() {}$/;"	f	class:b2PolyContact
+~b2Shape	Collision/b2Shape.cpp	/^b2Shape::~b2Shape()$/;"	f	class:b2Shape
+~b2ShapeDef	Collision/b2Shape.h	/^	virtual ~b2ShapeDef() {}$/;"	f	struct:b2ShapeDef
+~b2StackAllocator	Common/b2StackAllocator.cpp	/^b2StackAllocator::~b2StackAllocator()$/;"	f	class:b2StackAllocator
+~b2World	Dynamics/b2World.cpp	/^b2World::~b2World()$/;"	f	class:b2World
+~b2WorldListener	Dynamics/b2WorldCallbacks.h	/^	virtual ~b2WorldListener() {}$/;"	f	class:b2WorldListener

@@ -32,7 +32,7 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 	}
 
 	float64 separation;
-	if (distSqr < FLT_EPSILON)
+	if (distSqr < MIN_VALUE)
 	{
 		separation = -radiusSum;
 		manifold->normal.Set(0.0, 1.0);
@@ -82,7 +82,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	}
 
 	// If the center is inside the polygon ...
-	if (separation < FLT_EPSILON)
+	if (separation < MIN_VALUE)
 	{
 		manifold->pointCount = 1;
 		manifold->normal = b2Mul(poly->m_R, poly->m_normals[normalIndex]);
@@ -102,7 +102,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	float64 length = e.Normalize();
 
 	// If the edge length is zero ...
-	if (length < FLT_EPSILON)
+	if (length < MIN_VALUE)
 	{
 		b2Vec2 d = xLocal - poly->m_vertices[vertIndex1];
 		float64 dist = d.Normalize();

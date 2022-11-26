@@ -25,6 +25,7 @@
 #include "../Collision/b2Collision.h"
 #include "../Collision/b2Shape.h"
 #include <new>
+#include <net.h>
 
 int32 b2World::s_enablePositionCorrection = 1;
 int32 b2World::s_enableWarmStarting = 1;
@@ -288,6 +289,12 @@ void b2World::DestroyJoint(b2Joint* j)
 	}
 }
 
+void b2World::dump_bodies(const char *tag)
+{
+	for (b2Body *b = m_bodyList; b; b = b->m_next)
+		b->dump(tag);
+}
+
 void b2World::Step(float64 dt, int32 iterations)
 {
 	b2TimeStep step;
@@ -301,6 +308,9 @@ void b2World::Step(float64 dt, int32 iterations)
 	{
 		step.inv_dt = 0.0;
 	}
+
+	mw("MIN_VALUE", 1, MIN_VALUE);
+	dump_bodies("step0");
 
 	m_positionIterationCount = 0;
 
@@ -329,6 +339,8 @@ void b2World::Step(float64 dt, int32 iterations)
 	{
 		j->m_islandFlag = false;
 	}
+	
+	dump_bodies("step1");
 
 	// Build and simulate all awake islands.
 	int32 stackSize = m_bodyCount;
@@ -408,7 +420,11 @@ void b2World::Step(float64 dt, int32 iterations)
 			}
 		}
 
+		dump_bodies("step2");
+
 		island.Solve(&step, m_gravity);
+		
+		dump_bodies("step3");
 
 		m_positionIterationCount = b2Max(m_positionIterationCount, island.m_positionIterationCount);
 
@@ -444,6 +460,8 @@ void b2World::Step(float64 dt, int32 iterations)
 	m_stackAllocator.Free(stack);
 
 	m_broadPhase->Commit();
+	
+	dump_bodies("step4");
 
 #if 0
 	for (b2Contact* c = m_contactList; c; c = c->GetNext())

@@ -87,7 +87,7 @@ void b2PrismaticJoint::PrepareVelocitySolver()
 	m_linearJacobian.Set(-ay1, -b2Cross(e, ay1), ay1, b2Cross(r2, ay1));
 	m_linearMass =	invMass1 + invI1 * m_linearJacobian.angular1 * m_linearJacobian.angular1 +
 					invMass2 + invI2 * m_linearJacobian.angular2 * m_linearJacobian.angular2;
-	b2Assert(m_linearMass > FLT_EPSILON);
+	b2Assert(m_linearMass > MIN_VALUE);
 	m_linearMass = 1.0 / m_linearMass;
 
 	// Compute angular constraint effective mass.
@@ -101,7 +101,7 @@ void b2PrismaticJoint::PrepareVelocitySolver()
 		m_motorJacobian.Set(-ax1, -b2Cross(e, ax1), ax1, b2Cross(r2, ax1));
 		m_motorMass =	invMass1 + invI1 * m_motorJacobian.angular1 * m_motorJacobian.angular1 +
 						invMass2 + invI2 * m_motorJacobian.angular2 * m_motorJacobian.angular2;
-		b2Assert(m_motorMass > FLT_EPSILON);
+		b2Assert(m_motorMass > MIN_VALUE);
 		m_motorMass = 1.0 / m_motorMass;
 
 		if (m_enableLimit)

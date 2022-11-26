@@ -22,6 +22,12 @@
 #include "../b2World.h"
 #include "../../Common/b2StackAllocator.h"
 
+void b2ContactSolver::dump(const char *tag)
+{
+	for (int i = 0; i < m_constraintCount; i++)
+		m_constraints[i].dump(tag);
+}
+
 b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2StackAllocator* allocator)
 {
 	m_allocator = allocator;
@@ -90,7 +96,7 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 				float64 rn2 = b2Dot(r2, normal);
 				float64 kNormal = b1->m_invMass + b2->m_invMass;
 				kNormal += b1->m_invI * (r1Sqr - rn1 * rn1) + b2->m_invI * (r2Sqr - rn2 * rn2);
-				b2Assert(kNormal > FLT_EPSILON);
+				b2Assert(kNormal > MIN_VALUE);
 				ccp->normalMass = 1.0 / kNormal;
 
 				b2Vec2 tangent = b2Cross(normal, 1.0);
@@ -99,7 +105,7 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 				float64 rt2 = b2Dot(r2, tangent);
 				float64 kTangent = b1->m_invMass + b2->m_invMass;
 				kTangent += b1->m_invI * (r1Sqr - rt1 * rt1) + b2->m_invI * (r2Sqr - rt2 * rt2);
-				b2Assert(kTangent > FLT_EPSILON);
+				b2Assert(kTangent > MIN_VALUE);
 				ccp->tangentMass = 1.0 /  kTangent;
 
 				// Setup a velocity bias for restitution.
@@ -119,6 +125,8 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 			++count;
 		}
 	}
+
+	dump("solver");
 
 	b2Assert(count == m_constraintCount);
 }

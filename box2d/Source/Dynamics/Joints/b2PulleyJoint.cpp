@@ -134,9 +134,9 @@ void b2PulleyJoint::PrepareVelocitySolver()
 	m_limitMass1 = b1->m_invMass + b1->m_invI * cr1u1 * cr1u1;
 	m_limitMass2 = b2->m_invMass + b2->m_invI * cr2u2 * cr2u2;
 	m_pulleyMass = m_limitMass1 + m_ratio * m_ratio * m_limitMass2;
-	b2Assert(m_limitMass1 > FLT_EPSILON);
-	b2Assert(m_limitMass2 > FLT_EPSILON);
-	b2Assert(m_pulleyMass > FLT_EPSILON);
+	b2Assert(m_limitMass1 > MIN_VALUE);
+	b2Assert(m_limitMass2 > MIN_VALUE);
+	b2Assert(m_pulleyMass > MIN_VALUE);
 	m_limitMass1 = 1.0 / m_limitMass1;
 	m_limitMass2 = 1.0 / m_limitMass2;
 	m_pulleyMass = 1.0 / m_pulleyMass;

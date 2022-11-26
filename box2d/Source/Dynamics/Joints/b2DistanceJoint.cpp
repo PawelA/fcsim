@@ -60,7 +60,7 @@ void b2DistanceJoint::PrepareVelocitySolver()
 	float64 cr1u = b2Cross(r1, m_u);
 	float64 cr2u = b2Cross(r2, m_u);
 	m_mass = m_body1->m_invMass + m_body1->m_invI * cr1u * cr1u + m_body2->m_invMass + m_body2->m_invI * cr2u * cr2u;
-	b2Assert(m_mass > FLT_EPSILON);
+	b2Assert(m_mass > MIN_VALUE);
 	m_mass = 1.0 / m_mass;
 
 	if (b2World::s_enableWarmStarting)

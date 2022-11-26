@@ -23,6 +23,7 @@
 #include "Contacts/b2ContactSolver.h"
 #include "Joints/b2Joint.h"
 #include "../Common/b2StackAllocator.h"
+#include <net.h>
 
 /*
 Position Correction Notes
@@ -136,8 +137,15 @@ void b2Island::Clear()
 	m_jointCount = 0;
 }
 
+void b2Island::dump_bodies(const char *tag)
+{
+	for (int32 i = 0; i < m_bodyCount; ++i)
+		m_bodies[i]->dump(tag);
+}
+
 void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 {
+	dump_bodies("solve0");
 	for (int32 i = 0; i < m_bodyCount; ++i)
 	{
 		b2Body* b = m_bodies[i];
@@ -155,21 +163,26 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		b->m_position0 = b->m_position;
 		b->m_rotation0 = b->m_rotation;
 	}
+	dump_bodies("solve1");
 
 	b2ContactSolver contactSolver(m_contacts, m_contactCount, m_allocator);
 
 	// Pre-solve
 	contactSolver.PreSolve();
 
+	dump_bodies("solve2");
 	for (int32 i = 0; i < m_jointCount; ++i)
 	{
 		m_joints[i]->PrepareVelocitySolver();
 	}
 
+	dump_bodies("solve3");
 	// Solve velocity constraints.
 	for (int32 i = 0; i < step->iterations; ++i)
 	{
 		contactSolver.SolveVelocityConstraints();
+	
+		dump_bodies("solve3.1");
 
 		for (int32 j = 0; j < m_jointCount; ++j)
 		{
@@ -177,6 +190,8 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		}
 	}
 
+	dump_bodies("solve4");
+	mw("dt", step->dt);
 	// Integrate positions.
 	for (int32 i = 0; i < m_bodyCount; ++i)
 	{
@@ -191,11 +206,13 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		b->m_R.Set(b->m_rotation);
 	}
 
+	dump_bodies("solve5");
 	for (int32 i = 0; i < m_jointCount; ++i)
 	{
 		m_joints[i]->PreparePositionSolver();
 	}
 
+	dump_bodies("solve6");
 	// Solve position constraints.
 	if (b2World::s_enablePositionCorrection)
 	{
@@ -217,9 +234,11 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		}
 	}
 
+	dump_bodies("solve7");
 	// Post-solve.
 	contactSolver.PostSolve();
 
+	dump_bodies("solve8");
 	// Synchronize shapes and reset forces.
 	for (int32 i = 0; i < m_bodyCount; ++i)
 	{
@@ -234,6 +253,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		b->m_force.Set(0.0, 0.0);
 		b->m_torque = 0.0;
 	}
+	dump_bodies("solve9");
 }
 
 void b2Island::UpdateSleep(float64 dt)
