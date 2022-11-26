@@ -149,8 +149,11 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 		manifold->points[0].id.features.incidentEdge = (uint8)vertIndex1;
 	}
 
+	mw("collide_d_in", 4, xLocal.x, xLocal.y, p.x, p.y);
 	b2Vec2 d = xLocal - p;
-	float64 dist = d.Normalize();
+	float64 dist = d.Length();
+	d.x /= dist;
+	d.y /= dist;
 	if (dist > radius)
 	{
 		return;
