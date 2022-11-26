@@ -100,6 +100,8 @@ public:
 	b2Joint* GetNext();
 
 	void* GetUserData();
+	
+	virtual void dump(const char *tag);
 
 	//--------------- Internals Below -------------------
 

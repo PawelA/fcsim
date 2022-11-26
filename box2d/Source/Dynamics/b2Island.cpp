@@ -176,10 +176,10 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		m_joints[i]->PrepareVelocitySolver();
 	}
 
-	dump_bodies("solve3");
 	// Solve velocity constraints.
 	for (int32 i = 0; i < step->iterations; ++i)
 	{
+		dump_bodies("solve3.0");
 		contactSolver.SolveVelocityConstraints();
 	
 		dump_bodies("solve3.1");
@@ -191,7 +191,6 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	}
 
 	dump_bodies("solve4");
-	mw("dt", step->dt);
 	// Integrate positions.
 	for (int32 i = 0; i < m_bodyCount; ++i)
 	{

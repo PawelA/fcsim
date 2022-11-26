@@ -20,6 +20,7 @@
 #define B2_REVOLUTE_JOINT_H
 
 #include "b2Joint.h"
+#include <net.h>
 
 struct b2RevoluteJointDef : public b2JointDef
 {
@@ -59,6 +60,11 @@ public:
 
 	void SetMotorSpeed(float64 speed);
 	void SetMotorTorque(float64 torque);
+
+	void dump(const char *tag)
+	{
+		mw(tag, 4, m_localAnchor1.x, m_localAnchor1.y, m_localAnchor2.x, m_localAnchor2.y);
+	}
 
 	//--------------- Internals Below -------------------
 

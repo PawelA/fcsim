@@ -150,6 +150,9 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2TimeStep* step)
 	b2Body* b1 = m_body1;
 	b2Body* b2 = m_body2;
 
+	b1->dump("solvej1");
+	b2->dump("solvej2");
+
 	b2Vec2 r1 = b2Mul(b1->m_R, m_localAnchor1);
 	b2Vec2 r2 = b2Mul(b2->m_R, m_localAnchor2);
 

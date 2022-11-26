@@ -193,6 +193,7 @@ void b2ContactSolver::PreSolve()
 
 void b2ContactSolver::SolveVelocityConstraints()
 {
+	dump("solver_vel0");
 	for (int32 i = 0; i < m_constraintCount; ++i)
 	{
 		b2ContactConstraint* c = m_constraints + i;
@@ -207,6 +208,7 @@ void b2ContactSolver::SolveVelocityConstraints()
 
 		// Solver normal constraints
 		for (int32 j = 0; j < c->pointCount; ++j)
+		{
 		{
 			b2ContactConstraintPoint* ccp = c->points + j;
 
@@ -233,11 +235,11 @@ void b2ContactSolver::SolveVelocityConstraints()
 			b2->m_linearVelocity += invMass2 * P;
 			b2->m_angularVelocity += invI2 * b2Cross(r2, P);
 
+			mw("new_impulse", 1, newImpulse);
 			ccp->normalImpulse = newImpulse;
 		}
 
 		// Solver tangent constraints
-		for (int32 j = 0; j < c->pointCount; ++j)
 		{
 			b2ContactConstraintPoint* ccp = c->points + j;
 
@@ -267,7 +269,9 @@ void b2ContactSolver::SolveVelocityConstraints()
 
 			ccp->tangentImpulse = newImpulse;
 		}
+		}
 	}
+	dump("solver_vel1");
 }
 
 bool b2ContactSolver::SolvePositionConstraints(float64 beta)

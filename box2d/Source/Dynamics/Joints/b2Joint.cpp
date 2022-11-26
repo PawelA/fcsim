@@ -132,3 +132,7 @@ b2Joint::b2Joint(const b2JointDef* def)
 	m_islandFlag = false;
 	m_userData = def->userData;
 }
+
+void b2Joint::dump(const char *tag)
+{
+}

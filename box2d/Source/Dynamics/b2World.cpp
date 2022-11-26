@@ -295,6 +295,12 @@ void b2World::dump_bodies(const char *tag)
 		b->dump(tag);
 }
 
+void b2World::dump_joints(const char *tag)
+{
+	for (b2Joint *j = m_jointList; j; j = j->m_next)
+		j->dump(tag);
+}
+
 void b2World::Step(float64 dt, int32 iterations)
 {
 	b2TimeStep step;
@@ -311,6 +317,7 @@ void b2World::Step(float64 dt, int32 iterations)
 
 	mw("MIN_VALUE", 1, MIN_VALUE);
 	dump_bodies("step0");
+	dump_joints("step0j");
 
 	m_positionIterationCount = 0;
 
