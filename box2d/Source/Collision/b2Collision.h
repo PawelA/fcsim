@@ -21,6 +21,7 @@
 
 #include "../Common/b2Math.h"
 #include <climits>
+#include <net.h>
 
 class b2Shape;
 class b2CircleShape;
@@ -56,6 +57,11 @@ struct b2Manifold
 	b2ContactPoint points[b2_maxManifoldPoints];
 	b2Vec2 normal;
 	int32 pointCount;
+
+	void dump(const char *tag)
+	{
+		mw(tag, 2, normal.x, normal.y);
+	}
 };
 
 struct b2AABB

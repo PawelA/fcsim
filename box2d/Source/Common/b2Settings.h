@@ -32,7 +32,7 @@ typedef unsigned short uint16;
 typedef unsigned int uint32;
 typedef double float64;
 
-const float64 b2_pi = 3.14159265359;
+const float64 b2_pi = 3.141592653589793;
 
 // Define your unit system here. The default system is
 // meters-kilograms-seconds. For the tuning to work well,

@@ -32,6 +32,9 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 {
 	m_allocator = allocator;
 
+	for (int i = 0; i < contactCount; i++)
+		contacts[i]->dump("solver_contact");
+
 	m_constraintCount = 0;
 	for (int32 i = 0; i < contactCount; ++i)
 	{
@@ -64,6 +67,8 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 
 			const b2Vec2 normal = manifold->normal;
 
+			mw("normal", 2, normal.x, normal.y);
+
 			b2Assert(count < m_constraintCount);
 			b2ContactConstraint* c = m_constraints + count;
 			c->body1 = b1;
@@ -82,6 +87,7 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 				ccp->normalImpulse = cp->normalImpulse;
 				ccp->tangentImpulse = cp->tangentImpulse;
 				ccp->separation = cp->separation;
+				ccp->positionImpulse = NAN;
 
 				b2Vec2 r1 = cp->position - b1->m_position;
 				b2Vec2 r2 = cp->position - b2->m_position;
@@ -92,11 +98,14 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 				float64 r1Sqr = b2Dot(r1, r1);
 				float64 r2Sqr = b2Dot(r2, r2);
 
+				mw("rn_in", 6, r1.x, r1.y, r2.x, r2.y, normal.x, normal.y);
 				float64 rn1 = b2Dot(r1, normal);
 				float64 rn2 = b2Dot(r2, normal);
+				mw("knormal_in", 8, b1->m_invMass, b2->m_invMass, b1->m_invI, r1Sqr, rn1, b2->m_invI, r2Sqr, rn2);
 				float64 kNormal = b1->m_invMass + b2->m_invMass;
 				kNormal += b1->m_invI * (r1Sqr - rn1 * rn1) + b2->m_invI * (r2Sqr - rn2 * rn2);
 				b2Assert(kNormal > MIN_VALUE);
+				mw("knormal", 1, kNormal);
 				ccp->normalMass = 1.0 / kNormal;
 
 				b2Vec2 tangent = b2Cross(normal, 1.0);

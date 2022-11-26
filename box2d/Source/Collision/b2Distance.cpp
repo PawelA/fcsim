@@ -211,7 +211,7 @@ float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 			return 0.0;
 		}
 
-		float64 maxSqr = -FLT_MAX;
+		float64 maxSqr = -DBL_MAX;
 		for (int32 i = 0; i < pointCount; ++i)
 		{
 			maxSqr = b2Max(maxSqr, b2Dot(points[i], points[i]));

@@ -258,7 +258,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 
 void b2Island::UpdateSleep(float64 dt)
 {
-	float64 minSleepTime = FLT_MAX;
+	float64 minSleepTime = DBL_MAX;
 
 	const float64 linTolSqr = b2_linearSleepTolerance * b2_linearSleepTolerance;
 	const float64 angTolSqr = b2_angularSleepTolerance * b2_angularSleepTolerance;

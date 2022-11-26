@@ -73,7 +73,7 @@ static float64 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2Pol
 
 	// Find support vertex on poly2 for -normal.
 	int32 vertexIndex2 = 0;
-	float64 minDot = FLT_MAX;
+	float64 minDot = DBL_MAX;
 	for (int32 i = 0; i < count2; ++i)
 	{
 		float64 dot = b2Dot(vert2s[i], normalLocal2);
@@ -101,7 +101,7 @@ static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 
 	// Find edge normal on poly1 that has the largest projection onto d.
 	int32 edge = 0;
-	float64 maxDot = -FLT_MAX;
+	float64 maxDot = -DBL_MAX;
 	for (int32 i = 0; i < count1; ++i)
 	{
 		float64 dot = b2Dot(poly1->m_normals[i], dLocal1);
@@ -203,7 +203,7 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 
 	// Find the incident edge on poly2.
 	int32 vertex21 = 0, vertex22 = 0;
-	float64 minDot = FLT_MAX;
+	float64 minDot = DBL_MAX;
 	for (int32 i = 0; i < count2; ++i)
 	{
 		int32 i1 = i;

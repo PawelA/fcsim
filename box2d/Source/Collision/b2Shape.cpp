@@ -448,8 +448,8 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 	}
 
 	// Compute bounding box. TODO_ERIN optimize OBB
-	b2Vec2 minVertex(FLT_MAX, FLT_MAX);
-	b2Vec2 maxVertex(-FLT_MAX, -FLT_MAX);
+	b2Vec2 minVertex(DBL_MAX, DBL_MAX);
+	b2Vec2 maxVertex(-DBL_MAX, -DBL_MAX);
 	m_maxRadius = 0.0;
 	for (int32 i = 0; i < m_vertexCount; ++i)
 	{
