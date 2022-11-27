@@ -102,13 +102,17 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	int32 vertIndex1 = normalIndex;
 	int32 vertIndex2 = vertIndex1 + 1 < poly->m_vertexCount ? vertIndex1 + 1 : 0;
 	b2Vec2 e = poly->m_vertices[vertIndex2] - poly->m_vertices[vertIndex1];
-	float64 length = e.Normalize();
+	float64 length = e.Length();
+	e.x /= length;
+	e.y /= length;
 
 	// If the edge length is zero ...
 	if (length < MIN_VALUE)
 	{
 		b2Vec2 d = xLocal - poly->m_vertices[vertIndex1];
-		float64 dist = d.Normalize();
+		float64 dist = d.Length();
+		d.x /= dist;
+		d.y /= dist;
 		if (dist > radius)
 		{
 			return;
@@ -135,16 +139,20 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	b2Vec2 p;
 	if (u <= 0.0)
 	{
+		mw("collide_if0", 0);
 		p = poly->m_vertices[vertIndex1];
 		manifold->points[0].id.features.incidentVertex = (uint8)vertIndex1;
 	}
 	else if (u >= length)
 	{
+		mw("collide_if1", 0);
 		p = poly->m_vertices[vertIndex2];
 		manifold->points[0].id.features.incidentVertex = (uint8)vertIndex2;
 	}
 	else
 	{
+		mw("collide_if2", 0);
+		mw("collide_p", 5, poly->m_vertices[vertIndex1].x, poly->m_vertices[vertIndex1].y, u, e.x, e.y);
 		p = poly->m_vertices[vertIndex1] + u * e;
 		manifold->points[0].id.features.incidentEdge = (uint8)vertIndex1;
 	}

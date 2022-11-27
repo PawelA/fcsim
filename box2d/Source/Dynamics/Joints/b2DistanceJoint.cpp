@@ -104,7 +104,9 @@ bool b2DistanceJoint::SolvePositionConstraints()
 	b2Vec2 r2 = b2Mul(m_body2->m_R, m_localAnchor2);
 	b2Vec2 d = m_body2->m_position + r2 - m_body1->m_position - r1;
 
-	float64 length = d.Normalize();
+	float64 length = d.Length();
+	d.x /= length;
+	d.y /= length;
 	float64 C = length - m_length;
 	C = b2Clamp(C, -b2_maxLinearCorrection, b2_maxLinearCorrection);
 

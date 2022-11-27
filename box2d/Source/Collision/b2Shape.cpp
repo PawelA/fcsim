@@ -351,9 +351,10 @@ void b2CircleShape::QuickSync(const b2Vec2& position, const b2Mat22& R)
 b2Vec2 b2CircleShape::Support(const b2Vec2& d) const
 {
 	b2Vec2 u = d;
-	u.Normalize();
-	float64 r = b2Max(0.0, m_radius - 2.0 * b2_linearSlop);
-	return m_position + r * u;
+	float64 len = u.Length();
+	u.x /= len;
+	u.y /= len;
+	return m_position + m_radius * u;
 }
 
 bool b2CircleShape::TestPoint(const b2Vec2& p)
