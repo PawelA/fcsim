@@ -29,8 +29,8 @@ static draw_info draw_info_tbl[] = {
 
 static void draw_rect(struct fcsim_block *block, float cr, float cg, float cb)
 {
-	float sina = sinf(block->angle);
-	float cosa = cosf(block->angle);
+	float sina = sin(block->angle);
+	float cosa = cos(block->angle);
 	float wc = block->w * cosa / 2;
 	float ws = block->w * sina / 2;
 	float hc = block->h * cosa / 2;
@@ -56,8 +56,8 @@ static void draw_circle(struct fcsim_block *block, float cr, float cg, float cb)
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(cr, cg, cb);
 	for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
-		glVertex2f(cosf(6.28 * i / CIRCLE_SEGMENTS) * r + block->x,
-			   sinf(6.28 * i / CIRCLE_SEGMENTS) * r + block->y);
+		glVertex2f(cos(6.28 * i / CIRCLE_SEGMENTS) * r + block->x,
+			   sin(6.28 * i / CIRCLE_SEGMENTS) * r + block->y);
 	}
 	glEnd();
 }

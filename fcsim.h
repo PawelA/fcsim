@@ -16,6 +16,7 @@ struct fcsim_block {
 	double x, y;
 	double w, h;
 	double angle;
+	int id;
 	int joints[2];
 };
 
@@ -24,3 +25,5 @@ void fcsim_create_world(void);
 void fcsim_add_block(fcsim_block *block);
 
 void fcsim_step(void);
+
+int fcparse(const char *xml, fcsim_block *blocks);

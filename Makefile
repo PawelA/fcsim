@@ -4,14 +4,17 @@ include box2d.mk
 OBJS = \
 	draw.o \
 	fcsim.o \
-	main.o
+	fcparse.o \
+	main.o \
+	net.o
 
-$(TARGET): $(OBJS) box2d.a
+$(TARGET): $(OBJS) box2d.a yxml.a
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 draw.o:  fcsim.h
-fcsim.o: fcsim.h $(BOX2D_HDRS)
-main.o:  fcsim.h draw.h level.h
+fcsim.o: fcsim.h net.h $(BOX2D_HDRS)
+fcparse.o: fcsim.h
+main.o:  fcsim.h draw.h net.h
 
 box2d.a: $(BOX2D_OBJS)
 	ar rc $@ $^

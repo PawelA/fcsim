@@ -1,5 +1,6 @@
 #include "box2d/Include/Box2D.h"
 #include "fcsim.h"
+#include "net.h"
 
 #define ARENA_WIDTH	2000
 #define ARENA_HEIGHT	1450
@@ -38,7 +39,7 @@ static double distance(double x1, double y1, double x2, double y2)
 	double dx = x2 - x1;
 	double dy = y2 - y1;
 
-	return sqrtf(dx * dx + dy * dy);
+	return sqrt(dx * dx + dy * dy);
 }
 
 class fcsim_collision_filter : public b2CollisionFilter {
@@ -87,17 +88,17 @@ struct block_physics {
 
 static struct block_physics block_physics_tbl[] = {
 	/* c  dens  fric  rest   cB   mB    linD  angD */
-	{  0, 0.0f, 0.7f, 0.0f,  -1,  -1,   0.0f, 0.0f }, /* STAT_RECT */
-	{  1, 0.0f, 0.7f, 0.0f,  -1,  -1,   0.0f, 0.0f }, /* STAT_CIRCLE */
-	{  0, 1.0f, 0.7f, 0.2f,  -1,  -1,   0.0f, 0.0f }, /* DYN_RECT */
-	{  1, 1.0f, 0.7f, 0.2f,  -1,  -1,   0.0f, 0.0f }, /* DYN_CIRCLE */
-	{  0, 1.0f, 0.7f, 0.2f,   1, -17,   0.0f, 0.0f }, /* GOAL_RECT */
-	{  1, 1.0f, 0.7f, 0.2f,   1, -17,   0.0f, 0.0f }, /* GOAL_CIRCLE */
-	{  1, 1.0f, 0.7f, 0.2f,   1, -17,   0.0f, 0.0f }, /* WHEEL */
-	{  1, 1.0f, 0.7f, 0.2f,   1, -17,   0.0f, 0.0f }, /* CW_WHEEL */
-	{  1, 1.0f, 0.7f, 0.2f,   1, -17,   0.0f, 0.0f }, /* CCW_WHEEL */
-	{  0, 1.0f, 0.7f, 0.2f,  16, -18, 0.009f, 0.2f }, /* ROD */
-	{  0, 1.0f, 0.7f, 0.2f, 256, -17, 0.009f, 0.2f }, /* SOLID_ROD */
+	{  0, 0.0, 0.7, 0.0,  -1,  -1,   0.0, 0.0 }, /* STAT_RECT */
+	{  1, 0.0, 0.7, 0.0,  -1,  -1,   0.0, 0.0 }, /* STAT_CIRCLE */
+	{  0, 1.0, 0.7, 0.2,  -1,  -1,   0.0, 0.0 }, /* DYN_RECT */
+	{  1, 1.0, 0.7, 0.2,  -1,  -1,   0.0, 0.0 }, /* DYN_CIRCLE */
+	{  0, 1.0, 0.7, 0.2,   1, -17,   0.0, 0.0 }, /* GOAL_RECT */
+	{  1, 1.0, 0.7, 0.2,   1, -17,   0.0, 0.0 }, /* GOAL_CIRCLE */
+	{  1, 1.0, 0.7, 0.2,   1, -17,   0.0, 0.0 }, /* WHEEL */
+	{  1, 1.0, 0.7, 0.2,   1, -17,   0.0, 0.0 }, /* CW_WHEEL */
+	{  1, 1.0, 0.7, 0.2,   1, -17,   0.0, 0.0 }, /* CCW_WHEEL */
+	{  0, 1.0, 0.7, 0.2,  16, -18, 0.009, 0.2 }, /* ROD */
+	{  0, 1.0, 0.7, 0.2, 256, -17, 0.009, 0.2 }, /* SOLID_ROD */
 };
 
 static void create_block_body(block_descr *bd)
@@ -127,19 +128,35 @@ static void create_block_body(block_descr *bd)
 	body_def.linearDamping = phys.linearDamping;
 	body_def.angularDamping = phys.angularDamping;
 	body_def.AddShape(shape_def);
+	if (phys.circle)
+		mw("body", 1, circle_def.radius);
+	else
+		mw("body", 2, box_def.extents.x, box_def.extents.y);
+	mw("body", 8, shape_def->density, shape_def->friction, shape_def->restitution, body_def.position.x, body_def.position.y, body_def.rotation, body_def.linearDamping, body_def.angularDamping);
 	bd->body = the_world->CreateBody(&body_def);
+}
+
+static block_descr *find_block_by_id(int id)
+{
+	for (int i = 0; i < the_block_cnt; i++) {
+		if (the_blocks[i].block->id == id)
+			return &the_blocks[i];
+	}
+	return NULL;
 }
 
 static joint_collection *get_closest_jc(double x, double y, int joints[2])
 {
-	double best_dist = 10.0f;
+	double best_dist = 10000000.0;
 	joint_collection *res = NULL;
 
 	for (int i = 0; i < 2; i++) {
 		int block_idx = joints[i];
 		if (block_idx < 0)
 			continue;
-		block_descr *bd = &the_blocks[block_idx];
+		block_descr *bd = find_block_by_id(block_idx);
+		if (!bd)
+			continue;
 		for (joint_descr *j = bd->joints; j; j = j->next) {
 			double dist = distance(x, y, j->jc->x, j->jc->y);
 			if (dist < best_dist) {
@@ -154,13 +171,17 @@ static joint_collection *get_closest_jc(double x, double y, int joints[2])
 
 void get_rod_endpoints(fcsim_block *block, double *x0, double *y0, double *x1, double *y1)
 {
-	double cw = cosf(block->angle) * block->w / 2;
-	double sw = sinf(block->angle) * block->w / 2;
+	mw("rod_ends_in", 4, block->x, block->y, block->w, block->angle);
+
+	double cw = cos(block->angle) * block->w / 2;
+	double sw = sin(block->angle) * block->w / 2;
 
 	*x0 = block->x - cw;
 	*y0 = block->y - sw;
 	*x1 = block->x + cw;
 	*y1 = block->y + sw;
+	
+	mw("rod_ends_out", 4, *x0, *y0, *x1, *y1);
 }
 
 int share_block(joint_collection *jc0, joint_collection *jc1)
@@ -214,6 +235,7 @@ static void create_joint(b2Body *b1, b2Body *b2, double x, double y, int type)
 		joint_def.motorSpeed = -5 * type;
 		joint_def.enableMotor = true;
 	}
+	mw("joint", 4, joint_def.anchorPoint.x, joint_def.anchorPoint.y, joint_def.motorTorque, joint_def.motorSpeed);
 	the_world->CreateJoint(&joint_def);
 }
 
@@ -225,7 +247,7 @@ static void create_block_joint(block_descr *bd, joint_descr *j)
 		return;
 
 	int type = joint_type(bd->block->type);
-	if (jc->cnt == 2 && is_wheel(to->block->type))
+	if (jc->cnt == 2 && is_wheel(to->block->type) && jc->x == to->block->x && jc->y == to->block->y)
 		type = joint_type(to->block->type);
 	if (type != FCSIM_JOINT_PIN && is_wheel(bd->block->type))
 		type = -type;
@@ -233,10 +255,21 @@ static void create_block_joint(block_descr *bd, joint_descr *j)
 	create_joint(to->body, bd->body, jc->x, jc->y, type);
 }
 
+static void rec(joint_descr *j, block_descr *bd)
+{
+	if (!j)
+		return;
+	rec(j->next, bd);
+	create_block_joint(bd, j);
+}
+
 static void create_block_joints(block_descr *bd)
 {
+	/*
 	for (joint_descr *j = bd->joints; j; j = j->next)
 		create_block_joint(bd, j);
+	*/
+	rec(bd->joints, bd);
 }
 
 static void connect_joint(block_descr *bd, joint_collection *jc)
@@ -273,6 +306,7 @@ static void make_connecting_block_joint(block_descr *bd, joint_collection *jc, d
 	}
 }
 
+int cnt = 0;
 static void do_rod_joints(struct block_descr *bd)
 {
 	fcsim_block *block = bd->block;
@@ -282,13 +316,31 @@ static void do_rod_joints(struct block_descr *bd)
 	joint_collection *j0 = get_closest_jc(x0, y0, block->joints);
 	joint_collection *j1 = get_closest_jc(x1, y1, block->joints);
 
+	if (j0) mw("jj", 2, j0->x, j0->y);
+	if (j1) mw("jj", 2, j1->x, j1->y);
+	mw("jj", 0);
+
 	if (j0 && j1 && share_block(j0, j1))
 		j1 = NULL;
 
-	make_connecting_block_joint(bd, j0, &x0, &y0);
-	make_connecting_block_joint(bd, j1, &x1, &y1);
+	if (j0) mw("jj", 2, j0->x, j0->y);
+	if (j1) mw("jj", 2, j1->x, j1->y);
+	mw("jj", 0);
 
-	/* todo: update block position & rotation from x0, y0, x1, y1 */
+	if (j0 && !j1) {
+		make_connecting_block_joint(bd, j1, &x1, &y1);
+		make_connecting_block_joint(bd, j0, &x0, &y0);
+	} else {
+		make_connecting_block_joint(bd, j0, &x0, &y0);
+		make_connecting_block_joint(bd, j1, &x1, &y1);
+	}
+
+	mw("atan2_in", 2, y1 - y0, x1 - x0);
+	block->angle = atan2(y1 - y0, x1 - x0);
+	mw("atan2_out", 1, block->angle);
+	block->w = distance(x0, y0, x1, y1);
+	block->x = x0 + (x1 - x0) / 2.0;
+	block->y = y0 + (y1 - y0) / 2.0;
 }
 		
 static void do_wheel_joints(struct block_descr *bd)
@@ -299,6 +351,7 @@ static void do_wheel_joints(struct block_descr *bd)
 	double r = block->w/2;
 	joint_collection *j = get_closest_jc(x, y, block->joints);
 
+	// todo: bogus joint order
 	make_connecting_block_joint(bd, j, &x, &y);
 	block->x = x;
 	block->y = y;
@@ -352,6 +405,11 @@ void fcsim_add_block(struct fcsim_block *block)
 	assert(block->joints[0] < the_block_cnt);
 	assert(block->joints[1] < the_block_cnt);
 
+	if (block->id == -1)
+		mw("level_block", 5, block->x, block->y, block->w, block->h, block->angle);
+	else
+		mw("player_block", 5, block->x, block->y, block->w, block->h, block->angle);
+
 	if (block->type == FCSIM_STAT_CIRCLE || block->type == FCSIM_DYN_CIRCLE) {
 		block->w *= 2;
 		block->h *= 2;
@@ -375,4 +433,9 @@ void fcsim_step(void)
 		bd->block->y = pos.y;
 		bd->block->angle = angle;
 	}
+
+	for (int i = the_block_cnt - 1; i >= 0; i--) {
+		//mw("step_block", 3, the_blocks[i].block->x, the_blocks[i].block->y, the_blocks[i].block->angle);
+	}
+
 }
