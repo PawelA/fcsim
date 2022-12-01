@@ -409,6 +409,12 @@ static void do_rod_joints(block *b)
 	if (jc1)
 		replace_joint(b, jcl1, jc1);
 }
+
+static void rotate(double *x_res, double *y_res, double x, double y, double rot, double r)
+{
+	*x_res = x + cos(rot) * r;
+	*y_res = y + sin(rot) * r;
+}
 		
 static void do_wheel_joints(block *b)
 {
@@ -424,10 +430,10 @@ static void do_wheel_joints(block *b)
 	}
 
 	joint_collection_list *jcl = add_joint(b, bdef->x, bdef->y);
-	add_joint(b, x + r, y);
-	add_joint(b, x, y + r);
-	add_joint(b, x - r, y);
-	add_joint(b, x, y - r);
+	add_joint(b, x + cos(bdef->angle) * r, y + sin(bdef->angle) * r);
+	add_joint(b, x + cos(bdef->angle + 3.141592653589793 / 2) * r, y + sin(bdef->angle + 3.141592653589793 / 2) * r);
+	add_joint(b, x + cos(bdef->angle + 3.141592653589793) * r, y + sin(bdef->angle + 3.141592653589793) * r);
+	add_joint(b, x + cos(bdef->angle + 4.71238898038469) * r, y + sin(bdef->angle + 4.71238898038469) * r);
 
 	if (jc)
 		replace_joint(b, jcl, jc);
