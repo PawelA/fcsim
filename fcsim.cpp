@@ -447,12 +447,16 @@ static void do_goal_rect_joints(block *b)
 	double w = bdef->w/2;
 	double h = bdef->h/2;
 
-	/* todo: take rotation into account */
+	double x0 =  cos(bdef->angle) * w;
+	double y0 =  sin(bdef->angle) * w;
+	double x1 =  sin(bdef->angle) * h;
+	double y1 = -cos(bdef->angle) * h;
+
 	add_joint(b, x, y);
-	add_joint(b, x + w, y + w);
-	add_joint(b, x + w, y - w);
-	add_joint(b, x - w, y + w);
-	add_joint(b, x - w, y - w);
+	add_joint(b, x + x0 + x1, y + y0 + y1);
+	add_joint(b, x - x0 + x1, y - y0 + y1);
+	add_joint(b, x + x0 - x1, y + y0 - y1);
+	add_joint(b, x - x0 - x1, y - y0 - y1);
 }
 
 static void do_joints(block *b)
