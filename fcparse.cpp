@@ -210,25 +210,47 @@ static void read_player_blocks(void)
 static void read_start(void)
 {
 	double x, y;
+	double w, h;
 	expect_elem_start_exact("start");
 	next();
 	read_position(&x, &y);
-	read_field("width");
-	read_field("height");
+	w = read_field_double("width");
+	h = read_field_double("height");
 	expect_elem_end();
 	next();
+	cur_block->type = FCSIM_START;
+	cur_block->x = x;
+	cur_block->y = y;
+	cur_block->w = w;
+	cur_block->h = h;
+	cur_block->angle = 0;
+	cur_block->id = -1;
+	cur_block->joints[0] = -1;
+	cur_block->joints[1] = -1;
+	cur_block++;
 }
 
 static void read_end(void)
 {
 	double x, y;
+	double w, h;
 	expect_elem_start_exact("end");
 	next();
 	read_position(&x, &y);
-	read_field("width");
-	read_field("height");
+	w = read_field_double("width");
+	h = read_field_double("height");
 	expect_elem_end();
 	next();
+	cur_block->type = FCSIM_END;
+	cur_block->x = x;
+	cur_block->y = y;
+	cur_block->w = w;
+	cur_block->h = h;
+	cur_block->angle = 0;
+	cur_block->id = -1;
+	cur_block->joints[0] = -1;
+	cur_block->joints[1] = -1;
+	cur_block++;
 }
 
 static void read_level(void)

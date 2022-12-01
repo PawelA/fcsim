@@ -74,6 +74,9 @@ static void draw_block(struct fcsim_block_def *block)
 void draw_world(struct fcsim_block_def *blocks, int block_cnt)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	for (int i = 0; i < block_cnt; i++)
+	for (int i = 0; i < block_cnt; i++) {
+		if (blocks[i].type < 0)
+			continue;
 		draw_block(&blocks[i]);
+	}
 }

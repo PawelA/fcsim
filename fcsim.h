@@ -11,6 +11,9 @@
 #define FCSIM_SOLID_ROD   10
 #define FCSIM_TYPE_MAX    10
 
+#define FCSIM_START -1
+#define FCSIM_END   -2
+
 struct fcsim_block_def {
 	int type;
 	double x, y;

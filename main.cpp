@@ -31,6 +31,26 @@ char *read_file(const char *name)
 	return ptr;
 }
 
+bool check(int cnt)
+{
+	for (int i = 0; i < cnt; i++) {
+		fcsim_block_def *g = &blocks[i];
+		if (g->type == FCSIM_WHEEL) {
+			for (int j = 0; j < cnt; j++) {
+				fcsim_block_def *e = &blocks[j];
+				if (e->type == FCSIM_END) {
+					if (e->x - e->w/2 > g->x - g->w/2) return false;
+					if (e->x + e->w/2 < g->x + g->w/2) return false;
+					if (e->y - e->h/2 > g->y - g->h/2) return false;
+					if (e->y + e->h/2 < g->y + g->h/2) return false;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 int main(void)
 {
 	char *xml;
@@ -68,11 +88,16 @@ int main(void)
 	fcsim_generate();
 
 	setup_draw();
-	while (!glfwWindowShouldClose(window)) {
+
+	int ticks = 0;
+	while (true) {
 		draw_world(blocks, block_count);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		fcsim_step();
+		printf("%d\n", ++ticks);
+		if (check(block_count))
+			break;
 	}
 
 	return 0;

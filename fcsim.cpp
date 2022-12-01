@@ -478,14 +478,14 @@ static void do_joints(block *b)
 	}
 }
 
+#include <stdio.h>
 void fcsim_add_block(fcsim_block_def *bdef)
 {
+	if (bdef->type < 0 || bdef->type > FCSIM_TYPE_MAX)
+		return;
+
 	block *b = &the_blocks[the_block_cnt++];
 	b->bdef = bdef;
-
-	assert(bdef->type >= 0 && bdef->type <= FCSIM_TYPE_MAX);
-	assert(bdef->joints[0] < the_block_cnt);
-	assert(bdef->joints[1] < the_block_cnt);
 
 	if (bdef->id == -1)
 		mw("level_block", 5, bdef->x, bdef->y, bdef->w, bdef->h, bdef->angle);
@@ -496,6 +496,9 @@ void fcsim_add_block(fcsim_block_def *bdef)
 		bdef->w *= 2;
 		bdef->h *= 2;
 	}
+
+	if (bdef->type == FCSIM_DYN_CIRCLE)
+		bdef->angle = 0;
 
 	do_joints(b);
 }

@@ -188,6 +188,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		{
 			m_joints[j]->SolveVelocityConstraints(step);
 		}
+		dump_bodies("solve3.2");
 	}
 
 	dump_bodies("solve4");
