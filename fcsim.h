@@ -11,7 +11,7 @@
 #define FCSIM_SOLID_ROD   10
 #define FCSIM_TYPE_MAX    10
 
-struct fcsim_block {
+struct fcsim_block_def {
 	int type;
 	double x, y;
 	double w, h;
@@ -22,8 +22,10 @@ struct fcsim_block {
 
 void fcsim_create_world(void);
 
-void fcsim_add_block(fcsim_block *block);
+void fcsim_add_block(fcsim_block_def *bdef);
+
+void fcsim_generate(void);
 
 void fcsim_step(void);
 
-int fcparse(const char *xml, fcsim_block *blocks);
+int fcsim_parse_xml(const char *xml, fcsim_block_def *bdefs);

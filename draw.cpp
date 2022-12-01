@@ -27,7 +27,7 @@ static draw_info draw_info_tbl[] = {
 	{ 0, 0.420f, 0.204f, 0.000f }, /* FCSIM_SOLID_ROD */
 };
 
-static void draw_rect(struct fcsim_block *block, float cr, float cg, float cb)
+static void draw_rect(struct fcsim_block_def *block, float cr, float cg, float cb)
 {
 	float sina = sin(block->angle);
 	float cosa = cos(block->angle);
@@ -49,7 +49,7 @@ static void draw_rect(struct fcsim_block *block, float cr, float cg, float cb)
 
 #define CIRCLE_SEGMENTS 32
 
-static void draw_circle(struct fcsim_block *block, float cr, float cg, float cb)
+static void draw_circle(struct fcsim_block_def *block, float cr, float cg, float cb)
 {
 	float r = block->w/2;
 
@@ -62,7 +62,7 @@ static void draw_circle(struct fcsim_block *block, float cr, float cg, float cb)
 	glEnd();
 }
 
-static void draw_block(struct fcsim_block *block)
+static void draw_block(struct fcsim_block_def *block)
 {
 	draw_info info = draw_info_tbl[block->type];
 	if (info.circle)
@@ -71,7 +71,7 @@ static void draw_block(struct fcsim_block *block)
 		draw_rect(block, info.r, info.g, info.b);
 }
  
-void draw_world(struct fcsim_block *blocks, int block_cnt)
+void draw_world(struct fcsim_block_def *blocks, int block_cnt)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	for (int i = 0; i < block_cnt; i++)

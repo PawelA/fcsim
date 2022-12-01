@@ -6,7 +6,7 @@
 #include "draw.h"
 #include "net.h"
 
-fcsim_block blocks[1000];
+fcsim_block_def blocks[1000];
 
 char *read_file(const char *name)
 {
@@ -38,7 +38,7 @@ int main(void)
 	GLFWwindow *window;
 
 	xml = read_file("level.xml");
-	block_count = fcparse(xml, blocks);
+	block_count = fcsim_parse_xml(xml, blocks);
 
 	if (!glfwInit())
 		return 1;
@@ -65,6 +65,7 @@ int main(void)
 		if (blocks[i].id == -1)
 			fcsim_add_block(&blocks[i]);
 	}
+	fcsim_generate();
 
 	setup_draw();
 	while (!glfwWindowShouldClose(window)) {

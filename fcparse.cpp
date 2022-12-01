@@ -10,7 +10,7 @@ static char buf[4096];
 yxml_t yxml;
 const char *cur_str;
 yxml_ret_t cur_ret;
-struct fcsim_block *cur_block;
+struct fcsim_block_def *cur_block;
 int cur_id;
 
 static void next(void)
@@ -255,7 +255,7 @@ static void read_retrieve_level(void)
 	next();
 }
 
-int fcparse(const char *xml, struct fcsim_block *blocks)
+int fcsim_parse_xml(const char *xml, struct fcsim_block_def *blocks)
 {
 	int res;
 
