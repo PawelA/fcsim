@@ -14,7 +14,7 @@
 #include <byteswap.h>
 #endif
 
-#define PORT 8088
+#define PORT 2137
 #define ADDR "192.168.0.106"
  
 static int sock;
@@ -23,6 +23,12 @@ int minit(void)
 {
 	struct sockaddr_in addr;
 	int res;
+	
+#ifdef _WIN32
+	WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+        return -1;
+#endif
 
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock < 0)
