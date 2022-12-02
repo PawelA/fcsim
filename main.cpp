@@ -90,7 +90,7 @@ int main(void)
 	setup_draw();
 
 	int ticks = 0;
-	while (true) {
+	while (!glfwWindowShouldClose(window)) { 
 		draw_world(blocks, block_count);
 		glfwSwapBuffers(window);
 		glfwPollEvents();

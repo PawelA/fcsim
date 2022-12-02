@@ -34,3 +34,6 @@ config.mk: config.def.mk
 
 clean:
 	rm -f $(TARGET) box2d.a $(OBJS) $(BOX2D_OBJS)
+
+clean2:
+	rm -f $(TARGET) box2d.a $(OBJS)

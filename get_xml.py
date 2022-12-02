@@ -6,5 +6,5 @@ import xml.etree.ElementTree as et
 
 url = 'http://fantasticcontraption.com/retrieveLevel.php'
 
-resp = requests.post(url, data = {'id': sys.argv[1], 'loadDesign': 0})
+resp = requests.post(url, data = {'id': sys.argv[1], 'loadDesign': sys.argv[2]})
 print(resp.text)

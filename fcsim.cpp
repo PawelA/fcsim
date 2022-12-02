@@ -111,6 +111,7 @@ static struct block_physics block_physics_tbl[] = {
 	{  1, 1.0, 0.7, 0.2,   1, -17,   0.0, 0.0 }, /* CCW_WHEEL */
 	{  0, 1.0, 0.7, 0.2,  16, -18, 0.009, 0.2 }, /* ROD */
 	{  0, 1.0, 0.7, 0.2, 256, -17, 0.009, 0.2 }, /* SOLID_ROD */
+	{  0, 1.0, 0.7, 0.2, 256, -17,   0.0, 0.0 }, /* GOAL_RECT */
 };
 
 static void generate_body(block *b)

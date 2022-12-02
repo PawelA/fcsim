@@ -12,6 +12,8 @@ const char *cur_str;
 yxml_ret_t cur_ret;
 struct fcsim_block_def *cur_block;
 int cur_id;
+int trash_int;
+double trash_double;
 
 static void next(void)
 {
@@ -137,6 +139,43 @@ void read_joints(int *joints)
 	next();
 }
 
+void toss_rotation_field(void)
+{
+	if (!strcmp(yxml.elem, "rotation"))
+	{
+		next();
+		trash_double = read_double();
+		expect_elem_end();
+		next();
+	}
+}
+void toss_tick_count(void)
+{
+	if (cur_ret == YXML_ELEMSTART) {
+		//is this second check necessary?
+		if (!strcmp(yxml.elem, "tickCount"))
+		{
+			next();
+			trash_double = read_double();
+			expect_elem_end();
+			next();
+		}
+	}
+}
+void toss_piece_count(void)
+{
+	if (cur_ret == YXML_ELEMSTART) {
+		//is this second check necessary?
+		if (!strcmp(yxml.elem, "pieceCount"))
+		{
+			next();
+			trash_double = read_double();
+			expect_elem_end();
+			next();
+		}
+	}
+}
+
 int block_type(const char *elem)
 {
 	if (!strcmp(elem, "StaticRectangle"))
@@ -157,6 +196,8 @@ int block_type(const char *elem)
 		return FCSIM_SOLID_ROD;
 	if (!strcmp(elem, "HollowRod"))
 		return FCSIM_ROD;
+	if (!strcmp(elem, "JointedDynamicRectangle"))
+		return FCSIM_GOAL_RECT;
 	return -1;
 }
 
@@ -191,8 +232,9 @@ static void read_level_blocks(void)
 {
 	expect_elem_start_exact("levelBlocks");
 	next();
-	while (cur_ret == YXML_ELEMSTART)
+	while (cur_ret == YXML_ELEMSTART) {
 		read_block();
+	}
 	expect_elem_end();
 	next();
 }
@@ -201,8 +243,9 @@ static void read_player_blocks(void)
 {
 	expect_elem_start_exact("playerBlocks");
 	next();
-	while (cur_ret == YXML_ELEMSTART)
+	while (cur_ret == YXML_ELEMSTART) {
 		read_block();
+	}
 	expect_elem_end();
 	next();
 }
@@ -213,6 +256,7 @@ static void read_start(void)
 	double w, h;
 	expect_elem_start_exact("start");
 	next();
+	toss_rotation_field();
 	read_position(&x, &y);
 	w = read_field_double("width");
 	h = read_field_double("height");
@@ -236,6 +280,7 @@ static void read_end(void)
 	double w, h;
 	expect_elem_start_exact("end");
 	next();
+	toss_rotation_field();
 	read_position(&x, &y);
 	w = read_field_double("width");
 	h = read_field_double("height");
@@ -261,6 +306,8 @@ static void read_level(void)
 	read_player_blocks();
 	read_start();
 	read_end();
+	toss_tick_count();
+	toss_piece_count();
 	expect_elem_end();
 	next();
 }

@@ -25,6 +25,7 @@ static draw_info draw_info_tbl[] = {
 	{ 1, 1.000f, 0.800f, 0.800f }, /* FCSIM_CCW_WHEEL */
 	{ 0, 0.000f, 0.000f, 1.000f }, /* FCSIM_ROD */
 	{ 0, 0.420f, 0.204f, 0.000f }, /* FCSIM_SOLID_ROD */
+	{ 0, 0.900f, 0.200f, 0.400f }, /* FCSIM_GOAL_RECT */
 };
 
 static void draw_rect(struct fcsim_block_def *block, float cr, float cg, float cb)
