@@ -45,6 +45,7 @@ b2PolyAndCircleContact::b2PolyAndCircleContact(b2Shape* s1, b2Shape* s2)
 
 void b2PolyAndCircleContact::Evaluate()
 {
+	mw("#poly_and_circle_contact_evaluate", 0);
 	b2CollidePolyAndCircle(&m_manifold, (b2PolyShape*)m_shape1, (b2CircleShape*)m_shape2, false);
 
 	if (m_manifold.pointCount > 0)

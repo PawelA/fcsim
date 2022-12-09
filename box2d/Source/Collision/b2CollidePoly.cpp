@@ -28,6 +28,11 @@ struct ClipVertex
 static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
 					  const b2Vec2& normal, float64 offset)
 {
+	mw("clip_segment_to_line0", 7, vIn[0].v.x, vIn[0].v.y,
+				       vIn[1].v.x, vIn[1].v.y,
+				       normal.x, normal.y,
+				       offset);
+
 	// Start with no output points
 	int32 numOut = 0;
 
@@ -55,6 +60,9 @@ static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
 		}
 		++numOut;
 	}
+
+	for (int i = 0; i < numOut; i++)
+		mw("clip_segment_to_line1", 2, vOut[i].v.x, vOut[i].v.y);
 
 	return numOut;
 }
@@ -197,7 +205,9 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 
 	// Get the normal of edge1.
 	b2Vec2 normal1Local1 = b2Cross(vert1s[vertex12] - vert1s[vertex11], 1.0);
-	normal1Local1.Normalize();
+	float64 normal1Local1LenInv = 1.0 / normal1Local1.Length();
+	normal1Local1.x *= normal1Local1LenInv;
+	normal1Local1.y *= normal1Local1LenInv;
 	b2Vec2 normal1 = b2Mul(poly1->m_R, normal1Local1);
 	b2Vec2 normal1Local2 = b2MulT(poly2->m_R, normal1);
 
@@ -210,7 +220,9 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 		int32 i2 = i + 1 < count2 ? i + 1 : 0;
 
 		b2Vec2 normal2Local2 = b2Cross(vert2s[i2] - vert2s[i1], 1.0);
-		normal2Local2.Normalize();
+		float64 normal2Local2LenInv = 1.0 / normal2Local2.Length();
+		normal2Local2.x *= normal2Local2LenInv;
+		normal2Local2.y *= normal2Local2LenInv;
 		float64 dot = b2Dot(normal2Local2, normal1Local2);
 		if (dot < minDot)
 		{
@@ -241,6 +253,7 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 // The normal points from 1 to 2
 void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyShape* polyB, bool conservative)
 {
+	mw("collide_poly0", 0);
 	NOT_USED(conservative);
 
 	manifold->pointCount = 0;
@@ -249,11 +262,15 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	float64 separationA = FindMaxSeparation(&edgeA, polyA, polyB, conservative);
 	if (separationA > 0.0 && conservative == false)
 		return;
+	
+	mw("collide_poly1", 0);
 
 	int32 edgeB = 0;
 	float64 separationB = FindMaxSeparation(&edgeB, polyB, polyA, conservative);
 	if (separationB > 0.0 && conservative == false)
 		return;
+
+	mw("collide_poly2", 0);
 
 	const b2PolyShape* poly1;	// reference poly
 	const b2PolyShape* poly2;	// incident poly
@@ -289,7 +306,10 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 
 	b2Vec2 dv = v12 - v11;
 	b2Vec2 sideNormal = b2Mul(poly1->m_R, v12 - v11);
-	sideNormal.Normalize();
+	mw("side_normal", 2, sideNormal.x, sideNormal.y);
+	float64 sideNormalLenInv = 1.0 / sideNormal.Length();
+	sideNormal.x *= sideNormalLenInv;
+	sideNormal.y *= sideNormalLenInv;
 	b2Vec2 frontNormal = b2Cross(sideNormal, 1.0);
 
 	v11 = poly1->m_position + b2Mul(poly1->m_R, v11);
@@ -309,12 +329,16 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 
 	if (np < 2)
 		return;
+	
+	mw("collide_poly3", 0);
 
 	// Clip to negative box side 1
 	np = ClipSegmentToLine(clipPoints2, clipPoints1,  sideNormal, sideOffset2);
 
 	if (np < 2)
 		return;
+	
+	mw("collide_poly4", 0);
 
 	// Now clipPoints2 contains the clipped points.
 	manifold->normal = flip ? -frontNormal : frontNormal;
