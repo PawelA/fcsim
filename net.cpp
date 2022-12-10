@@ -49,6 +49,23 @@ int minit(void)
 	return 0;
 }
 
+static char buf[1024];
+static int buf_bytes;
+
+static void buf_add(const void *data, int len)
+{
+	if (len > sizeof(buf) - buf_bytes)
+		len = sizeof(buf) - buf_bytes;
+	memcpy(buf, data, len);
+	buf_bytes += len;
+}
+
+static void buf_send(void)
+{
+	send(sock, buf, buf_bytes, 0);
+	buf_bytes = 0;
+}
+
 void mw(const char *name, int num_cnt, ...)
 {
 	va_list va;
@@ -61,10 +78,10 @@ void mw(const char *name, int num_cnt, ...)
 	if (sock <= 0)
 		return;
 
-	send(sock, &who, 1, 0);
-	send(sock, (const char *)&name_len_n, 4, 0);
-	send(sock, (const char *)&num_cnt_n, 4, 0);
-	send(sock, name, name_len, 0);
+	buf_add(&who, 1);
+	buf_add((const char *)&name_len_n, 4);
+	buf_add((const char *)&num_cnt_n, 4);
+	buf_add(name, name_len);
 
 	va_start(va, num_cnt);
 	for (i = 0; i < num_cnt; i++) {
@@ -74,6 +91,8 @@ void mw(const char *name, int num_cnt, ...)
 		} num;
 		num.d = va_arg(va, double);
 		num.u = bswap_64(num.u);
-		send(sock, (const char *)&num, 8, 0);
+		buf_add(&num, 8);
 	}
+
+	buf_send();
 }
