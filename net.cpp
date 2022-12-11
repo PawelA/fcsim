@@ -44,7 +44,7 @@ int minit(void)
 		return res;
 	}
 
-	send(sock, "AAAAAAAAAAAAAAAAAAAAAAA", 23, 0);
+	send(sock, "!c", 2, 0);
 
 	return 0;
 }
@@ -56,12 +56,13 @@ static void buf_add(const void *data, int len)
 {
 	if (len > sizeof(buf) - buf_bytes)
 		len = sizeof(buf) - buf_bytes;
-	memcpy(buf, data, len);
+	memcpy(buf + buf_bytes, data, len);
 	buf_bytes += len;
 }
 
 static void buf_send(void)
 {
+	buf[0] = buf_bytes - 1;
 	send(sock, buf, buf_bytes, 0);
 	buf_bytes = 0;
 }
@@ -69,7 +70,7 @@ static void buf_send(void)
 void mw(const char *name, int num_cnt, ...)
 {
 	va_list va;
-	char who = 'c';
+	char size = 0;
 	int name_len = strlen(name);
 	int name_len_n = htonl(name_len);
 	int num_cnt_n  = htonl(num_cnt);
@@ -78,9 +79,9 @@ void mw(const char *name, int num_cnt, ...)
 	if (sock <= 0)
 		return;
 
-	buf_add(&who, 1);
-	buf_add((const char *)&name_len_n, 4);
-	buf_add((const char *)&num_cnt_n, 4);
+	buf_add(&size, 1);
+	buf_add(&name_len_n, 4);
+	buf_add(&num_cnt_n, 4);
 	buf_add(name, name_len);
 
 	va_start(va, num_cnt);

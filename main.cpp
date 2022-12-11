@@ -73,7 +73,7 @@ int main(void)
 		printf("net disconnected\n");
 
 	//uint64_t x = 0x405df22a8c92047f;
-	//mw("parse_check", 1, strtod("119.78384699115303", NULL));
+	mw("parse_check", 1, strtod("119.78384699115303", NULL));
 	//mw("parse_check", 1, *(double *)&x, NULL);
 
 	fcsim_create_world();
