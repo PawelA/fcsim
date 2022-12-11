@@ -52,37 +52,46 @@ int minit(void)
 static char buf[1024];
 static int buf_bytes;
 
-static void buf_add(const void *data, int len)
+static void buf_flush(void)
 {
-	if (len > sizeof(buf) - buf_bytes)
-		len = sizeof(buf) - buf_bytes;
-	memcpy(buf + buf_bytes, data, len);
-	buf_bytes += len;
+	int res;
+
+	while (buf_bytes > 0) {
+		res = send(sock, buf, buf_bytes, 0);
+		if (res <= 0)
+			buf_bytes = 0;
+		else
+			buf_bytes -= res;
+	}
 }
 
-static void buf_send(void)
+static void buf_write(const void *datav, int len)
 {
-	buf[0] = buf_bytes - 1;
-	send(sock, buf, buf_bytes, 0);
-	buf_bytes = 0;
+	const char *data = (const char *)datav;
+	int to_write;
+
+	while (len > 0) {
+		to_write = len;
+		if (to_write > sizeof(buf) - buf_bytes)
+			to_write = sizeof(buf) - buf_bytes;
+		memcpy(buf + buf_bytes, data, to_write);
+		buf_bytes += to_write;
+		data += to_write;
+		len -= to_write;
+		if (buf_bytes == sizeof(buf))
+			buf_flush();
+	}
 }
 
 void mw(const char *name, int num_cnt, ...)
 {
 	va_list va;
-	char size = 0;
-	int name_len = strlen(name);
-	int name_len_n = htonl(name_len);
-	int num_cnt_n  = htonl(num_cnt);
+	uint8_t name_size = strlen(name) + 1;
+	uint8_t size = name_size + 8 * num_cnt;
 	int i;
 
-	if (sock <= 0)
-		return;
-
-	buf_add(&size, 1);
-	buf_add(&name_len_n, 4);
-	buf_add(&num_cnt_n, 4);
-	buf_add(name, name_len);
+	buf_write(&size, 1);
+	buf_write(name, name_size);
 
 	va_start(va, num_cnt);
 	for (i = 0; i < num_cnt; i++) {
@@ -92,8 +101,6 @@ void mw(const char *name, int num_cnt, ...)
 		} num;
 		num.d = va_arg(va, double);
 		num.u = bswap_64(num.u);
-		buf_add(&num, 8);
+		buf_write(&num, 8);
 	}
-
-	buf_send();
 }

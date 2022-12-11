@@ -87,7 +87,8 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 				ccp->normalImpulse = cp->normalImpulse;
 				ccp->tangentImpulse = cp->tangentImpulse;
 				ccp->separation = cp->separation;
-				ccp->positionImpulse = NAN;
+				unsigned long long dupa = 0x7fffffffe0000000LLU;
+				ccp->positionImpulse = *(double *)&dupa;
 
 				b2Vec2 r1 = cp->position - b1->m_position;
 				b2Vec2 r2 = cp->position - b2->m_position;
