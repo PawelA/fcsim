@@ -218,6 +218,7 @@ static void read_start(void)
 	h = read_field_double("height");
 	expect_elem_end();
 	next();
+	/*
 	cur_block->type = FCSIM_START;
 	cur_block->x = x;
 	cur_block->y = y;
@@ -228,6 +229,7 @@ static void read_start(void)
 	cur_block->joints[0] = -1;
 	cur_block->joints[1] = -1;
 	cur_block++;
+	*/
 }
 
 static void read_end(void)
@@ -241,6 +243,7 @@ static void read_end(void)
 	h = read_field_double("height");
 	expect_elem_end();
 	next();
+	/*
 	cur_block->type = FCSIM_END;
 	cur_block->x = x;
 	cur_block->y = y;
@@ -251,6 +254,7 @@ static void read_end(void)
 	cur_block->joints[0] = -1;
 	cur_block->joints[1] = -1;
 	cur_block++;
+	*/
 }
 
 static void read_level(void)
@@ -277,19 +281,23 @@ static void read_retrieve_level(void)
 	next();
 }
 
-int fcsim_parse_xml(const char *xml, struct fcsim_block_def *blocks)
+int fcsim_read_xml(const char *xml, fcsim_arena *arena)
 {
 	int res;
 
 	yxml_init(&yxml, buf, sizeof(buf));
 
+	arena->blocks = new fcsim_block_def[10000];
+
 	cur_str = xml;
-	cur_block = blocks;
+	cur_block = arena->blocks;
 	cur_id = 0;
 
 	next();
 	read_retrieve_level();
 	expect(YXML_OK);
 
-	return cur_block - blocks;
+	arena->block_cnt = cur_block - arena->blocks;
+
+	return 0;
 }

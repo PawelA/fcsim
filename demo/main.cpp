@@ -2,11 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <GLFW/glfw3.h>
-#include "fcsim.h"
+#include <fcsim.h>
+#include <net.h>
 #include "draw.h"
-#include "net.h"
-
-fcsim_block_def blocks[1000];
 
 char *read_file(const char *name)
 {
@@ -31,6 +29,7 @@ char *read_file(const char *name)
 	return ptr;
 }
 
+/*
 bool check(int cnt)
 {
 	for (int i = 0; i < cnt; i++) {
@@ -50,15 +49,18 @@ bool check(int cnt)
 	}
 	return false;
 }
+*/
 
-int main(void)
+int main()
 {
 	char *xml;
-	int block_count;
+	fcsim_arena arena;
+	fcsim_handle *handle;
 	GLFWwindow *window;
 
 	xml = read_file("level.xml");
-	block_count = fcsim_parse_xml(xml, blocks);
+	fcsim_read_xml(xml, &arena);
+	handle = fcsim_new(&arena);
 
 	if (!glfwInit())
 		return 1;
@@ -72,32 +74,17 @@ int main(void)
 	if (minit())
 		printf("net disconnected\n");
 
-	//uint64_t x = 0x405df22a8c92047f;
-	mw("parse_check", 1, strtod("119.78384699115303", NULL));
-	//mw("parse_check", 1, *(double *)&x, NULL);
-
-	fcsim_create_world();
-	for (int i = 0; i < block_count; i++) {
-		if (blocks[i].id != -1)
-			fcsim_add_block(&blocks[i]);
-	}
-	for (int i = 0; i < block_count; i++) {
-		if (blocks[i].id == -1)
-			fcsim_add_block(&blocks[i]);
-	}
-	fcsim_generate();
+	//mw("parse_check", 1, strtod("119.78384699115303", NULL));
 
 	setup_draw();
 
 	int ticks = 0;
-	while (true) {
-		draw_world(blocks, block_count);
+	while (!glfwWindowShouldClose(window)) {
+		draw_world(arena.blocks, arena.block_cnt);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		fcsim_step();
+		fcsim_step(handle);
 		printf("%d\n", ++ticks);
-		if (check(block_count))
-			break;
 	}
 
 	return 0;

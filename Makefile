@@ -1,36 +1,25 @@
 include config.mk
 include box2d.mk
 
-OBJS = \
-	draw.o \
-	fcsim.o \
-	fcparse.o \
-	main.o \
+FCSIM_OBJS = \
+	fcsim/fcsim.o \
+	fcsim/parse.o \
+	fcsim/yxml/yxml.o \
+	$(BOX2D_OBJS) \
 	net.o
 
-$(TARGET): $(OBJS) box2d.a yxml.a
+DEMO_OBJS = \
+	demo/main.o \
+	demo/draw.o
+
+demo/main: $(DEMO_OBJS) fcsim/fcsim.a
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-draw.o:  fcsim.h
-fcsim.o: fcsim.h net.h $(BOX2D_HDRS)
-fcparse.o: fcsim.h
-main.o:  fcsim.h draw.h net.h
-
-box2d.a: $(BOX2D_OBJS)
-	ar rc $@ $^
-
-$(BOX2D_OBJS): $(BOX2D_HDRS)
-
-parse: parse.o yxml.a
-
-yxml/yxml.o: yxml/yxml.c
-	$(CC) -I yxml -c -o $@ $^
-
-yxml.a: yxml/yxml.o
+fcsim/fcsim.a: $(FCSIM_OBJS)
 	ar rc $@ $^
 
 config.mk: config.def.mk
 	cp $< $@
 
 clean:
-	rm -f $(TARGET) box2d.a $(OBJS) $(BOX2D_OBJS)
+	rm -f demo/main fcsim/fcsim.a $(FCSIM_OBJS) $(DEMO_OBJS)

@@ -9,26 +9,35 @@
 #define FCSIM_CCW_WHEEL   8
 #define FCSIM_ROD         9
 #define FCSIM_SOLID_ROD   10
-#define FCSIM_TYPE_MAX    10
 
-#define FCSIM_START -1
-#define FCSIM_END   -2
+#define FCSIM_TYPE_LAST FCSIM_SOLID_ROD
 
 struct fcsim_block_def {
 	int type;
+	int id;
 	double x, y;
 	double w, h;
 	double angle;
-	int id;
 	int joints[2];
+	int joint_cnt;
 };
 
-void fcsim_create_world(void);
+struct fcsim_rect {
+	double x, y;
+	double w, h;
+};
 
-void fcsim_add_block(fcsim_block_def *bdef);
+struct fcsim_arena {
+	fcsim_block_def *blocks;
+	int block_cnt;
+	fcsim_rect build;
+	fcsim_rect goal;
+};
 
-void fcsim_generate(void);
+struct fcsim_handle;
 
-void fcsim_step(void);
+fcsim_handle *fcsim_new(fcsim_arena *arena);
 
-int fcsim_parse_xml(const char *xml, fcsim_block_def *bdefs);
+void fcsim_step(fcsim_handle *handle);
+
+int fcsim_read_xml(const char *xml, fcsim_arena *arena);
