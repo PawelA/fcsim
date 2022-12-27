@@ -31,10 +31,10 @@ static void draw_rect(struct fcsim_block_def *block, float cr, float cg, float c
 {
 	float sina = sin(block->angle);
 	float cosa = cos(block->angle);
-	float wc = block->w * cosa / 2;
-	float ws = block->w * sina / 2;
-	float hc = block->h * cosa / 2;
-	float hs = block->h * sina / 2;
+	float wc = std::max(4.0, block->w) * cosa / 2;
+	float ws = std::max(4.0, block->w) * sina / 2;
+	float hc = std::max(4.0, block->h) * cosa / 2;
+	float hs = std::max(4.0, block->h) * sina / 2;
 	float x = block->x;
 	float y = block->y;
 
@@ -44,6 +44,22 @@ static void draw_rect(struct fcsim_block_def *block, float cr, float cg, float c
 	glVertex2f(-wc - hs + x, -ws + hc + y);
 	glVertex2f(-wc + hs + x, -ws - hc + y);
 	glVertex2f( wc + hs + x,  ws - hc + y);
+	glEnd();
+}
+
+static void draw_area(fcsim_rect *area, float cr, float cg, float cb)
+{
+	float w_half = area->w / 2;
+	float h_half = area->h / 2;
+	float x = area->x;
+	float y = area->y;
+
+	glBegin(GL_TRIANGLE_FAN);
+	glColor3f(cr, cg, cb);
+	glVertex2f(x + w_half, y + h_half);
+	glVertex2f(x + w_half, y - h_half);
+	glVertex2f(x - w_half, y - h_half);
+	glVertex2f(x - w_half, y + h_half);
 	glEnd();
 }
 
@@ -71,12 +87,11 @@ static void draw_block(struct fcsim_block_def *block)
 		draw_rect(block, info.r, info.g, info.b);
 }
  
-void draw_world(struct fcsim_block_def *blocks, int block_cnt)
+void draw_world(fcsim_arena *arena)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	for (int i = 0; i < block_cnt; i++) {
-		if (blocks[i].type < 0)
-			continue;
-		draw_block(&blocks[i]);
-	}
+	draw_area(&arena->build, 0.737, 0.859, 0.976);
+	draw_area(&arena->goal,  0.945, 0.569, 0.569);
+	for (int i = 0; i < arena->block_cnt; i++)
+		draw_block(&arena->blocks[i]);
 }

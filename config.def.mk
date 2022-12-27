@@ -1,4 +1,4 @@
-CXXFLAGS = -O2 -DNDEBUG -I.
+CXXFLAGS = -O2 -DNDEBUG -Ifcsim -I.
 
 # Windows:
 LDFLAGS = -lglfw3 -lgdi32 -lopengl32 -lws2_32

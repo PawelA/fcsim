@@ -6,7 +6,7 @@
 #include <net.h>
 #include "draw.h"
 
-char *read_file(const char *name)
+static char *read_file(const char *name)
 {
 	FILE *fp;
 	char *ptr;
@@ -51,6 +51,38 @@ bool check(int cnt)
 }
 */
 
+void print_area(fcsim_rect *area, const char *name)
+{
+	printf("%s: x = %lf y = %lf w = %lf h = %lf\n", name, area->x, area->y, area->w, area->h);
+}
+
+void print_block(fcsim_block_def *block)
+{
+	printf("type = %d id = %d x = %lf y = %lf w = %lf h = %lf angle = %lf joints = [", block->type, block->id, block->x, block->y, block->w, block->h, block->angle);
+	for (int i = 0; i < block->joint_cnt; i++) {
+		printf("%d", block->joints[i]);
+		if (i + 1 < block->joint_cnt)
+			printf(" ");
+	}
+	printf("]\n");
+}
+
+void print_arena(fcsim_arena *arena)
+{
+	for (int i = 0; i < arena->block_cnt; i++)
+		print_block(&arena->blocks[i]);
+	print_area(&arena->build, "build");
+	print_area(&arena->goal, "goal");
+}
+
+int running;
+
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+		running = !running;
+}
+
 int main()
 {
 	char *xml;
@@ -59,32 +91,32 @@ int main()
 	GLFWwindow *window;
 
 	xml = read_file("level.xml");
-	fcsim_read_xml(xml, &arena);
+	if (fcsim_read_xml(xml, &arena))
+		return 1;
+	print_arena(&arena);
 	handle = fcsim_new(&arena);
 
 	if (!glfwInit())
 		return 1;
-	//glfwWindowHint(GLFW_VISIBLE, 0);
 	window = glfwCreateWindow(800, 800, "fcsim demo", NULL, NULL);
 	if (!window)
 		return 1;
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
-	if (minit())
-		printf("net disconnected\n");
-
-	//mw("parse_check", 1, strtod("119.78384699115303", NULL));
+	glfwSetKeyCallback(window, key_callback);
 
 	setup_draw();
 
 	int ticks = 0;
 	while (!glfwWindowShouldClose(window)) {
-		draw_world(arena.blocks, arena.block_cnt);
+		draw_world(&arena);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		fcsim_step(handle);
-		printf("%d\n", ++ticks);
+		if (running) {
+			fcsim_step(handle);
+			printf("%d\n", ++ticks);
+		}
 	}
 
 	return 0;

@@ -1,303 +1,452 @@
 #include <stdio.h>
+
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+
 #include "yxml/yxml.h"
 #include "fcsim.h"
 
-static char buf[4096];
+struct state {
+	char *str;
+	yxml_t yxml;
+	yxml_ret_t cur;
+	fcsim_arena *arena;
+	fcsim_block_def *block;
+};
 
-yxml_t yxml;
-const char *cur_str;
-yxml_ret_t cur_ret;
-struct fcsim_block_def *cur_block;
-int cur_id;
+static char yxml_buf[1024];
 
-static void next(void)
+static void next(state *st)
 {
-	do {
-		if (!*cur_str) {
-			cur_ret = yxml_eof(&yxml);
-			if (cur_ret == YXML_OK)
-				return;
-		} else {
-			cur_ret = yxml_parse(&yxml, *cur_str++);
+again:
+	if (*st->str) {
+		st->cur = yxml_parse(&st->yxml, *st->str);
+		st->str++;
+	} else {
+		st->cur = yxml_eof(&st->yxml);
+		return;
+	}
+
+	if (st->cur == YXML_OK)
+		goto again;
+	/* TODO: only ignore whitespace at the start of the content */
+	if (st->cur == YXML_CONTENT && isspace(st->yxml.data[0]))
+		goto again;
+}
+
+static bool ignore_field(state *st)
+{
+	/* TODO: keep a balance of ELEMSTART and ELEMEND instead of using recursion */
+	next(st);
+	while (true) {
+		switch (st->cur) {
+		case YXML_CONTENT:
+			next(st);
+			break;
+		case YXML_ELEMSTART:
+			ignore_field(st);
+			break;
+		case YXML_ELEMEND:
+			next(st);
+			return true;
+		default:
+			return false;
 		}
-	} while (cur_ret == YXML_OK || (cur_ret == YXML_CONTENT && isspace(yxml.data[0])));
-}
-
-static void expect(yxml_ret_t ret)
-{
-	if (cur_ret != ret) {
-		fprintf(stdout, "expected %d, got %d\n", ret, cur_ret);
-		exit(1);
 	}
 }
 
-static void expect_elem_start_exact(const char *name)
+static bool read_string(state *st, char *buf, int len)
 {
-	expect(YXML_ELEMSTART);
-	if (strcmp(yxml.elem, name)) {
-		fprintf(stdout, "expected elem %s, got %s\n", name, yxml.elem);
-		exit(1);
+	char *start = st->str;
+	char *end = start;
+
+	next(st);
+	while (st->cur == YXML_CONTENT) {
+		if (!isspace(st->yxml.data[0]))
+			end = st->str;
+		next(st);
 	}
+
+	if (end - start >= len)
+		return false;
+	memcpy(buf, start, end - start);
+	buf[end - start] = 0;
+
+	if (st->cur != YXML_ELEMEND)
+		return false;
+	next(st);
+
+	return true;
 }
 
-static void expect_elem_end(void)
+static bool read_int(state *st, int *res)
 {
-	expect(YXML_ELEMEND);
+	char buf[20];
+	char *end;
+
+	if (!read_string(st, buf, sizeof(buf)))
+		return false;
+
+	end = buf + strlen(buf);
+	*res = strtol(buf, &end, 10);
+
+	return true;
 }
 
-int read_string(void)
+static bool read_number(state *st, double *res)
+{
+	char buf[60];
+	char *end;
+
+	if (!read_string(st, buf, sizeof(buf)))
+		return false;
+
+	end = buf + strlen(buf);
+	*res = strtod(buf, &end);
+
+	return true;
+}
+
+static bool read_bool(state *st, bool *res)
+{
+	char buf[20];
+	char *end;
+
+	if (!read_string(st, buf, sizeof(buf)))
+		return false;
+
+	if (!strcmp(buf, "true"))
+		*res = true;
+	else if (!strcmp(buf, "false"))
+		*res = false;
+	else
+		return false;
+
+	return true;
+}
+
+static bool read_position(state *st, double *x, double *y)
+{
+	next(st);
+	while (st->cur == YXML_ELEMSTART) {
+		if (!strcmp(st->yxml.elem, "x")) {
+			if (!read_number(st, x))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "y")) {
+			if (!read_number(st, y))
+				return false;
+		} else {
+			if (!ignore_field(st))
+				return false;
+		}
+	}
+	if (st->cur != YXML_ELEMEND)
+		return false;
+	next(st);
+
+	return true;
+}
+
+enum xml_block_type {
+	STATIC_RECTANGLE,
+	STATIC_CIRCLE,
+	DYNAMIC_RECTANGLE,
+	DYNAMIC_CIRCLE,
+	JOINTED_DYNAMIC_RECTANGLE,
+	NO_SPIN_WHEEL,
+	CLOCKWISE_WHEEL,
+	COUNTER_CLOCKWISE_WHEEL,
+	SOLID_ROD,
+	HOLLOW_ROD,
+};
+
+static bool read_joints(state *st, fcsim_block_def *block)
+{
+	next(st);
+	while (st->cur == YXML_ELEMSTART) {
+		if (!strcmp(st->yxml.elem, "jointedTo")) {
+			if (!read_int(st, &block->joints[block->joint_cnt++]))
+				return false;
+		} else {
+			if (!ignore_field(st))
+				return false;
+		}
+	}
+	if (st->cur != YXML_ELEMEND)
+		return false;
+	next(st);
+
+	return true;
+}
+
+static bool ignore_attr(state *st)
+{
+	next(st);
+	while (st->cur == YXML_ATTRVAL)
+		next(st);
+	if (st->cur != YXML_ATTREND)
+		return false;
+	next(st);
+
+	return true;
+}
+
+static bool read_id(state *st, int *id)
 {
 	int res = 0;
+	
+	next(st);
+	while (st->cur == YXML_ATTRVAL) {
+		/* TODO: check the digits */
+		res = res * 10 + (st->yxml.data[0] - '0');
+		next(st);
+	}
+	if (st->cur != YXML_ATTREND)
+		return false;
+	next(st);
 
-	while (cur_ret == YXML_CONTENT) {
-		next();
-		res++;
+	*id = res;
+	return true;
+}
+
+static bool read_block_attrs(state *st, fcsim_block_def *block)
+{
+	while (st->cur == YXML_ATTRSTART) {
+		bool res;
+		if (!strcmp(st->yxml.attr, "id"))
+			res = read_id(st, &block->id);
+		else
+			res = ignore_attr(st);
+		if (!res)
+			return false;
 	}
 
-	return res;
+	return true;
 }
 
-int read_int(void)
+static bool read_block(state *st, xml_block_type type)
 {
-	const char *start = cur_str-1;
-	char *end;
-	int len;
+	fcsim_block_def *block = st->block++;
+	bool goal_block = false;
 
-	len = read_string();
-	end = (char *)start + len;
-	return strtol(start, &end, 10);
-}
+	next(st);
 
-double read_double(void)
-{
-	const char *start = cur_str-1;
-	char *end;
-	int len;
+	memset(block, 0, sizeof(*block));
+	block->id = -1;
+	if (!read_block_attrs(st, block))
+		return false;
 
-	len = read_string();
-	end = (char *)start + len;
-	return strtod(start, &end);
-}
-
-void read_field(const char *name)
-{
-	expect_elem_start_exact(name);
-	next();
-	read_string();
-	expect_elem_end();
-	next();
-}
-
-double read_field_int(const char *name)
-{
-	int res;
-
-	expect_elem_start_exact(name);
-	next();
-	res = read_int();
-	expect_elem_end();
-	next();
-
-	return res;
-}
-
-double read_field_double(const char *name)
-{
-	double res;
-
-	expect_elem_start_exact(name);
-	next();
-	res = read_double();
-	expect_elem_end();
-	next();
-
-	return res;
-}
-
-void read_position(double *x, double *y)
-{
-	expect_elem_start_exact("position");
-	next();
-	*x = read_field_double("x");
-	*y = read_field_double("y");
-	expect_elem_end();
-	next();
-}
-
-void read_joints(int *joints)
-{
-	expect_elem_start_exact("joints");
-	next();
-	while (cur_ret == YXML_ELEMSTART)
-		*joints++ = read_field_int("jointedTo");
-	expect_elem_end();
-	next();
-}
-
-int block_type(const char *elem)
-{
-	if (!strcmp(elem, "StaticRectangle"))
-		return FCSIM_STAT_RECT;
-	if (!strcmp(elem, "StaticCircle"))
-		return FCSIM_STAT_CIRCLE;
-	if (!strcmp(elem, "DynamicRectangle"))
-		return FCSIM_DYN_RECT;
-	if (!strcmp(elem, "DynamicCircle"))
-		return FCSIM_DYN_CIRCLE;
-	if (!strcmp(elem, "NoSpinWheel"))
-		return FCSIM_WHEEL;
-	if (!strcmp(elem, "ClockwiseWheel"))
-		return FCSIM_CW_WHEEL;
-	if (!strcmp(elem, "CounterClockwiseWheel"))
-		return FCSIM_CCW_WHEEL;
-	if (!strcmp(elem, "SolidRod"))
-		return FCSIM_SOLID_ROD;
-	if (!strcmp(elem, "HollowRod"))
-		return FCSIM_ROD;
-	return -1;
-}
-
-void read_block(void)
-{
-	expect(YXML_ELEMSTART);
-	cur_block->type = block_type(yxml.elem);
-	next();
-	cur_block->id = -1;
-	cur_block->joints[0] = -1;
-	cur_block->joints[1] = -1;
-	if (cur_ret == YXML_ATTRSTART) {
-		cur_block->id = cur_id++;
-		next();
-		while (cur_ret == YXML_ATTRVAL)
-			next();
-		expect(YXML_ATTREND);
-		next();
+	while (st->cur == YXML_ELEMSTART) {
+		if (!strcmp(st->yxml.elem, "rotation")) {
+			if (!read_number(st, &block->angle))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "position")) {
+			if (!read_position(st, &block->x, &block->y))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "width")) {
+			if (!read_number(st, &block->w))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "height")) {
+			if (!read_number(st, &block->h))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "goalBlock")) {
+			if (!read_bool(st, &goal_block))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "joints")) {
+			if (!read_joints(st, block))
+				return false;
+		} else {
+			if (!ignore_field(st))
+				return false;
+		}
 	}
-	cur_block->angle = read_field_double("rotation");
-	read_position(&cur_block->x, &cur_block->y);
-	cur_block->w = read_field_double("width");
-	cur_block->h = read_field_double("height");
-	read_field("goalBlock");
-	read_joints(cur_block->joints);
-	expect(YXML_ELEMEND);
-	next();
-	cur_block++;
+	if (st->cur != YXML_ELEMEND)
+		return false;
+	next(st);
+
+	switch (type) {
+	case STATIC_RECTANGLE:
+		block->type = FCSIM_STAT_RECT;
+		break;
+	case STATIC_CIRCLE:
+		block->type = FCSIM_STAT_CIRCLE;
+		break;
+	case DYNAMIC_RECTANGLE:
+		block->type = FCSIM_DYN_RECT;
+		break;
+	case DYNAMIC_CIRCLE:
+		block->type = FCSIM_DYN_CIRCLE;
+		break;
+	case JOINTED_DYNAMIC_RECTANGLE:
+		block->type = FCSIM_GOAL_RECT;
+		break;
+	case NO_SPIN_WHEEL:
+		if (goal_block)
+			block->type = FCSIM_GOAL_CIRCLE;
+		else
+			block->type = FCSIM_WHEEL;
+		break;
+	case CLOCKWISE_WHEEL:
+		block->type = FCSIM_CW_WHEEL;
+		break;
+	case COUNTER_CLOCKWISE_WHEEL:
+		block->type = FCSIM_CCW_WHEEL;
+		break;
+	case SOLID_ROD:
+		block->type = FCSIM_SOLID_ROD;
+		break;
+	case HOLLOW_ROD:
+		block->type = FCSIM_ROD;
+		break;
+	}
+
+	return true;
 }
 
-static void read_level_blocks(void)
+static bool read_blocks(state *st)
 {
-	expect_elem_start_exact("levelBlocks");
-	next();
-	while (cur_ret == YXML_ELEMSTART)
-		read_block();
-	expect_elem_end();
-	next();
+	next(st);
+	while (st->cur == YXML_ELEMSTART) {
+		if (!strcmp(st->yxml.elem, "StaticRectangle")) {
+			if (!read_block(st, STATIC_RECTANGLE))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "StaticCircle")) {
+			if (!read_block(st, STATIC_CIRCLE))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "DynamicRectangle")) {
+			if (!read_block(st, DYNAMIC_RECTANGLE))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "DynamicCircle")) {
+			if (!read_block(st, DYNAMIC_CIRCLE))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "JointedDynamicRectangle")) {
+			if (!read_block(st, JOINTED_DYNAMIC_RECTANGLE))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "NoSpinWheel")) {
+			if (!read_block(st, NO_SPIN_WHEEL))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "ClockwiseWheel")) {
+			if (!read_block(st, CLOCKWISE_WHEEL))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "CounterClockwiseWheel")) {
+			if (!read_block(st, COUNTER_CLOCKWISE_WHEEL))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "SolidRod")) {
+			if (!read_block(st, SOLID_ROD))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "HollowRod")) {
+			if (!read_block(st, HOLLOW_ROD))
+				return false;
+		} else {
+			if (!ignore_field(st))
+				return false;
+		}
+	}
+	if (st->cur != YXML_ELEMEND)
+		return false;
+	next(st);
+
+	return true;
 }
 
-static void read_player_blocks(void)
+static bool read_area(state *st, fcsim_rect *area)
 {
-	expect_elem_start_exact("playerBlocks");
-	next();
-	while (cur_ret == YXML_ELEMSTART)
-		read_block();
-	expect_elem_end();
-	next();
+	next(st);
+	while (st->cur == YXML_ELEMSTART) {
+		if (!strcmp(st->yxml.elem, "position")) {
+			if (!read_position(st, &area->x, &area->y))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "width")) {
+			if (!read_number(st, &area->w))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "height")) {
+			if (!read_number(st, &area->h))
+				return false;
+		} else {
+			if (!ignore_field(st))
+				return false;
+		}
+	}
+	if (st->cur != YXML_ELEMEND)
+		return false;
+	next(st);
+
+	return true;
 }
 
-static void read_start(void)
+static bool read_level(state *st)
 {
-	double x, y;
-	double w, h;
-	expect_elem_start_exact("start");
-	next();
-	read_position(&x, &y);
-	w = read_field_double("width");
-	h = read_field_double("height");
-	expect_elem_end();
-	next();
-	/*
-	cur_block->type = FCSIM_START;
-	cur_block->x = x;
-	cur_block->y = y;
-	cur_block->w = w;
-	cur_block->h = h;
-	cur_block->angle = 0;
-	cur_block->id = -1;
-	cur_block->joints[0] = -1;
-	cur_block->joints[1] = -1;
-	cur_block++;
-	*/
+	next(st);
+	while (st->cur == YXML_ELEMSTART) {
+		if (!strcmp(st->yxml.elem, "levelBlocks")) {
+			if (!read_blocks(st))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "playerBlocks")) {
+			if (!read_blocks(st))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "start")) {
+			if (!read_area(st, &st->arena->build))
+				return false;
+		} else if (!strcmp(st->yxml.elem, "end")) {
+			if (!read_area(st, &st->arena->goal))
+				return false;
+		} else {
+			if (!ignore_field(st))
+				return false;
+		}
+	}
+	if (st->cur != YXML_ELEMEND)
+		return false;
+	next(st);
+
+	return true;
 }
 
-static void read_end(void)
+static bool read_retrieve_level(state *st)
 {
-	double x, y;
-	double w, h;
-	expect_elem_start_exact("end");
-	next();
-	read_position(&x, &y);
-	w = read_field_double("width");
-	h = read_field_double("height");
-	expect_elem_end();
-	next();
-	/*
-	cur_block->type = FCSIM_END;
-	cur_block->x = x;
-	cur_block->y = y;
-	cur_block->w = w;
-	cur_block->h = h;
-	cur_block->angle = 0;
-	cur_block->id = -1;
-	cur_block->joints[0] = -1;
-	cur_block->joints[1] = -1;
-	cur_block++;
-	*/
+	if (st->cur != YXML_ELEMSTART)
+		return false;
+	if (strcmp(st->yxml.elem, "retrieveLevel"))
+		return false;
+
+	next(st);
+	while (st->cur == YXML_ELEMSTART) {
+		if (!strcmp(st->yxml.elem, "level")) {
+			if (!read_level(st))
+				return false;
+		} else {
+			if (!ignore_field(st))
+				return false;
+		}
+	}
+	if (st->cur != YXML_ELEMEND)
+		return false;
+	next(st);
+
+	return true;
 }
 
-static void read_level(void)
+int fcsim_read_xml(char *xml, fcsim_arena *arena)
 {
-	expect_elem_start_exact("level");
-	next();
-	read_level_blocks();
-	read_player_blocks();
-	read_start();
-	read_end();
-	expect_elem_end();
-	next();
-}
+	state st;
 
-static void read_retrieve_level(void)
-{
-	expect_elem_start_exact("retrieveLevel");
-	next();
-	read_field("levelId");
-	read_field("levelNumber");
-	read_field("name");
-	read_level();
-	expect_elem_end();
-	next();
-}
+	arena->block_cnt = 1000;
+	arena->blocks = new fcsim_block_def[arena->block_cnt];
 
-int fcsim_read_xml(const char *xml, fcsim_arena *arena)
-{
-	int res;
+	yxml_init(&st.yxml, yxml_buf, sizeof(yxml_buf));
+	st.str = xml;
+	st.arena = arena;
+	st.block = arena->blocks;
 
-	yxml_init(&yxml, buf, sizeof(buf));
+	next(&st);
+	if (!read_retrieve_level(&st)) {
+		*st.str = 0;
+		printf("%s\n", xml);
+		return -1;
+	}
 
-	arena->blocks = new fcsim_block_def[10000];
-
-	cur_str = xml;
-	cur_block = arena->blocks;
-	cur_id = 0;
-
-	next();
-	read_retrieve_level();
-	expect(YXML_OK);
-
-	arena->block_cnt = cur_block - arena->blocks;
+	arena->block_cnt = st.block - arena->blocks;
 
 	return 0;
 }

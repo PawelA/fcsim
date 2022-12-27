@@ -1,7 +1,6 @@
-tags
 *.o
 *.a
-main
+*.xml
 config.mk
-parse
-level.xml
+demo/main
+tags

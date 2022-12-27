@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "box2d/Include/Box2D.h"
 #include "fcsim.h"
 #include "net.h"
@@ -151,11 +153,11 @@ static void generate_joint(b2World *world, joint *j)
 
 
 
-static block *find_block_by_id(block *blocks, int block_cnt, int id)
+static block *find_block_by_id(fcsim_handle *handle, int id)
 {
-	for (int i = 0; i < block_cnt; i++) {
-		if (blocks[i].bdef->id == id)
-			return &blocks[i];
+	for (int i = 0; i < handle->block_cnt; i++) {
+		if (handle->blocks[i].bdef->id == id)
+			return &handle->blocks[i];
 	}
 	return NULL;
 }
@@ -168,16 +170,14 @@ static double distance(double x1, double y1, double x2, double y2)
 	return sqrt(dx * dx + dy * dy);
 }
 
-static joint_collection *get_closest_jc(block *blocks, int block_cnt, double x, double y, int joints[2])
+static joint_collection *get_closest_jc(fcsim_handle *handle, double x, double y, fcsim_block_def *bdef)
 {
-	double best_dist = 10000000.0;
+	//double best_dist = 10000000.0;
+	double best_dist = 10.0;
 	joint_collection *res = NULL;
 
-	for (int i = 0; i < 2; i++) {
-		int block_id = joints[i];
-		if (block_id < 0)
-			continue;
-		block *b = find_block_by_id(blocks, block_cnt, block_id);
+	for (int i = 0; i < bdef->joint_cnt; i++) {
+		block *b = find_block_by_id(handle, bdef->joints[i]);
 		if (!b)
 			continue;
 		for (joint_collection_list *j = b->jcs_head; j; j = j->next) {
@@ -203,11 +203,11 @@ void get_rod_endpoints(fcsim_block_def *bdef, double *x0, double *y0, double *x1
 	*y1 = bdef->y + sw;
 }
 
-int share_block(block *blocks, int block_cnt, joint_collection *jc0, joint_collection *jc1)
+int share_block(fcsim_handle *handle, joint_collection *jc0, joint_collection *jc1)
 {
-	for (int i = 0; i < block_cnt; i++) {
+	for (int i = 0; i < handle->block_cnt; i++) {
 		bool f0 = false, f1 = false;
-		for (joint_collection_list *j = blocks[i].jcs_head; j; j = j->next) {
+		for (joint_collection_list *j = handle->blocks[i].jcs_head; j; j = j->next) {
 			if (j->jc == jc0) f0 = true;
 			if (j->jc == jc1) f1 = true;
 		}
@@ -358,17 +358,16 @@ static void replace_joint(block *b, joint_collection_list *jcl, joint_collection
 	}
 }
 
-static void create_rod_joints(block *b, block *blocks, int block_cnt)
+static void create_rod_joints(block *b, fcsim_handle *handle)
 {
 	fcsim_block_def *bdef = b->bdef;
 	double x0, y0, x1, y1;
 
 	get_rod_endpoints(bdef, &x0, &y0, &x1, &y1);
-	joint_collection *jc0 = get_closest_jc(blocks, block_cnt, x0, y0, bdef->joints);
-	joint_collection *jc1 = get_closest_jc(blocks, block_cnt, x1, y1, bdef->joints);
+	joint_collection *jc0 = get_closest_jc(handle, x0, y0, bdef);
+	joint_collection *jc1 = get_closest_jc(handle, x1, y1, bdef);
 
-	/* TODO: this condition is incomplete */
-	if (jc0 && jc1 && share_block(blocks, block_cnt, jc0, jc1))
+	if (jc0 && jc1 && share_block(handle, jc0, jc1))
 		jc1 = NULL;
 
 	if (jc0) {
@@ -385,7 +384,7 @@ static void create_rod_joints(block *b, block *blocks, int block_cnt)
 	bdef->w = distance(x0, y0, x1, y1);
 	bdef->x = x0 + (x1 - x0) / 2.0;
 	bdef->y = y0 + (y1 - y0) / 2.0;
-
+	
 	joint_collection_list *jcl0 = create_joint(b, x0, y0);
 	joint_collection_list *jcl1 = create_joint(b, x1, y1);
 
@@ -398,14 +397,14 @@ static void create_rod_joints(block *b, block *blocks, int block_cnt)
 
 
 
-static void create_wheel_joints(block *b, block *blocks, int block_cnt)
+static void create_wheel_joints(block *b, fcsim_handle *handle)
 {
 	fcsim_block_def *bdef = b->bdef;
 	double x = bdef->x;
 	double y = bdef->y;
 	double r = bdef->w/2;
 
-	joint_collection *jc = get_closest_jc(blocks, block_cnt, x, y, bdef->joints);
+	joint_collection *jc = get_closest_jc(handle, x, y, bdef);
 	if (jc) {
 		x = bdef->x = jc->x;
 		y = bdef->y = jc->y;
@@ -448,7 +447,7 @@ static void create_goal_rect_joints(block *b)
 	create_joint(b, x - x0 - x1, y - y0 - y1);
 }
 
-static void create_joints(block *b, block *blocks, int block_cnt)
+static void create_joints(block *b, fcsim_handle *handle)
 {
 	switch (b->bdef->type) {
 	case FCSIM_GOAL_RECT:
@@ -458,17 +457,18 @@ static void create_joints(block *b, block *blocks, int block_cnt)
 	case FCSIM_WHEEL:
 	case FCSIM_CW_WHEEL:
 	case FCSIM_CCW_WHEEL:
-		create_wheel_joints(b, blocks, block_cnt);
+		create_wheel_joints(b, handle);
 		return;
 	case FCSIM_ROD:
 	case FCSIM_SOLID_ROD:
-		create_rod_joints(b, blocks, block_cnt);
+		create_rod_joints(b, handle);
 		return;
 	}
 }
 
 void make_block(block *b, fcsim_block_def *bdef)
 {
+	memset(b, 0, sizeof(*b));
 	b->bdef = bdef;
 
 	/* TODO: deal with this somewhere else */
@@ -493,16 +493,17 @@ fcsim_handle *fcsim_new(fcsim_arena *arena)
 	handle->world->SetFilter(&fcsim_collision_filter);
 
 	handle->blocks = new block[arena->block_cnt];
-	handle->block_cnt = arena->block_cnt;
+	handle->block_cnt = 0;
 
-	for (int i = 0; i < handle->block_cnt; i++) {
+	for (int i = 0; i < arena->block_cnt; i++) {
 		make_block(&handle->blocks[i], &arena->blocks[i]);
-		create_joints(&handle->blocks[i], handle->blocks, handle->block_cnt);
+		create_joints(&handle->blocks[i], handle);
+		handle->block_cnt++;
 	}
 
 	for (int i = 0; i < handle->block_cnt; i++)
 		generate_body(handle->world, &handle->blocks[i]);
-	
+
 	for (int i = 0; i < handle->block_cnt; i++) {
 		block *b = &handle->blocks[i];
 		for (joint_collection_list *l = b->jcs_head; l; l = l->next) {

@@ -40,4 +40,4 @@ fcsim_handle *fcsim_new(fcsim_arena *arena);
 
 void fcsim_step(fcsim_handle *handle);
 
-int fcsim_read_xml(const char *xml, fcsim_arena *arena);
+int fcsim_read_xml(char *xml, fcsim_arena *arena);
