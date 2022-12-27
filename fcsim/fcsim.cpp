@@ -3,6 +3,7 @@
 #include "box2d/Include/Box2D.h"
 #include "fcsim.h"
 #include "net.h"
+#include "fcsim_math.h"
 
 #define ARENA_WIDTH	2000
 #define ARENA_HEIGHT	1450
@@ -194,8 +195,8 @@ static joint_collection *get_closest_jc(fcsim_handle *handle, double x, double y
 
 void get_rod_endpoints(fcsim_block_def *bdef, double *x0, double *y0, double *x1, double *y1)
 {
-	double cw = cos(bdef->angle) * bdef->w / 2;
-	double sw = sin(bdef->angle) * bdef->w / 2;
+	double cw = fcsim_cos(bdef->angle) * bdef->w / 2;
+	double sw = fcsim_sin(bdef->angle) * bdef->w / 2;
 
 	*x0 = bdef->x - cw;
 	*y0 = bdef->y - sw;
@@ -419,8 +420,8 @@ static void create_wheel_joints(block *b, fcsim_handle *handle)
 
 	joint_collection_list *jcl = create_joint(b, bdef->x, bdef->y);
 	for (int i = 0; i < 4; i++) {
-		create_joint(b, x + cos(bdef->angle + a[i]) * r,
-		                y + sin(bdef->angle + a[i]) * r);
+		create_joint(b, x + fcsim_cos(bdef->angle + a[i]) * r,
+		                y + fcsim_sin(bdef->angle + a[i]) * r);
 	}
 
 	if (jc)
@@ -435,10 +436,10 @@ static void create_goal_rect_joints(block *b)
 	double w_half = bdef->w/2;
 	double h_half = bdef->h/2;
 
-	double x0 =  cos(bdef->angle) * w_half;
-	double y0 =  sin(bdef->angle) * w_half;
-	double x1 =  sin(bdef->angle) * h_half;
-	double y1 = -cos(bdef->angle) * h_half;
+	double x0 =  fcsim_cos(bdef->angle) * w_half;
+	double y0 =  fcsim_sin(bdef->angle) * w_half;
+	double x1 =  fcsim_sin(bdef->angle) * h_half;
+	double y1 = -fcsim_cos(bdef->angle) * h_half;
 
 	create_joint(b, x, y);
 	create_joint(b, x + x0 + x1, y + y0 + y1);
