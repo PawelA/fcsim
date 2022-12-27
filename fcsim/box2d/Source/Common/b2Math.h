@@ -20,6 +20,7 @@
 #define B2_MATH_H
 
 #include "b2Settings.h"
+#include "../../../fcsim_math.h"
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
@@ -112,7 +113,7 @@ struct b2Mat22
 
 	explicit b2Mat22(float64 angle)
 	{
-		float64 c = cos(angle), s = sin(angle);
+		float64 c = fcsim_cos(angle), s = fcsim_sin(angle);
 		col1.x = c; col2.x = -s;
 		col1.y = s; col2.y = c;
 	}
@@ -125,7 +126,7 @@ struct b2Mat22
 
 	void Set(float64 angle)
 	{
-		float64 c = cos(angle), s = sin(angle);
+		float64 c = fcsim_cos(angle), s = fcsim_sin(angle);
 		col1.x = c; col2.x = -s;
 		col1.y = s; col2.y = c;
 	}
