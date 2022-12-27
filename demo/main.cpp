@@ -12,8 +12,10 @@ static char *read_file(const char *name)
 	int len;
 
 	fp = fopen(name, "rb");
-	if (!fp)
-		return NULL;
+	if (!fp) {
+		perror(name);
+		exit(1);
+	}
 
 	fseek(fp, 0, SEEK_END);
 	len = ftell(fp);
@@ -66,8 +68,12 @@ int main()
 	GLFWwindow *window;
 
 	xml = read_file("level.xml");
-	if (fcsim_read_xml(xml, &arena))
+	if (!xml)
 		return 1;
+	if (fcsim_read_xml(xml, &arena)) {
+		fprintf(stderr, "failed to parse xml\n");
+		return 1;
+	}
 	handle = fcsim_new(&arena);
 
 	if (!glfwInit())
@@ -82,12 +88,15 @@ int main()
 
 	setup_draw();
 
+	int ticks = 0;
 	while (!glfwWindowShouldClose(window)) {
 		draw_world(&arena);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		if (running)
+		if (running) {
 			fcsim_step(handle);
+			printf("%d\n", ticks++);
+		}
 	}
 
 	return 0;
