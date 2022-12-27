@@ -84,10 +84,6 @@ public:
 
 	void CleanBodyList();
 
-	void dump_bodies(const char *tag);
-	void dump_contacts(const char *tag);
-	void dump_joints(const char *tag);
-
 	b2BlockAllocator m_blockAllocator;
 	b2StackAllocator m_stackAllocator;
 

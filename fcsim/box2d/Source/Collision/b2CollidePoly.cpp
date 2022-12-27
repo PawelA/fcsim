@@ -28,11 +28,6 @@ struct ClipVertex
 static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
 					  const b2Vec2& normal, float64 offset)
 {
-	mw("clip_segment_to_line0", 7, vIn[0].v.x, vIn[0].v.y,
-				       vIn[1].v.x, vIn[1].v.y,
-				       normal.x, normal.y,
-				       offset);
-
 	// Start with no output points
 	int32 numOut = 0;
 
@@ -60,9 +55,6 @@ static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
 		}
 		++numOut;
 	}
-
-	for (int i = 0; i < numOut; i++)
-		mw("clip_segment_to_line1", 2, vOut[i].v.x, vOut[i].v.y);
 
 	return numOut;
 }
@@ -253,7 +245,6 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 // The normal points from 1 to 2
 void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyShape* polyB, bool conservative)
 {
-	mw("collide_poly0", 0);
 	NOT_USED(conservative);
 
 	manifold->pointCount = 0;
@@ -263,14 +254,10 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	if (separationA > 0.0 && conservative == false)
 		return;
 	
-	mw("collide_poly1", 0);
-
 	int32 edgeB = 0;
 	float64 separationB = FindMaxSeparation(&edgeB, polyB, polyA, conservative);
 	if (separationB > 0.0 && conservative == false)
 		return;
-
-	mw("collide_poly2", 0);
 
 	const b2PolyShape* poly1;	// reference poly
 	const b2PolyShape* poly2;	// incident poly
@@ -306,7 +293,6 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 
 	b2Vec2 dv = v12 - v11;
 	b2Vec2 sideNormal = b2Mul(poly1->m_R, v12 - v11);
-	mw("side_normal", 2, sideNormal.x, sideNormal.y);
 	float64 sideNormalLenInv = 1.0 / sideNormal.Length();
 	sideNormal.x *= sideNormalLenInv;
 	sideNormal.y *= sideNormalLenInv;
@@ -330,16 +316,12 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	if (np < 2)
 		return;
 	
-	mw("collide_poly3", 0);
-
 	// Clip to negative box side 1
 	np = ClipSegmentToLine(clipPoints2, clipPoints1,  sideNormal, sideOffset2);
 
 	if (np < 2)
 		return;
 	
-	mw("collide_poly4", 0);
-
 	// Now clipPoints2 contains the clipped points.
 	manifold->normal = flip ? -frontNormal : frontNormal;
 

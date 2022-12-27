@@ -2,7 +2,6 @@
 
 #include "box2d/Include/Box2D.h"
 #include "fcsim.h"
-#include "net.h"
 
 #define ARENA_WIDTH	2000
 #define ARENA_HEIGHT	1450

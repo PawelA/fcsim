@@ -21,7 +21,6 @@
 #include "Joints/b2Joint.h"
 #include "Contacts/b2Contact.h"
 #include "../Collision/b2Shape.h"
-#include <net.h>
 
 b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 {
@@ -218,10 +217,4 @@ void b2Body::Freeze()
 	{
 		s->DestroyProxy();
 	}
-}
-
-void b2Body::dump(const char *tag)
-{
-	if (m_shapeList)
-		mw(tag, 10, m_position.x, m_position.y, m_rotation, m_linearVelocity.x, m_linearVelocity.y, m_angularVelocity, m_mass, m_invMass, m_I, m_invI);
 }

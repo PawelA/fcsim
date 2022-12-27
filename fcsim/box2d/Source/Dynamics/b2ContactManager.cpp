@@ -207,7 +207,6 @@ void b2ContactManager::Collide()
 {
 	for (b2Contact* c = m_world->m_contactList; c; c = c->m_next)
 	{
-		m_world->dump_bodies("collide0");
 		if (c->m_shape1->m_body->IsSleeping() &&
 			c->m_shape2->m_body->IsSleeping())
 		{
@@ -250,7 +249,6 @@ void b2ContactManager::Collide()
 				c->m_node2.next->prev = &c->m_node2;
 			}
 			body2->m_contactList = &c->m_node2;
-			m_world->dump_bodies("collide1");
 		}
 		else if (oldCount > 0 && newCount == 0)
 		{
@@ -295,8 +293,6 @@ void b2ContactManager::Collide()
 
 			c->m_node2.prev = NULL;
 			c->m_node2.next = NULL;
-			m_world->dump_bodies("collide2");
 		}
-		m_world->dump_bodies("collide3");
 	}
 }

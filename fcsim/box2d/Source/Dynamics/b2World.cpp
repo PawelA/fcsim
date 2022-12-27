@@ -25,7 +25,6 @@
 #include "../Collision/b2Collision.h"
 #include "../Collision/b2Shape.h"
 #include <new>
-#include <net.h>
 
 int32 b2World::s_enablePositionCorrection = 1;
 int32 b2World::s_enableWarmStarting = 1;
@@ -289,27 +288,6 @@ void b2World::DestroyJoint(b2Joint* j)
 	}
 }
 
-void b2World::dump_bodies(const char *tag)
-{
-	for (b2Body *b = m_bodyList; b; b = b->m_next) {
-		b->dump(tag);
-		for (b2ContactNode *c = b->m_contactList; c; c = c->next)
-			c->contact->dump(tag);
-	}
-}
-
-void b2World::dump_contacts(const char *tag)
-{
-	for (b2Contact *c = m_contactList; c; c = c->m_next)
-		c->dump(tag);
-}
-
-void b2World::dump_joints(const char *tag)
-{
-	for (b2Joint *j = m_jointList; j; j = j->m_next)
-		j->dump(tag);
-}
-
 void b2World::Step(float64 dt, int32 iterations)
 {
 	b2TimeStep step;
@@ -324,9 +302,6 @@ void b2World::Step(float64 dt, int32 iterations)
 		step.inv_dt = 0.0;
 	}
 
-	dump_bodies("step0");
-	dump_joints("step0j");
-
 	m_positionIterationCount = 0;
 
 	// Handle deferred contact destruction.
@@ -335,11 +310,8 @@ void b2World::Step(float64 dt, int32 iterations)
 	// Handle deferred body destruction.
 	CleanBodyList();
 
-	dump_bodies("step1");
 	// Update contacts.
 	m_contactManager.Collide();
-
-	dump_bodies("step2");
 
 	// Size the island for the worst case.
 	b2Island island(m_bodyCount, m_contactCount, m_jointCount, &m_stackAllocator);
@@ -358,8 +330,6 @@ void b2World::Step(float64 dt, int32 iterations)
 		j->m_islandFlag = false;
 	}
 	
-	dump_bodies("step3");
-
 	// Build and simulate all awake islands.
 	int32 stackSize = m_bodyCount;
 	b2Body** stack = (b2Body**)m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
@@ -369,8 +339,6 @@ void b2World::Step(float64 dt, int32 iterations)
 		{
 			continue;
 		}
-
-		seed->dump("seed");
 
 		// Reset island and stack.
 		island.Clear();
@@ -403,8 +371,6 @@ void b2World::Step(float64 dt, int32 iterations)
 					continue;
 				}
 
-				mw("add_contact", 0);
-
 				island.Add(cn->contact);
 				cn->contact->m_flags |= b2Contact::e_islandFlag;
 
@@ -413,8 +379,6 @@ void b2World::Step(float64 dt, int32 iterations)
 				{
 					continue;
 				}
-
-				mw("push_contact", 0);
 
 				b2Assert(stackCount < stackSize);
 				stack[stackCount++] = other;
@@ -438,20 +402,14 @@ void b2World::Step(float64 dt, int32 iterations)
 					continue;
 				}
 
-				mw("push_joint", 0);
-
 				b2Assert(stackCount < stackSize);
 				stack[stackCount++] = other;
 				other->m_flags |= b2Body::e_islandFlag;
 			}
 		}
 
-		dump_bodies("step4");
-
 		island.Solve(&step, m_gravity);
 		
-		dump_bodies("step5");
-
 		m_positionIterationCount = b2Max(m_positionIterationCount, island.m_positionIterationCount);
 
 		if (m_allowSleep)
@@ -487,8 +445,6 @@ void b2World::Step(float64 dt, int32 iterations)
 
 	m_broadPhase->Commit();
 	
-	dump_bodies("step6");
-
 #if 0
 	for (b2Contact* c = m_contactList; c; c = c->GetNext())
 	{

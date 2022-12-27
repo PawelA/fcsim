@@ -61,8 +61,6 @@ public:
 
 	b2Shape* GetShape2();
 
-	void dump(const char *tag);
-
 	//--------------- Internals Below -------------------
 
 	// m_flags

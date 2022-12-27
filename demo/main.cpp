@@ -3,7 +3,6 @@
 #include <string.h>
 #include <GLFW/glfw3.h>
 #include <fcsim.h>
-#include <net.h>
 #include "draw.h"
 
 static char *read_file(const char *name)
@@ -51,30 +50,6 @@ bool check(int cnt)
 }
 */
 
-void print_area(fcsim_rect *area, const char *name)
-{
-	printf("%s: x = %lf y = %lf w = %lf h = %lf\n", name, area->x, area->y, area->w, area->h);
-}
-
-void print_block(fcsim_block_def *block)
-{
-	printf("type = %d id = %d x = %lf y = %lf w = %lf h = %lf angle = %lf joints = [", block->type, block->id, block->x, block->y, block->w, block->h, block->angle);
-	for (int i = 0; i < block->joint_cnt; i++) {
-		printf("%d", block->joints[i]);
-		if (i + 1 < block->joint_cnt)
-			printf(" ");
-	}
-	printf("]\n");
-}
-
-void print_arena(fcsim_arena *arena)
-{
-	for (int i = 0; i < arena->block_cnt; i++)
-		print_block(&arena->blocks[i]);
-	print_area(&arena->build, "build");
-	print_area(&arena->goal, "goal");
-}
-
 int running;
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -93,7 +68,6 @@ int main()
 	xml = read_file("level.xml");
 	if (fcsim_read_xml(xml, &arena))
 		return 1;
-	print_arena(&arena);
 	handle = fcsim_new(&arena);
 
 	if (!glfwInit())
@@ -108,15 +82,12 @@ int main()
 
 	setup_draw();
 
-	int ticks = 0;
 	while (!glfwWindowShouldClose(window)) {
 		draw_world(&arena);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		if (running) {
+		if (running)
 			fcsim_step(handle);
-			printf("%d\n", ++ticks);
-		}
 	}
 
 	return 0;

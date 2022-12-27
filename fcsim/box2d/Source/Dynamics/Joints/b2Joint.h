@@ -101,8 +101,6 @@ public:
 
 	void* GetUserData();
 	
-	virtual void dump(const char *tag);
-
 	//--------------- Internals Below -------------------
 
 	static b2Joint* Create(const b2JointDef* def, b2BlockAllocator* allocator);

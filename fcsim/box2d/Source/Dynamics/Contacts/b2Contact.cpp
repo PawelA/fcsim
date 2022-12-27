@@ -25,7 +25,6 @@
 #include "../../Common/b2BlockAllocator.h"
 #include "../../Dynamics/b2World.h"
 #include "../../Dynamics/b2Body.h"
-#include <net.h>
 
 b2ContactRegister b2Contact::s_registers[e_shapeTypeCount][e_shapeTypeCount];
 bool b2Contact::s_initialized = false;
@@ -136,9 +135,4 @@ b2Contact::b2Contact(b2Shape* s1, b2Shape* s2)
 	m_node2.prev = NULL;
 	m_node2.next = NULL;
 	m_node2.other = NULL;
-}
-
-void b2Contact::dump(const char *tag)
-{
-	mw(tag, 2, m_friction, m_restitution);
 }

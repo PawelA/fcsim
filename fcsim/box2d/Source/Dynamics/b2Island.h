@@ -57,8 +57,6 @@ public:
 		m_joints[m_jointCount++] = joint;
 	}
 
-	void dump_bodies(const char *tag);
-
 	b2StackAllocator* m_allocator;
 
 	b2Body** m_bodies;

@@ -49,7 +49,6 @@ void b2PolyContact::Evaluate()
 	memcpy(&m0, &m_manifold, sizeof(b2Manifold));
 
 	b2CollidePoly(&m_manifold, (b2PolyShape*)m_shape1, (b2PolyShape*)m_shape2, false);
-	mw("poly_contact_evaluate", 1, m_manifold.pointCount + 0.1);
 
 	// Match contact ids to facilitate warm starting.
 	if (m_manifold.pointCount > 0)

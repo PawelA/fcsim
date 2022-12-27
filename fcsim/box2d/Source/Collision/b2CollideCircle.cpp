@@ -18,7 +18,6 @@
 
 #include "b2Collision.h"
 #include "b2Shape.h"
-#include <net.h>
 
 void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape* circle2, bool conservative)
 {
@@ -65,7 +64,6 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	// Find the min separating edge.
 	int32 normalIndex = 0;
 	float64 separation = -DBL_MAX;
-	mw("collide_separation", 1, separation);
 	const float64 radius = circle->m_radius;
 	for (int32 i = 0; i < poly->m_vertexCount; ++i)
 	{
@@ -94,7 +92,6 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 		manifold->points[0].id.features.flip = 0;
 		manifold->points[0].position = circle->m_position - radius * manifold->normal;
 		manifold->points[0].separation = separation - radius;
-		manifold->dump("collide0");
 		return;
 	}
 
@@ -126,7 +123,6 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 		manifold->points[0].id.features.flip = 0;
 		manifold->points[0].position = circle->m_position - radius * manifold->normal;
 		manifold->points[0].separation = dist - radius;
-		manifold->dump("collide1");
 		return;
 	}
 
@@ -139,25 +135,20 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	b2Vec2 p;
 	if (u <= 0.0)
 	{
-		mw("collide_if0", 0);
 		p = poly->m_vertices[vertIndex1];
 		manifold->points[0].id.features.incidentVertex = (uint8)vertIndex1;
 	}
 	else if (u >= length)
 	{
-		mw("collide_if1", 0);
 		p = poly->m_vertices[vertIndex2];
 		manifold->points[0].id.features.incidentVertex = (uint8)vertIndex2;
 	}
 	else
 	{
-		mw("collide_if2", 0);
-		mw("collide_p", 5, poly->m_vertices[vertIndex1].x, poly->m_vertices[vertIndex1].y, u, e.x, e.y);
 		p = poly->m_vertices[vertIndex1] + u * e;
 		manifold->points[0].id.features.incidentEdge = (uint8)vertIndex1;
 	}
 
-	mw("collide_d_in", 4, xLocal.x, xLocal.y, p.x, p.y);
 	b2Vec2 d = xLocal - p;
 	float64 dist = d.Length();
 	d.x /= dist;
@@ -167,10 +158,8 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 		return;
 	}
 
-	mw("collide_in", 6, poly->m_R.col1.x, poly->m_R.col1.y, poly->m_R.col2.x, poly->m_R.col2.y, d.x, d.y);
 	manifold->pointCount = 1;
 	manifold->normal = b2Mul(poly->m_R, d);
 	manifold->points[0].position = circle->m_position - radius * manifold->normal;
 	manifold->points[0].separation = dist - radius;
-	manifold->dump("collide2");
 }

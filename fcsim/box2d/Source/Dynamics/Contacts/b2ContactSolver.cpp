@@ -22,18 +22,9 @@
 #include "../b2World.h"
 #include "../../Common/b2StackAllocator.h"
 
-void b2ContactSolver::dump(const char *tag)
-{
-	for (int i = 0; i < m_constraintCount; i++)
-		m_constraints[i].dump(tag);
-}
-
 b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2StackAllocator* allocator)
 {
 	m_allocator = allocator;
-
-	for (int i = 0; i < contactCount; i++)
-		contacts[i]->dump("solver_contact");
 
 	m_constraintCount = 0;
 	for (int32 i = 0; i < contactCount; ++i)
@@ -67,8 +58,6 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 
 			const b2Vec2 normal = manifold->normal;
 
-			mw("normal", 2, normal.x, normal.y);
-
 			b2Assert(count < m_constraintCount);
 			b2ContactConstraint* c = m_constraints + count;
 			c->body1 = b1;
@@ -99,14 +88,11 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 				float64 r1Sqr = b2Dot(r1, r1);
 				float64 r2Sqr = b2Dot(r2, r2);
 
-				mw("rn_in", 6, r1.x, r1.y, r2.x, r2.y, normal.x, normal.y);
 				float64 rn1 = b2Dot(r1, normal);
 				float64 rn2 = b2Dot(r2, normal);
-				mw("knormal_in", 8, b1->m_invMass, b2->m_invMass, b1->m_invI, r1Sqr, rn1, b2->m_invI, r2Sqr, rn2);
 				float64 kNormal = b1->m_invMass + b2->m_invMass;
 				kNormal += b1->m_invI * (r1Sqr - rn1 * rn1) + b2->m_invI * (r2Sqr - rn2 * rn2);
 				b2Assert(kNormal > MIN_VALUE);
-				mw("knormal", 1, kNormal);
 				ccp->normalMass = 1.0 / kNormal;
 
 				b2Vec2 tangent = b2Cross(normal, 1.0);
@@ -135,8 +121,6 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 			++count;
 		}
 	}
-
-	dump("solver");
 
 	b2Assert(count == m_constraintCount);
 }
@@ -194,7 +178,6 @@ void b2ContactSolver::PreSolve()
 
 void b2ContactSolver::SolveVelocityConstraints()
 {
-	dump("solver_vel0");
 	for (int32 i = 0; i < m_constraintCount; ++i)
 	{
 		b2ContactConstraint* c = m_constraints + i;
@@ -236,7 +219,6 @@ void b2ContactSolver::SolveVelocityConstraints()
 			b2->m_linearVelocity += invMass2 * P;
 			b2->m_angularVelocity += invI2 * b2Cross(r2, P);
 
-			mw("new_impulse", 1, newImpulse);
 			ccp->normalImpulse = newImpulse;
 		}
 
@@ -272,7 +254,6 @@ void b2ContactSolver::SolveVelocityConstraints()
 		}
 		}
 	}
-	dump("solver_vel1");
 }
 
 bool b2ContactSolver::SolvePositionConstraints(float64 beta)

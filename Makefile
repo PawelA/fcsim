@@ -5,8 +5,7 @@ FCSIM_OBJS = \
 	fcsim/fcsim.o \
 	fcsim/parse.o \
 	fcsim/yxml/yxml.o \
-	$(BOX2D_OBJS) \
-	net.o
+	$(BOX2D_OBJS)
 
 DEMO_OBJS = \
 	demo/main.o \
