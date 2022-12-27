@@ -153,6 +153,32 @@ static void generate_joint(b2World *world, joint *j)
 
 
 
+static bool is_wheel(block *b)
+{
+	switch (b->bdef->type) {
+	case FCSIM_GOAL_CIRCLE:
+	case FCSIM_WHEEL:
+	case FCSIM_CW_WHEEL:
+	case FCSIM_CCW_WHEEL:
+		return true;
+	}
+	return false;
+}
+
+static bool is_player(fcsim_block_def *bdef)
+{
+	switch (bdef->type) {
+	case FCSIM_STAT_RECT:
+	case FCSIM_STAT_CIRCLE:
+	case FCSIM_DYN_RECT:
+	case FCSIM_DYN_CIRCLE:
+		return false;
+	}
+	return true;
+}
+
+
+
 static block *find_block_by_id(fcsim_handle *handle, int id)
 {
 	for (int i = 0; i < handle->block_cnt; i++) {
@@ -225,18 +251,6 @@ static int joint_type(int block_type)
 	return JOINT_PIN;
 }
 
-static int is_wheel(int block_type)
-{
-	switch (block_type) {
-	case FCSIM_GOAL_CIRCLE:
-	case FCSIM_WHEEL:
-	case FCSIM_CW_WHEEL:
-	case FCSIM_CCW_WHEEL:
-		return true;
-	}
-	return false;
-}
-
 static joint_collection_list *create_joint(block *b, double x, double y)
 {
 	joint_collection *jc = new joint_collection;
@@ -259,18 +273,6 @@ static joint_collection_list *create_joint(block *b, double x, double y)
 	}
 
 	return jcl;
-}
-
-static bool is_wheel(block *b)
-{
-	switch (b->bdef->type) {
-	case FCSIM_GOAL_CIRCLE:
-	case FCSIM_WHEEL:
-	case FCSIM_CW_WHEEL:
-	case FCSIM_CCW_WHEEL:
-		return true;
-	}
-	return false;
 }
 
 static int joint_type(block *b)
@@ -466,10 +468,12 @@ static void create_joints(block *b, fcsim_handle *handle)
 	}
 }
 
-void make_block(block *b, fcsim_block_def *bdef)
+void add_block(fcsim_handle *handle, fcsim_block_def *bdef)
 {
-	memset(b, 0, sizeof(*b));
-	b->bdef = bdef;
+	block *block = &handle->blocks[handle->block_cnt++];
+
+	memset(block, 0, sizeof(*block));
+	block->bdef = bdef;
 
 	/* TODO: deal with this somewhere else */
 	if (bdef->type == FCSIM_STAT_CIRCLE || bdef->type == FCSIM_DYN_CIRCLE) {
@@ -479,6 +483,8 @@ void make_block(block *b, fcsim_block_def *bdef)
 	if (bdef->type == FCSIM_DYN_CIRCLE) {
 		bdef->angle = 0;
 	}
+
+	create_joints(block, handle);
 }
 
 fcsim_handle *fcsim_new(fcsim_arena *arena)
@@ -496,9 +502,13 @@ fcsim_handle *fcsim_new(fcsim_arena *arena)
 	handle->block_cnt = 0;
 
 	for (int i = 0; i < arena->block_cnt; i++) {
-		make_block(&handle->blocks[i], &arena->blocks[i]);
-		create_joints(&handle->blocks[i], handle);
-		handle->block_cnt++;
+		if (is_player(&arena->blocks[i]))
+			add_block(handle, &arena->blocks[i]);
+	}
+
+	for (int i = 0; i < arena->block_cnt; i++) {
+		if (!is_player(&arena->blocks[i]))
+			add_block(handle, &arena->blocks[i]);
 	}
 
 	for (int i = 0; i < handle->block_cnt; i++)
