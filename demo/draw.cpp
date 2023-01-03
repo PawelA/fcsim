@@ -1,5 +1,6 @@
 #include <GL/gl.h>
 #include <math.h>
+#include <algorithm>
 #include "fcsim.h"
 	
 void setup_draw(void)
