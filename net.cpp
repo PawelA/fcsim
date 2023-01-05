@@ -14,33 +14,31 @@
 #include <byteswap.h>
 #endif
 
-#define PORT 2137
-#define ADDR "192.168.0.106"
- 
-static int sock;
+static int sock = -1;
 
-int minit(void)
+int minit(const char *addr, int port)
 {
-	struct sockaddr_in addr;
+	struct sockaddr_in saddr;
 	int res;
-	
+
 #ifdef _WIN32
 	WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-        return -1;
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+		return -1;
 #endif
 
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock < 0)
 		return sock;
 
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(PORT);
-	inet_pton(AF_INET, ADDR, &addr.sin_addr);
+	saddr.sin_family = AF_INET;
+	saddr.sin_port = htons(port);
+	if (inet_pton(AF_INET, addr, &saddr.sin_addr) != 1)
+		return -1;
 
-	res = connect(sock, (struct sockaddr *)&addr, sizeof(addr));
+	res = connect(sock, (struct sockaddr *)&saddr, sizeof(saddr));
 	if (res < 0) {
-		sock = 0;
+		sock = -1;
 		return res;
 	}
 
@@ -89,6 +87,9 @@ void mw(const char *name, int num_cnt, ...)
 	uint8_t name_size = strlen(name) + 1;
 	uint8_t size = name_size + 8 * num_cnt;
 	int i;
+
+	if (sock < 0)
+		return;
 
 	buf_write(&size, 1);
 	buf_write(name, name_size);

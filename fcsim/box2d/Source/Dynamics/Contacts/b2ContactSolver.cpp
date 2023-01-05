@@ -93,6 +93,12 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 				b2Vec2 r1 = cp->position - b1->m_position;
 				b2Vec2 r2 = cp->position - b2->m_position;
 
+				mw("local_anchor1_in", 6, b1->m_R.col1.x,
+							  b1->m_R.col1.y,
+							  b1->m_R.col2.x,
+							  b1->m_R.col2.y,
+							  r1.x, r1.y);
+
 				ccp->localAnchor1 = b2MulT(b1->m_R, r1);
 				ccp->localAnchor2 = b2MulT(b2->m_R, r2);
 

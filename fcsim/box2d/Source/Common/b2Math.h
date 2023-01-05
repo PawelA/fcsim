@@ -24,6 +24,7 @@
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
+#include <net.h>
 
 #define MIN_VALUE 5e-324
 

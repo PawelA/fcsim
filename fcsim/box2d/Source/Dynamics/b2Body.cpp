@@ -223,5 +223,5 @@ void b2Body::Freeze()
 void b2Body::dump(const char *tag)
 {
 	if (m_shapeList)
-		mw(tag, 10, m_position.x, m_position.y, m_rotation, m_linearVelocity.x, m_linearVelocity.y, m_angularVelocity, m_mass, m_invMass, m_I, m_invI);
+		mw(tag, 14, m_position.x, m_position.y, m_rotation, m_linearVelocity.x, m_linearVelocity.y, m_angularVelocity, m_mass, m_invMass, m_I, m_invI, m_R.col1.x, m_R.col1.y, m_R.col2.x, m_R.col2.y);
 }

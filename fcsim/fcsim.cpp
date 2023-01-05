@@ -221,6 +221,8 @@ static joint_collection *get_closest_jc(fcsim_handle *handle, double x, double y
 
 void get_rod_endpoints(fcsim_block_def *bdef, double *x0, double *y0, double *x1, double *y1)
 {
+	mw("rod_ends_in", 4, bdef->x, bdef->y, bdef->w, bdef->angle);
+
 	double cw = fcsim_cos(bdef->angle) * bdef->w / 2;
 	double sw = fcsim_sin(bdef->angle) * bdef->w / 2;
 
@@ -228,6 +230,8 @@ void get_rod_endpoints(fcsim_block_def *bdef, double *x0, double *y0, double *x1
 	*y0 = bdef->y - sw;
 	*x1 = bdef->x + cw;
 	*y1 = bdef->y + sw;
+
+	mw("rod_ends_out", 4, *x0, *y0, *x1, *y1);
 }
 
 int share_block(fcsim_handle *handle, joint_collection *jc0, joint_collection *jc1)

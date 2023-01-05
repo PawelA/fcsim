@@ -95,6 +95,7 @@ int main()
 		return 1;
 	print_arena(&arena);
 	handle = fcsim_new(&arena);
+	minit("127.0.0.1", 2137);
 
 	if (!glfwInit())
 		return 1;
