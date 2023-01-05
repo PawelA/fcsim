@@ -3,4 +3,5 @@
 *.xml
 config.mk
 demo/main
+scoreboard
 tags
