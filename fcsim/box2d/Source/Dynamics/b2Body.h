@@ -23,8 +23,7 @@
 #include "../Dynamics/Joints/b2Joint.h"
 #include "../Collision/b2Shape.h"
 
-#include <cstring>
-#include <memory>
+#include <string.h>
 
 class b2Joint;
 class b2Contact;
