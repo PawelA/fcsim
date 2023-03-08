@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "box2d/Include/Box2D.h"
 #include "fcsim.h"
 #include "fcsim_math.h"
