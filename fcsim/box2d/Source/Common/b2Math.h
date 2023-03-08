@@ -315,23 +315,6 @@ template<typename T> inline void b2Swap(T& a, T& b)
 	b = tmp;
 }
 
-// b2Random number in range [-1,1]
-inline float64 b2Random()
-{
-	float64 r = (float64)rand();
-	r /= RAND_MAX;
-	r = 2.0 * r - 1.0;
-	return r;
-}
-
-inline float64 b2Random(float64 lo, float64 hi)
-{
-	float64 r = (float64)rand();
-	r /= RAND_MAX;
-	r = (hi - lo) * r + lo;
-	return r;
-}
-
 // "Next Largest Power of 2
 // Given a binary integer value x, the next largest power of 2 can be computed by a SWAR algorithm
 // that recursively "folds" the upper bits into the lower bits. This process yields a bit vector with
