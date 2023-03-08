@@ -1,4 +1,3 @@
-#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -12,6 +11,11 @@ struct state {
 	fcsim_arena *arena;
 	fcsim_block_def *block;
 };
+
+int is_whitespace(char c)
+{
+	return c == ' ' || c == '\n' || c == '\t';
+}
 
 static char yxml_buf[1024];
 
@@ -29,7 +33,7 @@ again:
 	if (st->cur == YXML_OK)
 		goto again;
 	/* TODO: only ignore whitespace at the start of the content */
-	if (st->cur == YXML_CONTENT && isspace(st->yxml.data[0]))
+	if (st->cur == YXML_CONTENT && is_whitespace(st->yxml.data[0]))
 		goto again;
 }
 
@@ -61,7 +65,7 @@ static bool read_string(state *st, char *buf, int len)
 
 	next(st);
 	while (st->cur == YXML_CONTENT) {
-		if (!isspace(st->yxml.data[0]))
+		if (!is_whitespace(st->yxml.data[0]))
 			end = st->str;
 		next(st);
 	}
