@@ -29,11 +29,7 @@
 
 inline bool b2IsValid(float64 x)
 {
-#ifdef _MSC_VER
-	return _finite(x) != 0;
-#else
-	return finite(x) != 0;
-#endif
+	return true;
 }
 
 inline float64 b2InvSqrt(float64 x)
