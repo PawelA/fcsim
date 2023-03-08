@@ -21,9 +21,9 @@
 
 #include "b2Settings.h"
 #include "../../../fcsim_math.h"
-#include <cmath>
-#include <cfloat>
-#include <cstdlib>
+#include <math.h>
+#include <float.h>
+#include <stdlib.h>
 
 #define MIN_VALUE 5e-324
 
