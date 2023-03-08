@@ -442,11 +442,8 @@ int fcsim_read_xml(char *xml, fcsim_arena *arena)
 	st.block = arena->blocks;
 
 	next(&st);
-	if (!read_retrieve_level(&st)) {
-		*st.str = 0;
-		printf("%s\n", xml);
+	if (!read_retrieve_level(&st))
 		return -1;
-	}
 
 	arena->block_cnt = st.block - arena->blocks;
 
