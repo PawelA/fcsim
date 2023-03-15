@@ -3,6 +3,7 @@
 
 #include "yxml/yxml.h"
 #include "fcsim.h"
+#include "atod.h"
 
 struct state {
 	char *str;
@@ -114,13 +115,12 @@ static bool read_int(state *st, int *res)
 static bool read_number(state *st, double *res)
 {
 	char buf[60];
-	char *end;
 
 	if (!read_string(st, buf, sizeof(buf)))
 		return false;
 
-	end = buf + strlen(buf);
-	*res = strtod(buf, &end);
+	if (!parse_double(buf, res))
+		return false;
 
 	return true;
 }

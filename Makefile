@@ -5,6 +5,7 @@ OBJ = \
 	fcsim/fcsim.o \
 	fcsim/parse.o \
 	fcsim/math.o \
+	fcsim/atod.o \
 	fcsim/yxml/yxml.o \
 	fcsim/stdlib/math.o \
 	fcsim/stdlib/new.o \
