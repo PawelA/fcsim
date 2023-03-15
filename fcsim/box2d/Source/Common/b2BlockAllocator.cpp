@@ -17,10 +17,9 @@
 */
 
 #include "b2BlockAllocator.h"
-#include <cstdlib>
-#include <cstring>
-#include <memory>
-#include <climits>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
 
 int32 b2BlockAllocator::s_blockSizes[b2_blockSizes] = 
 {
