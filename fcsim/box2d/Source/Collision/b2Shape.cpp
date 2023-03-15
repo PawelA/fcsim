@@ -21,7 +21,7 @@
 #include "../Dynamics/b2World.h"
 #include "../Common/b2BlockAllocator.h"
 
-#include <new>
+#include <new.h>
 
 // Polygon mass, centroid, and inertia.
 // Let rho be the polygon density in mass per unit area.
