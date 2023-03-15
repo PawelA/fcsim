@@ -17,7 +17,6 @@
 */
 
 #include "b2BroadPhase.h"
-#include <algorithm>
 #include <cstring>
 
 // Notes:
