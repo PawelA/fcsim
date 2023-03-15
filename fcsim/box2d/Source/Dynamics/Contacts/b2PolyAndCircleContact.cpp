@@ -19,7 +19,7 @@
 #include "b2PolyAndCircleContact.h"
 #include "../../Common/b2BlockAllocator.h"
 
-#include <new>
+#include <new.h>
 
 b2Contact* b2PolyAndCircleContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
 {

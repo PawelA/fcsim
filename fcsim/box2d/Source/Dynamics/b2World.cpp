@@ -24,7 +24,7 @@
 #include "Contacts/b2Conservative.h"
 #include "../Collision/b2Collision.h"
 #include "../Collision/b2Shape.h"
-#include <new>
+#include <new.h>
 
 int32 b2World::s_enablePositionCorrection = 1;
 int32 b2World::s_enableWarmStarting = 1;
