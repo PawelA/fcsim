@@ -17,7 +17,7 @@
 */
 
 #include "b2BroadPhase.h"
-#include <cstring>
+#include <string.h>
 
 // Notes:
 // - we use bound arrays instead of linked lists for cache coherence.
