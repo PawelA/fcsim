@@ -82,16 +82,31 @@ static bool read_string(state *st, char *buf, int len)
 	return true;
 }
 
+static bool parse_int(char *str, int *rres)
+{
+	int res = 0;
+	char c;
+
+	for (; *str; str++) {
+		c = *str;
+		if (c < '0'|| c > '9')
+			return false;
+		res = res * 10 + (c - '0');
+	}
+	*rres = res;
+
+	return true;
+}
+
 static bool read_int(state *st, int *res)
 {
 	char buf[20];
-	char *end;
 
 	if (!read_string(st, buf, sizeof(buf)))
 		return false;
 
-	end = buf + strlen(buf);
-	*res = strtol(buf, &end, 10);
+	if (!parse_int(buf, res))
+		return false;
 
 	return true;
 }
