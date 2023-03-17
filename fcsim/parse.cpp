@@ -18,6 +18,13 @@ int is_whitespace(char c)
 	return c == ' ' || c == '\n' || c == '\t';
 }
 
+extern "C" {
+	__attribute__((
+		import_module("env"),
+		import_name("log")
+	)) void log(int);
+};
+
 static char yxml_buf[1024];
 
 static void next(state *st)
@@ -128,7 +135,6 @@ static bool read_number(state *st, double *res)
 static bool read_bool(state *st, bool *res)
 {
 	char buf[20];
-	char *end;
 
 	if (!read_string(st, buf, sizeof(buf)))
 		return false;
@@ -212,7 +218,7 @@ static bool ignore_attr(state *st)
 static bool read_id(state *st, int *id)
 {
 	int res = 0;
-	
+
 	next(st);
 	while (st->cur == YXML_ATTRVAL) {
 		/* TODO: check the digits */

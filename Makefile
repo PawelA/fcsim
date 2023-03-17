@@ -21,4 +21,4 @@ config.mk: config.def.mk
 	cp $< $@
 
 clean:
-	rm -f demo/main fcsim/fcsim.a $(FCSIM_OBJS) $(DEMO_OBJS)
+	rm -f demo/main fcsim/fcsim.a $(OBJ)

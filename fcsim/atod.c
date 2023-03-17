@@ -5,6 +5,11 @@ int parse_double(char *str, double *rres)
 	double e = 1.0;
 	char c;
 
+	if (*str == '-') {
+		str++;
+		den = -den;
+	}
+
 	for (; *str; str++) {
 		c = *str;
 		if (c == '.') {
@@ -13,10 +18,10 @@ int parse_double(char *str, double *rres)
 			num = num * 10.0 + (c - '0');
 			den = den * e;
 		} else {
-			return -1;
+			return 0;
 		}
 	}
 	*rres = num / den;
 
-	return 0;
+	return 1;
 }

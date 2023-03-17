@@ -36,8 +36,16 @@ struct fcsim_arena {
 
 struct fcsim_handle;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 fcsim_handle *fcsim_new(fcsim_arena *arena);
 
 void fcsim_step(fcsim_handle *handle);
 
 int fcsim_read_xml(char *xml, fcsim_arena *arena);
+
+#ifdef __cplusplus
+}
+#endif
