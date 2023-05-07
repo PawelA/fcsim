@@ -19,10 +19,8 @@
 #ifndef B2_SETTINGS_H
 #define B2_SETTINGS_H
 
-#include <cassert>
-
 #define NOT_USED(x) x
-#define b2Assert(A) assert((A))
+#define b2Assert(A)
 
 typedef signed char	int8;
 typedef signed short int16;
