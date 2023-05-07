@@ -28,16 +28,24 @@ struct fcsim_rect {
 };
 
 struct fcsim_arena {
-	fcsim_block_def *blocks;
+	struct fcsim_block_def *blocks;
 	int block_cnt;
-	fcsim_rect build;
-	fcsim_rect goal;
+	struct fcsim_rect build;
+	struct fcsim_rect goal;
 };
 
 struct fcsim_handle;
 
-fcsim_handle *fcsim_new(fcsim_arena *arena);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void fcsim_step(fcsim_handle *handle);
+struct fcsim_handle *fcsim_new(struct fcsim_arena *arena);
 
-int fcsim_read_xml(char *xml, fcsim_arena *arena);
+void fcsim_step(struct fcsim_handle *handle);
+
+int fcsim_read_xml(char *xml, struct fcsim_arena *arena);
+
+#ifdef __cplusplus
+}
+#endif
