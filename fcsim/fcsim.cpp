@@ -4,11 +4,6 @@
 #include "fcsim.h"
 #include "fcsim_math.h"
 
-#define ARENA_WIDTH	2000
-#define ARENA_HEIGHT	1450
-#define TIME_STEP	0.03333333333333333
-#define ITERATIONS	10
-
 struct block;
 
 #define JOINT_PIN  0
@@ -489,8 +484,8 @@ fcsim_handle *fcsim_new(fcsim_arena *arena)
 
 	b2Vec2 gravity(0, 300);
 	b2AABB aabb;
-	aabb.minVertex.Set(-ARENA_WIDTH, -ARENA_HEIGHT);
-	aabb.maxVertex.Set( ARENA_WIDTH,  ARENA_HEIGHT);
+	aabb.minVertex.Set(-2000, -1450);
+	aabb.maxVertex.Set(2000, 1450);
 	handle->world = new b2World(aabb, gravity, true);
 	handle->world->SetFilter(&fcsim_collision_filter);
 
@@ -523,7 +518,7 @@ fcsim_handle *fcsim_new(fcsim_arena *arena)
 
 void fcsim_step(fcsim_handle *handle)
 {
-	handle->world->Step(TIME_STEP, ITERATIONS);
+	handle->world->Step(1.0/30.0, 10);
 
 	for (int i = 0; i < handle->block_cnt; i++) {
 		block *b = &handle->blocks[i];
