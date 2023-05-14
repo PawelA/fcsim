@@ -102,6 +102,18 @@ static struct block_physics block_physics_tbl[] = {
 	{  0, 1.0, 0.7, 0.2, 256, -17, 0.009, 0.2 }, /* SOLID_ROD */
 };
 
+static bool is_wheel(block *b)
+{
+	switch (b->bdef->type) {
+	case FCSIM_GOAL_CIRCLE:
+	case FCSIM_WHEEL:
+	case FCSIM_CW_WHEEL:
+	case FCSIM_CCW_WHEEL:
+		return true;
+	}
+	return false;
+}
+
 static void generate_body(b2World *world, block *b)
 {
 	fcsim_block_def *bdef = b->bdef;
@@ -110,9 +122,15 @@ static void generate_body(b2World *world, block *b)
 	b2CircleDef circle_def;
 	b2ShapeDef *shape_def;
 	b2BodyDef body_def;
+	double rotation = bdef->angle;
 
 	if (phys.circle) {
-		circle_def.radius = bdef->w/2;
+		if (is_wheel(b)) {
+			circle_def.radius = bdef->w/2;
+		} else {
+			rotation = 0.0;
+			circle_def.radius = bdef->w;
+		}
 		shape_def = &circle_def;
 	} else {
 		box_def.extents.Set(bdef->w/2, bdef->h/2);
@@ -125,7 +143,7 @@ static void generate_body(b2World *world, block *b)
 	shape_def->maskBits = phys.maskBits;
 	shape_def->userData = b;
 	body_def.position.Set(bdef->x, bdef->y);
-	body_def.rotation = bdef->angle;
+	body_def.rotation = rotation;
 	body_def.linearDamping = phys.linearDamping;
 	body_def.angularDamping = phys.angularDamping;
 	body_def.AddShape(shape_def);
@@ -152,18 +170,6 @@ static void generate_joint(b2World *world, joint *j)
 }
 
 
-
-static bool is_wheel(block *b)
-{
-	switch (b->bdef->type) {
-	case FCSIM_GOAL_CIRCLE:
-	case FCSIM_WHEEL:
-	case FCSIM_CW_WHEEL:
-	case FCSIM_CCW_WHEEL:
-		return true;
-	}
-	return false;
-}
 
 static bool is_player(fcsim_block_def *bdef)
 {
@@ -471,18 +477,8 @@ static void create_joints(block *b, fcsim_handle *handle)
 void add_block(fcsim_handle *handle, fcsim_block_def *bdef)
 {
 	block *block = &handle->blocks[handle->block_cnt++];
-
 	memset(block, 0, sizeof(*block));
 	block->bdef = bdef;
-
-	/* TODO: deal with this somewhere else */
-	if (bdef->type == FCSIM_STAT_CIRCLE || bdef->type == FCSIM_DYN_CIRCLE) {
-		bdef->w *= 2;
-		bdef->h *= 2;
-	}
-	if (bdef->type == FCSIM_DYN_CIRCLE) {
-		bdef->angle = 0;
-	}
 
 	create_joints(block, handle);
 }

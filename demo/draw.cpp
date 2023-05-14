@@ -70,6 +70,9 @@ static void draw_circle(struct fcsim_block_def *block, float cr, float cg, float
 {
 	float r = block->w/2;
 
+	if (block->type == FCSIM_DYN_CIRCLE || block->type == FCSIM_STAT_CIRCLE)
+		r = block->w;
+
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(cr, cg, cb);
 	for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
