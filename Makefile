@@ -7,7 +7,7 @@ LDLIBS = -lGL -lglfw
 obj_fcsim = \
 	fcsim/fcsim.o \
 	fcsim/parse.o \
-	fcsim/math.o \
+	fcsim/sincos.o \
 	fcsim/yxml/yxml.o \
 	fcsim/box2d/Source/Collision/b2BroadPhase.o \
 	fcsim/box2d/Source/Collision/b2CollideCircle.o \
