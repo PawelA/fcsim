@@ -20,7 +20,7 @@
 #define B2_MATH_H
 
 #include "b2Settings.h"
-#include "../../../fcsim_math.h"
+#include <fcsim_funcs.h>
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>

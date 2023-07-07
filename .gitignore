@@ -1,6 +1,6 @@
 *.o
 *.a
+*.d
 *.xml
-config.mk
-demo/main
+/demo
 tags

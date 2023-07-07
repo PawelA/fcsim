@@ -1,8 +1,7 @@
 #include <stdio.h>
-
+#include <fcsim.h>
+#include <fcsim_funcs.h>
 #include "box2d/Include/Box2D.h"
-#include "fcsim.h"
-#include "fcsim_math.h"
 
 struct block;
 

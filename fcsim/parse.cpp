@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <fcsim.h>
+
 #include "yxml/yxml.h"
-#include "fcsim.h"
 
 struct state {
 	char *str;
