@@ -519,6 +519,17 @@ void fcsim_step(fcsim_handle *handle)
 {
 	handle->world->Step(1.0/30.0, 10);
 
+	b2Joint *joint = handle->world->GetJointList();
+	while (joint) {
+		b2Joint *next = joint->GetNext();
+		b2Vec2 a1 = joint->GetAnchor1();
+		b2Vec2 a2 = joint->GetAnchor2();
+		b2Vec2 d = a1 - a2;
+		if (fabs(d.x) + fabs(d.y) > 50.0)
+			handle->world->DestroyJoint(joint);
+		joint = next;
+	}
+
 	for (int i = 0; i < handle->block_cnt; i++) {
 		block *b = &handle->blocks[i];
 		b2Vec2 pos   = b->body->GetOriginPosition();
