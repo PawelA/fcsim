@@ -529,3 +529,76 @@ void fcsim_step(fcsim_handle *handle)
 		b->bdef->angle = angle;
 	}
 }
+
+static void rect_block_bb(fcsim_block_def *block, fcsim_rect *rect)
+{
+	float sina = fcsim_sin(block->angle);
+	float cosa = fcsim_cos(block->angle);
+	float wc = block->w * cosa;
+	float ws = block->w * sina;
+	float hc = block->h * cosa;
+	float hs = block->h * sina;
+
+	rect->x = block->x;
+	rect->y = block->y;
+	rect->w = fabs(wc) + fabs(hs);
+	rect->h = fabs(ws) + fabs(hc);
+}
+
+static void circle_block_bb(fcsim_block_def *block, fcsim_rect *rect)
+{
+	rect->x = block->x;
+	rect->y = block->y;
+	rect->w = block->w;
+	rect->h = block->w;
+}
+
+static bool is_circle(fcsim_block_def *bdef)
+{
+	switch (bdef->type) {
+	case FCSIM_STAT_RECT:
+	case FCSIM_DYN_RECT:
+	case FCSIM_GOAL_RECT:
+	case FCSIM_ROD:
+	case FCSIM_SOLID_ROD:
+		return false;
+	}
+	return true;
+}
+
+static void block_bb(fcsim_block_def *block, fcsim_rect *rect)
+{
+	if (is_circle(block))
+		circle_block_bb(block, rect);
+	else
+		rect_block_bb(block, rect);
+}
+
+static int block_inside_rect(fcsim_block_def *block, fcsim_rect *rect)
+{
+	fcsim_rect bb;
+
+	block_bb(block, &bb);
+
+	return bb.x - bb.w / 2 >= rect->x - rect->w / 2
+	    && bb.x + bb.w / 2 <= rect->x + rect->w / 2
+	    && bb.y - bb.h / 2 >= rect->y - rect->h / 2
+	    && bb.y + bb.h / 2 <= rect->y + rect->h / 2;
+}
+
+int fcsim_has_won(fcsim_arena *arena)
+{
+	bool checked = false;
+
+	for (int i = 0; i < arena->block_cnt; i++) {
+		fcsim_block_def *block = &arena->blocks[i];
+		if (block->type == FCSIM_GOAL_RECT ||
+		    block->type == FCSIM_GOAL_CIRCLE) {
+			if (!block_inside_rect(block, &arena->goal))
+				return false;
+			checked = true;
+		}
+	}
+
+	return checked;
+}

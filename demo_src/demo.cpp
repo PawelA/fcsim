@@ -74,6 +74,8 @@ int main()
 		if (running) {
 			fcsim_step(handle);
 			printf("%d\n", ++ticks);
+			if (fcsim_has_won(&arena))
+				running = false;
 		}
 	}
 
