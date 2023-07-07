@@ -7,6 +7,7 @@ extern "C" {
 
 double fcsim_sin(double x);
 double fcsim_cos(double x);
+int fcsim_strtod(const char *str, double *res);
 
 #ifdef __cplusplus
 }

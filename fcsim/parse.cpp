@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include <fcsim.h>
+#include <fcsim_funcs.h>
 
 #include "yxml/yxml.h"
 
@@ -98,13 +99,11 @@ static bool read_int(state *st, int *res)
 static bool read_number(state *st, double *res)
 {
 	char buf[60];
-	char *end;
 
 	if (!read_string(st, buf, sizeof(buf)))
 		return false;
 
-	end = buf + strlen(buf);
-	*res = strtod(buf, &end);
+	fcsim_strtod(buf, res);
 
 	return true;
 }
