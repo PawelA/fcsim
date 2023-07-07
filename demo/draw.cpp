@@ -2,7 +2,7 @@
 #include <math.h>
 #include <algorithm>
 #include "fcsim.h"
-	
+
 void setup_draw(void)
 {
 	glClearColor(0.529f, 0.741f, 0.945f, 0);
@@ -90,7 +90,7 @@ static void draw_block(struct fcsim_block_def *block)
 	else
 		draw_rect(block, info.r, info.g, info.b);
 }
- 
+
 void draw_world(fcsim_arena *arena)
 {
 	glClear(GL_COLOR_BUFFER_BIT);

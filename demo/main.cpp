@@ -30,28 +30,6 @@ static char *read_file(const char *name)
 	return ptr;
 }
 
-/*
-bool check(int cnt)
-{
-	for (int i = 0; i < cnt; i++) {
-		fcsim_block_def *g = &blocks[i];
-		if (g->type == FCSIM_WHEEL) {
-			for (int j = 0; j < cnt; j++) {
-				fcsim_block_def *e = &blocks[j];
-				if (e->type == FCSIM_END) {
-					if (e->x - e->w/2 > g->x - g->w/2) return false;
-					if (e->x + e->w/2 < g->x + g->w/2) return false;
-					if (e->y - e->h/2 > g->y - g->h/2) return false;
-					if (e->y + e->h/2 < g->y + g->h/2) return false;
-					return true;
-				}
-			}
-		}
-	}
-	return false;
-}
-*/
-
 int running;
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -95,7 +73,7 @@ int main()
 		glfwPollEvents();
 		if (running) {
 			fcsim_step(handle);
-			printf("%d\n", ticks++);
+			printf("%d\n", ++ticks);
 		}
 	}
 
