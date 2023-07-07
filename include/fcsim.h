@@ -1,3 +1,6 @@
+#ifndef __FCSIM_H__
+#define __FCSIM_H__
+
 #define FCSIM_STAT_RECT   0
 #define FCSIM_STAT_CIRCLE 1
 #define FCSIM_DYN_RECT    2
@@ -48,4 +51,6 @@ int fcsim_read_xml(char *xml, struct fcsim_arena *arena);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
