@@ -39,8 +39,7 @@ obj_fcsim = \
 	fcsim/box2d/Source/Dynamics/Joints/b2RevoluteJoint.o
 
 obj_demo = \
-	demo_src/demo.o \
-	demo_src/draw.o
+	demo_src/demo.o
 
 obj_all = $(obj_fcsim) $(obj_demo)
 dep_all = $(obj_all:%.o=%.d)
