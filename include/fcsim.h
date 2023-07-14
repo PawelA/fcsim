@@ -47,7 +47,7 @@ struct fcsim_handle *fcsim_new(struct fcsim_arena *arena);
 
 void fcsim_step(struct fcsim_handle *handle);
 
-int fcsim_read_xml(char *xml, struct fcsim_arena *arena);
+int fcsim_read_xml(char *xml, int len, struct fcsim_arena *arena);
 
 int fcsim_has_won(struct fcsim_arena *arena);
 
