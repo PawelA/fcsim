@@ -43,7 +43,10 @@ obj_fcsim = \
 obj_demo = \
 	stuff/demo.o
 
-obj_all = $(obj_fcsim) $(obj_demo)
+obj_run = \
+	stuff/run.o
+
+obj_all = $(obj_fcsim) $(obj_demo) $(obj_run)
 dep_all = $(obj_all:%.o=%.d)
 
 libfcsim.a: $(obj_fcsim)
@@ -51,6 +54,9 @@ libfcsim.a: $(obj_fcsim)
 
 demo: $(obj_demo) libfcsim.a
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+run: $(obj_run) libfcsim.a
+	$(CXX) -o $@ $^
 
 clean:
 	rm -f libfcsim.a demo
