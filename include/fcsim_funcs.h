@@ -7,6 +7,7 @@ extern "C" {
 
 double fcsim_sin(double x);
 double fcsim_cos(double x);
+double fcsim_atan2(double y, double x);
 int fcsim_strtoi(const char *str, int len, int *res);
 int fcsim_strtod(const char *str, int len, double *res);
 

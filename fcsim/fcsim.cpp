@@ -382,7 +382,7 @@ static void create_rod_joints(block *b, fcsim_handle *handle)
 		y1 = jc1->y;
 	}
 
-	bdef->angle = atan2(y1 - y0, x1 - x0);
+	bdef->angle = fcsim_atan2(y1 - y0, x1 - x0);
 	bdef->w = distance(x0, y0, x1, y1);
 	bdef->x = x0 + (x1 - x0) / 2.0;
 	bdef->y = y0 + (y1 - y0) / 2.0;
