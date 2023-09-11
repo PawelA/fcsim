@@ -8,6 +8,7 @@ obj_fcsim = \
 	fcsim/fcsim.o \
 	fcsim/parse.o \
 	fcsim/sincos.o \
+	fcsim/atan2.o \
 	fcsim/strtod.o \
 	fcsim/strtoi.o \
 	fcsim/yxml/yxml.o \
