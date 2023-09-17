@@ -4,8 +4,18 @@
 #include <math.h>
 #include <GLFW/glfw3.h>
 #include <fcsim.h>
+#include "font.h"
 
 #define TAU 6.28318530718
+
+struct ui_rect {
+	int x, y;
+	int w, h;
+	struct ui_rect *next;
+};
+
+struct ui_rect *buttons;
+struct ui_rect *inputs;
 
 static char *read_file(const char *name)
 {
@@ -50,9 +60,17 @@ int pressed;
 
 double view_x = 0.0;
 double view_y = 0.0;
-double view_w_half = 500.0;
-double view_h_half = 500.0;
+double view_scale = 1.0;
+double view_w_half;
+double view_h_half;
 
+int ui_scale = 5;
+
+static void update_view_wh(void)
+{
+	view_w_half = view_scale * width;
+	view_h_half = view_scale * height;
+}
 
 static void cursor_pos_callback(GLFWwindow *window, double x, double y)
 {
@@ -75,8 +93,9 @@ static void cursor_pos_callback(GLFWwindow *window, double x, double y)
 static void scroll_callback(GLFWwindow *window, double x, double y)
 {
 	double scale = 1 - y * 0.05;
-	view_w_half *= scale;
-	view_h_half *= scale;
+
+	view_scale *= scale;
+	update_view_wh();
 }
 
 static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
@@ -96,9 +115,87 @@ static void char_callback(GLFWwindow *window, unsigned int codepoint)
 	printf("char: %u\n", codepoint);
 }
 
-static void window_size_callback(GLFWwindow *window, int width, int height)
+static void window_size_callback(GLFWwindow *window, int w, int h)
 {
-	printf("size: %d %d\n", width, height);
+	width = w;
+	height = h;
+	update_view_wh();
+	glViewport(0, 0, w, h);
+}
+
+unsigned char font_rgba[20480] = { 0 };
+
+void setup_font(void)
+{
+	int i;
+	int j;
+
+	for (i = 33 * 8; i < 127 * 8; i++) {
+		for (j = 0; j < 5; j++) {
+			if (font[i - 33 * 8] & (1 << (7 - j))) {
+				font_rgba[(i * 5 + j) * 4 + 0] = 0xff;
+				font_rgba[(i * 5 + j) * 4 + 1] = 0xff;
+				font_rgba[(i * 5 + j) * 4 + 2] = 0xff;
+				font_rgba[(i * 5 + j) * 4 + 3] = 0xaa;
+			}
+		}
+	}
+}
+
+void vertex2f_pixel(int x, int y)
+{
+	glVertex2f((float)(2*x - width) / width,
+		   (float)(2*y - height) / height);
+}
+
+void draw_char(char c, int x, int y, int scale)
+{
+	int cw = 5 * scale;
+	int ch = 8 * scale;
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBegin(GL_TRIANGLE_FAN);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glTexCoord2f(0, c / 128.0f); vertex2f_pixel(x, y + ch);
+	glTexCoord2f(0, (c + 1) / 128.0f); vertex2f_pixel(x, y);
+	glTexCoord2f(1, (c + 1) / 128.0f); vertex2f_pixel(x + cw, y);
+	glTexCoord2f(1, c / 128.0f); vertex2f_pixel(x + cw, y + ch);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+}
+
+void draw_box(int x, int y, int w, int h)
+{
+	glEnable(GL_BLEND);
+	glBegin(GL_TRIANGLE_FAN);
+	glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+	vertex2f_pixel(x, y + h);
+	vertex2f_pixel(x, y);
+	vertex2f_pixel(x + w, y);
+	vertex2f_pixel(x + w, y + h);
+	glEnd();
+	glDisable(GL_BLEND);
+}
+
+void draw_text(char *s, int x, int y, int scale)
+{
+	int tw = scale * (strlen(s) * 6 + 1);
+	int th = scale * 10;
+	draw_box(x - scale, y - scale, tw, th);
+	for (; *s; s++) {
+		draw_char(*s, x, y, scale);
+		x += 6 * scale;
+	}
+}
+
+void draw_text_int(int n, int x, int y, int scale)
+{
+	char str[20];
+
+	sprintf(str, "%d", n);
+	draw_text(str, x, y, scale);
 }
 
 struct color {
@@ -269,14 +366,24 @@ int main(void)
 
 	glClearColor(0.529f, 0.741f, 0.945f, 0);
 
+	setup_font();
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 5, 128 * 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, font_rgba);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	update_view_wh();
+
 	int ticks = 0;
 	while (!glfwWindowShouldClose(window)) {
 		draw_arena(&arena);
+		draw_text_int(ticks, 10, 10, ui_scale);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		if (running) {
 			fcsim_step(handle);
-			printf("%d\n", ++ticks);
+			ticks++;
 			if (fcsim_has_won(&arena))
 				running = 0;
 		}
