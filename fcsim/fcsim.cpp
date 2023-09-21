@@ -38,6 +38,7 @@ struct block {
 };
 
 struct fcsim_handle {
+	fcsim_arena *arena;
 	b2World *world;
 	block *blocks;
 	int block_cnt;
@@ -491,6 +492,8 @@ fcsim_handle *fcsim_new(fcsim_arena *arena)
 	handle->blocks = new block[arena->block_cnt];
 	handle->block_cnt = 0;
 
+	handle->arena = arena;
+
 	for (int i = 0; i < arena->block_cnt; i++) {
 		if (is_player(&arena->blocks[i]))
 			add_block(handle, &arena->blocks[i]);
@@ -529,15 +532,21 @@ void fcsim_step(fcsim_handle *handle)
 			handle->world->DestroyJoint(joint);
 		joint = next;
 	}
+}
 
+void fcsim_get_block_stats(struct fcsim_handle *handle,
+			   struct fcsim_block_stat *stats)
+{
 	for (int i = 0; i < handle->block_cnt; i++) {
 		block *b = &handle->blocks[i];
 		b2Vec2 pos   = b->body->GetOriginPosition();
 		double angle = b->body->GetRotation();
 
-		b->bdef->x = pos.x;
-		b->bdef->y = pos.y;
-		b->bdef->angle = angle;
+		int ind = b->bdef - handle->arena->blocks;
+
+		stats[ind].x = pos.x;
+		stats[ind].y = pos.y;
+		stats[ind].angle = angle;
 	}
 }
 

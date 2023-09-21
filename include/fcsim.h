@@ -15,6 +15,11 @@
 
 #define FCSIM_TYPE_LAST FCSIM_SOLID_ROD
 
+struct fcsim_block_stat {
+	double x, y;
+	double angle;
+};
+
 struct fcsim_block_def {
 	int type;
 	int id;
@@ -46,6 +51,9 @@ extern "C" {
 struct fcsim_handle *fcsim_new(struct fcsim_arena *arena);
 
 void fcsim_step(struct fcsim_handle *handle);
+
+void fcsim_get_block_stats(struct fcsim_handle *handle,
+			   struct fcsim_block_stat *stats);
 
 int fcsim_read_xml(char *xml, int len, struct fcsim_arena *arena);
 
