@@ -1,3 +1,79 @@
+#include <stdio.h>
+#include <GLFW/glfw3.h>
+#include "text.h"
+#include "globals.h"
+
+static unsigned char font[];
+static unsigned char font_rgba[20480] = { 0 };
+
+void text_setup_draw(void)
+{
+	int i;
+	int j;
+
+	for (i = 33 * 8; i < 127 * 8; i++) {
+		for (j = 0; j < 5; j++) {
+			if (font[i - 33 * 8] & (1 << (7 - j))) {
+				font_rgba[(i * 5 + j) * 4 + 0] = 0xff;
+				font_rgba[(i * 5 + j) * 4 + 1] = 0xff;
+				font_rgba[(i * 5 + j) * 4 + 2] = 0xff;
+				font_rgba[(i * 5 + j) * 4 + 3] = 0xaa;
+			}
+		}
+	}
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 5, 128 * 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, font_rgba);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+static void vertex2f_pixel(int x, int y)
+{
+	glVertex2f((float)(2*x - the_width) / the_width,
+		   (float)(the_height - 2*y) / the_height);
+}
+
+static void draw_char(char c, int x, int y, int scale)
+{
+	int cw = 5 * scale;
+	int ch = 8 * scale;
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBegin(GL_TRIANGLE_FAN);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glTexCoord2f(0, (c + 0) / 128.0f); vertex2f_pixel(x, y);
+	glTexCoord2f(1, (c + 0) / 128.0f); vertex2f_pixel(x + cw, y);
+	glTexCoord2f(1, (c + 1) / 128.0f); vertex2f_pixel(x + cw, y + ch);
+	glTexCoord2f(0, (c + 1) / 128.0f); vertex2f_pixel(x, y + ch);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+}
+
+void text_draw_str(const char *s, int x, int y, int scale)
+{
+	/*
+	int tw = scale * (strlen(s) * 6 + 1);
+	int th = scale * 10;
+	draw_box(x - scale, y - scale, tw, th);
+	*/
+	for (; *s; s++) {
+		draw_char(*s, x, y, scale);
+		x += 6 * scale;
+	}
+}
+
+void text_draw_int(int n, int x, int y, int scale)
+{
+	char str[20];
+
+	sprintf(str, "%d", n);
+	text_draw_str(str, x, y, scale);
+}
+
 static unsigned char font[] = {
 	0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x20, 0x00, /* ! */
 	0x50, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* " */
