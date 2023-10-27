@@ -41,9 +41,16 @@ obj_fcsim = \
 	fcsim/box2d/Source/Dynamics/Joints/b2RevoluteJoint.o
 
 obj_demo = \
+	stuff/arena_layer.o \
 	stuff/demo.o \
+	stuff/file.o \
+	stuff/http.o \
+	stuff/load_layer.o \
+	stuff/loader.o \
 	stuff/runner.o \
-	stuff/timer.o
+	stuff/text.o \
+	stuff/timer.o \
+	stuff/ui.o
 
 obj_run = \
 	stuff/run.o
