@@ -159,12 +159,10 @@ void draw_arena(struct fcsim_arena *arena, struct fcsim_block_stat *stats)
 {
 	int i;
 
-	glEnable(GL_MULTISAMPLE);
 	draw_area(&arena->build, &build_color);
 	draw_area(&arena->goal,  &goal_color);
 	for (i = 0; i < arena->block_cnt; i++)
 		draw_block(&arena->blocks[i], &stats[i]);
-	glDisable(GL_MULTISAMPLE);
 }
 
 void arena_layer_init(struct arena_layer *arena_layer)
