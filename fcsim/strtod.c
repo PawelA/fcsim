@@ -128,6 +128,7 @@ int fcsim_strtod(const char *str, int len, double *res)
 		is_neg = 1;
 	case '+':
 		str++;
+		len--;
 	}
 
 	for (i = 0; i < len; i++) {
