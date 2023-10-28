@@ -7,6 +7,7 @@
 
 #include "text.h"
 #include "ui.h"
+#include "loader.h"
 #include "event.h"
 #include "load_layer.h"
 #include "arena_layer.h"
@@ -92,6 +93,7 @@ int main(void)
 	GLFWwindow *window;
 	int res;
 
+	loader_init();
 	arena_layer_init(&the_arena_layer);
 
 	if (!glfwInit())

@@ -3,10 +3,16 @@
 #include <string.h>
 #include <stdint.h>
 
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#endif
+
 #include <pthread.h>
 
 #include <fcsim.h>
@@ -159,7 +165,7 @@ int write_req(int fd, const char *design_id)
 		res = http_write_req(&http, &req_line, sock_buf, BUF_LEN);
 		if (res < 0)
 			return res;
-		res = write(fd, sock_buf, res);
+		res = send(fd, sock_buf, res, 0);
 		if (res < 0)
 			return res;
 	}
@@ -185,7 +191,7 @@ int read_res(int fd, struct alloc_readdata *data)
 	http.buf_len = BUF_LEN;
 
 	while (!http_finished(&http)) {
-		res = read(fd, sock_buf, BUF_LEN);
+		res = recv(fd, sock_buf, BUF_LEN, 0);
 		if (res < 0)
 			return res;
 		res = http_read_res(&http, &res_line, sock_buf, res);
@@ -246,4 +252,12 @@ int loader_is_done(struct loader *loader) {
 
 void loader_get(struct loader *loader, struct fcsim_arena *arena) {
 	memcpy(arena, &loader->arena, sizeof(*arena));
+}
+
+void loader_init(void)
+{
+#ifdef _WIN32
+	WSADATA wsaData;
+	WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
 }
