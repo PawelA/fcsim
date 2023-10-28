@@ -2,7 +2,11 @@ c_cxx_flags = -Iinclude -MMD -O2
 CFLAGS   = $(c_cxx_flags)
 CXXFLAGS = $(c_cxx_flags)
 
-LDLIBS = -lGL -lglfw
+ifeq ($(OS),Windows_NT)
+	LDLIBS = -lglfw3 -lgdi32 -lopengl32 -lws2_32 -mwindows
+else
+	LDLIBS = -lGL -lglfw
+endif
 
 obj_fcsim = \
 	fcsim/fcsim.o \
