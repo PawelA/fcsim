@@ -110,9 +110,13 @@ static void draw_circle(struct fcsim_block_def *block,
 		r = block->w/2;
 
 	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(color->r * COLOR_SCALE,
-		  color->g * COLOR_SCALE,
-		  color->b * COLOR_SCALE);
+	if (block->type == FCSIM_STAT_CIRCLE) {
+		glColor3f(color->r, color->g, color->b);
+	} else {
+		glColor3f(color->r * COLOR_SCALE,
+			  color->g * COLOR_SCALE,
+			  color->b * COLOR_SCALE);
+	}
 	vertex2f_world(x, y);
 	for (int i = 0; i <= 6; i++) {
 		double a = stat->angle + TAU * i / CIRCLE_SEGMENTS;
