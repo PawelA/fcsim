@@ -31,7 +31,7 @@ void load_layer_draw(struct load_layer *load_layer)
 			memset(load_layer->buf, 0, 16);
 			input_box_init(&load_layer->input, load_layer->buf, 16);
 		} else {
-			text_draw_str("Loading...", 20, 90, the_ui_scale);
+			text_draw_str("Loading...", 20, 125, the_ui_scale);
 		}
 	}
 }
