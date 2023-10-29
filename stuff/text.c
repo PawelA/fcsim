@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <inttypes.h>
 #include <GLFW/glfw3.h>
 #include "text.h"
 #include "globals.h"
@@ -66,11 +67,11 @@ void text_draw_str(const char *s, int x, int y, int scale)
 	}
 }
 
-void text_draw_int(int n, int x, int y, int scale)
+void text_draw_uint64(uint64_t n, int x, int y, int scale)
 {
-	char str[20];
+	char str[21];
 
-	sprintf(str, "%d", n);
+	sprintf(str, "%" PRIu64, n);
 	text_draw_str(str, x, y, scale);
 }
 
