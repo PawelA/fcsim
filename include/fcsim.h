@@ -57,7 +57,9 @@ void fcsim_get_block_stats(struct fcsim_handle *handle,
 
 int fcsim_read_xml(char *xml, int len, struct fcsim_arena *arena);
 
-int fcsim_has_won(struct fcsim_arena *arena);
+int fcsim_has_won(struct fcsim_arena *arena, struct fcsim_block_stat *stats);
+
+struct fcsim_arena *fcsim_arena_from_handle(struct fcsim_handle *handle);
 
 #ifdef __cplusplus
 }

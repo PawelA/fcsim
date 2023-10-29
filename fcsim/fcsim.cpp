@@ -606,19 +606,28 @@ static int block_inside_rect(fcsim_block_def *block, fcsim_rect *rect)
 	    && bb.y + bb.h / 2 <= rect->y + rect->h / 2;
 }
 
-int fcsim_has_won(fcsim_arena *arena)
+int fcsim_has_won(fcsim_arena *arena, struct fcsim_block_stat *stats)
 {
+	struct fcsim_block_def block;
 	bool checked = false;
 
 	for (int i = 0; i < arena->block_cnt; i++) {
-		fcsim_block_def *block = &arena->blocks[i];
-		if (block->type == FCSIM_GOAL_RECT ||
-		    block->type == FCSIM_GOAL_CIRCLE) {
-			if (!block_inside_rect(block, &arena->goal))
+		block = arena->blocks[i];
+		block.x = stats[i].x;
+		block.y = stats[i].y;
+		block.angle = stats[i].angle;
+		if (block.type == FCSIM_GOAL_RECT ||
+		    block.type == FCSIM_GOAL_CIRCLE) {
+			if (!block_inside_rect(&block, &arena->goal))
 				return false;
 			checked = true;
 		}
 	}
 
 	return checked;
+}
+
+struct fcsim_arena *fcsim_arena_from_handle(struct fcsim_handle *handle)
+{
+	return handle->arena;
 }
