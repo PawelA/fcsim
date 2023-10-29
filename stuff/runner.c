@@ -8,8 +8,8 @@
 
 struct execution {
 	struct fcsim_handle *handle;
-	int tick;
-	int won_tick;
+	uint64_t tick;
+	uint64_t won_tick;
 	struct runner_tick ticks[3];
 	int prod_idx;
 	int cons_idx;
@@ -200,7 +200,7 @@ void runner_get_tick(struct runner *runner, struct runner_tick *tick)
 	*tick = exec->ticks[exec->cons_idx];
 }
 
-int runner_get_won_tick(struct runner *runner)
+uint64_t runner_get_won_tick(struct runner *runner)
 {
 	struct execution *exec = &runner->execs[runner->exec_idx];
 
