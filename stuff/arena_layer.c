@@ -197,11 +197,16 @@ void arena_layer_draw(struct arena_layer *arena_layer)
 
 	if (arena_layer->loaded) {
 		struct runner_tick tick;
+		int won_tick;
 
 		runner_get_tick(arena_layer->runner, &tick);
+		won_tick = runner_get_won_tick(arena_layer->runner);
+
 		view = arena_layer->view;
 		draw_arena(&arena_layer->arena, tick.stats);
 		text_draw_int(tick.index, 200, 10, the_ui_scale);
+		if (won_tick)
+			text_draw_int(won_tick, 200, 50, the_ui_scale);
 	}
 	
 	draw_button(&arena_layer->load_button);

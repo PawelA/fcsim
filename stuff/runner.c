@@ -9,6 +9,7 @@
 struct execution {
 	struct fcsim_handle *handle;
 	int tick;
+	int won_tick;
 	struct runner_tick ticks[3];
 	int prod_idx;
 	int cons_idx;
@@ -50,11 +51,19 @@ static void execution_consume(struct execution *exec)
 static void execution_tick(struct execution *exec)
 {
 	struct runner_tick *tick = &exec->ticks[exec->prod_idx];
+	struct fcsim_arena *arena;
+
+	arena = fcsim_arena_from_handle(exec->handle);
 
 	fcsim_step(exec->handle);
 	exec->tick++;
 
 	fcsim_get_block_stats(exec->handle, tick->stats);
+	if (fcsim_has_won(arena, tick->stats)) {
+		if (!exec->won_tick)
+			exec->won_tick = exec->tick;
+	}
+
 	tick->index = exec->tick;
 
 	execution_produce(exec);
@@ -67,6 +76,7 @@ static void init_execution(struct execution *exec, struct fcsim_arena *arena)
 
 	exec->handle = fcsim_new(arena);
 	exec->tick = 0;
+	exec->won_tick = 0;
 
 	stats_size = sizeof(struct fcsim_block_stat) * arena->block_cnt;
 	for (i = 0; i < 3; i++)
@@ -188,6 +198,13 @@ void runner_get_tick(struct runner *runner, struct runner_tick *tick)
 
 	execution_consume(exec);
 	*tick = exec->ticks[exec->cons_idx];
+}
+
+int runner_get_won_tick(struct runner *runner)
+{
+	struct execution *exec = &runner->execs[runner->exec_idx];
+
+	return exec->won_tick;
 }
 
 void runner_set_frame_limit(struct runner *runner, uint64_t frame_limit_us)
