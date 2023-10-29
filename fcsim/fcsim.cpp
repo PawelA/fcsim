@@ -478,9 +478,26 @@ void add_block(fcsim_handle *handle, fcsim_block_def *bdef)
 	create_joints(block, handle);
 }
 
+fcsim_arena *copy_arena(fcsim_arena *arena)
+{
+	fcsim_arena *new_arena;
+
+	new_arena = new fcsim_arena;
+	new_arena->blocks = new fcsim_block_def[arena->block_cnt];
+	memcpy(new_arena->blocks, arena->blocks, sizeof(fcsim_block_def) * arena->block_cnt);
+	new_arena->block_cnt = arena->block_cnt;
+	new_arena->build = arena->build;
+	new_arena->goal = arena->goal;
+
+	return new_arena;
+}
+
 fcsim_handle *fcsim_new(fcsim_arena *arena)
 {
 	fcsim_handle *handle = new fcsim_handle;
+	fcsim_arena *new_arena;
+
+	new_arena = copy_arena(arena);
 
 	b2Vec2 gravity(0, 300);
 	b2AABB aabb;
@@ -489,19 +506,19 @@ fcsim_handle *fcsim_new(fcsim_arena *arena)
 	handle->world = new b2World(aabb, gravity, true);
 	handle->world->SetFilter(&fcsim_collision_filter);
 
-	handle->blocks = new block[arena->block_cnt];
+	handle->blocks = new block[new_arena->block_cnt];
 	handle->block_cnt = 0;
 
-	handle->arena = arena;
+	handle->arena = new_arena;
 
-	for (int i = 0; i < arena->block_cnt; i++) {
-		if (is_player(&arena->blocks[i]))
-			add_block(handle, &arena->blocks[i]);
+	for (int i = 0; i < new_arena->block_cnt; i++) {
+		if (is_player(&new_arena->blocks[i]))
+			add_block(handle, &new_arena->blocks[i]);
 	}
 
-	for (int i = 0; i < arena->block_cnt; i++) {
-		if (!is_player(&arena->blocks[i]))
-			add_block(handle, &arena->blocks[i]);
+	for (int i = 0; i < new_arena->block_cnt; i++) {
+		if (!is_player(&new_arena->blocks[i]))
+			add_block(handle, &new_arena->blocks[i]);
 	}
 
 	for (int i = 0; i < handle->block_cnt; i++)
