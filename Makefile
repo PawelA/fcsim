@@ -15,6 +15,7 @@ obj_fcsim = \
 	fcsim/atan2.o \
 	fcsim/strtod.o \
 	fcsim/strtoi.o \
+	fcsim/xml_parse.o \
 	fcsim/yxml/yxml.o \
 	fcsim/box2d/Source/Collision/b2BroadPhase.o \
 	fcsim/box2d/Source/Collision/b2CollideCircle.o \
