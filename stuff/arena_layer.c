@@ -176,7 +176,8 @@ void arena_layer_init(struct arena_layer *arena_layer)
 	load_layer_init(&arena_layer->load_layer);
 	arena_layer->runner = runner_create();
 	arena_layer->running = 0;
-	arena_layer->fast = 0;
+	arena_layer->min_frame_time = 16667;
+    runner_set_frame_limit(arena_layer->runner, arena_layer->min_frame_time);
 	arena_layer->view_scale = 1.0;
 	set_view_wh_from_scale(&arena_layer->view, 1.0);
 }
@@ -230,18 +231,28 @@ void arena_layer_toggle_running(struct arena_layer *arena_layer)
 	arena_layer->running = !arena_layer->running;
 }
 
-void arena_layer_toggle_fast(struct arena_layer *arena_layer)
+void arena_layer_set_min_frame_time(struct arena_layer *arena_layer, uint64_t min_frame_time)
 {
-	arena_layer->fast = !arena_layer->fast;
-	runner_set_frame_limit(arena_layer->runner, arena_layer->fast ? 0 : 16666);
+    arena_layer->min_frame_time = min_frame_time;
+    runner_set_frame_limit(arena_layer->runner, arena_layer->min_frame_time);
 }
 
 void arena_layer_key_event(struct arena_layer *arena_layer, struct key_event *event)
 {
 	if (event->key == GLFW_KEY_SPACE && event->action == GLFW_PRESS)
 		arena_layer_toggle_running(arena_layer);
-	if (event->key == GLFW_KEY_S && event->action == GLFW_PRESS)
-		arena_layer_toggle_fast(arena_layer);
+	if (event->key == GLFW_KEY_1 && event->action == GLFW_PRESS)
+		arena_layer_set_min_frame_time(arena_layer, 200000); //5fps
+    if (event->key == GLFW_KEY_2 && event->action == GLFW_PRESS)
+		arena_layer_set_min_frame_time(arena_layer, 66667); //15fps
+    if (event->key == GLFW_KEY_3 && event->action == GLFW_PRESS)
+		arena_layer_set_min_frame_time(arena_layer, 33333); //30fps 
+    if (event->key == GLFW_KEY_4 && event->action == GLFW_PRESS)
+		arena_layer_set_min_frame_time(arena_layer, 16667); //60fps
+    if (event->key == GLFW_KEY_5 && event->action == GLFW_PRESS)
+		arena_layer_set_min_frame_time(arena_layer, 8333); //60fps
+    if (event->key == GLFW_KEY_6 && event->action == GLFW_PRESS)
+		arena_layer_set_min_frame_time(arena_layer, 0); //unlimited fps
 }
 
 void arena_layer_mouse_move_event(struct arena_layer *arena_layer)

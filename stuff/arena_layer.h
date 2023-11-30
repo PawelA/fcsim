@@ -22,7 +22,7 @@ struct arena_layer {
 	int prev_y;
 	int pressed;
 
-	int fast;
+	uint64_t min_frame_time;
 };
 
 void arena_layer_init(struct arena_layer *arena_layer);
