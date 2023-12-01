@@ -55,31 +55,31 @@ enum joint_type {
 	JOINT_DERIVED,
 };
 
-struct free_joint {
+struct vertex {
 	double x;
 	double y;
 };
 
 struct derived_joint {
-	struct block *block;
+	int block_id;
 	int index;
 };
 
 struct joint {
 	enum joint_type type;
 	union {
-		struct free_joint free;
+		int vertex_id;
 		struct derived_joint derived;
 	};
 };
 
 enum block_type {
 	BLOCK_STAT_RECT,
-	BLOCK_STAT_CIRCLE,
+	BLOCK_STAT_CIRC,
 	BLOCK_DYN_RECT,
-	BLOCK_DYN_CIRCLE,
+	BLOCK_DYN_CIRC,
 	BLOCK_GOAL_RECT,
-	BLOCK_GOAL_CIRCLE,
+	BLOCK_GOAL_CIRC,
 	BLOCK_WHEEL,
 	BLOCK_CW_WHEEL,
 	BLOCK_CCW_WHEEL,
@@ -88,29 +88,28 @@ enum block_type {
 };
 
 struct rod {
-	struct joint *from;
-	struct joint *to;
+	struct joint from;
+	struct joint to;
 };
 
 struct wheel {
-	struct joint *center;
+	struct joint center;
 	double radius;
 	double angle;
 };
 
-struct jointed_rect {
-	struct joint *center;
+struct jrect {
+	double x, y;
 	double w, h;
 	double angle;
 };
 
-struct circle {
+struct circ {
 	double x, y;
 	double radius;
-	double angle;
 };
 
-struct rectangle {
+struct rect {
 	double x, y;
 	double w, h;
 	double angle;
@@ -119,12 +118,20 @@ struct rectangle {
 struct block {
 	enum block_type type;
 	union {
-		struct rod rod;
+		struct rod   rod;
 		struct wheel wheel;
-		struct jointed_rect jointed_rect;
-		struct cicle circle;
-		struct rectangle rectangle;
+		struct jrect rect;
+		struct circ  circ;
+		struct rect  rect;
 	};
+};
+
+struct level {
+	struct block *level_blocks;
+	int level_block_cnt;
+
+	struct block *player_blocks;
+	int player_block_cnt;
 };
 
 #define FCSIM_STAT_RECT   0
@@ -188,6 +195,7 @@ int fcsim_has_won(struct fcsim_arena *arena, struct fcsim_block_stat *stats);
 struct fcsim_arena *fcsim_arena_from_handle(struct fcsim_handle *handle);
 
 int xml_parse(char *xml, int len, struct xml_level *level);
+int xml_conv(char *xml, int len, struct xml_level *level);
 
 #ifdef __cplusplus
 }
