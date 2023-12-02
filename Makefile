@@ -127,9 +127,10 @@ $(obj-glfw-y): cflags-$(wayland) += -D_GLFW_WAYLAND
 
 ### demo
 
+demo = stuff/demo.o
+
 obj-demo-y = \
 	stuff/arena_layer.o \
-	stuff/demo.o \
 	stuff/file.o \
 	stuff/http.o \
 	stuff/load_layer.o \
@@ -142,7 +143,29 @@ obj-demo-y = \
 obj-y += $(obj-demo-y)
 obj-n += $(obj-demo-n)
 
+$(demo): cflags-y += -Iinclude -Istuff/glfw/include
 $(obj-demo-y): cflags-y += -Iinclude -Istuff/glfw/include
+
+### vidbot
+
+vidbot = stuff/render.o
+
+obj-vidbot-y = \
+	stuff/arena_layer.o \
+	stuff/file.o \
+	stuff/http.o \
+	stuff/load_layer.o \
+	stuff/loader.o \
+	stuff/runner.o \
+	stuff/text.o \
+	stuff/timer.o \
+	stuff/ui.o
+
+obj-y += $(obj-vidbot-y)
+obj-n += $(obj-vidbot-n)
+
+$(vidbot): cflags-y += -Iinclude -Istuff/glfw/include
+$(obj-vidbot-y): cflags-y += -Iinclude -Istuff/glfw/include
 
 ### rules
 
@@ -152,7 +175,10 @@ $(obj-demo-y): cflags-y += -Iinclude -Istuff/glfw/include
 %.o: %.cpp
 	$(cxx) -MMD $(cflags-y) -c -o $@ $<
 
-demo$(exe): $(obj-y)
+demo$(exe): $(demo) $(obj-y)
+	$(cxx) -o $@ $^ $(ldlibs-y)
+
+vidbot$(exe): $(vidbot) $(obj-y)
 	$(cxx) -o $@ $^ $(ldlibs-y)
 
 obj = $(obj-y) $(obj-n)
