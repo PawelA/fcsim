@@ -2,8 +2,8 @@
 *.a
 *.d
 *.xml
-demo
-demo.exe
+*.mp4
+*.exe
 tags
 
 # wayland generated files from glfw

@@ -90,6 +90,13 @@ void window_size_callback(GLFWwindow *window, int w, int h)
 
 int main(void)
 {
+    const char* cmd = "ffmpeg -r 60 -f rawvideo -pix_fmt rgba -s 800x600 -i - "
+                  "-threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip output.mp4"; 
+
+    FILE* ffmpeg = _popen(cmd, "wb");
+
+    int buffer [800*600];
+
 	GLFWwindow *window;
 	int res;
 
@@ -119,8 +126,14 @@ int main(void)
 	while (!glfwWindowShouldClose(window)) {
 		arena_layer_draw(&the_arena_layer);
 		glfwSwapBuffers(window);
+
+        glReadPixels(0, 0, 800, 600, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+        fwrite(buffer, sizeof(int)*800*600, 1, ffmpeg);
+
 		glfwPollEvents();
 	}
 
+    _pclose(ffmpeg);
+    glfwTerminate();
 	return 0;
 }
