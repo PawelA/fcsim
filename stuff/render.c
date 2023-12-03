@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <pthread.h>
 #include <GLFW/glfw3.h>
 #include <fcsim.h>
 
@@ -11,6 +12,7 @@
 #include "event.h"
 #include "load_layer.h"
 #include "arena_layer.h"
+#include "render_xml.h"
 
 int the_width = 800;
 int the_height = 800;
@@ -21,119 +23,95 @@ void *the_window = NULL;
 
 struct arena_layer the_arena_layer;
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+int main(void)
 {
-	struct event event;
+    freopen("renderOutputTest.tst", "a+", stdout);
+    // printf("%s", xml);
 
-	event.type = EVENT_KEY;
-	event.key_event.key = key;
-	event.key_event.action = action;
+    struct fcsim_arena arena;
+    fcsim_read_xml(xml, sizeof(xml), &arena);
+    // printf("%d\n", arena.block_cnt);
 
-	arena_layer_event(&the_arena_layer, &event);
+    struct fcsim_handle *handle = fcsim_new(&arena);
+
+    struct fcsim_block_stat block_stats[1000]; // haha who needs efficient memory usage right
+
+    int ticks = 0;
+    do
+    {
+        fcsim_get_block_stats(handle, block_stats);
+        fcsim_step(handle);
+        ticks++;
+    } while (!fcsim_has_won(&arena, block_stats));
+    ticks -= 1;
+
+    printf("%d\n", ticks);
 }
 
-void cursor_pos_callback(GLFWwindow *window, double x, double y)
-{
-	struct event event;
-
-	event.type = EVENT_MOUSE_MOVE;
-
-	the_cursor_x = x;
-	the_cursor_y = y;
-
-	arena_layer_event(&the_arena_layer, &event);
-}
-
-void scroll_callback(GLFWwindow *window, double x, double y)
-{
-	struct event event;
-
-	event.type = EVENT_SCROLL;
-	event.scroll_event.delta = y;
-
-	arena_layer_event(&the_arena_layer, &event);
-}
-
-void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
-{
-	struct event event;
-
-	event.type = EVENT_MOUSE_BUTTON;
-	event.mouse_button_event.button = button;
-	event.mouse_button_event.action = action;
-
-	arena_layer_event(&the_arena_layer, &event);
-}
-
-void char_callback(GLFWwindow *window, unsigned int codepoint)
-{
-	struct event event;
-
-	event.type = EVENT_CHAR;
-	event.char_event.codepoint = codepoint;
-
-	arena_layer_event(&the_arena_layer, &event);
-}
-
-void window_size_callback(GLFWwindow *window, int w, int h)
-{
-	struct event event;
-
-	event.type = EVENT_SIZE;
-
-	the_width = w;
-	the_height = h;
-	glViewport(0, 0, w, h);
-
-	arena_layer_event(&the_arena_layer, &event);
-}
+/*void draw_arena(struct fcsim_arena *arena, struct fcsim_block_stat *stats);
 
 int main(void)
 {
     const char* cmd = "ffmpeg -r 60 -f rawvideo -pix_fmt rgba -s 800x600 -i - "
-                  "-threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip output.mp4"; 
+                  "-threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip output.mp4";
 
     FILE* ffmpeg = _popen(cmd, "wb");
 
     int buffer [800*600];
 
-	GLFWwindow *window;
-	int res;
+    GLFWwindow *window;
 
-	loader_init();
-	arena_layer_init(&the_arena_layer);
+    arena_layer_init(&the_arena_layer);
 
-	if (!glfwInit())
-		return 1;
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	window = glfwCreateWindow(800, 800, "fcsim demo", NULL, NULL);
-	if (!window)
-		return 1;
-	the_window = window;
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
+    if (!glfwInit())
+        return 1;
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    window = glfwCreateWindow(800, 800, "fcsim demo", NULL, NULL);
+    if (!window)
+        return 1;
+    the_window = window;
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
-	glfwSetKeyCallback(window, key_callback);
-	glfwSetCursorPosCallback(window, cursor_pos_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	glfwSetCharCallback(window, char_callback);
-	glfwSetWindowSizeCallback(window, window_size_callback);
+    //text_setup_draw();
+    arena_layer_show(&the_arena_layer);
 
-	text_setup_draw();
-	arena_layer_show(&the_arena_layer);
+    struct fcsim_handle* handle = fcsim_new(&the_arena_layer.arena);
+    fcsim_read_xml(xml, sizeof(xml), &the_arena_layer.arena);
+    struct fcsim_block_stat* stats = malloc(sizeof(struct fcsim_block_stat) * the_arena_layer.arena.block_cnt);
 
-	while (!glfwWindowShouldClose(window)) {
-		arena_layer_draw(&the_arena_layer);
-		glfwSwapBuffers(window);
+    int ticks = 0;
+    do {
+        fcsim_get_block_stats(handle, stats);
+        fcsim_step(handle);
+        ticks++;
+    }
+    while(!fcsim_has_won(&the_arena_layer.arena, stats));
+
+    FILE*fp = fopen("renderOutputTest.txt", "w+");
+    fprintf(fp, "ticks: %d", ticks);
+    fclose(fp);
+
+    fcsim_get_block_stats(handle, stats);
+    draw_arena(&the_arena_layer.arena, stats);
+
+    while (!glfwWindowShouldClose(window)) {
+        //arena_layer_draw(&the_arena_layer);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        fcsim_get_block_stats(handle, stats);
+        draw_arena(&the_arena_layer.arena, stats);
+
+        glfwSwapBuffers(window);
 
         glReadPixels(0, 0, 800, 600, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
         fwrite(buffer, sizeof(int)*800*600, 1, ffmpeg);
 
-		glfwPollEvents();
-	}
+        glfwPollEvents();
+    }
 
+    free(stats);
     _pclose(ffmpeg);
     glfwTerminate();
-	return 0;
-}
+    return 0;
+}*/
