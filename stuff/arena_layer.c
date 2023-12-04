@@ -2,7 +2,9 @@
 #include <string.h>
 #include <math.h>
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <fcsim.h>
 
 #include "ui.h"
@@ -50,7 +52,9 @@ struct arena_view view;
 
 void vertex2f_world(double x, double y)
 {
+	/*
 	glVertex2f((x - view.x) / view.w_half, (view.y - y) / view.h_half);
+	*/
 }
 
 static void draw_rect(struct fcsim_block_def *block,
@@ -68,6 +72,7 @@ static void draw_rect(struct fcsim_block_def *block,
 	double x = stat->x;
 	double y = stat->y;
 
+	/*
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(color->r, color->g, color->b);
 	vertex2f_world( wc - hs + x,  ws + hc + y);
@@ -75,6 +80,7 @@ static void draw_rect(struct fcsim_block_def *block,
 	vertex2f_world(-wc + hs + x, -ws - hc + y);
 	vertex2f_world( wc + hs + x,  ws - hc + y);
 	glEnd();
+	*/
 }
 
 static void draw_area(struct fcsim_rect *area, struct color *color)
@@ -84,6 +90,7 @@ static void draw_area(struct fcsim_rect *area, struct color *color)
 	double x = area->x;
 	double y = area->y;
 
+	/*
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(color->r, color->g, color->b);
 	vertex2f_world(x + w_half, y + h_half);
@@ -91,6 +98,7 @@ static void draw_area(struct fcsim_rect *area, struct color *color)
 	vertex2f_world(x - w_half, y - h_half);
 	vertex2f_world(x - w_half, y + h_half);
 	glEnd();
+	*/
 }
 
 #define CIRCLE_SEGMENTS 32
@@ -109,6 +117,7 @@ static void draw_circle(struct fcsim_block_def *block,
 	else
 		r = block->w/2;
 
+	/*
 	glBegin(GL_TRIANGLE_FAN);
 	if (block->type == FCSIM_STAT_CIRCLE) {
 		glColor3f(color->r, color->g, color->b);
@@ -123,7 +132,9 @@ static void draw_circle(struct fcsim_block_def *block,
 		vertex2f_world(cos(a) * r + x, sin(a) * r + y);
 	}
 	glEnd();
+	*/
 
+	/*
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(color->r, color->g, color->b);
 	vertex2f_world(x, y);
@@ -132,6 +143,7 @@ static void draw_circle(struct fcsim_block_def *block,
 		vertex2f_world(cos(a) * r + x, sin(a) * r + y);
 	}
 	glEnd();
+	*/
 }
 
 static int is_circle(struct fcsim_block_def *block)

@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <fcsim.h>
 
 #include "text.h"
@@ -88,6 +90,75 @@ void window_size_callback(GLFWwindow *window, int w, int h)
 	arena_layer_event(&the_arena_layer, &event);
 }
 
+static const char* vertex_shader_text =
+	"#version 110\n"
+	"attribute vec2 pos;"
+	"void main()"
+	"{"
+		"gl_Position = vec4(pos, 0.0, 1.0);"
+	"}";
+
+static const char* fragment_shader_text =
+	"#version 110\n"
+	"void main()"
+	"{"
+		"gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);"
+	"}";
+
+float vertices[] = {
+	-0.6f, -0.4f,
+	 0.6f, -0.4f,
+	 0.0f,  0.6f,
+};
+
+void draw_triangle(void)
+{
+	GLuint vertex_shader;
+	GLuint fragment_shader;
+	GLuint program;
+	GLuint vertex_buffer;
+	GLuint pos_location;
+
+	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+	glCompileShader(vertex_shader);
+
+	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+	glCompileShader(fragment_shader);
+
+	program = glCreateProgram();
+	glAttachShader(program, vertex_shader);
+	glAttachShader(program, fragment_shader);
+	glLinkProgram(program);
+	glUseProgram(program);
+
+	pos_location = glGetAttribLocation(program, "pos");
+
+	glGenBuffers(1, &vertex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(pos_location);
+	glVertexAttribPointer(pos_location, 2, GL_FLOAT, GL_FALSE,
+			      0, (void*) 0);
+}
+
+/*
+void GLAPIENTRY
+MessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam )
+{
+  fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+           ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+            type, severity, message );
+}
+*/
+
 int main(void)
 {
 	GLFWwindow *window;
@@ -106,6 +177,8 @@ int main(void)
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
+	gladLoadGLES2Loader(glfwGetProcAddress);
+
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_pos_callback);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -113,11 +186,17 @@ int main(void)
 	glfwSetCharCallback(window, char_callback);
 	glfwSetWindowSizeCallback(window, window_size_callback);
 
+	/*
 	text_setup_draw();
 	arena_layer_show(&the_arena_layer);
+	*/
+
+	draw_triangle();
 
 	while (!glfwWindowShouldClose(window)) {
-		arena_layer_draw(&the_arena_layer);
+		//arena_layer_draw(&the_arena_layer);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

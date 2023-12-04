@@ -1,30 +1,37 @@
 #include <stdio.h>
 #include <inttypes.h>
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include "text.h"
 #include "globals.h"
 
 static unsigned char font[];
-static unsigned char font_rgba[20480] = { 0 };
+//static unsigned char font_rgba[20480] = { 0 };
+
+static GLuint font_texture;
 
 void text_setup_draw(void)
 {
+	uint8_t *buf;
 	int i;
 	int j;
+
+	glGenTextures(1, &font_texture);
+	glBindTexture(GL_TEXTURE_2D, font_texture);
+
+	buf = calloc(20480, 1);
 
 	for (i = 33 * 8; i < 127 * 8; i++) {
 		for (j = 0; j < 5; j++) {
 			if (font[i - 33 * 8] & (1 << (7 - j))) {
-				font_rgba[(i * 5 + j) * 4 + 0] = 0xff;
-				font_rgba[(i * 5 + j) * 4 + 1] = 0xff;
-				font_rgba[(i * 5 + j) * 4 + 2] = 0xff;
-				font_rgba[(i * 5 + j) * 4 + 3] = 0xaa;
+				buf[(i * 5 + j) * 4 + 0] = 0xff;
+				buf[(i * 5 + j) * 4 + 1] = 0xff;
+				buf[(i * 5 + j) * 4 + 2] = 0xff;
+				buf[(i * 5 + j) * 4 + 3] = 0xaa;
 			}
 		}
 	}
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 5, 128 * 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, font_rgba);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 5, 128 * 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -32,8 +39,10 @@ void text_setup_draw(void)
 
 static void vertex2f_pixel(int x, int y)
 {
+	/*
 	glVertex2f((float)(2*x - the_width) / the_width,
 		   (float)(the_height - 2*y) / the_height);
+	*/
 }
 
 static void draw_char(char c, int x, int y, int scale)
@@ -43,6 +52,7 @@ static void draw_char(char c, int x, int y, int scale)
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
+	/*
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glTexCoord2f(0, (c + 0) / 128.0f); vertex2f_pixel(x, y);
@@ -50,8 +60,44 @@ static void draw_char(char c, int x, int y, int scale)
 	glTexCoord2f(1, (c + 1) / 128.0f); vertex2f_pixel(x + cw, y + ch);
 	glTexCoord2f(0, (c + 1) / 128.0f); vertex2f_pixel(x, y + ch);
 	glEnd();
+	*/
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
+}
+
+struct buf {
+	uint8_t *data;
+	size_t len;
+};
+
+void alloc_buf(struct buf *buf, size_t bytes)
+{
+	buf->data = malloc(bytes);
+	buf->len = bytes;
+}
+
+void fill_buf(struct buf *buf, const char *text, int x, int y, int scale)
+{
+	size_t text_len;
+	float *v;
+
+	text_len = strlen(text);
+
+	alloc_buf(buf, text_len * 4 * 16);
+	v = (float *)buf->data;
+
+	for (; *text; text++) {
+		v[
+	}
+}
+
+void 
+{
+	GLuint vertex_buffer;
+
+	glGenBuffers(1, &vertex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+	glBufferData(GL_ARRAY_BUFFER, vertex_buffer);
 }
 
 void text_draw_str(const char *s, int x, int y, int scale)

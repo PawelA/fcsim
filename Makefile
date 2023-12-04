@@ -125,6 +125,15 @@ $(obj-glfw-y): cflags-$(win32)   += -D_GLFW_WIN32
 $(obj-glfw-y): cflags-$(x11)     += -D_GLFW_X11
 $(obj-glfw-y): cflags-$(wayland) += -D_GLFW_WAYLAND
 
+### glad
+
+obj-glad-y = stuff/glad/src/glad.o
+
+obj-y += $(obj-glad-y)
+obj-n += $(obj-glad-n)
+
+$(obj-glad-y): cflags-y += -Istuff/glad/include
+
 ### demo
 
 obj-demo-y = \
@@ -142,7 +151,7 @@ obj-demo-y = \
 obj-y += $(obj-demo-y)
 obj-n += $(obj-demo-n)
 
-$(obj-demo-y): cflags-y += -Iinclude -Istuff/glfw/include
+$(obj-demo-y): cflags-y += -Iinclude -Istuff/glfw/include -Istuff/glad/include
 
 ### rules
 

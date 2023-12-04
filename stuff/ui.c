@@ -1,14 +1,16 @@
 #include <stdio.h>
 #include <string.h>
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include "ui.h"
 #include "text.h"
 #include "globals.h"
 
 static void vertex2f_pixel(int x, int y)
 {
+	/*
 	glVertex2f((float)(2*x - the_width) / the_width,
 		   (float)(the_height - 2*y) / the_height);
+	*/
 }
 
 void input_box_init(struct input_box *input, char *buf, int len)
@@ -65,6 +67,7 @@ void input_box_move_cursor(struct input_box *input, int delta)
 void draw_box(int x, int y, int w, int h, float c)
 {
 	glEnable(GL_BLEND);
+	/*
 	glBegin(GL_TRIANGLE_FAN);
 	glColor4f(c, c, c, 0.5f);
 	vertex2f_pixel(x, y + h);
@@ -72,6 +75,7 @@ void draw_box(int x, int y, int w, int h, float c)
 	vertex2f_pixel(x + w, y);
 	vertex2f_pixel(x + w, y + h);
 	glEnd();
+	*/
 	glDisable(GL_BLEND);
 }
 
@@ -81,6 +85,7 @@ static void draw_cursor(int x, int y, int scale)
 	int h = scale * 8;
 
 	glEnable(GL_BLEND);
+	/*
 	glBegin(GL_TRIANGLE_FAN);
 	glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 	vertex2f_pixel(x, y + h);
@@ -88,6 +93,7 @@ static void draw_cursor(int x, int y, int scale)
 	vertex2f_pixel(x + w, y);
 	vertex2f_pixel(x + w, y + h);
 	glEnd();
+	*/
 	glDisable(GL_BLEND);
 }
 
