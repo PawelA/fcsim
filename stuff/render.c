@@ -34,7 +34,7 @@ int main(void)
 
     struct fcsim_handle *handle = fcsim_new(&arena);
 
-    struct fcsim_block_stat block_stats[1000]; // haha who needs efficient memory usage right
+    struct fcsim_block_stat* block_stats = malloc(arena.block_cnt * sizeof(struct fcsim_block_stat));
 
     int ticks = 0;
     do
@@ -46,6 +46,7 @@ int main(void)
     ticks -= 1;
 
     printf("%d\n", ticks);
+    free(block_stats);
 }
 
 /*void draw_arena(struct fcsim_arena *arena, struct fcsim_block_stat *stats);
