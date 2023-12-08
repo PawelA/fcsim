@@ -435,9 +435,21 @@ static bool read_retrieve_level(state *st)
 	return true;
 }
 
+void sanitize(char *xml, int len)
+{
+	int i;
+
+	for (i = 0; i < len; i++) {
+		if (xml[i] == '&')
+			xml[i] = '_';
+	}
+}
+
 int fcsim_read_xml(char *xml, int len, fcsim_arena *arena)
 {
 	state st;
+
+	sanitize(xml, len);
 
 	arena->block_cnt = 1000;
 	arena->blocks = new fcsim_block_def[arena->block_cnt];
