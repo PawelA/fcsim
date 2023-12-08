@@ -6,46 +6,12 @@
 #include <pthread.h>
 #include <fcsim.h>
 #include "font.h"
+#include "runner.h"
 
 #define TAU 6.28318530718
+
+struct runner *runner;
 	
-struct fcsim_arena arena;
-struct fcsim_handle *handle;
-struct fcsim_block_stat *block_stats;
-int ticks = 0;
-
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
-//pthread_mutex_t running_mutex = PTHREAD_MUTEX_INITIALIZER;
-int running;
-
-void *task(void *arg)
-{
-	while (1) {
-		pthread_mutex_lock(&cond_mutex);
-		while (!running) {
-			pthread_cond_wait(&cond, &cond_mutex);
-		}
-		pthread_mutex_unlock(&cond_mutex);
-
-		while (1) {
-			/*
-			int running_copy;
-			pthread_mutex_lock(&running_mutex);
-			running_copy = running;
-			pthread_mutex_unlock(&running_mutex);
-			if (!running_copy)
-				break;
-			*/
-			if (!running)
-				break;
-			printf("I am a thread!\n");
-		}
-	}
-
-	return NULL;
-}
-
 struct input_box {
 	char *buf;
 	int len;
@@ -129,23 +95,14 @@ static char *read_file(const char *name)
 	return ptr;
 }
 
-void start(void)
-{
-}
-
-void stop(void)
-{
-	handle = fcsim_new(&arena);
-	fcsim_get_block_stats(handle, block_stats);
-	ticks = 0;
-}
-
 void toggle(void)
 {
+	static int running = 0;
+
 	if (running)
-		stop();
+		runner_stop(runner);
 	else
-		start();
+		runner_start(runner);
 	running = !running;
 }
 
@@ -485,9 +442,12 @@ void draw_arena(struct fcsim_arena *arena, struct fcsim_block_stat *stats)
 
 int main(void)
 {
+	struct fcsim_arena arena;
+	struct runner_tick tick;
 	char *xml;
 	GLFWwindow *window;
-	pthread_t thread;
+
+	runner = runner_create();
 
 	xml = read_file("level.xml");
 	if (!xml)
@@ -496,9 +456,8 @@ int main(void)
 		fprintf(stderr, "failed to parse xml\n");
 		return 1;
 	}
-	block_stats = malloc(sizeof(block_stats[0]) * arena.block_cnt);
-	handle = fcsim_new(&arena);
-	fcsim_get_block_stats(handle, block_stats);
+
+	runner_load(runner, &arena);
 
 	if (!glfwInit())
 		return 1;
@@ -527,26 +486,13 @@ int main(void)
 
 	update_view_wh();
 
-	//pthread_create(&thread, NULL, task, NULL);
-
 	while (!glfwWindowShouldClose(window)) {
-		draw_arena(&arena, block_stats);
-		draw_text_int(ticks, 10, 10, ui_scale);
+		runner_get_tick(runner, &tick);
+		draw_arena(&arena, tick.stats);
+		draw_text_int(tick.index, 10, 10, ui_scale);
 		draw_input_box(&design_id_input_box, 100, 10, ui_scale);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		if (running) {
-			fcsim_step(handle);
-			fcsim_get_block_stats(handle, block_stats);
-			ticks++;
-			/*
-			if (fcsim_has_won(&arena))
-				running = 0;
-			*/
-		}
-		pthread_mutex_lock(&cond_mutex);
-		pthread_cond_signal(&cond);
-		pthread_mutex_unlock(&cond_mutex);
 	}
 
 	return 0;
