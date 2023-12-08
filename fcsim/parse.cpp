@@ -9,8 +9,13 @@
 
 #include "yxml/yxml.h"
 
+struct str_slice {
+	char *ptr;
+	int len;
+};
+
 struct state {
-	char *str;
+	struct str_slice str;
 	yxml_t yxml;
 	yxml_ret_t cur;
 	fcsim_arena *arena;
@@ -22,9 +27,10 @@ static char yxml_buf[1024];
 static void next(state *st)
 {
 again:
-	if (*st->str) {
-		st->cur = yxml_parse(&st->yxml, *st->str);
-		st->str++;
+	if (st->str.len > 0) {
+		st->cur = yxml_parse(&st->yxml, *st->str.ptr);
+		st->str.ptr++;
+		st->str.len--;
 	} else {
 		st->cur = yxml_eof(&st->yxml);
 		return;
@@ -58,22 +64,20 @@ static bool ignore_field(state *st)
 	}
 }
 
-static bool read_string(state *st, char *buf, int len)
+static bool read_string(state *st, struct str_slice *str)
 {
-	char *start = st->str;
+	char *start = st->str.ptr;
 	char *end = start;
 
 	next(st);
 	while (st->cur == YXML_CONTENT) {
 		if (!isspace(st->yxml.data[0]))
-			end = st->str;
+			end = st->str.ptr;
 		next(st);
 	}
 
-	if (end - start >= len)
-		return false;
-	memcpy(buf, start, end - start);
-	buf[end - start] = 0;
+	str->ptr = start;
+	str->len = end - start;
 
 	if (st->cur != YXML_ELEMEND)
 		return false;
@@ -84,41 +88,45 @@ static bool read_string(state *st, char *buf, int len)
 
 static bool read_int(state *st, int *res)
 {
-	char buf[20];
-	char *end;
+	struct str_slice str;
 
-	if (!read_string(st, buf, sizeof(buf)))
+	if (!read_string(st, &str))
 		return false;
 
-	end = buf + strlen(buf);
-	*res = strtol(buf, &end, 10);
+	fcsim_strtoi(str.ptr, str.len, res);
 
 	return true;
 }
 
 static bool read_number(state *st, double *res)
 {
-	char buf[60];
+	struct str_slice str;
 
-	if (!read_string(st, buf, sizeof(buf)))
+	if (!read_string(st, &str))
 		return false;
 
-	fcsim_strtod(buf, res);
+	fcsim_strtod(str.ptr, str.len, res);
 
 	return true;
 }
 
+static int str_equal_to(struct str_slice *str, const char *ns)
+{
+	int nlen = strlen(ns);
+
+	return str->len == nlen && memcmp(str->ptr, ns, nlen) == 0;
+}
+
 static bool read_bool(state *st, bool *res)
 {
-	char buf[20];
-	char *end;
+	struct str_slice str;
 
-	if (!read_string(st, buf, sizeof(buf)))
+	if (!read_string(st, &str))
 		return false;
 
-	if (!strcmp(buf, "true"))
+	if (str_equal_to(&str, "true"))
 		*res = true;
-	else if (!strcmp(buf, "false"))
+	else if (str_equal_to(&str, "false"))
 		*res = false;
 	else
 		return false;
@@ -427,7 +435,7 @@ static bool read_retrieve_level(state *st)
 	return true;
 }
 
-int fcsim_read_xml(char *xml, fcsim_arena *arena)
+int fcsim_read_xml(char *xml, int len, fcsim_arena *arena)
 {
 	state st;
 
@@ -435,16 +443,14 @@ int fcsim_read_xml(char *xml, fcsim_arena *arena)
 	arena->blocks = new fcsim_block_def[arena->block_cnt];
 
 	yxml_init(&st.yxml, yxml_buf, sizeof(yxml_buf));
-	st.str = xml;
+	st.str.ptr = xml;
+	st.str.len = len;
 	st.arena = arena;
 	st.block = arena->blocks;
 
 	next(&st);
-	if (!read_retrieve_level(&st)) {
-		*st.str = 0;
-		printf("%s\n", xml);
+	if (!read_retrieve_level(&st))
 		return -1;
-	}
 
 	arena->block_cnt = st.block - arena->blocks;
 

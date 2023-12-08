@@ -246,7 +246,7 @@ int main(void)
 	xml = read_file("level.xml");
 	if (!xml)
 		return 1;
-	if (fcsim_read_xml(xml, &arena)) {
+	if (fcsim_read_xml(xml, strlen(xml), &arena)) {
 		fprintf(stderr, "failed to parse xml\n");
 		return 1;
 	}

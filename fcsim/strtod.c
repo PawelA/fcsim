@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include <fcsim_funcs.h>
+
 struct bignum {
 	uint32_t words[130];
 	int num_words;
@@ -109,11 +111,11 @@ static double binexp(double x, int n)
 	return res;
 }
 
-int fcsim_strtod(char *str, double *res)
+int fcsim_strtod(const char *str, int len, double *res)
 {
 	struct bignum bignum;
 	int is_neg = 0;
-	int len;
+	int num_len;
 	int num_digits = 0;
 	int num_digits_after_decimal = 0;
 	int seen_decimal = 0;
@@ -128,7 +130,7 @@ int fcsim_strtod(char *str, double *res)
 		str++;
 	}
 
-	for (i = 0; str[i]; i++) {
+	for (i = 0; i < len; i++) {
 		if (is_digit(str[i])) {
 			num_digits++;
 			if (seen_decimal)
@@ -138,15 +140,15 @@ int fcsim_strtod(char *str, double *res)
 			seen_decimal = 1;
 		}
 		else if (str[i] == 'e' || str[i] == 'E') {
-			exp = atoi(&str[i+1]);
+			fcsim_strtoi(&str[i+1], len - (i+1), &exp);
 			break;
 		}
 	}
-	len = i;
+	num_len = i;
 
 	if (num_digits <= 15) {
 		num = 0;
-		for (i = 0; i < len; i++) {
+		for (i = 0; i < num_len; i++) {
 			if (!is_digit(str[i]))
 				continue;
 			num = num * 10 + (str[i] - '0');
@@ -155,7 +157,7 @@ int fcsim_strtod(char *str, double *res)
 		bignum.words[0] = 0;
 		bignum.num_words = 1;
 
-		for (i = 0; i < len; i++) {
+		for (i = 0; i < num_len; i++) {
 			if (!is_digit(str[i]))
 				continue;
 			bignum_muladd(&bignum, 10, str[i] - '0');
