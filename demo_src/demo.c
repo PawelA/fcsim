@@ -130,8 +130,8 @@ static void draw_rect(struct fcsim_block_def *block, struct color *color)
 {
 	double sina_half = sin(block->angle) / 2;
 	double cosa_half = cos(block->angle) / 2;
-	double w = fmax(block->w, 4.0);
-	double h = fmax(block->h, 4.0);
+	double w = fmax(fabs(block->w), 4.0);
+	double h = fmax(fabs(block->h), 4.0);
 	double wc = w * cosa_half;
 	double ws = w * sina_half;
 	double hc = h * cosa_half;
