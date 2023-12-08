@@ -74,7 +74,7 @@ static void cursor_pos_callback(GLFWwindow *window, double x, double y)
 
 static void scroll_callback(GLFWwindow *window, double x, double y)
 {
-	double scale = 1 + y * 0.01;
+	double scale = 1 - y * 0.05;
 	view_w_half *= scale;
 	view_h_half *= scale;
 }
