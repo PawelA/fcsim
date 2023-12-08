@@ -9,6 +9,7 @@ obj_fcsim = \
 	fcsim/parse.o \
 	fcsim/sincos.o \
 	fcsim/strtod.o \
+	fcsim/strtoi.o \
 	fcsim/yxml/yxml.o \
 	fcsim/box2d/Source/Collision/b2BroadPhase.o \
 	fcsim/box2d/Source/Collision/b2CollideCircle.o \
