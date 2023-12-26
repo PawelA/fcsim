@@ -4,7 +4,7 @@ struct load_layer {
 	char buf[17];
 	struct input_box input;
 	struct loader *loader;
-	struct fcsim_arena arena;
+	struct fcsimn_level level;
 	int loaded;
 };
 

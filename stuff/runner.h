@@ -7,7 +7,7 @@ struct runner_tick {
 
 struct runner *runner_create(void);
 
-void runner_load(struct runner *runner, struct fcsim_arena *arena);
+void runner_load(struct runner *runner, struct fcsimn_level *level);
 
 void runner_start(struct runner *runner);
 

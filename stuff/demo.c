@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <GLFW/glfw3.h>
-#include <fcsim.h>
+#include <fcsimn.h>
 
 #include "text.h"
 #include "ui.h"

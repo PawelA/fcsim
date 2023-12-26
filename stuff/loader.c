@@ -205,7 +205,7 @@ int read_res(int fd, struct alloc_readdata *data)
 struct loader {
 	pthread_t thread;
 	char *design_id;
-	struct fcsim_arena arena;
+	struct fcsimn_level level;
 	int done;
 };
 
@@ -223,7 +223,7 @@ static void *thread_func(void *arg)
 
 	write_req(fd, loader->design_id);
 	read_res(fd, &data);
-	fcsim_read_xml(data.buf, data.len, &loader->arena);
+	fcsimn_read_xml(data.buf, data.len, &loader->level);
 	//fwrite(data.buf, 1, data.len, stdout);
 
 	loader->done = 1;
@@ -250,8 +250,8 @@ int loader_is_done(struct loader *loader) {
 	return loader->done;
 }
 
-void loader_get(struct loader *loader, struct fcsim_arena *arena) {
-	memcpy(arena, &loader->arena, sizeof(*arena));
+void loader_get(struct loader *loader, struct fcsimn_level *level) {
+	memcpy(level, &loader->level, sizeof(*level));
 }
 
 void loader_init(void)

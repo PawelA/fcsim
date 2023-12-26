@@ -6,7 +6,7 @@ struct arena_view {
 };
 
 struct arena_layer {
-	struct fcsim_arena arena;
+	struct fcsimn_level level;
 	int loaded;
 
 	struct button load_button;
