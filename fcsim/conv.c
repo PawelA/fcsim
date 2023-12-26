@@ -160,10 +160,6 @@ static int block_map_find(struct block_map *map, int id)
 	return id;
 }
 
-static void get_joint_pos(struct fcsimn_level *level,
-			  struct fcsimn_joint *joint,
-			  double *x, double *y);
-
 static void get_free_joint_pos(struct fcsimn_level *level,
 			       struct fcsimn_free_joint *joint,
 			       double *x, double *y)
@@ -224,7 +220,7 @@ static void get_wheel_derived_joint_pos(struct fcsimn_level *level,
 	};
 	double x, y;
 
-	get_joint_pos(level, &wheel->center, &x, &y);
+	fcsimn_get_joint_pos(level, &wheel->center, &x, &y);
 
 	*rx = x + fcsim_cos(wheel->angle + a[index]) * wheel->radius;
 	*ry = x + fcsim_cos(wheel->angle + a[index]) * wheel->radius;
@@ -248,7 +244,7 @@ static void get_derived_joint_pos(struct fcsimn_level *level,
 	}
 }
 
-static void get_joint_pos(struct fcsimn_level *level,
+void fcsimn_get_joint_pos(struct fcsimn_level *level,
 			  struct fcsimn_joint *joint,
 			  double *x, double *y)
 {
@@ -329,7 +325,7 @@ static int find_closest_joint(struct fcsimn_level *level,
 			double dist;
 			double jx, jy;
 
-			get_joint_pos(level, &joints[i], &jx, &jy);
+			fcsimn_get_joint_pos(level, &joints[i], &jx, &jy);
 			dist = distance(jx, jy, x, y);
 			if (dist < best_dist) {
 				best_dist = dist;

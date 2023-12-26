@@ -99,6 +99,10 @@ struct fcsimn_simul;
 extern "C" {
 #endif
 
+void fcsimn_get_joint_pos(struct fcsimn_level *level,
+			  struct fcsimn_joint *joint,
+			  double *x, double *y);
+
 int fcsimn_parse_xml(char *xml, int len, struct fcsimn_level *level);
 
 struct fcsimn_simul *fcsimn_make_simul(struct fcsimn_level *level);

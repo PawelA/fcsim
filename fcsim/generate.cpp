@@ -118,10 +118,11 @@ static b2Body *generate_body(b2World *world, struct shape *shape, struct block_p
 	body_def.linearDamping = phys->linear_damping;
 	body_def.angularDamping = phys->angular_damping;
 	body_def.AddShape(shape_def);
+
 	return world->CreateBody(&body_def);
 }
 
-static void rect_to_shape(struct fcsimn_rect *rect, struct shape *shape)
+static void get_rect_shape(struct fcsimn_rect *rect, struct shape *shape)
 {
 	shape->type = SHAPE_RECT;
 	shape->x = rect->x;
@@ -131,7 +132,7 @@ static void rect_to_shape(struct fcsimn_rect *rect, struct shape *shape)
 	shape->angle = rect->angle;
 }
 
-static void circ_to_shape(struct fcsimn_circ *circ, struct shape *shape)
+static void get_circ_shape(struct fcsimn_circ *circ, struct shape *shape)
 {
 	shape->type = SHAPE_CIRC;
 	shape->x = circ->x;
@@ -140,40 +141,127 @@ static void circ_to_shape(struct fcsimn_circ *circ, struct shape *shape)
 	shape->angle = 0.0;
 }
 
-static void add_block(struct fcsimn_simul *simul, struct fcsimn_block *block)
+static double distance(double x1, double y1, double x2, double y2)
 {
-	struct shape shape;
-	b2Body *body = NULL;
+	double dx = x2 - x1;
+	double dy = y2 - y1;
 
+	return sqrt(dx * dx + dy * dy);
+}
+
+static void get_jrect_shape(struct fcsimn_jrect *jrect, struct shape *shape)
+{
+	shape->type = SHAPE_RECT;
+	shape->x = jrect->x;
+	shape->y = jrect->y;
+	shape->w = jrect->w;
+	shape->h = jrect->h;
+	shape->angle = jrect->angle;
+}
+
+static void get_wheel_shape(struct fcsimn_level *level, struct fcsimn_wheel *wheel, struct shape *shape)
+{
+	double x, y;
+
+	fcsimn_get_joint_pos(level, &wheel->center, &x, &y);
+
+	shape->type = SHAPE_CIRC;
+	shape->x = x;
+	shape->y = y;
+	shape->radius = wheel->radius;
+	shape->angle = wheel->angle;
+}
+
+static void get_rod_shape(struct fcsimn_level *level, struct fcsimn_rod *rod, int solid, struct shape *shape)
+{
+	double x0, y0, x1, y1;
+
+	fcsimn_get_joint_pos(level, &rod->from, &x0, &y0);
+	fcsimn_get_joint_pos(level, &rod->to, &x1, &y1);
+
+	shape->type = SHAPE_RECT;
+	shape->x = x0 + (x1 - x0) / 2.0;
+	shape->y = y0 + (y1 - y0) / 2.0;
+	shape->w = distance(x0, y0, x1, y1);
+	shape->h = solid ? 8.0 : 4.0;
+	shape->angle = fcsim_atan2(y1 - y0, x1 - x0);
+}
+
+static void get_block_shape(struct fcsimn_level *level, struct fcsimn_block *block, struct shape *shape)
+{
 	switch (block->type) {
 	case FCSIMN_BLOCK_STAT_RECT:
-		rect_to_shape(&block->rect, &shape);
-		body = generate_body(&simul->world, &shape, &stat_phys);
-		break;
 	case FCSIMN_BLOCK_DYN_RECT:
-		rect_to_shape(&block->rect, &shape);
-		body = generate_body(&simul->world, &shape, &dyn_phys);
+		get_rect_shape(&block->rect, shape);
 		break;
 	case FCSIMN_BLOCK_STAT_CIRC:
-		circ_to_shape(&block->circ, &shape);
-		body = generate_body(&simul->world, &shape, &stat_phys);
-		break;
 	case FCSIMN_BLOCK_DYN_CIRC:
-		circ_to_shape(&block->circ, &shape);
-		body = generate_body(&simul->world, &shape, &dyn_phys);
+		get_circ_shape(&block->circ, shape);
+		break;
+	case FCSIMN_BLOCK_GOAL_RECT:
+		get_jrect_shape(&block->jrect, shape);
+		break;
+	case FCSIMN_BLOCK_GOAL_CIRC:
+	case FCSIMN_BLOCK_WHEEL:
+	case FCSIMN_BLOCK_CW_WHEEL:
+	case FCSIMN_BLOCK_CCW_WHEEL:
+		get_wheel_shape(level, &block->wheel, shape);
+		break;
+	case FCSIMN_BLOCK_ROD:
+		get_rod_shape(level, &block->rod, 0, shape);
+		break;
+	case FCSIMN_BLOCK_SOLID_ROD:
+		get_rod_shape(level, &block->rod, 1, shape);
+		break;
+	}
+}
+
+static void get_block_phys(struct fcsimn_block *block, struct block_physics *phys)
+{
+	switch (block->type) {
+	case FCSIMN_BLOCK_STAT_RECT:
+	case FCSIMN_BLOCK_STAT_CIRC:
+		*phys = stat_phys;
+		break;
+	case FCSIMN_BLOCK_DYN_RECT:
+	case FCSIMN_BLOCK_DYN_CIRC:
+		*phys = dyn_phys;
 		break;
 	case FCSIMN_BLOCK_GOAL_RECT:
 	case FCSIMN_BLOCK_GOAL_CIRC:
 	case FCSIMN_BLOCK_WHEEL:
 	case FCSIMN_BLOCK_CW_WHEEL:
 	case FCSIMN_BLOCK_CCW_WHEEL:
+		*phys = player_phys;
+		break;
 	case FCSIMN_BLOCK_ROD:
+		*phys = rod_phys;
+		break;
 	case FCSIMN_BLOCK_SOLID_ROD:
+		*phys = solid_rod_phys;
 		break;
 	}
-
-	block->body = body;
 }
+
+static void generate_block_body(struct fcsimn_simul *simul, struct fcsimn_level *level, struct fcsimn_block *block)
+{
+	struct shape shape;
+	struct block_physics phys;
+
+	get_block_shape(level, block, &shape);
+	get_block_phys(block, &phys);
+
+	block->body = generate_body(&simul->world, &shape, &stat_phys);
+}
+
+/*
+static void add_player_block(struct fcsim_simul *simul,
+			     struct joint_map *map,
+			     struct fcsimn_block *block, int id)
+{
+
+}
+*/
 
 struct body_list {
 	b2Body *body;
@@ -205,11 +293,36 @@ static int joints_equal(struct fcsimn_joint *j0, struct fcsimn_joint *j1)
 		       j0->derived.index == j1->derived.index;
 }
 
-void joint_map_append(struct joint_map *map, struct fcsimn_joint *joint)
+void body_list_append(struct joint_map_entry *ent, b2Body *body)
 {
-	struct 
-	if (map->tail) {
-		
+	struct body_list *bl;
+
+	bl = (struct body_list *)calloc(1, sizeof(*bl));
+	bl->body = body;
+
+	if (ent->body_tail)
+		ent->body_tail->next = bl;
+	else
+		ent->body_head = bl;
+
+	ent->body_tail = bl;
+}
+
+struct joint_map_entry *joint_map_append(struct joint_map *map, struct fcsimn_joint *joint)
+{
+	struct joint_map_entry *ent;
+
+	ent = (struct joint_map_entry *)calloc(1, sizeof(*ent));
+	ent->joint = *joint;
+
+	if (map->tail)
+		map->tail->next = ent;
+	else
+		map->head = ent;
+
+	map->tail = ent;
+
+	return ent;
 }
 
 void joint_map_add(struct joint_map *map, struct fcsimn_joint *joint, b2Body *body)
@@ -218,17 +331,25 @@ void joint_map_add(struct joint_map *map, struct fcsimn_joint *joint, b2Body *bo
 
 	for (ent = map->head; ent; ent = ent->next) {
 		if (joints_equal(&ent->joint, joint)) {
-			body_list_add(ent, body);
+			body_list_append(ent, body);
 			return;
 		}
 	}
 
-	
+	ent = joint_map_append(map, joint);
+	body_list_append(ent, body);
 }
 
 struct joint_map_entry *joint_map_find(struct joint_map *map, struct fcsimn_joint *joint)
 {
+	struct joint_map_entry *ent;
 
+	for (ent = map->head; ent; ent = ent->next) {
+		if (joints_equal(&ent->joint, joint))
+			return ent;
+	}
+
+	return NULL;
 }
 
 struct fcsimn_simul *fcsimn_make_simul(struct fcsimn_level *level)
@@ -243,7 +364,7 @@ struct fcsimn_simul *fcsimn_make_simul(struct fcsimn_level *level)
 	init_b2world(&simul->world);
 
 	for (i = 0; i < level->level_block_cnt; i++)
-		add_block(simul, &level->level_blocks[i]);
+		generate_block_body(simul, level, &level->level_blocks[i]);
 
 	return simul;
 }
