@@ -8,7 +8,7 @@ int fcsim_strtoi(const char *str, int len, int *res)
 	int i;
 
 	if (len == 0)
-		return 0;
+		return -1;
 	if (*str == '+' || *str == '-') {
 		if (*str == '-')
 			neg = 1;
@@ -18,10 +18,10 @@ int fcsim_strtoi(const char *str, int len, int *res)
 	for (i = 0; i < len; i++) {
 		digit = str[i] - '0';
 		if (digit < 0 || digit > 10)
-			return 0;
+			return -1;
 		val = val * 10 + digit;
 	}
 	*res = neg ? -val : val;
 
-	return 1;
+	return 0;
 }

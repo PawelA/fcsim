@@ -176,4 +176,6 @@ int fcsim_strtod(const char *str, int len, double *res)
 
 	if (is_neg)
 		*res = -*res;
+
+	return 0;
 }

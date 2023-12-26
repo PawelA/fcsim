@@ -21,7 +21,7 @@ struct fcsimn_derived_joint {
 };
 
 struct fcsimn_joint {
-	enum joint_type type;
+	enum fcsimn_joint_type type;
 	union {
 		struct fcsimn_free_joint free;
 		struct fcsimn_derived_joint derived;
@@ -30,8 +30,8 @@ struct fcsimn_joint {
 
 enum fcsimn_block_type {
 	FCSIMN_BLOCK_STAT_RECT,
-	FCSIMN_BLOCK_STAT_CIRC,
 	FCSIMN_BLOCK_DYN_RECT,
+	FCSIMN_BLOCK_STAT_CIRC,
 	FCSIMN_BLOCK_DYN_CIRC,
 	FCSIMN_BLOCK_GOAL_RECT,
 	FCSIMN_BLOCK_GOAL_CIRC,
@@ -79,6 +79,7 @@ struct fcsimn_block {
 		struct fcsimn_circ  circ;
 		struct fcsimn_rect  rect;
 	};
+	void *body;
 };
 
 struct fcsimn_level {
@@ -94,25 +95,9 @@ struct fcsimn_level {
 
 struct fcsimn_simul;
 
-struct fcsimn_shape_circ {
-	double x, y;
-	double radius;
-	double angle;
-};
-
-struct fcsimn_shape_rect {
-	double x, y;
-	double w, h;
-	double angle;
-};
-
-struct fcsimn_shape {
-	enum fcsimn_block_type type;
-	union {
-		struct fcsimn_shape_circ circ;
-		struct fcsimn_shape_rect rect;
-	};
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int fcsimn_parse_xml(char *xml, int len, struct fcsimn_level *level);
 
@@ -120,6 +105,10 @@ struct fcsimn_simul *fcsimn_make_simul(struct fcsimn_level *level);
 
 void fcsimn_step(struct fcsimn_simul *simul);
 
-void fcsimn_get_shapes(struct fcsimn_simul *simul, struct fcsimn_shape *shapes);
+int fcsimn_get(struct fcsimn_block *block, double *x, double *y, double *angle);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

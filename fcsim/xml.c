@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <fcsim.h>
+#include <xml.h>
 #include <fcsim_funcs.h>
 
 struct slice {
@@ -10,7 +10,6 @@ struct slice {
 	long len;
 };
 
-/*
 void print_slice(struct slice *slice)
 {
 	fwrite(slice->ptr, 1, slice->len, stdout);
@@ -74,7 +73,6 @@ void print_level(struct xml_level *level)
 	for (block = level->player_blocks; block; block = block->next)
 		print_block(block);
 }
-*/
 
 int is_ws(char c)
 {
@@ -485,7 +483,7 @@ int read_joints(struct slice *buf, struct xml_joint **val)
 			skip_ws(buf);
 		}
 
-		joint = malloc(sizeof(*joint));
+		joint = calloc(1, sizeof(*joint));
 		res = read_int(buf, &joint->id);
 		if (res)
 			return res;
@@ -634,7 +632,7 @@ int read_block_list(struct slice *buf, struct xml_block **val)
 	skip_ws(buf);
 
 	while (peek_elem_name(buf, &name)) {
-		block = malloc(sizeof(*block));
+		block = calloc(1, sizeof(*block));
 		if (!block)
 			return -1;
 
@@ -795,6 +793,8 @@ int xml_parse(char *xml, int len, struct xml_level *level)
 
 	if (buf.len > 0)
 		return -1;
+
+	print_level(level);
 
 	return 0;
 }

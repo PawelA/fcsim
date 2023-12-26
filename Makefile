@@ -6,7 +6,7 @@ os_Windows_NT = n
 os_$(OS) = y
 
 win32   ?= $(os_Windows_NT)
-x11     ?= n
+x11     ?= y
 wayland ?= n
 
 y-or-y = y
@@ -40,9 +40,11 @@ obj-fcsim-y = \
 	fcsim/parse.o \
 	fcsim/sincos.o \
 	fcsim/atan2.o \
+	fcsim/conv.o \
+	fcsim/generate.o \
 	fcsim/strtod.o \
 	fcsim/strtoi.o \
-	fcsim/xml_parse.o \
+	fcsim/xml.o \
 	fcsim/yxml/yxml.o \
 	fcsim/box2d/Source/Collision/b2BroadPhase.o \
 	fcsim/box2d/Source/Collision/b2CollideCircle.o \
