@@ -1,7 +1,7 @@
 struct runner;
 
 struct runner_tick {
-	struct fcsim_block_stat *stats;
+	struct fcsimn_where *wheres;
 	uint64_t index;
 };
 

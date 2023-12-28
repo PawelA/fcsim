@@ -7,7 +7,7 @@
 #include "timer.h"
 
 struct execution {
-	struct fcsim_handle *handle;
+	struct fcsimn_simul *simul;
 	uint64_t tick;
 	uint64_t won_tick;
 	struct runner_tick ticks[3];
@@ -15,6 +15,19 @@ struct execution {
 	int cons_idx;
 	int next_idx;
 	int state;
+	pthread_mutex_t mutex;
+};
+
+struct runner {
+	pthread_t thread;
+
+	struct execution execs[2];
+	int exec_idx;
+
+	int running;
+	pthread_cond_t running_cond;
+	uint64_t frame_limit_us;
+
 	pthread_mutex_t mutex;
 };
 
@@ -51,13 +64,12 @@ static void execution_consume(struct execution *exec)
 static void execution_tick(struct execution *exec)
 {
 	struct runner_tick *tick = &exec->ticks[exec->prod_idx];
-	struct fcsim_arena *arena;
+	int i;
 
-	arena = fcsim_arena_from_handle(exec->handle);
-
-	fcsim_step(exec->handle);
+	fcsimn_step(exec->simul);
 	exec->tick++;
 
+	for (i = 0; i < 
 	fcsim_get_block_stats(exec->handle, tick->stats);
 	if (fcsim_has_won(arena, tick->stats)) {
 		if (!exec->won_tick)
@@ -71,18 +83,20 @@ static void execution_tick(struct execution *exec)
 
 static void init_execution(struct execution *exec, struct fcsim_arena *arena)
 {
-	size_t stats_size;
+	size_t wheres_size;
 	int i;
 
 	exec->handle = fcsim_new(arena);
 	exec->tick = 0;
 	exec->won_tick = 0;
 
-	stats_size = sizeof(struct fcsim_block_stat) * arena->block_cnt;
+	wheres_size = sizeof(struct fcsimn_where) * arena->block_cnt;
 	for (i = 0; i < 3; i++)
-		exec->ticks[i].stats = malloc(stats_size);
+		exec->ticks[i].wheres = malloc(wheres_size);
 
-	fcsim_get_block_stats(exec->handle, exec->ticks[0].stats);
+	//fcsimn_get_block_stats(exec->handle, exec->ticks[0].stats);
+	for (i = 0; i < 
+	fcsimn_get_block_desc_simul(
 	exec->ticks[0].index = 0;
 
 	exec->cons_idx = 0;
@@ -92,19 +106,6 @@ static void init_execution(struct execution *exec, struct fcsim_arena *arena)
 
 	pthread_mutex_init(&exec->mutex, NULL);
 }
-
-struct runner {
-	pthread_t thread;
-
-	struct execution execs[2];
-	int exec_idx;
-
-	int running;
-	pthread_cond_t running_cond;
-	uint64_t frame_limit_us;
-
-	pthread_mutex_t mutex;
-};
 
 uint64_t frame_limit(uint64_t prev_ts, uint64_t frame_limit_us)
 {

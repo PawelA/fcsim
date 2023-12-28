@@ -16,23 +16,6 @@ static void init_b2world(b2World *world)
 	new (world) b2World(aabb, gravity, true);
 }
 
-enum shape_type {
-	SHAPE_CIRC,
-	SHAPE_RECT,
-};
-
-struct shape {
-	enum shape_type type;
-	double x, y;
-	union {
-		struct {
-			double w, h;
-		};
-		double radius;
-	};
-	double angle;
-};
-
 struct block_physics {
 	double density;
 	double friction;
@@ -93,18 +76,19 @@ static const struct block_physics solid_rod_phys = {
 	.angular_damping = 0.2,
 };
 
-static b2Body *generate_body(b2World *world, struct shape *shape, struct block_physics *phys)
+static b2Body *generate_body(b2World *world, struct fcsimn_shape *shape, struct fcsimn_where *where, struct block_physics *phys)
 {
 	b2BoxDef box_def;
 	b2CircleDef circle_def;
 	b2ShapeDef *shape_def;
 	b2BodyDef body_def;
+	double x, y, angle;
 
 	if (shape->type == SHAPE_CIRC) {
-		circle_def.radius = shape->radius;
+		circle_def.radius = shape->circ.radius;
 		shape_def = &circle_def;
 	} else {
-		box_def.extents.Set(shape->w/2, shape->h/2);
+		box_def.extents.Set(shape->rect.w/2, shape->rect.h/2);
 		shape_def = &box_def;
 	}
 	shape_def->density = phys->density;
@@ -113,8 +97,8 @@ static b2Body *generate_body(b2World *world, struct shape *shape, struct block_p
 	shape_def->categoryBits = phys->category_bits;
 	shape_def->maskBits = phys->mask_bits;
 	shape_def->userData = NULL;
-	body_def.position.Set(shape->x, shape->y);
-	body_def.rotation = shape->angle;
+	body_def.position.Set(where->x, where->y);
+	body_def.rotation = where->angle;
 	body_def.linearDamping = phys->linear_damping;
 	body_def.angularDamping = phys->angular_damping;
 	body_def.AddShape(shape_def);
@@ -122,23 +106,23 @@ static b2Body *generate_body(b2World *world, struct shape *shape, struct block_p
 	return world->CreateBody(&body_def);
 }
 
-static void get_rect_shape(struct fcsimn_rect *rect, struct shape *shape)
+static void get_rect_desc(struct fcsimn_rect *rect, struct fcsimn_shape *shape, struct fcsimn_where *where)
 {
 	shape->type = SHAPE_RECT;
-	shape->x = rect->x;
-	shape->y = rect->y;
-	shape->w = rect->w;
-	shape->h = rect->h;
-	shape->angle = rect->angle;
+	shape->rect.w = rect->w;
+	shape->rect.h = rect->h;
+	where->x = rect->x;
+	where->y = rect->y;
+	where->angle = rect->angle;
 }
 
-static void get_circ_shape(struct fcsimn_circ *circ, struct shape *shape)
+static void get_circ_desc(struct fcsimn_circ *circ, struct fcsimn_shape *shape, struct fcsimn_where *where)
 {
 	shape->type = SHAPE_CIRC;
-	shape->x = circ->x;
-	shape->y = circ->y;
-	shape->radius = circ->radius;
-	shape->angle = 0.0;
+	shape->circ.radius = circ->radius;
+	where->x = circ->x;
+	where->y = circ->y;
+	where->angle = 0.0;
 }
 
 static double distance(double x1, double y1, double x2, double y2)
@@ -149,30 +133,30 @@ static double distance(double x1, double y1, double x2, double y2)
 	return sqrt(dx * dx + dy * dy);
 }
 
-static void get_jrect_shape(struct fcsimn_jrect *jrect, struct shape *shape)
+static void get_jrect_desc(struct fcsimn_jrect *jrect, struct fcsimn_shape *shape, struct fcsimn_where *where)
 {
 	shape->type = SHAPE_RECT;
-	shape->x = jrect->x;
-	shape->y = jrect->y;
-	shape->w = jrect->w;
-	shape->h = jrect->h;
-	shape->angle = jrect->angle;
+	shape->rect.w = jrect->w;
+	shape->rect.h = jrect->h;
+	where->x = jrect->x;
+	where->y = jrect->y;
+	where->angle = jrect->angle;
 }
 
-static void get_wheel_shape(struct fcsimn_level *level, struct fcsimn_wheel *wheel, struct shape *shape)
+static void get_wheel_desc(struct fcsimn_level *level, struct fcsimn_wheel *wheel, struct fcsimn_shape *shape, struct fcsimn_where *where)
 {
 	double x, y;
 
 	fcsimn_get_joint_pos(level, &wheel->center, &x, &y);
 
 	shape->type = SHAPE_CIRC;
-	shape->x = x;
-	shape->y = y;
-	shape->radius = wheel->radius;
-	shape->angle = wheel->angle;
+	shape->circ.radius = wheel->radius;
+	where->x = x;
+	where->y = y;
+	where->angle = wheel->angle;
 }
 
-static void get_rod_shape(struct fcsimn_level *level, struct fcsimn_rod *rod, int solid, struct shape *shape)
+static void get_rod_desc(struct fcsimn_level *level, struct fcsimn_rod *rod, int solid, struct fcsimn_shape *shape, struct fcsimn_where *where)
 {
 	double x0, y0, x1, y1;
 
@@ -180,38 +164,41 @@ static void get_rod_shape(struct fcsimn_level *level, struct fcsimn_rod *rod, in
 	fcsimn_get_joint_pos(level, &rod->to, &x1, &y1);
 
 	shape->type = SHAPE_RECT;
-	shape->x = x0 + (x1 - x0) / 2.0;
-	shape->y = y0 + (y1 - y0) / 2.0;
-	shape->w = distance(x0, y0, x1, y1);
-	shape->h = solid ? 8.0 : 4.0;
-	shape->angle = fcsim_atan2(y1 - y0, x1 - x0);
+	shape->rect.w = distance(x0, y0, x1, y1);
+	shape->rect.h = solid ? 8.0 : 4.0;
+	where->x = x0 + (x1 - x0) / 2.0;
+	where->y = y0 + (y1 - y0) / 2.0;
+	where->angle = fcsim_atan2(y1 - y0, x1 - x0);
 }
 
-static void get_block_shape(struct fcsimn_level *level, struct fcsimn_block *block, struct shape *shape)
+void fcsimn_get_block_desc(struct fcsimn_level *level,
+			   struct fcsimn_block *block,
+			   struct fcsimn_shape *shape,
+			   struct fcsimn_where *where)
 {
 	switch (block->type) {
 	case FCSIMN_BLOCK_STAT_RECT:
 	case FCSIMN_BLOCK_DYN_RECT:
-		get_rect_shape(&block->rect, shape);
+		get_rect_desc(&block->rect, shape, where);
 		break;
 	case FCSIMN_BLOCK_STAT_CIRC:
 	case FCSIMN_BLOCK_DYN_CIRC:
-		get_circ_shape(&block->circ, shape);
+		get_circ_desc(&block->circ, shape, where);
 		break;
 	case FCSIMN_BLOCK_GOAL_RECT:
-		get_jrect_shape(&block->jrect, shape);
+		get_jrect_desc(&block->jrect, shape, where);
 		break;
 	case FCSIMN_BLOCK_GOAL_CIRC:
 	case FCSIMN_BLOCK_WHEEL:
 	case FCSIMN_BLOCK_CW_WHEEL:
 	case FCSIMN_BLOCK_CCW_WHEEL:
-		get_wheel_shape(level, &block->wheel, shape);
+		get_wheel_desc(level, &block->wheel, shape, where);
 		break;
 	case FCSIMN_BLOCK_ROD:
-		get_rod_shape(level, &block->rod, 0, shape);
+		get_rod_desc(level, &block->rod, 0, shape, where);
 		break;
 	case FCSIMN_BLOCK_SOLID_ROD:
-		get_rod_shape(level, &block->rod, 1, shape);
+		get_rod_desc(level, &block->rod, 1, shape, where);
 		break;
 	}
 }
@@ -245,13 +232,14 @@ static void get_block_phys(struct fcsimn_block *block, struct block_physics *phy
 
 static void generate_block_body(struct fcsimn_simul *simul, struct fcsimn_level *level, struct fcsimn_block *block)
 {
-	struct shape shape;
+	struct fcsimn_shape shape;
+	struct fcsimn_where where;
 	struct block_physics phys;
 
-	get_block_shape(level, block, &shape);
+	get_block_desc(level, block, &shape, &where);
 	get_block_phys(block, &phys);
 
-	block->body = generate_body(&simul->world, &shape, &stat_phys);
+	block->body = generate_body(&simul->world, &shape, &where, &phys);
 }
 
 /*
@@ -385,7 +373,7 @@ void fcsimn_step(struct fcsimn_simul *simul)
 	}
 }
 
-int fcsimn_get(struct fcsimn_block *block, double *x, double *y, double *angle)
+int fcsimn_get_block_desc_simul(struct fcsimn_block *block, struct fcsimn_where *where);
 {
 	b2Body *body = (b2Body *)block->body;
 	b2Vec2 pos;
@@ -394,9 +382,9 @@ int fcsimn_get(struct fcsimn_block *block, double *x, double *y, double *angle)
 		return -1;
 
 	pos = body->GetOriginPosition();
-	*x = pos.x;
-	*y = pos.y;
-	*angle = body->GetRotation(); 
+	where->x = pos.x;
+	where->y = pos.y;
+	where->angle = body->GetRotation(); 
 
 	return 0;
 }

@@ -53,20 +53,20 @@ void vertex2f_world(double x, double y)
 	glVertex2f((x - view.x) / view.w_half, (view.y - y) / view.h_half);
 }
 
-static void draw_rect(struct fcsim_block_def *block,
-		      struct fcsim_block_stat *stat,
+static void draw_rect(struct fcsimn_rect_shape *rect,
+		      struct fcsimn_where *where,
 		      struct color *color)
 {
-	double sina_half = sin(stat->angle) / 2;
-	double cosa_half = cos(stat->angle) / 2;
-	double w = fmax(fabs(block->w), 4.0);
-	double h = fmax(fabs(block->h), 4.0);
+	double sina_half = sin(where->angle) / 2;
+	double cosa_half = cos(where->angle) / 2;
+	double w = fmax(fabs(rect->w), 4.0);
+	double h = fmax(fabs(rect->h), 4.0);
 	double wc = w * cosa_half;
 	double ws = w * sina_half;
 	double hc = h * cosa_half;
 	double hs = h * sina_half;
-	double x = stat->x;
-	double y = stat->y;
+	double x = where->x;
+	double y = where->y;
 
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(color->r, color->g, color->b);
@@ -77,6 +77,7 @@ static void draw_rect(struct fcsim_block_def *block,
 	glEnd();
 }
 
+/*
 static void draw_area(struct fcsim_rect *area, struct color *color)
 {
 	double w_half = area->w / 2;
@@ -92,42 +93,20 @@ static void draw_area(struct fcsim_rect *area, struct color *color)
 	vertex2f_world(x - w_half, y + h_half);
 	glEnd();
 }
+*/
 
-#define CIRCLE_SEGMENTS 32
-#define COLOR_SCALE 0.85
-
-static void draw_circle(struct fcsim_block_def *block,
-			struct fcsim_block_stat *stat,
-			struct color *color)
+static void draw_circ(struct fcsimn_circ_shape *circ,
+		      struct fcsimn_where *where,
+		      struct color *color)
 {
-	double x = stat->x;
-	double y = stat->y;
-	float r;
-
-	if (block->type == FCSIM_DYN_CIRCLE || block->type == FCSIM_STAT_CIRCLE)
-		r = block->w;
-	else
-		r = block->w/2;
-
-	glBegin(GL_TRIANGLE_FAN);
-	if (block->type == FCSIM_STAT_CIRCLE) {
-		glColor3f(color->r, color->g, color->b);
-	} else {
-		glColor3f(color->r * COLOR_SCALE,
-			  color->g * COLOR_SCALE,
-			  color->b * COLOR_SCALE);
-	}
-	vertex2f_world(x, y);
-	for (int i = 0; i <= 6; i++) {
-		double a = stat->angle + TAU * i / CIRCLE_SEGMENTS;
-		vertex2f_world(cos(a) * r + x, sin(a) * r + y);
-	}
-	glEnd();
+	double x = where->x;
+	double y = where->y;
+	float r = circ->radius;
 
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(color->r, color->g, color->b);
 	vertex2f_world(x, y);
-	for (int i = 6; i <= CIRCLE_SEGMENTS; i++) {
+	for (int i = 0; i <= CIRCLE_SEGMENTS; i++) {
 		double a = stat->angle + TAU * i / CIRCLE_SEGMENTS;
 		vertex2f_world(cos(a) * r + x, sin(a) * r + y);
 	}
@@ -163,8 +142,10 @@ void draw_arena(struct fcsim_arena *arena, struct fcsim_block_stat *stats)
 {
 	int i;
 
+	/*
 	draw_area(&arena->build, &build_color);
 	draw_area(&arena->goal,  &goal_color);
+	*/
 	for (i = 0; i < arena->block_cnt; i++)
 		draw_block(&arena->blocks[i], &stats[i]);
 }

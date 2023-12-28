@@ -95,6 +95,34 @@ struct fcsimn_level {
 
 struct fcsimn_simul;
 
+enum fcsimn_shape_type {
+	FCSIMN_SHAPE_CIRC,
+	FCSIMN_SHAPE_RECT,
+};
+
+struct fcsimn_shape_circ {
+	double radius;
+};
+
+struct fcsimn_shape_rect {
+	double w, h;
+};
+
+struct fcsimn_shape {
+	enum shape_type type;
+	union {
+		struct fcsimn_shape_circ circ;
+		struct fcsimn_shape_rect rect;
+	};
+};
+
+struct fcsimn_where {
+	double x, y;
+	double angle;
+};
+
+struct 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -109,7 +137,12 @@ struct fcsimn_simul *fcsimn_make_simul(struct fcsimn_level *level);
 
 void fcsimn_step(struct fcsimn_simul *simul);
 
-int fcsimn_get(struct fcsimn_block *block, double *x, double *y, double *angle);
+void fcsimn_get_block_desc(struct fcsimn_level *level,
+			   struct fcsimn_block *block,
+			   struct fcsimn_shape *shape,
+			   struct fcsimn_where *where);
+
+void fcsimn_get_block_desc_simul(struct fcsimn_block *block, struct fcsimn_where *where);
 
 #ifdef __cplusplus
 };
