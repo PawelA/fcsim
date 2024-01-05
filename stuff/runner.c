@@ -7,6 +7,7 @@
 #include "timer.h"
 
 struct execution {
+	struct fcsimn_level *level;
 	struct fcsimn_simul *simul;
 	uint64_t tick;
 	uint64_t won_tick;
@@ -69,8 +70,9 @@ static void execution_tick(struct execution *exec)
 	fcsimn_step(exec->simul);
 	exec->tick++;
 
-	for (i = 0; i < 
+	for (i = 0; i < exec->level->player_block_cnt) {
 	fcsim_get_block_stats(exec->handle, tick->stats);
+
 	if (fcsim_has_won(arena, tick->stats)) {
 		if (!exec->won_tick)
 			exec->won_tick = exec->tick;
