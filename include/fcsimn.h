@@ -109,7 +109,7 @@ struct fcsimn_shape_rect {
 };
 
 struct fcsimn_shape {
-	enum shape_type type;
+	enum fcsimn_shape_type type;
 	union {
 		struct fcsimn_shape_circ circ;
 		struct fcsimn_shape_rect rect;
@@ -121,8 +121,6 @@ struct fcsimn_where {
 	double angle;
 };
 
-struct 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -130,6 +128,8 @@ extern "C" {
 void fcsimn_get_joint_pos(struct fcsimn_level *level,
 			  struct fcsimn_joint *joint,
 			  double *x, double *y);
+
+int fcsimn_get_block_joints(struct fcsimn_block *block, int id, struct fcsimn_joint *joints);
 
 int fcsimn_parse_xml(char *xml, int len, struct fcsimn_level *level);
 
@@ -142,7 +142,7 @@ void fcsimn_get_block_desc(struct fcsimn_level *level,
 			   struct fcsimn_shape *shape,
 			   struct fcsimn_where *where);
 
-void fcsimn_get_block_desc_simul(struct fcsimn_block *block, struct fcsimn_where *where);
+int fcsimn_get_block_desc_simul(struct fcsimn_block *block, struct fcsimn_where *where);
 
 #ifdef __cplusplus
 };

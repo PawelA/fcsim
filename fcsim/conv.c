@@ -223,7 +223,7 @@ static void get_wheel_derived_joint_pos(struct fcsimn_level *level,
 	fcsimn_get_joint_pos(level, &wheel->center, &x, &y);
 
 	*rx = x + fcsim_cos(wheel->angle + a[index]) * wheel->radius;
-	*ry = x + fcsim_cos(wheel->angle + a[index]) * wheel->radius;
+	*ry = y + fcsim_sin(wheel->angle + a[index]) * wheel->radius;
 }
 
 static void get_derived_joint_pos(struct fcsimn_level *level,
@@ -256,7 +256,7 @@ void fcsimn_get_joint_pos(struct fcsimn_level *level,
 	}
 }
 
-static int get_block_joints(struct fcsimn_block *block, int id, struct fcsimn_joint *joints)
+int fcsimn_get_block_joints(struct fcsimn_block *block, int id, struct fcsimn_joint *joints)
 {
 	int i;
 
@@ -320,7 +320,7 @@ static int find_closest_joint(struct fcsimn_level *level,
 		if (block_index == -1)
 			continue;
 		block = &level->player_blocks[block_index];
-		joint_cnt = get_block_joints(block, block_index, joints);
+		joint_cnt = fcsimn_get_block_joints(block, block_index, joints);
 		for (i = 0; i < joint_cnt; i++) {
 			double dist;
 			double jx, jy;
@@ -453,6 +453,9 @@ static int add_wheel(struct fcsimn_level *level, struct xml_block *xml_block)
 	else
 		create_free_joint(level, x0, y0, &block->wheel.center);
 
+	block->wheel.radius = xml_block->width / 2;
+	block->wheel.angle = xml_block->rotation;
+
 	return 0;
 }
 
@@ -492,7 +495,7 @@ static int share_block(struct fcsimn_level *level, struct fcsimn_joint *j0, stru
 	int i, j;
 
 	for (i = 0; i < level->player_block_cnt; i++) {
-		joint_cnt = get_block_joints(&level->player_blocks[i], i, joints);
+		joint_cnt = fcsimn_get_block_joints(&level->player_blocks[i], i, joints);
 		found0 = 0;
 		found1 = 0;
 		for (j = 0; j < joint_cnt; j++) {
