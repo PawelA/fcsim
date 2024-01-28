@@ -53,7 +53,7 @@ void vertex2f_world(double x, double y)
 	glVertex2f((x - view.x) / view.w_half, (view.y - y) / view.h_half);
 }
 
-static void draw_rect(struct fcsimn_rect_shape *rect,
+static void draw_rect(struct fcsimn_shape_rect *rect,
 		      struct fcsimn_where *where,
 		      struct color *color)
 {
@@ -95,7 +95,9 @@ static void draw_area(struct fcsim_rect *area, struct color *color)
 }
 */
 
-static void draw_circ(struct fcsimn_circ_shape *circ,
+#define CIRCLE_SEGMENTS 32
+
+static void draw_circ(struct fcsimn_shape_circ *circ,
 		      struct fcsimn_where *where,
 		      struct color *color)
 {
@@ -107,12 +109,13 @@ static void draw_circ(struct fcsimn_circ_shape *circ,
 	glColor3f(color->r, color->g, color->b);
 	vertex2f_world(x, y);
 	for (int i = 0; i <= CIRCLE_SEGMENTS; i++) {
-		double a = stat->angle + TAU * i / CIRCLE_SEGMENTS;
+		double a = where->angle + TAU * i / CIRCLE_SEGMENTS;
 		vertex2f_world(cos(a) * r + x, sin(a) * r + y);
 	}
 	glEnd();
 }
 
+/*
 static int is_circle(struct fcsim_block_def *block)
 {
 	switch (block->type) {
@@ -127,6 +130,7 @@ static int is_circle(struct fcsim_block_def *block)
 
 	return 0;
 }
+*/
 
 static void draw_block(struct fcsim_block_def *block, struct fcsim_block_stat *stat)
 {
