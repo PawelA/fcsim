@@ -4,6 +4,10 @@
 
 struct fcsimn_simul {
 	b2World world;
+	int level_block_cnt;
+	int player_block_cnt;
+	b2Body **level_block_bodies;
+	b2Body **player_block_bodies;
 };
 
 struct body_data {
@@ -12,7 +16,7 @@ struct body_data {
 };
 
 struct body_list {
-	struct fcsimn_block *block;
+	int block_id;
 	struct body_list *next;
 };
 
@@ -377,7 +381,7 @@ static void get_block_phys(struct fcsimn_block *block, struct block_physics *phy
 	}
 }
 
-static struct body_data *get_body_data(struct fcsimn_block *block, int id, struct joint_map *map)
+static struct body_data *get_player_block_data(struct fcsimn_level *level, int id, struct joint_map *map)
 {
 	struct fcsimn_joint joints[5];
 	struct body_data *data;
@@ -385,7 +389,7 @@ static struct body_data *get_body_data(struct fcsimn_block *block, int id, struc
 	int joint_cnt;
 	int i;
 
-	joint_cnt = fcsimn_get_block_joints(block, id, joints);
+	joint_cnt = fcsimn_get_player_block_joints(level, id, joints);
 
 	data = (struct body_data *)malloc(sizeof(*data));
 	data->joint_cnt = joint_cnt;
@@ -398,8 +402,9 @@ static struct body_data *get_body_data(struct fcsimn_block *block, int id, struc
 	return data;
 }
 
-static void generate_block_body(struct fcsimn_simul *simul, struct fcsimn_level *level, struct fcsimn_block *block, int id, struct joint_map *map)
+static void generate_player_block_body(struct fcsimn_simul *simul, struct fcsimn_level *level, int id, struct joint_map *map)
 {
+	struct fcsimn_block *block = &level->player_blocks[id];
 	struct fcsimn_shape shape;
 	struct fcsimn_where where;
 	struct block_physics phys;
@@ -407,15 +412,29 @@ static void generate_block_body(struct fcsimn_simul *simul, struct fcsimn_level 
 
 	fcsimn_get_block_desc(level, block, &shape, &where);
 	get_block_phys(block, &phys);
-	data = get_body_data(block, id, map);
+	data = get_player_block_data(level, id, map);
 
-	block->body = generate_body(&simul->world, &shape, &where, &phys, data);
+	simul->player_block_bodies[id] = generate_body(&simul->world, &shape, &where, &phys, data);
 }
 
-static void add_block_joints(struct fcsimn_level *level,
-			     struct fcsimn_block *block, int id,
-			     struct joint_map *map)
+static void generate_level_block_body(struct fcsimn_simul *simul, struct fcsimn_level *level, int id, struct joint_map *map)
 {
+	struct fcsimn_block *block = &level->level_blocks[id];
+	struct fcsimn_shape shape;
+	struct fcsimn_where where;
+	struct block_physics phys;
+	struct body_data *data;
+
+	fcsimn_get_block_desc(level, block, &shape, &where);
+	get_block_phys(block, &phys);
+	data = get_player_block_data(level, id, map);
+
+	simul->level_block_bodies[id] = generate_body(&simul->world, &shape, &where, &phys, data);
+}
+
+static void add_player_block_joints(struct fcsimn_level *level, int id, struct joint_map *map)
+{
+	struct fcsimn_block *block = &level->player_blocks[id];
 	struct fcsimn_joint joints[5];
 	int joint_cnt;
 	int i;

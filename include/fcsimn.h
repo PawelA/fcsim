@@ -79,7 +79,6 @@ struct fcsimn_block {
 		struct fcsimn_circ  circ;
 		struct fcsimn_rect  rect;
 	};
-	void *body;
 };
 
 struct fcsimn_level {
@@ -125,24 +124,21 @@ struct fcsimn_where {
 extern "C" {
 #endif
 
-void fcsimn_get_joint_pos(struct fcsimn_level *level,
-			  struct fcsimn_joint *joint,
-			  double *x, double *y);
-
-int fcsimn_get_block_joints(struct fcsimn_block *block, int id, struct fcsimn_joint *joints);
-
 int fcsimn_parse_xml(char *xml, int len, struct fcsimn_level *level);
 
 struct fcsimn_simul *fcsimn_make_simul(struct fcsimn_level *level);
 
 void fcsimn_step(struct fcsimn_simul *simul);
 
-void fcsimn_get_block_desc(struct fcsimn_level *level,
-			   struct fcsimn_block *block,
-			   struct fcsimn_shape *shape,
-			   struct fcsimn_where *where);
+void fcsimn_get_level_block_desc(struct fcsimn_level *level, int id, struct fcsimn_shape *shape, struct fcsimn_where *where);
+void fcsimn_get_player_block_desc(struct fcsimn_level *level, int id, struct fcsimn_shape *shape, struct fcsimn_where *where);
 
-int fcsimn_get_block_desc_simul(struct fcsimn_block *block, struct fcsimn_where *where);
+void fcsimn_get_level_block_desc_simul(struct fcsimn_simul *simul, int id, struct fcsimn_where *where);
+void fcsimn_get_player_block_desc_simul(struct fcsimn_simul *simul, int id, struct fcsimn_where *where);
+
+int fcsimn_get_player_block_joints(struct fcsimn_level *level, int id, struct fcsimn_joint *joints);
+
+void fcsimn_get_joint_pos(struct fcsimn_level *level, struct fcsimn_joint *joint, double *x, double *y);
 
 #ifdef __cplusplus
 };
