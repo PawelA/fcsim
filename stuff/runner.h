@@ -1,13 +1,14 @@
 struct runner;
 
 struct runner_tick {
-	struct fcsimn_where *wheres;
+	struct fcsim_where *player_wheres;
+	struct fcsim_where *level_wheres;
 	uint64_t index;
 };
 
 struct runner *runner_create(void);
 
-void runner_load(struct runner *runner, struct fcsimn_level *level);
+void runner_load(struct runner *runner, struct fcsim_level *level);
 
 void runner_start(struct runner *runner);
 

@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <GLFW/glfw3.h>
-#include <fcsimn.h>
+#include <fcsim.h>
 
 #include "text.h"
 #include "ui.h"
@@ -88,13 +88,14 @@ void window_size_callback(GLFWwindow *window, int w, int h)
 	arena_layer_event(&the_arena_layer, &event);
 }
 
-#include <fcsimn.h>
+/*
+#include <fcsim.h>
 #include "file.h"
 
 int main(int argc, char **argv)
 {
-	struct fcsimn_level level;
-	struct fcsimn_simul *simul;
+	struct fcsim_level level;
+	struct fcsim_simul *simul;
 	struct file_buf buf;
 	int res;
 
@@ -109,13 +110,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	res = fcsimn_parse_xml(buf.ptr, buf.len, &level);
+	res = fcsim_parse_xml(buf.ptr, buf.len, &level);
 	if (res) {
 		printf("failed to parse xml\n");
 		return 1;
 	}
 
-	simul = fcsimn_make_simul(&level);
+	simul = fcsim_make_simul(&level);
 	if (!simul) {
 		printf("failed to make simul\n");
 		return 1;
@@ -123,8 +124,8 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+*/
 
-/*
 int main(void)
 {
 	GLFWwindow *window;
@@ -161,4 +162,3 @@ int main(void)
 
 	return 0;
 }
-*/

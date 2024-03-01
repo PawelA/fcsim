@@ -205,9 +205,10 @@ int read_res(int fd, struct alloc_readdata *data)
 struct loader {
 	pthread_t thread;
 	char *design_id;
-	struct fcsimn_level level;
+	struct fcsim_level level;
 	int done;
 };
+#include "file.h"
 
 static void *thread_func(void *arg)
 {
@@ -215,6 +216,7 @@ static void *thread_func(void *arg)
 	struct alloc_readdata data;
 	int fd;
 
+	/*
 	fd = fc_connect();
 	if (fd < 0) {
 		fprintf(stderr, "couldn't connect\n");
@@ -223,8 +225,12 @@ static void *thread_func(void *arg)
 
 	write_req(fd, loader->design_id);
 	read_res(fd, &data);
-	fcsimn_read_xml(data.buf, data.len, &loader->level);
-	//fwrite(data.buf, 1, data.len, stdout);
+	fcsim_parse_xml(data.buf, data.len, &loader->level);
+	*/
+
+	struct file_buf fb;
+	read_file(&fb, "pringle.xml");
+	fcsim_parse_xml(fb.ptr, fb.len, &loader->level);
 
 	loader->done = 1;
 
@@ -250,7 +256,7 @@ int loader_is_done(struct loader *loader) {
 	return loader->done;
 }
 
-void loader_get(struct loader *loader, struct fcsimn_level *level) {
+void loader_get(struct loader *loader, struct fcsim_level *level) {
 	memcpy(level, &loader->level, sizeof(*level));
 }
 

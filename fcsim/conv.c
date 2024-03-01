@@ -2,143 +2,8 @@
 #include <math.h>
 
 #include <xml.h>
-#include <fcsimn.h>
+#include <fcsim.h>
 #include <fcsim_funcs.h>
-
-#include <stdio.h>
-static void print_rect(struct fcsimn_block *block)
-{
-	switch (block->type) {
-	case FCSIMN_BLOCK_STAT_RECT:
-		printf("stat_rect");
-		break;
-	case FCSIMN_BLOCK_DYN_RECT:
-		printf("dyn_rect");
-		break;
-	}
-	printf("((%f %f), (%f %f), %f)\n",
-		block->rect.x,
-		block->rect.y,
-		block->rect.w,
-		block->rect.h,
-		block->rect.angle);
-}
-
-static void print_circ(struct fcsimn_block *block)
-{
-	switch (block->type) {
-	case FCSIMN_BLOCK_STAT_CIRC:
-		printf("stat_circ");
-		break;
-	case FCSIMN_BLOCK_DYN_CIRC:
-		printf("dyn_circ");
-		break;
-	}
-	printf("((%f %f), %f)\n",
-		block->circ.x,
-		block->circ.y,
-		block->circ.radius);
-}
-
-static void print_joint(struct fcsimn_joint *joint)
-{
-	switch (joint->type) {
-	case FCSIMN_JOINT_FREE:
-		printf("free(%d)", joint->free.vertex_id);
-		break;
-	case FCSIMN_JOINT_DERIVED:
-		printf("derived(%d, %d)", joint->derived.block_id, joint->derived.index);
-		break;
-	}
-}
-
-static void print_jrect(struct fcsimn_block *block)
-{
-	printf("goal_rect((%f %f), (%f %f), %f)\n",
-		block->jrect.x,
-		block->jrect.y,
-		block->jrect.w,
-		block->jrect.h,
-		block->jrect.angle);
-}
-
-static void print_wheel(struct fcsimn_block *block)
-{
-	switch (block->type) {
-	case FCSIMN_BLOCK_GOAL_CIRC:
-		printf("goal_circ");
-		break;
-	case FCSIMN_BLOCK_WHEEL:
-		printf("wheel");
-		break;
-	case FCSIMN_BLOCK_CW_WHEEL:
-		printf("cw_wheel");
-		break;
-	case FCSIMN_BLOCK_CCW_WHEEL:
-		printf("ccw_wheel");
-		break;
-	}
-	printf("(");
-	print_joint(&block->wheel.center);
-	printf(", %f, %f)\n", block->wheel.radius, block->wheel.angle);
-}
-
-static void print_rod(struct fcsimn_block *block)
-{
-	switch (block->type) {
-	case FCSIMN_BLOCK_ROD:
-		printf("rod");
-		break;
-	case FCSIMN_BLOCK_SOLID_ROD:
-		printf("solid_rod");
-		break;
-	}
-	printf("(");
-	print_joint(&block->rod.from);
-	printf(", ");
-	print_joint(&block->rod.to);
-	printf(")\n");
-}
-
-static void print_block(struct fcsimn_block *block)
-{
-	switch (block->type) {
-	case FCSIMN_BLOCK_STAT_RECT:
-	case FCSIMN_BLOCK_DYN_RECT:
-		print_rect(block);
-		break;
-	case FCSIMN_BLOCK_STAT_CIRC:
-	case FCSIMN_BLOCK_DYN_CIRC:
-		print_circ(block);
-		break;
-	case FCSIMN_BLOCK_GOAL_RECT:
-		print_jrect(block);
-		break;
-	case FCSIMN_BLOCK_GOAL_CIRC:
-	case FCSIMN_BLOCK_WHEEL:
-	case FCSIMN_BLOCK_CW_WHEEL:
-	case FCSIMN_BLOCK_CCW_WHEEL:
-		print_wheel(block);
-		break;
-	case FCSIMN_BLOCK_ROD:
-	case FCSIMN_BLOCK_SOLID_ROD:
-		print_rod(block);
-		break;
-	}
-}
-
-static void print_level(struct fcsimn_level *level)
-{
-	int i;
-
-	printf("level blocks:\n");
-	for (i = 0; i < level->level_block_cnt; i++)
-		print_block(&level->level_blocks[i]);
-
-	printf("player blocks:\n");
-	for (i = 0; i < level->player_block_cnt; i++)
-		print_block(&level->player_blocks[i]);
-}
 
 struct block_map_node {
 	int id;
@@ -160,18 +25,18 @@ static int block_map_find(struct block_map *map, int id)
 	return id;
 }
 
-static void get_free_joint_pos(struct fcsimn_level *level,
-			       struct fcsimn_free_joint *joint,
+static void get_free_joint_pos(struct fcsim_level *level,
+			       struct fcsim_free_joint *joint,
 			       double *x, double *y)
 {
-	struct fcsimn_vertex *vertex;
+	struct fcsim_vertex *vertex;
 	
 	vertex = &level->vertices[joint->vertex_id];
 	*x = vertex->x;
 	*y = vertex->y;
 }
 
-static void get_jrect_derived_joint_pos(struct fcsimn_jrect *jrect, int index,
+static void get_jrect_derived_joint_pos(struct fcsim_jrect *jrect, int index,
 					double *rx, double *ry)
 {
 	double x = jrect->x;
@@ -208,8 +73,8 @@ static void get_jrect_derived_joint_pos(struct fcsimn_jrect *jrect, int index,
 	}
 }
 
-static void get_wheel_derived_joint_pos(struct fcsimn_level *level,
-					struct fcsimn_wheel *wheel, int index,
+static void get_wheel_derived_joint_pos(struct fcsim_level *level,
+					struct fcsim_wheel *wheel, int index,
 					double *rx, double *ry)
 {
 	double a[4] = {
@@ -220,17 +85,17 @@ static void get_wheel_derived_joint_pos(struct fcsimn_level *level,
 	};
 	double x, y;
 
-	fcsimn_get_joint_pos(level, &wheel->center, &x, &y);
+	fcsim_get_joint_pos(level, &wheel->center, &x, &y);
 
 	*rx = x + fcsim_cos(wheel->angle + a[index]) * wheel->radius;
 	*ry = y + fcsim_sin(wheel->angle + a[index]) * wheel->radius;
 }
 
-static void get_derived_joint_pos(struct fcsimn_level *level,
-				  struct fcsimn_derived_joint *joint,
+static void get_derived_joint_pos(struct fcsim_level *level,
+				  struct fcsim_derived_joint *joint,
 				  double *x, double *y)
 {
-	struct fcsimn_block *block;
+	struct fcsim_block *block;
 
 	block = &level->player_blocks[joint->block_id];
 	switch (block->type) {
@@ -244,8 +109,8 @@ static void get_derived_joint_pos(struct fcsimn_level *level,
 	}
 }
 
-void fcsimn_get_joint_pos(struct fcsimn_level *level,
-			  struct fcsimn_joint *joint,
+void fcsim_get_joint_pos(struct fcsim_level *level,
+			  struct fcsim_joint *joint,
 			  double *x, double *y)
 {
 	switch (joint->type) {
@@ -256,8 +121,9 @@ void fcsimn_get_joint_pos(struct fcsimn_level *level,
 	}
 }
 
-int fcsimn_get_block_joints(struct fcsimn_block *block, int id, struct fcsimn_joint *joints)
+int fcsim_get_player_block_joints(struct fcsim_level *level, int id, struct fcsim_joint *joints)
 {
+	struct fcsim_block *block = &level->player_blocks[id];
 	int i;
 
 	switch (block->type) {
@@ -300,19 +166,19 @@ static double distance(double x1, double y1, double x2, double y2)
 	return sqrt(dx * dx + dy * dy);
 }
 
-static int find_closest_joint(struct fcsimn_level *level,
+static int find_closest_joint(struct fcsim_level *level,
 			      struct block_map *map,
 			      struct xml_joint *block_ids,
 			      double x, double y,
-			      struct fcsimn_joint *joint)
+			      struct fcsim_joint *joint)
 {
 	double best_dist = 10.0;
 	int found = 0;
 
 	for (; block_ids; block_ids = block_ids->next) {
 		int block_index;
-		struct fcsimn_block *block;
-		struct fcsimn_joint joints[5];
+		struct fcsim_block *block;
+		struct fcsim_joint joints[5];
 		int joint_cnt;
 		int i;
 
@@ -320,12 +186,12 @@ static int find_closest_joint(struct fcsimn_level *level,
 		if (block_index == -1)
 			continue;
 		block = &level->player_blocks[block_index];
-		joint_cnt = fcsimn_get_block_joints(block, block_index, joints);
+		joint_cnt = fcsim_get_player_block_joints(level, block_index, joints);
 		for (i = 0; i < joint_cnt; i++) {
 			double dist;
 			double jx, jy;
 
-			fcsimn_get_joint_pos(level, &joints[i], &jx, &jy);
+			fcsim_get_joint_pos(level, &joints[i], &jx, &jy);
 			dist = distance(jx, jy, x, y);
 			if (dist < best_dist) {
 				best_dist = dist;
@@ -338,9 +204,9 @@ static int find_closest_joint(struct fcsimn_level *level,
 	return found;
 }
 
-static int add_circ(struct fcsimn_level *level, struct xml_block *xml_block)
+static int add_circ(struct fcsim_level *level, struct xml_block *xml_block)
 {
-	struct fcsimn_block *block;
+	struct fcsim_block *block;
 
 	block = &level->level_blocks[level->level_block_cnt];
 	level->level_block_cnt++;
@@ -363,9 +229,9 @@ static int add_circ(struct fcsimn_level *level, struct xml_block *xml_block)
 	return 0;
 }
 
-static int add_rect(struct fcsimn_level *level, struct xml_block *xml_block)
+static int add_rect(struct fcsim_level *level, struct xml_block *xml_block)
 {
-	struct fcsimn_block *block;
+	struct fcsim_block *block;
 
 	block = &level->level_blocks[level->level_block_cnt];
 	level->level_block_cnt++;
@@ -390,9 +256,9 @@ static int add_rect(struct fcsimn_level *level, struct xml_block *xml_block)
 	return 0;
 }
 
-static int add_jrect(struct fcsimn_level *level, struct xml_block *xml_block)
+static int add_jrect(struct fcsim_level *level, struct xml_block *xml_block)
 {
-	struct fcsimn_block *block;
+	struct fcsim_block *block;
 
 	block = &level->player_blocks[level->player_block_cnt];
 	level->player_block_cnt++;
@@ -407,9 +273,9 @@ static int add_jrect(struct fcsimn_level *level, struct xml_block *xml_block)
 	return 0;
 }
 
-static void create_free_joint(struct fcsimn_level *level, double x, double y, struct fcsimn_joint *joint)
+static void create_free_joint(struct fcsim_level *level, double x, double y, struct fcsim_joint *joint)
 {
-	struct fcsimn_vertex *vertex;
+	struct fcsim_vertex *vertex;
 	
 	vertex = &level->vertices[level->vertex_cnt];
 	vertex->x = x;
@@ -419,11 +285,11 @@ static void create_free_joint(struct fcsimn_level *level, double x, double y, st
 	level->vertex_cnt++;
 }
 
-static int add_wheel(struct fcsimn_level *level, struct xml_block *xml_block)
+static int add_wheel(struct fcsim_level *level, struct xml_block *xml_block)
 {
-	struct fcsimn_block *block;
+	struct fcsim_block *block;
 
-	struct fcsimn_joint j0;
+	struct fcsim_joint j0;
 	int found0;
 	double x0, y0;
 
@@ -432,7 +298,10 @@ static int add_wheel(struct fcsimn_level *level, struct xml_block *xml_block)
 
 	switch (xml_block->type) {
 	case XML_NO_SPIN_WHEEL:
-		block->type = FCSIMN_BLOCK_WHEEL;
+		if (xml_block->goal_block)
+			block->type = FCSIMN_BLOCK_GOAL_CIRC;
+		else
+			block->type = FCSIMN_BLOCK_WHEEL;
 		break;
 	case XML_CLOCKWISE_WHEEL:
 		block->type = FCSIMN_BLOCK_CW_WHEEL;
@@ -475,7 +344,7 @@ static void get_rod_endpoints(struct xml_block *xml_block,
 	*y1 = y + sw;
 }
 
-static int joints_equal(struct fcsimn_joint *j0, struct fcsimn_joint *j1)
+static int joints_equal(struct fcsim_joint *j0, struct fcsim_joint *j1)
 {
 	if (j0->type != j1->type)
 		return 0;
@@ -487,15 +356,15 @@ static int joints_equal(struct fcsimn_joint *j0, struct fcsimn_joint *j1)
 		       j0->derived.index == j1->derived.index;
 }
 
-static int share_block(struct fcsimn_level *level, struct fcsimn_joint *j0, struct fcsimn_joint *j1)
+static int share_block(struct fcsim_level *level, struct fcsim_joint *j0, struct fcsim_joint *j1)
 {
-	struct fcsimn_joint joints[5];
+	struct fcsim_joint joints[5];
 	int joint_cnt;
 	int found0, found1;
 	int i, j;
 
 	for (i = 0; i < level->player_block_cnt; i++) {
-		joint_cnt = fcsimn_get_block_joints(&level->player_blocks[i], i, joints);
+		joint_cnt = fcsim_get_player_block_joints(level, i, joints);
 		found0 = 0;
 		found1 = 0;
 		for (j = 0; j < joint_cnt; j++) {
@@ -511,11 +380,11 @@ static int share_block(struct fcsimn_level *level, struct fcsimn_joint *j0, stru
 	return 0;
 }
 
-static int add_rod(struct fcsimn_level *level, struct xml_block *xml_block)
+static int add_rod(struct fcsim_level *level, struct xml_block *xml_block)
 {
-	struct fcsimn_block *block;
+	struct fcsim_block *block;
 
-	struct fcsimn_joint j0, j1;
+	struct fcsim_joint j0, j1;
 	int found0, found1;
 	double x0, y0, x1, y1;
 
@@ -556,7 +425,7 @@ static int add_rod(struct fcsimn_level *level, struct xml_block *xml_block)
 	return 0;
 }
 
-static int add_level_block(struct fcsimn_level *level, struct xml_block *block)
+static int add_level_block(struct fcsim_level *level, struct xml_block *block)
 {
 	switch (block->type) {
 	case XML_STATIC_CIRCLE:
@@ -570,7 +439,7 @@ static int add_level_block(struct fcsimn_level *level, struct xml_block *block)
 	return -1;
 }
 
-static int add_player_block(struct fcsimn_level *level, struct xml_block *block)
+static int add_player_block(struct fcsim_level *level, struct xml_block *block)
 {
 	switch (block->type) {
 	case XML_JOINTED_DYNAMIC_RECTANGLE:
@@ -599,7 +468,15 @@ static int get_block_count(struct xml_block *blocks)
 	return len;
 }
 
-static int convert_level(struct xml_level *xml_level, struct fcsimn_level *level)
+static void convert_area(struct xml_zone *zone, struct fcsim_area *area)
+{
+	area->x = zone->position.x;
+	area->y = zone->position.y;
+	area->w = zone->width;
+	area->h = zone->height;
+}
+
+static int convert_level(struct xml_level *xml_level, struct fcsim_level *level)
 {
 	struct xml_block *block;
 	int level_block_cnt;
@@ -611,17 +488,17 @@ static int convert_level(struct xml_level *xml_level, struct fcsimn_level *level
 	player_block_cnt = get_block_count(xml_level->player_blocks);
 	vertex_cnt = player_block_cnt * 2;
 
-	level->level_blocks = calloc(level_block_cnt, sizeof(struct fcsimn_block));
+	level->level_blocks = calloc(level_block_cnt, sizeof(struct fcsim_block));
 	if (!level->level_blocks)
 		goto err_level_blocks;
 	level->level_block_cnt = 0;
 
-	level->player_blocks = calloc(player_block_cnt, sizeof(struct fcsimn_block));
+	level->player_blocks = calloc(player_block_cnt, sizeof(struct fcsim_block));
 	if (!level->level_blocks)
 		goto err_player_blocks;
 	level->player_block_cnt = 0;
 
-	level->vertices = calloc(vertex_cnt, sizeof(struct fcsimn_vertex));
+	level->vertices = calloc(vertex_cnt, sizeof(struct fcsim_vertex));
 	if (!level->vertices)
 		goto err_vertices;
 	level->vertex_cnt = 0;
@@ -638,6 +515,9 @@ static int convert_level(struct xml_level *xml_level, struct fcsimn_level *level
 			goto err;
 	}
 
+	convert_area(&xml_level->start, &level->build_area);
+	convert_area(&xml_level->end, &level->goal_area);
+
 	return 0;
 
 err:
@@ -651,7 +531,7 @@ err_level_blocks:
 	return -1;
 }
 
-int fcsimn_parse_xml(char *xml, int len, struct fcsimn_level *level)
+int fcsim_parse_xml(char *xml, int len, struct fcsim_level *level)
 {
 	struct xml_level xml_level;
 	int res;
@@ -663,8 +543,6 @@ int fcsimn_parse_xml(char *xml, int len, struct fcsimn_level *level)
 	res = convert_level(&xml_level, level);
 	if (res)
 		return res;
-
-	print_level(level);
 
 	return 0;
 }

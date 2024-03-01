@@ -23,7 +23,7 @@ void load_layer_draw(struct load_layer *load_layer)
 	draw_input_box(&load_layer->input, 10, 70, the_ui_scale);
 	if (load_layer->loading) {
 		if (loader_is_done(load_layer->loader)) {
-			loader_get(load_layer->loader, &load_layer->arena);
+			loader_get(load_layer->loader, &load_layer->level);
 			load_layer->loaded = 1;
 			load_layer->loader = NULL;
 			load_layer->loading = 0;

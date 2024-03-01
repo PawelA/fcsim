@@ -10,70 +10,6 @@ struct slice {
 	long len;
 };
 
-void print_slice(struct slice *slice)
-{
-	fwrite(slice->ptr, 1, slice->len, stdout);
-	printf("\n");
-}
-
-void print_block_joints(struct xml_joint *joints)
-{
-	if (!joints)
-		return;
-
-	printf("[");
-	for (; joints; joints = joints->next) {
-		printf("%d", joints->id);
-		if (joints->next)
-			printf(" ");
-	}
-	printf("]");
-}
-
-const char *block_name_from_type(int block_type)
-{
-	switch (block_type) {
-	case XML_STATIC_RECTANGLE: return "StaticRectangle";
-	case XML_STATIC_CIRCLE: return "StaticCircle";
-	case XML_DYNAMIC_RECTANGLE: return "DynamicRectangle";
-	case XML_DYNAMIC_CIRCLE: return "DynamicCircle";
-	case XML_JOINTED_DYNAMIC_RECTANGLE: return "JointedDynamicRectangle";
-	case XML_NO_SPIN_WHEEL: return "NoSpinWheel";
-	case XML_CLOCKWISE_WHEEL: return "ClockwiseWheel";
-	case XML_COUNTER_CLOCKWISE_WHEEL: return "CounterClockwiseWheel";
-	case XML_SOLID_ROD: return "SolidRod";
-	case XML_HOLLOW_ROD: return "HollowRod";
-	default: return "Unknown";
-	}
-}
-
-void print_block(struct xml_block *block)
-{
-	printf("%s#%d (%f %f) %f x %f @%f ",
-		block_name_from_type(block->type),
-		block->id,
-		block->position.x,
-		block->position.y,
-		block->width,
-		block->height,
-		block->rotation);
-	print_block_joints(block->joints);
-	printf("\n");
-}
-
-void print_level(struct xml_level *level)
-{
-	struct xml_block *block;
-
-	printf("level blocks:\n");
-	for (block = level->level_blocks; block; block = block->next)
-		print_block(block);
-	
-	printf("player blocks:\n");
-	for (block = level->player_blocks; block; block = block->next)
-		print_block(block);
-}
-
 int is_ws(char c)
 {
 	return c == ' ' || c == '\t' || c == '\n';
@@ -793,8 +729,6 @@ int xml_parse(char *xml, int len, struct xml_level *level)
 
 	if (buf.len > 0)
 		return -1;
-
-	print_level(level);
 
 	return 0;
 }

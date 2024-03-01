@@ -36,120 +36,122 @@ ldlibs-$(wayland) += -lwayland-client
 ### fcsim
 
 obj-fcsim-y = \
-	fcsim/fcsim.o \
-	fcsim/parse.o \
 	fcsim/sincos.o \
 	fcsim/atan2.o \
 	fcsim/conv.o \
 	fcsim/generate.o \
 	fcsim/strtod.o \
 	fcsim/strtoi.o \
-	fcsim/xml.o \
-	fcsim/yxml/yxml.o \
-	fcsim/box2d/Source/Collision/b2BroadPhase.o \
-	fcsim/box2d/Source/Collision/b2CollideCircle.o \
-	fcsim/box2d/Source/Collision/b2CollidePoly.o \
-	fcsim/box2d/Source/Collision/b2Distance.o \
-	fcsim/box2d/Source/Collision/b2PairManager.o \
-	fcsim/box2d/Source/Collision/b2Shape.o \
-	fcsim/box2d/Source/Common/b2BlockAllocator.o \
-	fcsim/box2d/Source/Common/b2Settings.o \
-	fcsim/box2d/Source/Common/b2StackAllocator.o \
-	fcsim/box2d/Source/Dynamics/b2Body.o \
-	fcsim/box2d/Source/Dynamics/b2ContactManager.o \
-	fcsim/box2d/Source/Dynamics/b2Island.o \
-	fcsim/box2d/Source/Dynamics/b2WorldCallbacks.o \
-	fcsim/box2d/Source/Dynamics/b2World.o \
-	fcsim/box2d/Source/Dynamics/Contacts/b2CircleContact.o \
-	fcsim/box2d/Source/Dynamics/Contacts/b2Conservative.o \
-	fcsim/box2d/Source/Dynamics/Contacts/b2Contact.o \
-	fcsim/box2d/Source/Dynamics/Contacts/b2ContactSolver.o \
-	fcsim/box2d/Source/Dynamics/Contacts/b2PolyAndCircleContact.o \
-	fcsim/box2d/Source/Dynamics/Contacts/b2PolyContact.o \
-	fcsim/box2d/Source/Dynamics/Joints/b2DistanceJoint.o \
-	fcsim/box2d/Source/Dynamics/Joints/b2GearJoint.o \
-	fcsim/box2d/Source/Dynamics/Joints/b2Joint.o \
-	fcsim/box2d/Source/Dynamics/Joints/b2MouseJoint.o \
-	fcsim/box2d/Source/Dynamics/Joints/b2PrismaticJoint.o \
-	fcsim/box2d/Source/Dynamics/Joints/b2PulleyJoint.o \
-	fcsim/box2d/Source/Dynamics/Joints/b2RevoluteJoint.o
+	fcsim/xml.o
 
 obj-y += $(obj-fcsim-y)
 obj-n += $(obj-fcsim-n)
 
-$(obj-fcsim-y): cflags-y += -Iinclude
+$(obj-fcsim-y): cflags-y += -Iinclude -Ibox2d/Include
+
+### box2d
+
+obj-box2d-y = \
+	box2d/Source/Collision/b2BroadPhase.o \
+	box2d/Source/Collision/b2CollideCircle.o \
+	box2d/Source/Collision/b2CollidePoly.o \
+	box2d/Source/Collision/b2Distance.o \
+	box2d/Source/Collision/b2PairManager.o \
+	box2d/Source/Collision/b2Shape.o \
+	box2d/Source/Common/b2BlockAllocator.o \
+	box2d/Source/Common/b2Settings.o \
+	box2d/Source/Common/b2StackAllocator.o \
+	box2d/Source/Dynamics/b2Body.o \
+	box2d/Source/Dynamics/b2ContactManager.o \
+	box2d/Source/Dynamics/b2Island.o \
+	box2d/Source/Dynamics/b2WorldCallbacks.o \
+	box2d/Source/Dynamics/b2World.o \
+	box2d/Source/Dynamics/Contacts/b2CircleContact.o \
+	box2d/Source/Dynamics/Contacts/b2Conservative.o \
+	box2d/Source/Dynamics/Contacts/b2Contact.o \
+	box2d/Source/Dynamics/Contacts/b2ContactSolver.o \
+	box2d/Source/Dynamics/Contacts/b2PolyAndCircleContact.o \
+	box2d/Source/Dynamics/Contacts/b2PolyContact.o \
+	box2d/Source/Dynamics/Joints/b2DistanceJoint.o \
+	box2d/Source/Dynamics/Joints/b2GearJoint.o \
+	box2d/Source/Dynamics/Joints/b2Joint.o \
+	box2d/Source/Dynamics/Joints/b2MouseJoint.o \
+	box2d/Source/Dynamics/Joints/b2PrismaticJoint.o \
+	box2d/Source/Dynamics/Joints/b2PulleyJoint.o \
+	box2d/Source/Dynamics/Joints/b2RevoluteJoint.o
+
+obj-y += $(obj-box2d-y)
+obj-n += $(obj-box2d-n)
+
+$(obj-box2d-y): cflags-y += -Iinclude
 
 ### glfw
 
-obj-glfw-y += stuff/glfw/src/context.o
-obj-glfw-y += stuff/glfw/src/egl_context.o
-obj-glfw-y += stuff/glfw/src/init.o
-obj-glfw-y += stuff/glfw/src/input.o
-obj-glfw-y += stuff/glfw/src/monitor.o
-obj-glfw-y += stuff/glfw/src/osmesa_context.o
-obj-glfw-y += stuff/glfw/src/vulkan.o
-obj-glfw-y += stuff/glfw/src/window.o
+obj-glfw-y += glfw/src/context.o
+obj-glfw-y += glfw/src/egl_context.o
+obj-glfw-y += glfw/src/init.o
+obj-glfw-y += glfw/src/input.o
+obj-glfw-y += glfw/src/monitor.o
+obj-glfw-y += glfw/src/osmesa_context.o
+obj-glfw-y += glfw/src/vulkan.o
+obj-glfw-y += glfw/src/window.o
 
-obj-glfw-$(win32) += stuff/glfw/src/wgl_context.o
-obj-glfw-$(win32) += stuff/glfw/src/win32_init.o
-obj-glfw-$(win32) += stuff/glfw/src/win32_joystick.o
-obj-glfw-$(win32) += stuff/glfw/src/win32_monitor.o
-obj-glfw-$(win32) += stuff/glfw/src/win32_thread.o
-obj-glfw-$(win32) += stuff/glfw/src/win32_time.o
-obj-glfw-$(win32) += stuff/glfw/src/win32_window.o
+obj-glfw-$(win32) += glfw/src/wgl_context.o
+obj-glfw-$(win32) += glfw/src/win32_init.o
+obj-glfw-$(win32) += glfw/src/win32_joystick.o
+obj-glfw-$(win32) += glfw/src/win32_monitor.o
+obj-glfw-$(win32) += glfw/src/win32_thread.o
+obj-glfw-$(win32) += glfw/src/win32_time.o
+obj-glfw-$(win32) += glfw/src/win32_window.o
 
-obj-glfw-$(linux) += stuff/glfw/src/linux_joystick.o
-obj-glfw-$(linux) += stuff/glfw/src/posix_thread.o
-obj-glfw-$(linux) += stuff/glfw/src/posix_time.o
-obj-glfw-$(linux) += stuff/glfw/src/xkb_unicode.o
+obj-glfw-$(linux) += glfw/src/linux_joystick.o
+obj-glfw-$(linux) += glfw/src/posix_thread.o
+obj-glfw-$(linux) += glfw/src/posix_time.o
+obj-glfw-$(linux) += glfw/src/xkb_unicode.o
 
-obj-glfw-$(x11) += stuff/glfw/src/glx_context.o
-obj-glfw-$(x11) += stuff/glfw/src/x11_init.o
-obj-glfw-$(x11) += stuff/glfw/src/x11_monitor.o
-obj-glfw-$(x11) += stuff/glfw/src/x11_window.o
+obj-glfw-$(x11) += glfw/src/glx_context.o
+obj-glfw-$(x11) += glfw/src/x11_init.o
+obj-glfw-$(x11) += glfw/src/x11_monitor.o
+obj-glfw-$(x11) += glfw/src/x11_window.o
 
-obj-glfw-$(wayland) += stuff/glfw/src/wl_init.o
-obj-glfw-$(wayland) += stuff/glfw/src/wl_monitor.o
-obj-glfw-$(wayland) += stuff/glfw/src/wl_window.o
+obj-glfw-$(wayland) += glfw/src/wl_init.o
+obj-glfw-$(wayland) += glfw/src/wl_monitor.o
+obj-glfw-$(wayland) += glfw/src/wl_window.o
 
-obj-glfw-n += stuff/glfw/src/cocoa_time.o
-obj-glfw-n += stuff/glfw/src/null_init.o
-obj-glfw-n += stuff/glfw/src/null_joystick.o
-obj-glfw-n += stuff/glfw/src/null_monitor.o
-obj-glfw-n += stuff/glfw/src/null_window.o
+obj-glfw-n += glfw/src/cocoa_time.o
+obj-glfw-n += glfw/src/null_init.o
+obj-glfw-n += glfw/src/null_joystick.o
+obj-glfw-n += glfw/src/null_monitor.o
+obj-glfw-n += glfw/src/null_window.o
 
 include glfw-wayland.mk
 
 obj-y += $(obj-glfw-y)
 obj-n += $(obj-glfw-n)
 
-$(obj-glfw-y): cflags-y += -Istuff/glfw/include
+$(obj-glfw-y): cflags-y += -Iglfw/include
 $(obj-glfw-y): cflags-$(win32)   += -D_GLFW_WIN32
 $(obj-glfw-y): cflags-$(x11)     += -D_GLFW_X11
 $(obj-glfw-y): cflags-$(wayland) += -D_GLFW_WAYLAND
 
 ### demo
 
-#obj-demo-y = \
-#	stuff/arena_layer.o \
-#	stuff/demo.o \
-#	stuff/file.o \
-#	stuff/http.o \
-#	stuff/load_layer.o \
-#	stuff/loader.o \
-#	stuff/runner.o \
-#	stuff/text.o \
-#	stuff/timer.o \
-#	stuff/ui.o
-
 obj-demo-y = \
-	stuff/watch.o \
-	stuff/file.o
+	stuff/arena_layer.o \
+	stuff/demo.o \
+	stuff/file.o \
+	stuff/http.o \
+	stuff/load_layer.o \
+	stuff/loader.o \
+	stuff/runner.o \
+	stuff/text.o \
+	stuff/timer.o \
+	stuff/ui.o
 
 obj-y += $(obj-demo-y)
 obj-n += $(obj-demo-n)
 
-$(obj-demo-y): cflags-y += -Iinclude -Istuff/glfw/include
+$(obj-demo-y): cflags-y += -Iinclude -Iglfw/include
 
 ### rules
 

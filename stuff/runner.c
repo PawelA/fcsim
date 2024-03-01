@@ -7,8 +7,9 @@
 #include "timer.h"
 
 struct execution {
-	struct fcsimn_level *level;
-	struct fcsimn_simul *simul;
+	struct fcsim_simul *simul;
+	int player_block_cnt;
+	int level_block_cnt;
 	uint64_t tick;
 	uint64_t won_tick;
 	struct runner_tick ticks[3];
@@ -67,13 +68,17 @@ static void execution_tick(struct execution *exec)
 	struct runner_tick *tick = &exec->ticks[exec->prod_idx];
 	int i;
 
-	fcsimn_step(exec->simul);
+	fcsim_step(exec->simul);
 	exec->tick++;
 
-	for (i = 0; i < exec->level->player_block_cnt) {
-	fcsim_get_block_stats(exec->handle, tick->stats);
+	for (i = 0; i < exec->player_block_cnt; i++)
+		fcsim_get_player_block_desc_simul(exec->simul, i, &tick->player_wheres[i]);
 
-	if (fcsim_has_won(arena, tick->stats)) {
+	for (i = 0; i < exec->level_block_cnt; i++)
+		fcsim_get_level_block_desc_simul(exec->simul, i, &tick->level_wheres[i]);
+
+	//if (fcsim_has_won(arena, tick->stats)) {
+	if (0) {
 		if (!exec->won_tick)
 			exec->won_tick = exec->tick;
 	}
@@ -83,22 +88,35 @@ static void execution_tick(struct execution *exec)
 	execution_produce(exec);
 }
 
-static void init_execution(struct execution *exec, struct fcsim_arena *arena)
+static void init_execution(struct execution *exec, struct fcsim_level *level)
 {
-	size_t wheres_size;
+	size_t player_wheres_size;
+	size_t level_wheres_size;
 	int i;
 
-	exec->handle = fcsim_new(arena);
+	exec->simul = fcsim_make_simul(level);
+	exec->player_block_cnt = level->player_block_cnt;
+	exec->level_block_cnt = level->level_block_cnt;
 	exec->tick = 0;
 	exec->won_tick = 0;
 
-	wheres_size = sizeof(struct fcsimn_where) * arena->block_cnt;
-	for (i = 0; i < 3; i++)
-		exec->ticks[i].wheres = malloc(wheres_size);
+	player_wheres_size = sizeof(struct fcsim_where) * level->player_block_cnt;
+	level_wheres_size = sizeof(struct fcsim_where) * level->level_block_cnt;
+	for (i = 0; i < 3; i++) {
+		exec->ticks[i].player_wheres = malloc(player_wheres_size);
+		exec->ticks[i].level_wheres = malloc(level_wheres_size);
+	}
 
-	//fcsimn_get_block_stats(exec->handle, exec->ticks[0].stats);
-	for (i = 0; i < 
-	fcsimn_get_block_desc_simul(
+	for (i = 0; i < level->player_block_cnt; i++) {
+		fcsim_get_player_block_desc_simul(exec->simul, i,
+						   &exec->ticks[0].player_wheres[i]);
+	}
+
+	for (i = 0; i < level->level_block_cnt; i++) {
+		fcsim_get_level_block_desc_simul(exec->simul, i,
+						  &exec->ticks[0].level_wheres[i]);
+	}
+
 	exec->ticks[0].index = 0;
 
 	exec->cons_idx = 0;
@@ -151,14 +169,14 @@ static void *thread_func(void *arg)
 
 struct runner *runner_create(void)
 {
-	struct fcsim_arena arena = { 0 };
+	struct fcsim_level level = { 0 };
 	struct runner *runner;
 
 	runner = malloc(sizeof(*runner));
 	if (!runner)
 		return runner;
 
-	init_execution(&runner->execs[0], &arena);
+	init_execution(&runner->execs[0], &level);
 	runner->exec_idx = 0;
 
 	runner->running = 0;
@@ -171,11 +189,11 @@ struct runner *runner_create(void)
 	return runner;
 }
 
-void runner_load(struct runner *runner, struct fcsim_arena *arena)
+void runner_load(struct runner *runner, struct fcsim_level *level)
 {
 	int new_exec_idx = !runner->exec_idx;
 
-	init_execution(&runner->execs[new_exec_idx], arena);
+	init_execution(&runner->execs[new_exec_idx], level);
 
 	pthread_mutex_lock(&runner->mutex);
 	runner->exec_idx = new_exec_idx;
