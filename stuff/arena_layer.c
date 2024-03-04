@@ -363,10 +363,12 @@ void arena_layer_mouse_button_event(struct arena_layer *arena_layer, struct mous
 	pixel_to_world(&arena_layer->view, x, y, &x_world, &y_world);
 
 	if (arena_layer->running) {
-		if (event->button == GLFW_MOUSE_BUTTON_LEFT)
-			arena_layer->drag.type = DRAG_PAN;
-		else
-			arena_layer->drag.type = DRAG_NONE;
+		if (event->button == GLFW_MOUSE_BUTTON_LEFT) {
+			if (event->action == GLFW_PRESS)
+				arena_layer->drag.type = DRAG_PAN;
+			else
+				arena_layer->drag.type = DRAG_NONE;
+		}
 	} else {
 		if (event->button == GLFW_MOUSE_BUTTON_LEFT) {
 			if (event->action == GLFW_PRESS) {
