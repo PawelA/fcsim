@@ -150,6 +150,11 @@ void arena_layer_init(struct arena_layer *arena_layer)
 	arena_layer->loaded = 0;
 	button_init(&arena_layer->load_button, "Load", 10, 10);
 	load_layer_init(&arena_layer->load_layer);
+	button_init(&arena_layer->r_button, "R", 200, 10);
+	button_init(&arena_layer->s_button, "S", 240, 10);
+	button_init(&arena_layer->w_button, "W", 280, 10);
+	button_init(&arena_layer->c_button, "C", 320, 10);
+	button_init(&arena_layer->u_button, "U", 360, 10);
 	arena_layer->runner = runner_create();
 	arena_layer->running = 0;
 	arena_layer->fast = 0;
@@ -204,9 +209,9 @@ void arena_layer_draw(struct arena_layer *arena_layer)
 
 			view = arena_layer->view;
 			draw_level(arena_layer, &tick);
-			text_draw_uint64(tick.index, 200, 10, the_ui_scale);
+			text_draw_uint64(tick.index, 500, 10, the_ui_scale);
 			if (won_tick)
-				text_draw_uint64(won_tick, 200, 50, the_ui_scale);
+				text_draw_uint64(won_tick, 500, 50, the_ui_scale);
 		} else {
 			struct runner_tick tick;
 
@@ -220,6 +225,14 @@ void arena_layer_draw(struct arena_layer *arena_layer)
 	draw_button(&arena_layer->load_button);
 	if (arena_layer->load_layer.open)
 		load_layer_draw(&arena_layer->load_layer);
+
+	if (arena_layer->loaded) {
+		draw_button(&arena_layer->r_button);
+		draw_button(&arena_layer->s_button);
+		draw_button(&arena_layer->w_button);
+		draw_button(&arena_layer->c_button);
+		draw_button(&arena_layer->u_button);
+	}
 }
 
 void arena_layer_show(struct arena_layer *arena_layer)
@@ -252,6 +265,16 @@ void arena_layer_key_event(struct arena_layer *arena_layer, struct key_event *ev
 		arena_layer_toggle_fast(arena_layer);
 }
 
+void move_block(struct fcsim_level *level, int id, float dx, float dy)
+{
+	struct fcsim_block *block = &level->player_blocks[id];
+
+	if (block->type == FCSIM_BLOCK_GOAL_RECT) {
+		block->jrect.x += dx;
+		block->jrect.y += dy;
+	}
+}
+
 void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 {
 	int x = the_cursor_x;
@@ -278,6 +301,11 @@ void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 		arena_layer->level.vertices[arena_layer->drag.vertex_id].y += dy_world;
 		arena_layer_update_descs(arena_layer);
 		break;
+	case DRAG_MOVE_BLOCK:
+		move_block(&arena_layer->level, arena_layer->drag.block_id,
+			   dx_world, dy_world);
+		arena_layer_update_descs(arena_layer);
+		break;
 	}
 
 	arena_layer->prev_x = x;
@@ -298,7 +326,7 @@ static float distance(float x0, float y0, float x1, float y1)
 	return sqrt(dx * dx + dy * dy);
 }
 
-int vertex_hit_test(struct fcsim_level *level, float x, float y, struct fcsim_joint *joint)
+int joint_hit_test(struct fcsim_level *level, float x, float y, struct fcsim_joint *joint)
 {
 	struct fcsim_joint joints[5];
 	int joint_cnt;
@@ -387,14 +415,14 @@ void resolve_draggable(struct fcsim_level *level,
 
 	block = &level->player_blocks[joint->derived.block_id];
 	switch (block->type) {
-	case FCSIM_GOAL_RECT:
+	case FCSIM_BLOCK_GOAL_RECT:
 		draggable->type = DRAGGABLE_BLOCK;
 		draggable->id = joint->derived.block_id;
 		break;
-	case FCSIM_GOAL_CIRC:
-	case FCSIM_WHEEL:
-	case FCSIM_CW_WHEEL:
-	case FCSIM_CCW_WHEEL:
+	case FCSIM_BLOCK_GOAL_CIRC:
+	case FCSIM_BLOCK_WHEEL:
+	case FCSIM_BLOCK_CW_WHEEL:
+	case FCSIM_BLOCK_CCW_WHEEL:
 		resolve_draggable(level, &block->wheel.center, draggable);
 		break;
 	}
@@ -431,10 +459,17 @@ void arena_layer_mouse_button_event(struct arena_layer *arena_layer, struct mous
 				struct fcsim_joint joint;
 				int res;
 
-				res = vertex_hit_test(&arena_layer->level, x_world, y_world, &joint);
+				res = joint_hit_test(&arena_layer->level, x_world, y_world, &joint);
 				if (res) {
-					arena_layer->drag.type = DRAG_MOVE_VERTEX;
-					arena_layer->drag.vertex_id = joint.free.vertex_id;
+					struct draggable draggable;
+					resolve_draggable(&arena_layer->level, &joint, &draggable);
+					if (draggable.type == DRAGGABLE_VERTEX) {
+						arena_layer->drag.type = DRAG_MOVE_VERTEX;
+						arena_layer->drag.vertex_id = draggable.id;
+					} else {
+						arena_layer->drag.type = DRAG_MOVE_BLOCK;
+						arena_layer->drag.block_id = draggable.id;
+					}
 				} else {
 					arena_layer->drag.type = DRAG_PAN;
 				}

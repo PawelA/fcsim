@@ -29,6 +29,12 @@ struct arena_layer {
 	struct button load_button;
 	struct load_layer load_layer;
 
+	struct button r_button;
+	struct button s_button;
+	struct button w_button;
+	struct button c_button;
+	struct button u_button;
+
 	struct runner *runner;
 	int running;
 
