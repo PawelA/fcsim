@@ -118,7 +118,7 @@ static void draw_block(struct fcsim_shape *shape, struct fcsim_where *where, int
 {
 	struct color *color = &block_colors[type];
 
-	if (shape->type == FCSIMN_SHAPE_CIRC)
+	if (shape->type == FCSIM_SHAPE_CIRC)
 		draw_circ(&shape->circ, where, color);
 	else
 		draw_rect(&shape->rect, where, color);
@@ -273,7 +273,7 @@ void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 		arena_layer->view.x -= dx_world;
 		arena_layer->view.y -= dy_world;
 		break;
-	case DRAG_MOVE_JOINT:
+	case DRAG_MOVE_VERTEX:
 		arena_layer->level.vertices[arena_layer->drag.vertex_id].x += dx_world;
 		arena_layer->level.vertices[arena_layer->drag.vertex_id].y += dy_world;
 		arena_layer_update_descs(arena_layer);
@@ -298,28 +298,48 @@ static float distance(float x0, float y0, float x1, float y1)
 	return sqrt(dx * dx + dy * dy);
 }
 
-int vertex_hit_test(struct fcsim_level *level, float x, float y)
+int vertex_hit_test(struct fcsim_level *level, float x, float y, struct fcsim_joint *joint)
 {
-	struct fcsim_vertex *vert;
-	int i;
+	struct fcsim_joint joints[5];
+	int joint_cnt;
+	double jx, jy;
+	int i, j;
 
-	for (i = level->vertex_cnt - 1; i >= 0; i--) {
-		vert = &level->vertices[i];
-		if (distance(vert->x, vert->y, x, y) < 10.0f)
-			return i;
+	for (i = level->player_block_cnt - 1; i >= 0; i--) {
+		joint_cnt = fcsim_get_player_block_joints(level, i, joints);
+		for (j = 0; j < joint_cnt; j++) {
+			fcsim_get_joint_pos(level, &joints[j], &jx, &jy);
+			if (distance(jx, jy, x, y) < 10.0f) {
+				*joint = joints[j];
+				return 1;
+			}
+		}
 	}
 
-	return -1;
-}
-
-int rect_hit_test(struct fcsim_shape *shape, struct fcsim_where *where, float x, float y)
-{
 	return 0;
 }
 
-int circ_hit_test(struct fcsim_shape *shape, struct fcsim_where *where, float x, float y)
+int rect_hit_test(struct fcsim_shape_rect *rect,
+		  struct fcsim_where *where, float x, float y)
 {
-	return distance(where->x, where->y, x, y) < shape->circ.radius;
+	float dx = where->x - x;
+	float dy = where->y - y;
+	float s = sinf(where->angle);
+	float c = cosf(where->angle);
+	float dx_t =  dx * c + dy * s;
+	float dy_t = -dx * s + dy * c;
+
+	return fabsf(dx_t) < rect->w && fabsf(dy_t) < rect->h;
+}
+
+int circ_hit_test(struct fcsim_shape_circ *circ,
+		  struct fcsim_where *where, float x, float y)
+{
+	float dx = where->x - x;
+	float dy = where->y - y;
+	float r = circ->radius;
+
+	return dx * dx + dy * dy < r * r;
 }
 
 int player_block_hit_test(struct arena_layer *arena_layer, float x, float y)
@@ -333,15 +353,51 @@ int player_block_hit_test(struct arena_layer *arena_layer, float x, float y)
 	for (i = level->player_block_cnt - 1; i >= 0; i--) {
 		shape = &arena_layer->player_shapes[i];
 		where = &arena_layer->player_wheres[i];
-		if (shape->type == FCSIMN_SHAPE_CIRC)
-			res = circ_hit_test(shape, where, x, y);
+		if (shape->type == FCSIM_SHAPE_CIRC)
+			res = circ_hit_test(&shape->circ, where, x, y);
 		else
-			res = rect_hit_test(shape, where, x, y);
+			res = rect_hit_test(&shape->rect, where, x, y);
 		if (res)
 			return i;
 	}
 
 	return -1;
+}
+
+enum draggable_type {
+	DRAGGABLE_VERTEX,
+	DRAGGABLE_BLOCK,
+};
+
+struct draggable {
+	enum draggable_type type;
+	int id;
+};
+
+void resolve_draggable(struct fcsim_level *level,
+		       struct fcsim_joint *joint, struct draggable *draggable)
+{
+	struct fcsim_block *block;
+	
+	if (joint->type == FCSIM_JOINT_FREE) {
+		draggable->type = DRAGGABLE_VERTEX;
+		draggable->id = joint->free.vertex_id;
+		return;
+	}
+
+	block = &level->player_blocks[joint->derived.block_id];
+	switch (block->type) {
+	case FCSIM_GOAL_RECT:
+		draggable->type = DRAGGABLE_BLOCK;
+		draggable->id = joint->derived.block_id;
+		break;
+	case FCSIM_GOAL_CIRC:
+	case FCSIM_WHEEL:
+	case FCSIM_CW_WHEEL:
+	case FCSIM_CCW_WHEEL:
+		resolve_draggable(level, &block->wheel.center, draggable);
+		break;
+	}
 }
 
 void arena_layer_mouse_button_event(struct arena_layer *arena_layer, struct mouse_button_event *event)
@@ -372,15 +428,22 @@ void arena_layer_mouse_button_event(struct arena_layer *arena_layer, struct mous
 	} else {
 		if (event->button == GLFW_MOUSE_BUTTON_LEFT) {
 			if (event->action == GLFW_PRESS) {
-				vert_id = vertex_hit_test(&arena_layer->level, x_world, y_world);
-				if (vert_id == -1) {
-					arena_layer->drag.type = DRAG_PAN;
+				struct fcsim_joint joint;
+				int res;
+
+				res = vertex_hit_test(&arena_layer->level, x_world, y_world, &joint);
+				if (res) {
+					arena_layer->drag.type = DRAG_MOVE_VERTEX;
+					arena_layer->drag.vertex_id = joint.free.vertex_id;
 				} else {
-					arena_layer->drag.type = DRAG_MOVE_JOINT;
-					arena_layer->drag.vertex_id = vert_id;
+					arena_layer->drag.type = DRAG_PAN;
 				}
 			} else {
 				arena_layer->drag.type = DRAG_NONE;
+			}
+		} else if (event->button == GLFW_MOUSE_BUTTON_RIGHT) {
+			if (event->action == GLFW_PRESS) {
+				//...
 			}
 		}
 	}

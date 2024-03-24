@@ -1,5 +1,5 @@
-#ifndef __FCSIMN_H__
-#define __FCSIMN_H__
+#ifndef __FCSIM_H__
+#define __FCSIM_H__
 
 struct fcsim_vertex {
 	double x;
@@ -7,8 +7,8 @@ struct fcsim_vertex {
 };
 
 enum fcsim_joint_type {
-	FCSIMN_JOINT_FREE,
-	FCSIMN_JOINT_DERIVED,
+	FCSIM_JOINT_FREE,
+	FCSIM_JOINT_DERIVED,
 };
 
 struct fcsim_free_joint {
@@ -29,17 +29,17 @@ struct fcsim_joint {
 };
 
 enum fcsim_block_type {
-	FCSIMN_BLOCK_STAT_RECT,
-	FCSIMN_BLOCK_DYN_RECT,
-	FCSIMN_BLOCK_STAT_CIRC,
-	FCSIMN_BLOCK_DYN_CIRC,
-	FCSIMN_BLOCK_GOAL_RECT,
-	FCSIMN_BLOCK_GOAL_CIRC,
-	FCSIMN_BLOCK_WHEEL,
-	FCSIMN_BLOCK_CW_WHEEL,
-	FCSIMN_BLOCK_CCW_WHEEL,
-	FCSIMN_BLOCK_ROD,
-	FCSIMN_BLOCK_SOLID_ROD,
+	FCSIM_BLOCK_STAT_RECT,
+	FCSIM_BLOCK_DYN_RECT,
+	FCSIM_BLOCK_STAT_CIRC,
+	FCSIM_BLOCK_DYN_CIRC,
+	FCSIM_BLOCK_GOAL_RECT,
+	FCSIM_BLOCK_GOAL_CIRC,
+	FCSIM_BLOCK_WHEEL,
+	FCSIM_BLOCK_CW_WHEEL,
+	FCSIM_BLOCK_CCW_WHEEL,
+	FCSIM_BLOCK_ROD,
+	FCSIM_BLOCK_SOLID_ROD,
 };
 
 struct fcsim_rod {
@@ -103,8 +103,8 @@ struct fcsim_level {
 struct fcsim_simul;
 
 enum fcsim_shape_type {
-	FCSIMN_SHAPE_CIRC,
-	FCSIMN_SHAPE_RECT,
+	FCSIM_SHAPE_CIRC,
+	FCSIM_SHAPE_RECT,
 };
 
 struct fcsim_shape_circ {
@@ -138,15 +138,23 @@ struct fcsim_simul *fcsim_make_simul(struct fcsim_level *level);
 
 void fcsim_step(struct fcsim_simul *simul);
 
-void fcsim_get_level_block_desc(struct fcsim_level *level, int id, struct fcsim_shape *shape, struct fcsim_where *where);
-void fcsim_get_player_block_desc(struct fcsim_level *level, int id, struct fcsim_shape *shape, struct fcsim_where *where);
+void fcsim_get_level_block_desc(struct fcsim_level *level, int id,
+				struct fcsim_shape *shape, struct fcsim_where *where);
 
-void fcsim_get_level_block_desc_simul(struct fcsim_simul *simul, int id, struct fcsim_where *where);
-void fcsim_get_player_block_desc_simul(struct fcsim_simul *simul, int id, struct fcsim_where *where);
+void fcsim_get_player_block_desc(struct fcsim_level *level, int id,
+				 struct fcsim_shape *shape, struct fcsim_where *where);
 
-int fcsim_get_player_block_joints(struct fcsim_level *level, int id, struct fcsim_joint *joints);
+void fcsim_get_level_block_desc_simul(struct fcsim_simul *simul, int id,
+				      struct fcsim_where *where);
 
-void fcsim_get_joint_pos(struct fcsim_level *level, struct fcsim_joint *joint, double *x, double *y);
+void fcsim_get_player_block_desc_simul(struct fcsim_simul *simul, int id,
+				       struct fcsim_where *where);
+
+int fcsim_get_player_block_joints(struct fcsim_level *level, int id,
+				  struct fcsim_joint *joints);
+
+void fcsim_get_joint_pos(struct fcsim_level *level,
+			 struct fcsim_joint *joint, double *x, double *y);
 
 #ifdef __cplusplus
 };

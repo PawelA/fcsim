@@ -99,12 +99,12 @@ static void get_derived_joint_pos(struct fcsim_level *level,
 
 	block = &level->player_blocks[joint->block_id];
 	switch (block->type) {
-	case FCSIMN_BLOCK_GOAL_RECT:
+	case FCSIM_BLOCK_GOAL_RECT:
 		return get_jrect_derived_joint_pos(&block->jrect, joint->index, x, y);
-	case FCSIMN_BLOCK_GOAL_CIRC:
-	case FCSIMN_BLOCK_WHEEL:
-	case FCSIMN_BLOCK_CW_WHEEL:
-	case FCSIMN_BLOCK_CCW_WHEEL:
+	case FCSIM_BLOCK_GOAL_CIRC:
+	case FCSIM_BLOCK_WHEEL:
+	case FCSIM_BLOCK_CW_WHEEL:
+	case FCSIM_BLOCK_CCW_WHEEL:
 		return get_wheel_derived_joint_pos(level, &block->wheel, joint->index, x, y);
 	}
 }
@@ -114,9 +114,9 @@ void fcsim_get_joint_pos(struct fcsim_level *level,
 			  double *x, double *y)
 {
 	switch (joint->type) {
-	case FCSIMN_JOINT_FREE:
+	case FCSIM_JOINT_FREE:
 		return get_free_joint_pos(level, &joint->free, x, y);
-	case FCSIMN_JOINT_DERIVED:
+	case FCSIM_JOINT_DERIVED:
 		return get_derived_joint_pos(level, &joint->derived, x, y);
 	}
 }
@@ -127,31 +127,31 @@ int fcsim_get_player_block_joints(struct fcsim_level *level, int id, struct fcsi
 	int i;
 
 	switch (block->type) {
-	case FCSIMN_BLOCK_STAT_RECT:
-	case FCSIMN_BLOCK_DYN_RECT:
-	case FCSIMN_BLOCK_STAT_CIRC:
-	case FCSIMN_BLOCK_DYN_CIRC:
+	case FCSIM_BLOCK_STAT_RECT:
+	case FCSIM_BLOCK_DYN_RECT:
+	case FCSIM_BLOCK_STAT_CIRC:
+	case FCSIM_BLOCK_DYN_CIRC:
 		return 0;
-	case FCSIMN_BLOCK_GOAL_RECT:
+	case FCSIM_BLOCK_GOAL_RECT:
 		for (i = 0; i < 5; i++) {
-			joints[i].type = FCSIMN_JOINT_DERIVED;
+			joints[i].type = FCSIM_JOINT_DERIVED;
 			joints[i].derived.block_id = id;
 			joints[i].derived.index = i;
 		}
 		return 5;
-	case FCSIMN_BLOCK_GOAL_CIRC:
-	case FCSIMN_BLOCK_WHEEL:
-	case FCSIMN_BLOCK_CW_WHEEL:
-	case FCSIMN_BLOCK_CCW_WHEEL:
+	case FCSIM_BLOCK_GOAL_CIRC:
+	case FCSIM_BLOCK_WHEEL:
+	case FCSIM_BLOCK_CW_WHEEL:
+	case FCSIM_BLOCK_CCW_WHEEL:
 		joints[0] = block->wheel.center;
 		for (i = 0; i < 4; i++) {
-			joints[i+1].type = FCSIMN_JOINT_DERIVED;
+			joints[i+1].type = FCSIM_JOINT_DERIVED;
 			joints[i+1].derived.block_id = id;
 			joints[i+1].derived.index = i;
 		}
 		return 5;
-	case FCSIMN_BLOCK_ROD:
-	case FCSIMN_BLOCK_SOLID_ROD:
+	case FCSIM_BLOCK_ROD:
+	case FCSIM_BLOCK_SOLID_ROD:
 		joints[0] = block->rod.from;
 		joints[1] = block->rod.to;
 		return 2;
@@ -213,10 +213,10 @@ static int add_circ(struct fcsim_level *level, struct xml_block *xml_block)
 
 	switch (xml_block->type) {
 	case XML_STATIC_CIRCLE:
-		block->type = FCSIMN_BLOCK_STAT_CIRC;
+		block->type = FCSIM_BLOCK_STAT_CIRC;
 		break;
 	case XML_DYNAMIC_CIRCLE:
-		block->type = FCSIMN_BLOCK_DYN_CIRC;
+		block->type = FCSIM_BLOCK_DYN_CIRC;
 		break;
 	default:
 		return -1;
@@ -238,10 +238,10 @@ static int add_rect(struct fcsim_level *level, struct xml_block *xml_block)
 
 	switch (xml_block->type) {
 	case XML_STATIC_RECTANGLE:
-		block->type = FCSIMN_BLOCK_STAT_RECT;
+		block->type = FCSIM_BLOCK_STAT_RECT;
 		break;
 	case XML_DYNAMIC_RECTANGLE:
-		block->type = FCSIMN_BLOCK_DYN_RECT;
+		block->type = FCSIM_BLOCK_DYN_RECT;
 		break;
 	default:
 		return -1;
@@ -263,7 +263,7 @@ static int add_jrect(struct fcsim_level *level, struct xml_block *xml_block)
 	block = &level->player_blocks[level->player_block_cnt];
 	level->player_block_cnt++;
 
-	block->type = FCSIMN_BLOCK_GOAL_RECT;
+	block->type = FCSIM_BLOCK_GOAL_RECT;
 	block->jrect.x = xml_block->position.x;
 	block->jrect.y = xml_block->position.y;
 	block->jrect.w = xml_block->width;
@@ -280,7 +280,7 @@ static void create_free_joint(struct fcsim_level *level, double x, double y, str
 	vertex = &level->vertices[level->vertex_cnt];
 	vertex->x = x;
 	vertex->y = y;
-	joint->type = FCSIMN_JOINT_FREE;
+	joint->type = FCSIM_JOINT_FREE;
 	joint->free.vertex_id = level->vertex_cnt;
 	level->vertex_cnt++;
 }
@@ -299,15 +299,15 @@ static int add_wheel(struct fcsim_level *level, struct xml_block *xml_block)
 	switch (xml_block->type) {
 	case XML_NO_SPIN_WHEEL:
 		if (xml_block->goal_block)
-			block->type = FCSIMN_BLOCK_GOAL_CIRC;
+			block->type = FCSIM_BLOCK_GOAL_CIRC;
 		else
-			block->type = FCSIMN_BLOCK_WHEEL;
+			block->type = FCSIM_BLOCK_WHEEL;
 		break;
 	case XML_CLOCKWISE_WHEEL:
-		block->type = FCSIMN_BLOCK_CW_WHEEL;
+		block->type = FCSIM_BLOCK_CW_WHEEL;
 		break;
 	case XML_COUNTER_CLOCKWISE_WHEEL:
-		block->type = FCSIMN_BLOCK_CCW_WHEEL;
+		block->type = FCSIM_BLOCK_CCW_WHEEL;
 		break;
 	default:
 		return -1;
@@ -349,7 +349,7 @@ static int joints_equal(struct fcsim_joint *j0, struct fcsim_joint *j1)
 	if (j0->type != j1->type)
 		return 0;
 
-	if (j0->type == FCSIMN_JOINT_FREE)
+	if (j0->type == FCSIM_JOINT_FREE)
 		return j0->free.vertex_id == j1->free.vertex_id;
 	else
 		return j0->derived.block_id == j1->derived.block_id &&
@@ -393,10 +393,10 @@ static int add_rod(struct fcsim_level *level, struct xml_block *xml_block)
 
 	switch (xml_block->type) {
 	case XML_SOLID_ROD:
-		block->type = FCSIMN_BLOCK_SOLID_ROD;
+		block->type = FCSIM_BLOCK_SOLID_ROD;
 		break;
 	case XML_HOLLOW_ROD:
-		block->type = FCSIMN_BLOCK_ROD;
+		block->type = FCSIM_BLOCK_ROD;
 		break;
 	default:
 		return -1;

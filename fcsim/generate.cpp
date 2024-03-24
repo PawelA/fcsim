@@ -40,7 +40,7 @@ static int joints_equal(struct fcsim_joint *j0, struct fcsim_joint *j1)
 	if (j0->type != j1->type)
 		return 0;
 
-	if (j0->type == FCSIMN_JOINT_FREE)
+	if (j0->type == FCSIM_JOINT_FREE)
 		return j0->free.vertex_id == j1->free.vertex_id;
 	else
 		return j0->derived.block_id == j1->derived.block_id &&
@@ -221,7 +221,7 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 	b2BodyDef body_def;
 	double x, y, angle;
 
-	if (shape->type == FCSIMN_SHAPE_CIRC) {
+	if (shape->type == FCSIM_SHAPE_CIRC) {
 		circle_def.radius = shape->circ.radius;
 		shape_def = &circle_def;
 	} else {
@@ -261,7 +261,7 @@ static void generate_joint(b2World *world, b2Body *b1, b2Body *b2, double x, dou
 
 static void get_rect_desc(struct fcsim_rect *rect, struct fcsim_shape *shape, struct fcsim_where *where)
 {
-	shape->type = FCSIMN_SHAPE_RECT;
+	shape->type = FCSIM_SHAPE_RECT;
 	shape->rect.w = rect->w;
 	shape->rect.h = rect->h;
 	where->x = rect->x;
@@ -271,7 +271,7 @@ static void get_rect_desc(struct fcsim_rect *rect, struct fcsim_shape *shape, st
 
 static void get_circ_desc(struct fcsim_circ *circ, struct fcsim_shape *shape, struct fcsim_where *where)
 {
-	shape->type = FCSIMN_SHAPE_CIRC;
+	shape->type = FCSIM_SHAPE_CIRC;
 	shape->circ.radius = circ->radius;
 	where->x = circ->x;
 	where->y = circ->y;
@@ -288,7 +288,7 @@ static double distance(double x1, double y1, double x2, double y2)
 
 static void get_jrect_desc(struct fcsim_jrect *jrect, struct fcsim_shape *shape, struct fcsim_where *where)
 {
-	shape->type = FCSIMN_SHAPE_RECT;
+	shape->type = FCSIM_SHAPE_RECT;
 	shape->rect.w = jrect->w;
 	shape->rect.h = jrect->h;
 	where->x = jrect->x;
@@ -302,7 +302,7 @@ static void get_wheel_desc(struct fcsim_level *level, struct fcsim_wheel *wheel,
 
 	fcsim_get_joint_pos(level, &wheel->center, &x, &y);
 
-	shape->type = FCSIMN_SHAPE_CIRC;
+	shape->type = FCSIM_SHAPE_CIRC;
 	shape->circ.radius = wheel->radius;
 	where->x = x;
 	where->y = y;
@@ -316,7 +316,7 @@ static void get_rod_desc(struct fcsim_level *level, struct fcsim_rod *rod, int s
 	fcsim_get_joint_pos(level, &rod->from, &x0, &y0);
 	fcsim_get_joint_pos(level, &rod->to, &x1, &y1);
 
-	shape->type = FCSIMN_SHAPE_RECT;
+	shape->type = FCSIM_SHAPE_RECT;
 	shape->rect.w = distance(x0, y0, x1, y1);
 	shape->rect.h = solid ? 8.0 : 4.0;
 	where->x = x0 + (x1 - x0) / 2.0;
@@ -329,12 +329,12 @@ void fcsim_get_level_block_desc(struct fcsim_level *level, int id, struct fcsim_
 	struct fcsim_block *block = &level->level_blocks[id];
 
 	switch (block->type) {
-	case FCSIMN_BLOCK_STAT_RECT:
-	case FCSIMN_BLOCK_DYN_RECT:
+	case FCSIM_BLOCK_STAT_RECT:
+	case FCSIM_BLOCK_DYN_RECT:
 		get_rect_desc(&block->rect, shape, where);
 		break;
-	case FCSIMN_BLOCK_STAT_CIRC:
-	case FCSIMN_BLOCK_DYN_CIRC:
+	case FCSIM_BLOCK_STAT_CIRC:
+	case FCSIM_BLOCK_DYN_CIRC:
 		get_circ_desc(&block->circ, shape, where);
 		break;
 	}
@@ -345,19 +345,19 @@ void fcsim_get_player_block_desc(struct fcsim_level *level, int id, struct fcsim
 	struct fcsim_block *block = &level->player_blocks[id];
 
 	switch (block->type) {
-	case FCSIMN_BLOCK_GOAL_RECT:
+	case FCSIM_BLOCK_GOAL_RECT:
 		get_jrect_desc(&block->jrect, shape, where);
 		break;
-	case FCSIMN_BLOCK_GOAL_CIRC:
-	case FCSIMN_BLOCK_WHEEL:
-	case FCSIMN_BLOCK_CW_WHEEL:
-	case FCSIMN_BLOCK_CCW_WHEEL:
+	case FCSIM_BLOCK_GOAL_CIRC:
+	case FCSIM_BLOCK_WHEEL:
+	case FCSIM_BLOCK_CW_WHEEL:
+	case FCSIM_BLOCK_CCW_WHEEL:
 		get_wheel_desc(level, &block->wheel, shape, where);
 		break;
-	case FCSIMN_BLOCK_ROD:
+	case FCSIM_BLOCK_ROD:
 		get_rod_desc(level, &block->rod, 0, shape, where);
 		break;
-	case FCSIMN_BLOCK_SOLID_ROD:
+	case FCSIM_BLOCK_SOLID_ROD:
 		get_rod_desc(level, &block->rod, 1, shape, where);
 		break;
 	}
@@ -366,25 +366,25 @@ void fcsim_get_player_block_desc(struct fcsim_level *level, int id, struct fcsim
 static void get_block_phys(struct fcsim_block *block, struct block_physics *phys)
 {
 	switch (block->type) {
-	case FCSIMN_BLOCK_STAT_RECT:
-	case FCSIMN_BLOCK_STAT_CIRC:
+	case FCSIM_BLOCK_STAT_RECT:
+	case FCSIM_BLOCK_STAT_CIRC:
 		*phys = stat_phys;
 		break;
-	case FCSIMN_BLOCK_DYN_RECT:
-	case FCSIMN_BLOCK_DYN_CIRC:
+	case FCSIM_BLOCK_DYN_RECT:
+	case FCSIM_BLOCK_DYN_CIRC:
 		*phys = dyn_phys;
 		break;
-	case FCSIMN_BLOCK_GOAL_RECT:
-	case FCSIMN_BLOCK_GOAL_CIRC:
-	case FCSIMN_BLOCK_WHEEL:
-	case FCSIMN_BLOCK_CW_WHEEL:
-	case FCSIMN_BLOCK_CCW_WHEEL:
+	case FCSIM_BLOCK_GOAL_RECT:
+	case FCSIM_BLOCK_GOAL_CIRC:
+	case FCSIM_BLOCK_WHEEL:
+	case FCSIM_BLOCK_CW_WHEEL:
+	case FCSIM_BLOCK_CCW_WHEEL:
 		*phys = player_phys;
 		break;
-	case FCSIMN_BLOCK_ROD:
+	case FCSIM_BLOCK_ROD:
 		*phys = rod_phys;
 		break;
-	case FCSIMN_BLOCK_SOLID_ROD:
+	case FCSIM_BLOCK_SOLID_ROD:
 		*phys = solid_rod_phys;
 		break;
 	}
@@ -461,20 +461,20 @@ static void generate_joints(struct fcsim_simul *simul, struct fcsim_level *level
 
 	fcsim_get_joint_pos(level, joint, &x, &y);
 
-	if (joint->type == FCSIMN_JOINT_FREE) {
+	if (joint->type == FCSIM_JOINT_FREE) {
 		block = &level->player_blocks[bodies->block_id];
-		if (block->type == FCSIMN_BLOCK_CW_WHEEL)
+		if (block->type == FCSIM_BLOCK_CW_WHEEL)
 			first_speed = 5;
-		if (block->type == FCSIMN_BLOCK_CCW_WHEEL)
+		if (block->type == FCSIM_BLOCK_CCW_WHEEL)
 			first_speed = -5;
 	}
 
 	for (; bodies->next; bodies = bodies->next) {
 		block = &level->player_blocks[bodies->next->block_id];
 		speed = 0;
-		if (block->type == FCSIMN_BLOCK_CW_WHEEL)
+		if (block->type == FCSIM_BLOCK_CW_WHEEL)
 			speed = 5;
-		if (block->type == FCSIMN_BLOCK_CCW_WHEEL)
+		if (block->type == FCSIM_BLOCK_CCW_WHEEL)
 			speed = -5;
 		generate_joint(&simul->world,
 			       simul->player_block_bodies[bodies->block_id],

@@ -8,12 +8,14 @@ struct arena_view {
 enum drag_type {
 	DRAG_NONE,
 	DRAG_PAN,
-	DRAG_MOVE_JOINT,
+	DRAG_MOVE_VERTEX,
+	DRAG_MOVE_BLOCK,
 };
 
 struct drag_action {
 	enum drag_type type;
 	int vertex_id;
+	int block_id;
 };
 
 struct arena_layer {
