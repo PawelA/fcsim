@@ -31,7 +31,7 @@ int32 b2World_s_enableWarmStarting = 1;
 
 void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep)
 {
-	new (&world->m_blockAllocator) b2BlockAllocator();
+	b2BlockAllocator_ctor(&world->m_blockAllocator);
 	new (&world->m_stackAllocator) b2StackAllocator();
 	new (&world->m_contactManager) b2ContactManager();
 
@@ -79,7 +79,7 @@ void b2World_SetFilter(b2World *world, b2CollisionFilter* filter)
 
 b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def)
 {
-	void* mem = world->m_blockAllocator.Allocate(sizeof(b2Body));
+	void* mem = b2BlockAllocator_Allocate(&world->m_blockAllocator, sizeof(b2Body));
 	b2Body* b = new (mem) b2Body(def, world);
 	b->m_prev = NULL;
 
@@ -157,7 +157,7 @@ void b2World_CleanBodyList(b2World *world)
 		}
 
 		b0->~b2Body();
-		world->m_blockAllocator.Free(b0, sizeof(b2Body));
+		b2BlockAllocator_Free(&world->m_blockAllocator, b0, sizeof(b2Body));
 	}
 
 	// Reset the list.

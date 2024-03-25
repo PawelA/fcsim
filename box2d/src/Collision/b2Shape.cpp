@@ -206,14 +206,14 @@ b2Shape* b2Shape::Create(const b2ShapeDef* def,
 	{
 	case e_circleShape:
 		{
-			void* mem = body->m_world->m_blockAllocator.Allocate(sizeof(b2CircleShape));
+			void* mem = b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2CircleShape));
 			return new (mem) b2CircleShape(def, body, center);
 		}
 
 	case e_boxShape:
 	case e_polyShape:
 		{
-			void* mem = body->m_world->m_blockAllocator.Allocate(sizeof(b2PolyShape));
+			void* mem = b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2PolyShape));
 			return new (mem) b2PolyShape(def, body, center);
 		}
 	}
@@ -230,11 +230,11 @@ void b2Shape::Destroy(b2Shape*& shape)
 	switch (shape->m_type)
 	{
 	case e_circleShape:
-		allocator.Free(shape, sizeof(b2CircleShape));
+		b2BlockAllocator_Free(&allocator, shape, sizeof(b2CircleShape));
 		break;
 
 	case e_polyShape:
-		allocator.Free(shape, sizeof(b2PolyShape));
+		b2BlockAllocator_Free(&allocator, shape, sizeof(b2PolyShape));
 		break;
 
 	default:

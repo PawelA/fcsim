@@ -25,14 +25,14 @@
 
 b2Contact* b2PolyContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
 {
-	void* mem = allocator->Allocate(sizeof(b2PolyContact));
+	void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2PolyContact));
 	return new (mem) b2PolyContact(shape1, shape2);
 }
 
 void b2PolyContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 {
 	((b2PolyContact*)contact)->~b2PolyContact();
-	allocator->Free(contact, sizeof(b2PolyContact));
+	b2BlockAllocator_Free(allocator, contact, sizeof(b2PolyContact));
 }
 
 b2PolyContact::b2PolyContact(b2Shape* s1, b2Shape* s2)

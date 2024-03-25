@@ -23,14 +23,14 @@
 
 b2Contact* b2CircleContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
 {
-	void* mem = allocator->Allocate(sizeof(b2CircleContact));
+	void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2CircleContact));
 	return new (mem) b2CircleContact(shape1, shape2);
 }
 
 void b2CircleContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 {
 	((b2CircleContact*)contact)->~b2CircleContact();
-	allocator->Free(contact, sizeof(b2CircleContact));
+	b2BlockAllocator_Free(allocator, contact, sizeof(b2CircleContact));
 }
 
 b2CircleContact::b2CircleContact(b2Shape* s1, b2Shape* s2)
