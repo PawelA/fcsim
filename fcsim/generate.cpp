@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <fcsim.h>
-#include <Box2D.h>
+#include <Dynamics/b2World.h>
+#include <Dynamics/b2Body.h>
+#include <Dynamics/Joints/b2RevoluteJoint.h>
 
 struct fcsim_simul {
 	b2World world;
@@ -149,8 +151,8 @@ static void init_b2world(b2World *world)
 	gravity.Set(0, 300);
 	aabb.minVertex.Set(-2000, -1450);
 	aabb.maxVertex.Set(2000, 1450);
-	new (world) b2World(aabb, gravity, true);
-	world->SetFilter(&fcsim_collision_filter);
+	b2World_ctor(world, aabb, gravity, true);
+	b2World_SetFilter(world, &fcsim_collision_filter);
 }
 
 struct block_physics {
@@ -240,7 +242,7 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 	body_def.angularDamping = phys->angular_damping;
 	body_def.AddShape(shape_def);
 
-	return world->CreateBody(&body_def);
+	return b2World_CreateBody(world, &body_def);
 }
 
 static void generate_joint(b2World *world, b2Body *b1, b2Body *b2, double x, double y, int spin)
@@ -256,7 +258,7 @@ static void generate_joint(b2World *world, b2Body *b1, b2Body *b2, double x, dou
 		joint_def.motorSpeed = spin;
 		joint_def.enableMotor = true;
 	}
-	world->CreateJoint(&joint_def);
+	b2World_CreateJoint(world, &joint_def);
 }
 
 static void get_rect_desc(struct fcsim_rect *rect, struct fcsim_shape *shape, struct fcsim_where *where)
@@ -537,16 +539,16 @@ struct fcsim_simul *fcsim_make_simul(struct fcsim_level *level)
 
 void fcsim_step(struct fcsim_simul *simul)
 {
-	simul->world.Step(1.0 / 30.0, 10);
+	b2World_Step(&simul->world, 1.0 / 30.0, 10);
 
-	b2Joint *joint = simul->world.GetJointList();
+	b2Joint *joint = b2World_GetJointList(&simul->world);
 	while (joint) {
 		b2Joint *next = joint->GetNext();
 		b2Vec2 a1 = joint->GetAnchor1();
 		b2Vec2 a2 = joint->GetAnchor2();
 		b2Vec2 d = a1 - a2;
 		if (fabs(d.x) + fabs(d.y) > 50.0)
-			simul->world.DestroyJoint(joint);
+			b2World_DestroyJoint(&simul->world, joint);
 		joint = next;
 	}
 }

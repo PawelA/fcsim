@@ -146,7 +146,7 @@ void b2ContactSolver::PreSolve()
 		b2Vec2 normal = c->normal;
 		b2Vec2 tangent = b2Cross(normal, 1.0);
 
-		if (b2World::s_enableWarmStarting)
+		if (b2World_s_enableWarmStarting)
 		{
 			for (int32 j = 0; j < c->pointCount; ++j)
 			{

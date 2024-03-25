@@ -28,61 +28,21 @@
 struct b2AABB;
 struct b2BodyDef;
 struct b2JointDef;
-class b2Body;
-class b2Joint;
-class b2Shape;
-class b2Contact;
-class b2BroadPhase;
+struct b2Body;
+struct b2Joint;
+struct b2Shape;
+struct b2Contact;
+struct b2BroadPhase;
 
-struct b2TimeStep
-{
-	float64 dt;			// time step
+typedef struct b2TimeStep b2TimeStep;
+struct b2TimeStep {
+	float64 dt;		// time step
 	float64 inv_dt;		// inverse time step (0 if dt == 0).
 	int32 iterations;
 };
 
-class b2World
-{
-public:
-	b2World(const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep);
-	~b2World();
-
-	// Register a world listener to receive important events that can
-	// help prevent your code from crashing.
-	void SetListener(b2WorldListener* listener);
-
-	// Register a collision filter to provide specific control over collision.
-	// Otherwise the default filter is used (b2CollisionFilter).
-	void SetFilter(b2CollisionFilter* filter);
-
-	// Create and destroy rigid bodies. Destruction is deferred until the
-	// the next call to Step. This is done so that bodies may be destroyed
-	// while you iterate through the contact list.
-	b2Body* CreateBody(const b2BodyDef* def);
-	void DestroyBody(b2Body* body);
-
-	b2Joint* CreateJoint(const b2JointDef* def);
-	void DestroyJoint(b2Joint* joint);
-
-	// The world provides a single ground body with no collision shapes. You
-	// can use this to simplify the creation of joints.
-	b2Body* GetGroundBody();
-
-	void Step(float64 timeStep, int32 iterations);
-
-	// Query the world for all shapes that potentially overlap the
-	// provided AABB. You provide a shape pointer buffer of specified
-	// size. The number of shapes found is returned.
-	int32 Query(const b2AABB& aabb, b2Shape** shapes, int32 maxCount);
-
-	// You can use these to iterate over all the bodies, joints, and contacts.
-	b2Body* GetBodyList();
-	b2Joint* GetJointList();
-	b2Contact* GetContactList();
-
-	//--------------- Internals Below -------------------
-
-	void CleanBodyList();
+typedef struct b2World b2World;
+struct b2World {
 
 	b2BlockAllocator m_blockAllocator;
 	b2StackAllocator m_stackAllocator;
@@ -110,29 +70,69 @@ public:
 	b2CollisionFilter* m_filter;
 
 	int32 m_positionIterationCount;
-
-	static int32 s_enablePositionCorrection;
-	static int32 s_enableWarmStarting;
 };
 
-inline b2Body* b2World::GetGroundBody()
+void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep);
+void b2World_dtor(b2World *world);
+
+// Register a world listener to receive important events that can
+// help prevent your code from crashing.
+void b2World_SetListener(b2World *world, b2WorldListener* listener);
+
+// Register a collision filter to provide specific control over collision.
+// Otherwise the default filter is used (b2CollisionFilter).
+void b2World_SetFilter(b2World *world, b2CollisionFilter* filter);
+
+// Create and destroy rigid bodies. Destruction is deferred until the
+// the next call to Step. This is done so that bodies may be destroyed
+// while you iterate through the contact list.
+b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def);
+void b2World_DestroyBody(b2World *world, b2Body* body);
+
+b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def);
+void b2World_DestroyJoint(b2World *world, b2Joint* joint);
+
+// The world provides a single ground body with no collision shapes. You
+// can use this to simplify the creation of joints.
+b2Body* b2World_GetGroundBody(b2World *world);
+
+void b2World_Step(b2World *world, float64 timeStep, int32 iterations);
+
+// Query the world for all shapes that potentially overlap the
+// provided AABB. You provide a shape pointer buffer of specified
+// size. The number of shapes found is returned.
+int32 b2World_Query(b2World *world, const b2AABB& aabb, b2Shape** shapes, int32 maxCount);
+
+// You can use these to iterate over all the bodies, joints, and contacts.
+b2Body* b2World_GetBodyList(b2World *world);
+b2Joint* b2World_GetJointList(b2World *world);
+b2Contact* b2World_GetContactList(b2World *world);
+
+//--------------- Internals Below -------------------
+
+void b2World_CleanBodyList(b2World *world);
+
+extern int32 b2World_s_enablePositionCorrection;
+extern int32 b2World_s_enableWarmStarting;
+
+inline b2Body* b2World_GetGroundBody(b2World *world)
 {
-	return m_groundBody;
+	return world->m_groundBody;
 }
 
-inline b2Body* b2World::GetBodyList()
+inline b2Body* b2World_GetBodyList(b2World *world)
 {
-	return m_bodyList;
+	return world->m_bodyList;
 }
 
-inline b2Joint* b2World::GetJointList()
+inline b2Joint* b2World_GetJointList(b2World *world)
 {
-	return m_jointList;
+	return world->m_jointList;
 }
 
-inline b2Contact* b2World::GetContactList()
+inline b2Contact* b2World_GetContactList(b2World *world)
 {
-	return m_contactList;
+	return world->m_contactList;
 }
 
 #endif

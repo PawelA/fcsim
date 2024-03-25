@@ -26,72 +26,76 @@
 #include <Collision/b2Shape.h>
 #include <new>
 
-int32 b2World::s_enablePositionCorrection = 1;
-int32 b2World::s_enableWarmStarting = 1;
+int32 b2World_s_enablePositionCorrection = 1;
+int32 b2World_s_enableWarmStarting = 1;
 
-b2World::b2World(const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep)
+void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep)
 {
-	m_listener = NULL;
-	m_filter = &b2_defaultFilter;
+	new (&world->m_blockAllocator) b2BlockAllocator();
+	new (&world->m_stackAllocator) b2StackAllocator();
+	new (&world->m_contactManager) b2ContactManager();
 
-	m_bodyList = NULL;
-	m_contactList = NULL;
-	m_jointList = NULL;
+	world->m_listener = NULL;
+	world->m_filter = &b2_defaultFilter;
 
-	m_bodyCount = 0;
-	m_contactCount = 0;
-	m_jointCount = 0;
+	world->m_bodyList = NULL;
+	world->m_contactList = NULL;
+	world->m_jointList = NULL;
 
-	m_bodyDestroyList = NULL;
+	world->m_bodyCount = 0;
+	world->m_contactCount = 0;
+	world->m_jointCount = 0;
 
-	m_allowSleep = doSleep;
+	world->m_bodyDestroyList = NULL;
 
-	m_gravity = gravity;
+	world->m_allowSleep = doSleep;
 
-	m_contactManager.m_world = this;
+	world->m_gravity = gravity;
+
+	world->m_contactManager.m_world = world;
 	void* mem = b2Alloc(sizeof(b2BroadPhase));
-	m_broadPhase = new (mem) b2BroadPhase(worldAABB, &m_contactManager);
+	world->m_broadPhase = new (mem) b2BroadPhase(worldAABB, &world->m_contactManager);
 
 	b2BodyDef bd;
-	m_groundBody = CreateBody(&bd);
+	world->m_groundBody = b2World_CreateBody(world, &bd);
 }
 
-b2World::~b2World()
+void b2World_dtor(b2World *world)
 {
-	DestroyBody(m_groundBody);
-	m_broadPhase->~b2BroadPhase();
-	b2Free(m_broadPhase);
+	b2World_DestroyBody(world, world->m_groundBody);
+	world->m_broadPhase->~b2BroadPhase();
+	b2Free(world->m_broadPhase);
 }
 
-void b2World::SetListener(b2WorldListener* listener)
+void b2World_SetListener(b2World *world, b2WorldListener* listener)
 {
-	m_listener = listener;
+	world->m_listener = listener;
 }
 
-void b2World::SetFilter(b2CollisionFilter* filter)
+void b2World_SetFilter(b2World *world, b2CollisionFilter* filter)
 {
-	m_filter = filter;
+	world->m_filter = filter;
 }
 
-b2Body* b2World::CreateBody(const b2BodyDef* def)
+b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def)
 {
-	void* mem = m_blockAllocator.Allocate(sizeof(b2Body));
-	b2Body* b = new (mem) b2Body(def, this);
+	void* mem = world->m_blockAllocator.Allocate(sizeof(b2Body));
+	b2Body* b = new (mem) b2Body(def, world);
 	b->m_prev = NULL;
 
-	b->m_next = m_bodyList;
-	if (m_bodyList)
+	b->m_next = world->m_bodyList;
+	if (world->m_bodyList)
 	{
-		m_bodyList->m_prev = b;
+		world->m_bodyList->m_prev = b;
 	}
-	m_bodyList = b;
-	++m_bodyCount;
+	world->m_bodyList = b;
+	++world->m_bodyCount;
 
 	return b;
 }
 
 // Body destruction is deferred to make contact processing more robust.
-void b2World::DestroyBody(b2Body* b)
+void b2World_DestroyBody(b2World *world, b2Body* b)
 {
 	if (b->m_flags & b2Body::e_destroyFlag)
 	{
@@ -109,26 +113,26 @@ void b2World::DestroyBody(b2Body* b)
 		b->m_next->m_prev = b->m_prev;
 	}
 
-	if (b == m_bodyList)
+	if (b == world->m_bodyList)
 	{
-		m_bodyList = b->m_next;
+		world->m_bodyList = b->m_next;
 	}
 
 	b->m_flags |= b2Body::e_destroyFlag;
-	b2Assert(m_bodyCount > 0);
-	--m_bodyCount;
+	b2Assert(world->m_bodyCount > 0);
+	--world->m_bodyCount;
 
 	// Add to the deferred destruction list.
 	b->m_prev = NULL;
-	b->m_next = m_bodyDestroyList;
-	m_bodyDestroyList = b;
+	b->m_next = world->m_bodyDestroyList;
+	world->m_bodyDestroyList = b;
 }
 
-void b2World::CleanBodyList()
+void b2World_CleanBodyList(b2World *world)
 {
-	m_contactManager.m_destroyImmediate = true;
+	world->m_contactManager.m_destroyImmediate = true;
 
-	b2Body* b = m_bodyDestroyList;
+	b2Body* b = world->m_bodyDestroyList;
 	while (b)
 	{
 		b2Assert((b->m_flags & b2Body::e_destroyFlag) != 0);
@@ -144,37 +148,37 @@ void b2World::CleanBodyList()
 			b2JointNode* jn0 = jn;
 			jn = jn->next;
 
-			if (m_listener)
+			if (world->m_listener)
 			{
-				m_listener->NotifyJointDestroyed(jn0->joint);
+				world->m_listener->NotifyJointDestroyed(jn0->joint);
 			}
 
-			DestroyJoint(jn0->joint);
+			b2World_DestroyJoint(world, jn0->joint);
 		}
 
 		b0->~b2Body();
-		m_blockAllocator.Free(b0, sizeof(b2Body));
+		world->m_blockAllocator.Free(b0, sizeof(b2Body));
 	}
 
 	// Reset the list.
-	m_bodyDestroyList = NULL;
+	world->m_bodyDestroyList = NULL;
 
-	m_contactManager.m_destroyImmediate = false;
+	world->m_contactManager.m_destroyImmediate = false;
 }
 
-b2Joint* b2World::CreateJoint(const b2JointDef* def)
+b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def)
 {
-	b2Joint* j = b2Joint::Create(def, &m_blockAllocator);
+	b2Joint* j = b2Joint::Create(def, &world->m_blockAllocator);
 
 	// Connect to the world list.
 	j->m_prev = NULL;
-	j->m_next = m_jointList;
-	if (m_jointList)
+	j->m_next = world->m_jointList;
+	if (world->m_jointList)
 	{
-		m_jointList->m_prev = j;
+		world->m_jointList->m_prev = j;
 	}
-	m_jointList = j;
-	++m_jointCount;
+	world->m_jointList = j;
+	++world->m_jointCount;
 
 	// Connect to the bodies
 	j->m_node1.joint = j;
@@ -198,14 +202,14 @@ b2Joint* b2World::CreateJoint(const b2JointDef* def)
 		b2Body* b = def->body1->m_shapeCount < def->body2->m_shapeCount ? def->body1 : def->body2;
 		for (b2Shape* s = b->m_shapeList; s; s = s->m_next)
 		{
-			s->ResetProxy(m_broadPhase);
+			s->ResetProxy(world->m_broadPhase);
 		}
 	}
 
 	return j;
 }
 
-void b2World::DestroyJoint(b2Joint* j)
+void b2World_DestroyJoint(b2World *world, b2Joint* j)
 {
 	bool collideConnected = j->m_collideConnected;
 
@@ -220,9 +224,9 @@ void b2World::DestroyJoint(b2Joint* j)
 		j->m_next->m_prev = j->m_prev;
 	}
 
-	if (j == m_jointList)
+	if (j == world->m_jointList)
 	{
-		m_jointList = j->m_next;
+		world->m_jointList = j->m_next;
 	}
 
 	// Disconnect from island graph.
@@ -271,10 +275,10 @@ void b2World::DestroyJoint(b2Joint* j)
 	j->m_node2.prev = NULL;
 	j->m_node2.next = NULL;
 
-	b2Joint::Destroy(j, &m_blockAllocator);
+	b2Joint::Destroy(j, &world->m_blockAllocator);
 
-	b2Assert(m_jointCount > 0);
-	--m_jointCount;
+	b2Assert(world->m_jointCount > 0);
+	--world->m_jointCount;
 
 	// If the joint prevents collisions, then reset collision filtering.
 	if (collideConnected == false)
@@ -283,12 +287,12 @@ void b2World::DestroyJoint(b2Joint* j)
 		b2Body* b = body1->m_shapeCount < body2->m_shapeCount ? body1 : body2;
 		for (b2Shape* s = b->m_shapeList; s; s = s->m_next)
 		{
-			s->ResetProxy(m_broadPhase);
+			s->ResetProxy(world->m_broadPhase);
 		}
 	}
 }
 
-void b2World::Step(float64 dt, int32 iterations)
+void b2World_Step(b2World *world, float64 dt, int32 iterations)
 {
 	b2TimeStep step;
 	step.dt = dt;
@@ -302,38 +306,38 @@ void b2World::Step(float64 dt, int32 iterations)
 		step.inv_dt = 0.0;
 	}
 
-	m_positionIterationCount = 0;
+	world->m_positionIterationCount = 0;
 
 	// Handle deferred contact destruction.
-	m_contactManager.CleanContactList();
+	world->m_contactManager.CleanContactList();
 
 	// Handle deferred body destruction.
-	CleanBodyList();
+	b2World_CleanBodyList(world);
 
 	// Update contacts.
-	m_contactManager.Collide();
+	world->m_contactManager.Collide();
 
 	// Size the island for the worst case.
-	b2Island island(m_bodyCount, m_contactCount, m_jointCount, &m_stackAllocator);
+	b2Island island(world->m_bodyCount, world->m_contactCount, world->m_jointCount, &world->m_stackAllocator);
 
 	// Clear all the island flags.
-	for (b2Body* b = m_bodyList; b; b = b->m_next)
+	for (b2Body* b = world->m_bodyList; b; b = b->m_next)
 	{
 		b->m_flags &= ~b2Body::e_islandFlag;
 	}
-	for (b2Contact* c = m_contactList; c; c = c->m_next)
+	for (b2Contact* c = world->m_contactList; c; c = c->m_next)
 	{
 		c->m_flags &= ~b2Contact::e_islandFlag;
 	}
-	for (b2Joint* j = m_jointList; j; j = j->m_next)
+	for (b2Joint* j = world->m_jointList; j; j = j->m_next)
 	{
 		j->m_islandFlag = false;
 	}
 	
 	// Build and simulate all awake islands.
-	int32 stackSize = m_bodyCount;
-	b2Body** stack = (b2Body**)m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
-	for (b2Body* seed = m_bodyList; seed; seed = seed->m_next)
+	int32 stackSize = world->m_bodyCount;
+	b2Body** stack = (b2Body**)world->m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
+	for (b2Body* seed = world->m_bodyList; seed; seed = seed->m_next)
 	{
 		if (seed->m_flags & (b2Body::e_staticFlag | b2Body::e_islandFlag | b2Body::e_sleepFlag | b2Body::e_frozenFlag))
 		{
@@ -408,11 +412,11 @@ void b2World::Step(float64 dt, int32 iterations)
 			}
 		}
 
-		island.Solve(&step, m_gravity);
+		island.Solve(&step, world->m_gravity);
 		
-		m_positionIterationCount = b2Max(m_positionIterationCount, island.m_positionIterationCount);
+		world->m_positionIterationCount = b2Max(world->m_positionIterationCount, island.m_positionIterationCount);
 
-		if (m_allowSleep)
+		if (world->m_allowSleep)
 		{
 			island.UpdateSleep(dt);
 		}
@@ -428,12 +432,12 @@ void b2World::Step(float64 dt, int32 iterations)
 			}
 
 			// Handle newly frozen bodies.
-			if (b->IsFrozen() && m_listener)
+			if (b->IsFrozen() && world->m_listener)
 			{
-				b2BoundaryResponse response = m_listener->NotifyBoundaryViolated(b);
+				b2BoundaryResponse response = world->m_listener->NotifyBoundaryViolated(b);
 				if (response == b2_destroyBody)
 				{
-					DestroyBody(b);
+					b2World_DestroyBody(world, b);
 					b = NULL;
 					island.m_bodies[i] = NULL;
 				}
@@ -441,12 +445,12 @@ void b2World::Step(float64 dt, int32 iterations)
 		}
 	}
 
-	m_stackAllocator.Free(stack);
+	world->m_stackAllocator.Free(stack);
 
-	m_broadPhase->Commit();
+	world->m_broadPhase->Commit();
 	
 #if 0
-	for (b2Contact* c = m_contactList; c; c = c->GetNext())
+	for (b2Contact* c = world->m_contactList; c; c = c->GetNext())
 	{
 		b2Shape* shape1 = c->GetShape1();
 		b2Shape* shape2 = c->GetShape2();
@@ -463,17 +467,17 @@ void b2World::Step(float64 dt, int32 iterations)
 #endif
 }
 
-int32 b2World::Query(const b2AABB& aabb, b2Shape** shapes, int32 maxCount)
+int32 b2World_Query(b2World *world, const b2AABB& aabb, b2Shape** shapes, int32 maxCount)
 {
-	void** results = (void**)m_stackAllocator.Allocate(maxCount * sizeof(void*));
+	void** results = (void**)world->m_stackAllocator.Allocate(maxCount * sizeof(void*));
 
-	int32 count = m_broadPhase->Query(aabb, results, maxCount);
+	int32 count = world->m_broadPhase->Query(aabb, results, maxCount);
 
 	for (int32 i = 0; i < count; ++i)
 	{
 		shapes[i] = (b2Shape*)results[i];
 	}
 
-	m_stackAllocator.Free(results);
+	world->m_stackAllocator.Free(results);
 	return count;
 }
