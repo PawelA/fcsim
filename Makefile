@@ -47,43 +47,43 @@ obj-fcsim-y = \
 obj-y += $(obj-fcsim-y)
 obj-n += $(obj-fcsim-n)
 
-$(obj-fcsim-y): cflags-y += -Iinclude -Ibox2d/Include
+$(obj-fcsim-y): cflags-y += -Iinclude -Ibox2d/include
 
 ### box2d
 
 obj-box2d-y = \
-	box2d/Source/Collision/b2BroadPhase.o \
-	box2d/Source/Collision/b2CollideCircle.o \
-	box2d/Source/Collision/b2CollidePoly.o \
-	box2d/Source/Collision/b2Distance.o \
-	box2d/Source/Collision/b2PairManager.o \
-	box2d/Source/Collision/b2Shape.o \
-	box2d/Source/Common/b2BlockAllocator.o \
-	box2d/Source/Common/b2Settings.o \
-	box2d/Source/Common/b2StackAllocator.o \
-	box2d/Source/Dynamics/b2Body.o \
-	box2d/Source/Dynamics/b2ContactManager.o \
-	box2d/Source/Dynamics/b2Island.o \
-	box2d/Source/Dynamics/b2WorldCallbacks.o \
-	box2d/Source/Dynamics/b2World.o \
-	box2d/Source/Dynamics/Contacts/b2CircleContact.o \
-	box2d/Source/Dynamics/Contacts/b2Conservative.o \
-	box2d/Source/Dynamics/Contacts/b2Contact.o \
-	box2d/Source/Dynamics/Contacts/b2ContactSolver.o \
-	box2d/Source/Dynamics/Contacts/b2PolyAndCircleContact.o \
-	box2d/Source/Dynamics/Contacts/b2PolyContact.o \
-	box2d/Source/Dynamics/Joints/b2DistanceJoint.o \
-	box2d/Source/Dynamics/Joints/b2GearJoint.o \
-	box2d/Source/Dynamics/Joints/b2Joint.o \
-	box2d/Source/Dynamics/Joints/b2MouseJoint.o \
-	box2d/Source/Dynamics/Joints/b2PrismaticJoint.o \
-	box2d/Source/Dynamics/Joints/b2PulleyJoint.o \
-	box2d/Source/Dynamics/Joints/b2RevoluteJoint.o
+	box2d/src/Collision/b2BroadPhase.o \
+	box2d/src/Collision/b2CollideCircle.o \
+	box2d/src/Collision/b2CollidePoly.o \
+	box2d/src/Collision/b2Distance.o \
+	box2d/src/Collision/b2PairManager.o \
+	box2d/src/Collision/b2Shape.o \
+	box2d/src/Common/b2BlockAllocator.o \
+	box2d/src/Common/b2Settings.o \
+	box2d/src/Common/b2StackAllocator.o \
+	box2d/src/Dynamics/b2Body.o \
+	box2d/src/Dynamics/b2ContactManager.o \
+	box2d/src/Dynamics/b2Island.o \
+	box2d/src/Dynamics/b2WorldCallbacks.o \
+	box2d/src/Dynamics/b2World.o \
+	box2d/src/Dynamics/Contacts/b2CircleContact.o \
+	box2d/src/Dynamics/Contacts/b2Conservative.o \
+	box2d/src/Dynamics/Contacts/b2Contact.o \
+	box2d/src/Dynamics/Contacts/b2ContactSolver.o \
+	box2d/src/Dynamics/Contacts/b2PolyAndCircleContact.o \
+	box2d/src/Dynamics/Contacts/b2PolyContact.o \
+	box2d/src/Dynamics/Joints/b2DistanceJoint.o \
+	box2d/src/Dynamics/Joints/b2GearJoint.o \
+	box2d/src/Dynamics/Joints/b2Joint.o \
+	box2d/src/Dynamics/Joints/b2MouseJoint.o \
+	box2d/src/Dynamics/Joints/b2PrismaticJoint.o \
+	box2d/src/Dynamics/Joints/b2PulleyJoint.o \
+	box2d/src/Dynamics/Joints/b2RevoluteJoint.o
 
 obj-y += $(obj-box2d-y)
 obj-n += $(obj-box2d-n)
 
-$(obj-box2d-y): cflags-y += -Iinclude
+$(obj-box2d-y): cflags-y += -Iinclude -Ibox2d/include
 
 ### glfw
 
