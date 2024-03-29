@@ -84,7 +84,7 @@ void b2RevoluteJoint::PrepareVelocitySolver()
 	K3.col1.y = -invI2 * r2.x * r2.y;	K3.col2.y =  invI2 * r2.x * r2.x;
 
 	b2Mat22 K = K1 + K2 + K3;
-	m_ptpMass = K.Invert();
+	m_ptpMass = b2Mat22_Invert(&K);
 
 	m_motorMass = 1.0 / (invI1 + invI2);
 

@@ -84,7 +84,7 @@ void b2MouseJoint::PrepareVelocitySolver()
 	K.col1.x += m_gamma;
 	K.col2.y += m_gamma;
 
-	m_ptpMass = K.Invert();
+	m_ptpMass = b2Mat22_Invert(&K);
 
 	m_C = b->m_position + r - m_target;
 

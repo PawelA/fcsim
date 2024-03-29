@@ -103,18 +103,6 @@ struct b2Mat22
 		col1.y = s; col2.y = c;
 	}
 
-	b2Mat22 Invert() const
-	{
-		float64 a = col1.x, b = col2.x, c = col1.y, d = col2.y;
-		b2Mat22 B;
-		float64 det = a * d - b * c;
-		b2Assert(det != 0.0);
-		det = 1.0 / det;
-		B.col1.x =  det * d;	B.col2.x = -det * b;
-		B.col1.y = -det * c;	B.col2.y =  det * a;
-		return B;
-	}
-
 	// Solve A * x = b
 	b2Vec2 Solve(const b2Vec2& b) const
 	{
@@ -148,6 +136,18 @@ static void b2Mat22_SetIdentity(b2Mat22 *m)
 {
 	m->col1.x = 1.0; m->col2.x = 0.0;
 	m->col1.y = 0.0; m->col2.y = 1.0;
+}
+
+static b2Mat22 b2Mat22_Invert(b2Mat22 *m)
+{
+	float64 a = m->col1.x, b = m->col2.x, c = m->col1.y, d = m->col2.y;
+	b2Mat22 B;
+	float64 det = a * d - b * c;
+	b2Assert(det != 0.0);
+	det = 1.0 / det;
+	B.col1.x =  det * d;	B.col2.x = -det * b;
+	B.col1.y = -det * c;	B.col2.y =  det * a;
+	return B;
 }
 
 
