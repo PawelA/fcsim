@@ -103,19 +103,6 @@ struct b2Mat22
 		col1.y = s; col2.y = c;
 	}
 
-	// Solve A * x = b
-	b2Vec2 Solve(const b2Vec2& b) const
-	{
-		float64 a11 = col1.x, a12 = col2.x, a21 = col1.y, a22 = col2.y;
-		float64 det = a11 * a22 - a12 * a21;
-		b2Assert(det != 0.0);
-		det = 1.0 / det;
-		b2Vec2 x;
-		x.x = det * (a22 * b.x - a12 * b.y);
-		x.y = det * (a11 * b.y - a21 * b.x);
-		return x;
-	}
-
 	b2Vec2 col1, col2;
 };
 
@@ -148,6 +135,19 @@ static b2Mat22 b2Mat22_Invert(b2Mat22 *m)
 	B.col1.x =  det * d;	B.col2.x = -det * b;
 	B.col1.y = -det * c;	B.col2.y =  det * a;
 	return B;
+}
+
+// Solve A * x = b
+static b2Vec2 b2Mat22_Solve(b2Mat22 *m, const b2Vec2& b)
+{
+	float64 a11 = m->col1.x, a12 = m->col2.x, a21 = m->col1.y, a22 = m->col2.y;
+	float64 det = a11 * a22 - a12 * a21;
+	b2Assert(det != 0.0);
+	det = 1.0 / det;
+	b2Vec2 x;
+	x.x = det * (a22 * b.x - a12 * b.y);
+	x.y = det * (a11 * b.y - a21 * b.x);
+	return x;
 }
 
 

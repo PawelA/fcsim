@@ -239,7 +239,7 @@ bool b2RevoluteJoint::SolvePositionConstraints()
 	K3.col1.y = -invI2 * r2.x * r2.y;	K3.col2.y =  invI2 * r2.x * r2.x;
 
 	b2Mat22 K = K1 + K2 + K3;
-	b2Vec2 impulse = K.Solve(-ptpC);
+	b2Vec2 impulse = b2Mat22_Solve(&K, -ptpC);
 
 	b1->m_position -= b1->m_invMass * impulse;
 	b1->m_rotation -= b1->m_invI * b2Cross(r1, impulse);
