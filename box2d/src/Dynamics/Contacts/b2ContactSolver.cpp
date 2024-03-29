@@ -32,7 +32,7 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 		m_constraintCount += contacts[i]->GetManifoldCount();
 	}
 
-	m_constraints = (b2ContactConstraint*)m_allocator->Allocate(m_constraintCount * sizeof(b2ContactConstraint));
+	m_constraints = (b2ContactConstraint*)b2StackAllocator_Allocate(m_allocator, m_constraintCount * sizeof(b2ContactConstraint));
 
 	int32 count = 0;
 	for (int32 i = 0; i < contactCount; ++i)

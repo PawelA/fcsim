@@ -33,27 +33,27 @@ void b2StackAllocator_dtor(struct b2StackAllocator *allocator)
 	b2Assert(allocator->m_entryCount == 0);
 }
 
-void* b2StackAllocator::Allocate(int32 size)
+void* b2StackAllocator_Allocate(struct b2StackAllocator *allocator, int32 size)
 {
-	b2Assert(m_entryCount < b2_maxStackEntries);
+	b2Assert(allocator->m_entryCount < b2_maxStackEntries);
 
-	b2StackEntry* entry = m_entries + m_entryCount;
+	b2StackEntry* entry = allocator->m_entries + allocator->m_entryCount;
 	entry->size = size;
-	if (m_index + size > b2_stackSize)
+	if (allocator->m_index + size > b2_stackSize)
 	{
 		entry->data = (char*)b2Alloc(size);
 		entry->usedMalloc = true;
 	}
 	else
 	{
-		entry->data = m_data + m_index;
+		entry->data = allocator->m_data + allocator->m_index;
 		entry->usedMalloc = false;
-		m_index += size;
+		allocator->m_index += size;
 	}
 
-	m_allocation += size;
-	m_maxAllocation = b2Max(m_maxAllocation, m_allocation);
-	++m_entryCount;
+	allocator->m_allocation += size;
+	allocator->m_maxAllocation = b2Max(allocator->m_maxAllocation, allocator->m_allocation);
+	++allocator->m_entryCount;
 
 	return entry->data;
 }

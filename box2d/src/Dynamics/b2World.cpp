@@ -338,7 +338,7 @@ void b2World::Step(float64 dt, int32 iterations)
 	
 	// Build and simulate all awake islands.
 	int32 stackSize = m_bodyCount;
-	b2Body** stack = (b2Body**)m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
+	b2Body** stack = (b2Body**)b2StackAllocator_Allocate(&m_stackAllocator, stackSize * sizeof(b2Body*));
 	for (b2Body* seed = m_bodyList; seed; seed = seed->m_next)
 	{
 		if (seed->m_flags & (b2Body::e_staticFlag | b2Body::e_islandFlag | b2Body::e_sleepFlag | b2Body::e_frozenFlag))
@@ -471,7 +471,7 @@ void b2World::Step(float64 dt, int32 iterations)
 
 int32 b2World::Query(const b2AABB& aabb, b2Shape** shapes, int32 maxCount)
 {
-	void** results = (void**)m_stackAllocator.Allocate(maxCount * sizeof(void*));
+	void** results = (void**)b2StackAllocator_Allocate(&m_stackAllocator, maxCount * sizeof(void*));
 
 	int32 count = m_broadPhase->Query(aabb, results, maxCount);
 

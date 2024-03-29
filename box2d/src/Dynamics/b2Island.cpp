@@ -114,9 +114,9 @@ b2Island::b2Island(int32 bodyCapacity, int32 contactCapacity, int32 jointCapacit
 	m_contactCount = 0;
 	m_jointCount = 0;
 
-	m_bodies = (b2Body**)allocator->Allocate(bodyCapacity * sizeof(b2Body*));
-	m_contacts = (b2Contact**)allocator->Allocate(contactCapacity	 * sizeof(b2Contact*));
-	m_joints = (b2Joint**)allocator->Allocate(jointCapacity * sizeof(b2Joint*));
+	m_bodies = (b2Body**)b2StackAllocator_Allocate(allocator, bodyCapacity * sizeof(b2Body*));
+	m_contacts = (b2Contact**)b2StackAllocator_Allocate(allocator, contactCapacity * sizeof(b2Contact*));
+	m_joints = (b2Joint**)b2StackAllocator_Allocate(allocator, jointCapacity * sizeof(b2Joint*));
 
 	m_allocator = allocator;
 }
