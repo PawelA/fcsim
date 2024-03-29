@@ -27,7 +27,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 	m_flags = 0;
 	m_position = bd->position;
 	m_rotation = bd->rotation;
-	m_R.Set(m_rotation);
+	b2Mat22_SetAngle(&m_R, m_rotation);
 	m_position0 = m_position;
 	m_rotation0 = m_rotation;
 	m_world = world;
@@ -155,7 +155,7 @@ void b2Body::SetOriginPosition(const b2Vec2& position, float64 rotation)
 	}
 
 	m_rotation = rotation;
-	m_R.Set(m_rotation);
+	b2Mat22_SetAngle(&m_R, m_rotation);
 	m_position = position + b2Mul(m_R, m_center);
 
 	m_position0 = m_position;
@@ -177,7 +177,7 @@ void b2Body::SetCenterPosition(const b2Vec2& position, float64 rotation)
 	}
 
 	m_rotation = rotation;
-	m_R.Set(m_rotation);
+	b2Mat22_SetAngle(&m_R, m_rotation);
 	m_position = position;
 
 	m_position0 = m_position;

@@ -281,9 +281,9 @@ bool b2PrismaticJoint::SolvePositionConstraints()
 	float64 angularImpulse = -m_angularMass * angularC;
 
 	b1->m_rotation -= b1->m_invI * angularImpulse;
-	b1->m_R.Set(b1->m_rotation);
+	b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
 	b2->m_rotation += b2->m_invI * angularImpulse;
-	b2->m_R.Set(b2->m_rotation);
+	b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 
 	float64 angularError = b2Abs(angularC);
 
@@ -334,10 +334,10 @@ bool b2PrismaticJoint::SolvePositionConstraints()
 
 		b1->m_position += (invMass1 * limitImpulse) * m_motorJacobian.linear1;
 		b1->m_rotation += invI1 * limitImpulse * m_motorJacobian.angular1;
-		b1->m_R.Set(b1->m_rotation);
+		b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
 		b2->m_position += (invMass2 * limitImpulse) * m_motorJacobian.linear2;
 		b2->m_rotation += invI2 * limitImpulse * m_motorJacobian.angular2;
-		b2->m_R.Set(b2->m_rotation);
+		b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 	}
 
 	return positionError <= b2_linearSlop && angularError <= b2_angularSlop;

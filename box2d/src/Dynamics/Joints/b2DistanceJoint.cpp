@@ -119,8 +119,8 @@ bool b2DistanceJoint::SolvePositionConstraints()
 	m_body2->m_position += m_body2->m_invMass * P;
 	m_body2->m_rotation += m_body2->m_invI * b2Cross(r2, P);
 
-	m_body1->m_R.Set(m_body1->m_rotation);
-	m_body2->m_R.Set(m_body2->m_rotation);
+	b2Mat22_SetAngle(&m_body1->m_R, m_body1->m_rotation);
+	b2Mat22_SetAngle(&m_body2->m_R, m_body2->m_rotation);
 
 	return b2Abs(C) < b2_linearSlop;
 }

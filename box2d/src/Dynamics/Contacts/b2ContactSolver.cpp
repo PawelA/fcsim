@@ -305,11 +305,11 @@ bool b2ContactSolver::SolvePositionConstraints(float64 beta)
 
 			b1->m_position -= invMass1 * impulse;
 			b1->m_rotation -= invI1 * b2Cross(r1, impulse);
-			b1->m_R.Set(b1->m_rotation);
+			b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
 
 			b2->m_position += invMass2 * impulse;
 			b2->m_rotation += invI2 * b2Cross(r2, impulse);
-			b2->m_R.Set(b2->m_rotation);
+			b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 		}
 	}
 

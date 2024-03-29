@@ -103,13 +103,6 @@ struct b2Mat22
 		col1.y = s; col2.y = c;
 	}
 
-	void Set(float64 angle)
-	{
-		float64 c = fcsim_cos(angle), s = fcsim_sin(angle);
-		col1.x = c; col2.x = -s;
-		col1.y = s; col2.y = c;
-	}
-
 	void SetIdentity()
 	{
 		col1.x = 1.0; col2.x = 0.0;
@@ -155,6 +148,14 @@ static void b2Mat22_Set(b2Mat22 *m, const b2Vec2& c1, const b2Vec2& c2)
 	m->col1 = c1;
 	m->col2 = c2;
 }
+
+static void b2Mat22_SetAngle(b2Mat22 *m, float64 angle)
+{
+	float64 c = fcsim_cos(angle), s = fcsim_sin(angle);
+	m->col1.x = c; m->col2.x = -s;
+	m->col1.y = s; m->col2.y = c;
+}
+
 
 inline float64 b2Dot(const b2Vec2& a, const b2Vec2& b)
 {

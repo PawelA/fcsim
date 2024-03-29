@@ -188,7 +188,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		b->m_position += step->dt * b->m_linearVelocity;
 		b->m_rotation += step->dt * b->m_angularVelocity;
 
-		b->m_R.Set(b->m_rotation);
+		b2Mat22_SetAngle(&b->m_R, b->m_rotation);
 	}
 
 	for (int32 i = 0; i < m_jointCount; ++i)
@@ -228,7 +228,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		if (b->m_invMass == 0.0)
 			continue;
 
-		b->m_R.Set(b->m_rotation);
+		b2Mat22_SetAngle(&b->m_R, b->m_rotation);
 
 		b->SynchronizeShapes();
 		b2Vec2_Set(&b->m_force, 0.0, 0.0);

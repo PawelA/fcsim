@@ -258,8 +258,8 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		b2->m_position += b2->m_invMass * P2;
 		b2->m_rotation += b2->m_invI * b2Cross(r2, P2);
 
-		b1->m_R.Set(b1->m_rotation);
-		b2->m_R.Set(b2->m_rotation);
+		b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
+		b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 	}
 
 	if (m_limitState1 == e_atUpperLimit)
@@ -290,7 +290,7 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		b2Vec2 P1 = -impulse * m_u1;
 		b1->m_position += b1->m_invMass * P1;
 		b1->m_rotation += b1->m_invI * b2Cross(r1, P1);
-		b1->m_R.Set(b1->m_rotation);
+		b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
 	}
 
 	if (m_limitState2 == e_atUpperLimit)
@@ -321,7 +321,7 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		b2Vec2 P2 = -impulse * m_u2;
 		b2->m_position += b2->m_invMass * P2;
 		b2->m_rotation += b2->m_invI * b2Cross(r2, P2);
-		b2->m_R.Set(b2->m_rotation);
+		b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 	}
 
 	return linearError < b2_linearSlop;

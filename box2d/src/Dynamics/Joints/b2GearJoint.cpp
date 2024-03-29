@@ -202,8 +202,8 @@ bool b2GearJoint::SolvePositionConstraints()
 	b1->m_rotation += b1->m_invI * impulse * m_J.angular1;
 	b2->m_position += b2->m_invMass * impulse * m_J.linear2;
 	b2->m_rotation += b2->m_invI * impulse * m_J.angular2;
-	b1->m_R.Set(b1->m_rotation);
-	b2->m_R.Set(b2->m_rotation);
+	b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
+	b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 
 	return linearError < b2_linearSlop;
 }

@@ -243,11 +243,11 @@ bool b2RevoluteJoint::SolvePositionConstraints()
 
 	b1->m_position -= b1->m_invMass * impulse;
 	b1->m_rotation -= b1->m_invI * b2Cross(r1, impulse);
-	b1->m_R.Set(b1->m_rotation);
+	b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
 
 	b2->m_position += b2->m_invMass * impulse;
 	b2->m_rotation += b2->m_invI * b2Cross(r2, impulse);
-	b2->m_R.Set(b2->m_rotation);
+	b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 
 	// Handle limits.
 	float64 angularError = 0.0;
@@ -290,9 +290,9 @@ bool b2RevoluteJoint::SolvePositionConstraints()
 		}
 
 		b1->m_rotation -= b1->m_invI * limitImpulse;
-		b1->m_R.Set(b1->m_rotation);
+		b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
 		b2->m_rotation += b2->m_invI * limitImpulse;
-		b2->m_R.Set(b2->m_rotation);
+		b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 	}
 
 	return positionError <= b2_linearSlop && angularError <= b2_angularSlop;

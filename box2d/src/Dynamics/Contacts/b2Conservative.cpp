@@ -112,8 +112,8 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 		p2 = p2Start + s1 * v2;
 		a2 = a2Start + s1 * omega2;
 
-		R1.Set(a1);
-		R2.Set(a2);
+		b2Mat22_SetAngle(&R1, a1);
+		b2Mat22_SetAngle(&R2, a2);
 		shape1->QuickSync(p1, R1);
 		shape2->QuickSync(p2, R2);
 	}
@@ -137,7 +137,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 			body1->m_position = p1 - d;
 		}
 		body1->m_rotation = a1;
-		body1->m_R.Set(a1);
+		b2Mat22_SetAngle(&body1->m_R, a1);
 		body1->QuickSyncShapes();
 
 		if (body2->IsStatic())
@@ -150,7 +150,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 		}
 		body2->m_position = p2 + d;
 		body2->m_rotation = a2;
-		body2->m_R.Set(a2);
+		b2Mat22_SetAngle(&body2->m_R, a2);
 		body2->QuickSyncShapes();
 
 		return true;
