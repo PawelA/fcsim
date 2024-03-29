@@ -460,7 +460,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 		m_maxRadius = b2Max(m_maxRadius, b2Vec2_Length(&v));
 	}
 
-	m_localOBB.R.SetIdentity();
+	b2Mat22_SetIdentity(&m_localOBB.R);
 	m_localOBB.center = 0.5 * (minVertex + maxVertex);
 	m_localOBB.extents = 0.5 * (maxVertex - minVertex);
 
