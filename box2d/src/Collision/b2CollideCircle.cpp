@@ -35,7 +35,7 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 	if (distSqr < MIN_VALUE)
 	{
 		separation = -radiusSum;
-		manifold->normal.Set(0.0, 1.0);
+		b2Vec2_Set(&manifold->normal, 0.0, 1.0);
 	}
 	else
 	{

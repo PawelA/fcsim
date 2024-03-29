@@ -54,7 +54,7 @@ void b2DistanceJoint::PrepareVelocitySolver()
 	}
 	else
 	{
-		m_u.Set(0.0, 0.0);
+		b2Vec2_Set(&m_u, 0.0, 0.0);
 	}
 
 	float64 cr1u = b2Cross(r1, m_u);

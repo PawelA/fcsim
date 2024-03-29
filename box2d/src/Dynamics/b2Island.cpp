@@ -231,7 +231,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		b->m_R.Set(b->m_rotation);
 
 		b->SynchronizeShapes();
-		b->m_force.Set(0.0, 0.0);
+		b2Vec2_Set(&b->m_force, 0.0, 0.0);
 		b->m_torque = 0.0;
 	}
 }

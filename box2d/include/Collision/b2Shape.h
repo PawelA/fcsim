@@ -48,7 +48,7 @@ struct b2ShapeDef
 	{
 		type = e_unknownShape;
 		userData = NULL;
-		localPosition.Set(0.0, 0.0);
+		b2Vec2_Set(&localPosition, 0.0, 0.0);
 		localRotation = 0.0;
 		friction = 0.2;
 		restitution = 0.0;
@@ -99,7 +99,7 @@ struct b2BoxDef : public b2ShapeDef
 	b2BoxDef()
 	{
 		type = e_boxShape;
-		extents.Set(1.0, 1.0);
+		b2Vec2_Set(&extents, 1.0, 1.0);
 	}
 
 	b2Vec2 extents;

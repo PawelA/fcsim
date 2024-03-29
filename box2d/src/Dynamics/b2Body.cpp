@@ -35,7 +35,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 	m_linearDamping = b2Clamp(1.0 - bd->linearDamping, 0.0, 1.0);
 	m_angularDamping = b2Clamp(1.0 - bd->angularDamping, 0.0, 1.0);
 
-	m_force.Set(0.0, 0.0);
+	b2Vec2_Set(&m_force, 0.0, 0.0);
 	m_torque = 0.0;
 
 	m_mass = 0.0;
@@ -44,7 +44,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 
 	// Compute the shape mass properties, the bodies total mass and COM.
 	m_shapeCount = 0;
-	m_center.Set(0.0, 0.0);
+	b2Vec2_Set(&m_center, 0.0, 0.0);
 	for (int32 i = 0; i < b2_maxShapesPerBody; ++i)
 	{
 		const b2ShapeDef* sd = bd->shapes[i];
@@ -128,7 +128,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 
 	if ((m_flags & e_sleepFlag)  || m_invMass == 0.0)
 	{
-		m_linearVelocity.Set(0.0, 0.0);
+		b2Vec2_Set(&m_linearVelocity, 0.0, 0.0);
 		m_angularVelocity = 0.0;
 	}
 

@@ -146,9 +146,9 @@ static void init_b2world(b2World *world)
 	b2Vec2 gravity;
 	b2AABB aabb;
 
-	gravity.Set(0, 300);
-	aabb.minVertex.Set(-2000, -1450);
-	aabb.maxVertex.Set(2000, 1450);
+	b2Vec2_Set(&gravity, 0, 300);
+	b2Vec2_Set(&aabb.minVertex, -2000, -1450);
+	b2Vec2_Set(&aabb.maxVertex, 2000, 1450);
 	new (world) b2World(aabb, gravity, true);
 	world->SetFilter(&fcsim_collision_filter);
 }
@@ -225,7 +225,7 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 		circle_def.radius = shape->circ.radius;
 		shape_def = &circle_def;
 	} else {
-		box_def.extents.Set(shape->rect.w/2, shape->rect.h/2);
+		b2Vec2_Set(&box_def.extents, shape->rect.w/2, shape->rect.h/2);
 		shape_def = &box_def;
 	}
 	shape_def->density = phys->density;
@@ -234,7 +234,7 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 	shape_def->categoryBits = phys->category_bits;
 	shape_def->maskBits = phys->mask_bits;
 	shape_def->userData = data;
-	body_def.position.Set(where->x, where->y);
+	b2Vec2_Set(&body_def.position, where->x, where->y);
 	body_def.rotation = where->angle;
 	body_def.linearDamping = phys->linear_damping;
 	body_def.angularDamping = phys->angular_damping;
@@ -249,7 +249,7 @@ static void generate_joint(b2World *world, b2Body *b1, b2Body *b2, double x, dou
 
 	joint_def.body1 = b1;
 	joint_def.body2 = b2;
-	joint_def.anchorPoint.Set(x, y);
+	b2Vec2_Set(&joint_def.anchorPoint, x, y);
 	joint_def.collideConnected = true;
 	if (spin != 0) {
 		joint_def.motorTorque = 50000000;

@@ -43,7 +43,7 @@ b2RevoluteJoint::b2RevoluteJoint(const b2RevoluteJointDef* def)
 
 	m_intialAngle = m_body2->m_rotation - m_body1->m_rotation;
 
-	m_ptpImpulse.Set(0.0, 0.0);
+	b2Vec2_Set(&m_ptpImpulse, 0.0, 0.0);
 	m_motorImpulse = 0.0;
 	m_limitImpulse = 0.0;
 	m_limitPositionImpulse = 0.0;

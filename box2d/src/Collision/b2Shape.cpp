@@ -50,7 +50,7 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float6
 {
 	b2Assert(count >= 3);
 
-	b2Vec2 center; center.Set(0.0, 0.0);
+	b2Vec2 center; b2Vec2_Set(&center, 0.0, 0.0);
 	float64 area = 0.0;
 	float64 I = 0.0;
 
@@ -113,7 +113,7 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 {
 	b2Assert(count >= 3);
 
-	b2Vec2 c; c.Set(0.0, 0.0);
+	b2Vec2 c; b2Vec2_Set(&c, 0.0, 0.0);
 	float64 area = 0.0;
 
 	// pRef is the reference point for forming triangles.
@@ -160,7 +160,7 @@ void b2ShapeDef::ComputeMass(b2MassData* massData) const
 	if (density == 0.0)
 	{
 		massData->mass = 0.0;
-		massData->center.Set(0.0, 0.0);
+		b2Vec2_Set(&massData->center, 0.0, 0.0);
 		massData->I = 0.0;
 	}
 
@@ -170,7 +170,7 @@ void b2ShapeDef::ComputeMass(b2MassData* massData) const
 		{
 			b2CircleDef* circle = (b2CircleDef*)this;
 			massData->mass = density * b2_pi * circle->radius * circle->radius;
-			massData->center.Set(0.0, 0.0);
+			b2Vec2_Set(&massData->center, 0.0, 0.0);
 			massData->I = 0.5 * (massData->mass) * circle->radius * circle->radius;
 		}
 		break;
@@ -179,7 +179,7 @@ void b2ShapeDef::ComputeMass(b2MassData* massData) const
 		{
 			b2BoxDef* box = (b2BoxDef*)this;
 			massData->mass = 4.0 * density * box->extents.x * box->extents.y;
-			massData->center.Set(0.0, 0.0);
+			b2Vec2_Set(&massData->center, 0.0, 0.0);
 			massData->I = massData->mass / 3.0 * b2Dot(box->extents, box->extents);
 		}
 		break;
@@ -193,7 +193,7 @@ void b2ShapeDef::ComputeMass(b2MassData* massData) const
 
 	default:
 		massData->mass = 0.0;
-		massData->center.Set(0.0, 0.0);
+		b2Vec2_Set(&massData->center, 0.0, 0.0);
 		massData->I = 0.0;
 		break;
 	}
@@ -292,8 +292,8 @@ b2CircleShape::b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& 
 	m_maxRadius = b2Vec2_Length(&r) + m_radius;
 
 	b2AABB aabb;
-	aabb.minVertex.Set(m_position.x - m_radius, m_position.y - m_radius);
-	aabb.maxVertex.Set(m_position.x + m_radius, m_position.y + m_radius);
+	b2Vec2_Set(&aabb.minVertex, m_position.x - m_radius, m_position.y - m_radius);
+	b2Vec2_Set(&aabb.maxVertex, m_position.x + m_radius, m_position.y + m_radius);
 
 	b2BroadPhase* broadPhase = m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
@@ -328,8 +328,8 @@ void b2CircleShape::Synchronize(const b2Vec2& position1, const b2Mat22& R1,
 	b2Vec2 upper = b2Max(p1, m_position);
 
 	b2AABB aabb;
-	aabb.minVertex.Set(lower.x - m_radius, lower.y - m_radius);
-	aabb.maxVertex.Set(upper.x + m_radius, upper.y + m_radius);
+	b2Vec2_Set(&aabb.minVertex, lower.x - m_radius, lower.y - m_radius);
+	b2Vec2_Set(&aabb.maxVertex, upper.x + m_radius, upper.y + m_radius);
 
 	b2BroadPhase* broadPhase = m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
@@ -376,8 +376,8 @@ void b2CircleShape::ResetProxy(b2BroadPhase* broadPhase)
 	proxy = NULL;
 
 	b2AABB aabb;
-	aabb.minVertex.Set(m_position.x - m_radius, m_position.y - m_radius);
-	aabb.maxVertex.Set(m_position.x + m_radius, m_position.y + m_radius);
+	b2Vec2_Set(&aabb.minVertex, m_position.x - m_radius, m_position.y - m_radius);
+	b2Vec2_Set(&aabb.maxVertex, m_position.x + m_radius, m_position.y + m_radius);
 
 	if (broadPhase->InRange(aabb))
 	{

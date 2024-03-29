@@ -38,9 +38,9 @@ struct b2BodyDef
 	{
 		userData = NULL;
 		memset(shapes, 0, sizeof(shapes));
-		position.Set(0.0, 0.0);
+		b2Vec2_Set(&position, 0.0, 0.0);
 		rotation = 0.0;
-		linearVelocity.Set(0.0, 0.0);
+		b2Vec2_Set(&linearVelocity, 0.0, 0.0);
 		angularVelocity = 0.0;
 		linearDamping = 0.0;
 		angularDamping = 0.0;

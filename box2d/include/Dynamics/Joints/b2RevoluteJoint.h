@@ -26,7 +26,7 @@ struct b2RevoluteJointDef : public b2JointDef
 	b2RevoluteJointDef()
 	{
 		type = e_revoluteJoint;
-		anchorPoint.Set(0.0, 0.0);
+		b2Vec2_Set(&anchorPoint, 0.0, 0.0);
 		lowerAngle = 0.0;
 		upperAngle = 0.0;
 		motorTorque = 0.0;

@@ -26,7 +26,7 @@ struct b2MouseJointDef : public b2JointDef
 	b2MouseJointDef()
 	{
 		type = e_mouseJoint;
-		target.Set(0.0, 0.0);
+		b2Vec2_Set(&target, 0.0, 0.0);
 		maxForce = 0.0;
 		frequencyHz = 5.0;
 		dampingRatio = 0.7;

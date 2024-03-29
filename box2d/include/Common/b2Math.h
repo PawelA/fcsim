@@ -41,6 +41,9 @@ inline float64 b2InvSqrt(float64 x)
 	return 1.0 / sqrt(x);
 }
 
+struct b2Vec2;
+static void b2Vec2_Set(b2Vec2 *v, float64 x_, float64 y_);
+
 // b2Vec2 has no constructor so that it
 // can be placed in a union.
 struct b2Vec2
@@ -48,14 +51,12 @@ struct b2Vec2
 	b2Vec2() {}
 	b2Vec2(float64 x, float64 y) : x(x), y(y) {}
 
-	void Set(float64 x_, float64 y_) { x = x_; y = y_; }
-
-	b2Vec2 operator -() { b2Vec2 v; v.Set(-x, -y); return v; }
+	b2Vec2 operator -() { b2Vec2 v; b2Vec2_Set(&v, -x, -y); return v; }
 
 	static b2Vec2 Make(float64 x_, float64 y_)
 	{
 		b2Vec2 v;
-		v.Set(x_, y_);
+		b2Vec2_Set(&v, x_, y_);
 		return v;
 	}
 
@@ -81,6 +82,12 @@ static void b2Vec2_SetZero(b2Vec2 *v)
 {
 	v->x = 0.0;
 	v->y = 0.0;
+}
+
+static void b2Vec2_Set(b2Vec2 *v, float64 x_, float64 y_)
+{
+	v->x = x_;
+	v->y = y_;
 }
 
 static float64 b2Vec2_Length(b2Vec2 *v)
@@ -188,45 +195,45 @@ inline float64 b2Cross(const b2Vec2& a, const b2Vec2& b)
 
 inline b2Vec2 b2Cross(const b2Vec2& a, float64 s)
 {
-	b2Vec2 v; v.Set(s * a.y, -s * a.x);
+	b2Vec2 v; b2Vec2_Set(&v, s * a.y, -s * a.x);
 	return v;
 }
 
 inline b2Vec2 b2Cross(float64 s, const b2Vec2& a)
 {
-	b2Vec2 v; v.Set(-s * a.y, s * a.x);
+	b2Vec2 v; b2Vec2_Set(&v, -s * a.y, s * a.x);
 	return v;
 }
 
 inline b2Vec2 b2Mul(const b2Mat22& A, const b2Vec2& v)
 {
 	b2Vec2 u;
-	u.Set(A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y);
+	b2Vec2_Set(&u, A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y);
 	return u;
 }
 
 inline b2Vec2 b2MulT(const b2Mat22& A, const b2Vec2& v)
 {
 	b2Vec2 u;
-	u.Set(b2Dot(v, A.col1), b2Dot(v, A.col2));
+	b2Vec2_Set(&u, b2Dot(v, A.col1), b2Dot(v, A.col2));
 	return u;
 }
 
 inline b2Vec2 operator + (const b2Vec2& a, const b2Vec2& b)
 {
-	b2Vec2 v; v.Set(a.x + b.x, a.y + b.y);
+	b2Vec2 v; b2Vec2_Set(&v, a.x + b.x, a.y + b.y);
 	return v;
 }
 
 inline b2Vec2 operator - (const b2Vec2& a, const b2Vec2& b)
 {
-	b2Vec2 v; v.Set(a.x - b.x, a.y - b.y);
+	b2Vec2 v; b2Vec2_Set(&v, a.x - b.x, a.y - b.y);
 	return v;
 }
 
 inline b2Vec2 operator * (float64 s, const b2Vec2& a)
 {
-	b2Vec2 v; v.Set(s * a.x, s * a.y);
+	b2Vec2 v; b2Vec2_Set(&v, s * a.x, s * a.y);
 	return v;
 }
 
@@ -253,8 +260,8 @@ inline b2Mat22 b2Mul(const b2Mat22& A, const b2Mat22& B)
 // A^T * B
 inline b2Mat22 b2MulT(const b2Mat22& A, const b2Mat22& B)
 {
-	b2Vec2 c1; c1.Set(b2Dot(A.col1, B.col1), b2Dot(A.col2, B.col1));
-	b2Vec2 c2; c2.Set(b2Dot(A.col1, B.col2), b2Dot(A.col2, B.col2));
+	b2Vec2 c1; b2Vec2_Set(&c1, b2Dot(A.col1, B.col1), b2Dot(A.col2, B.col1));
+	b2Vec2 c2; b2Vec2_Set(&c2, b2Dot(A.col1, B.col2), b2Dot(A.col2, B.col2));
 	b2Mat22 C;
 	C.Set(c1, c2);
 	return C;
@@ -267,7 +274,7 @@ inline float64 b2Abs(float64 a)
 
 inline b2Vec2 b2Abs(const b2Vec2& a)
 {
-	b2Vec2 b; b.Set(fabs(a.x), fabs(a.y));
+	b2Vec2 b; b2Vec2_Set(&b, fabs(a.x), fabs(a.y));
 	return b;
 }
 

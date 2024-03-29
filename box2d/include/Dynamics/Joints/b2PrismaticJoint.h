@@ -26,8 +26,8 @@ struct b2PrismaticJointDef : public b2JointDef
 	b2PrismaticJointDef()
 	{
 		type = e_prismaticJoint;
-		anchorPoint.Set(0.0, 0.0);
-		axis.Set(1.0, 0.0);
+		b2Vec2_Set(&anchorPoint, 0.0, 0.0);
+		b2Vec2_Set(&axis, 1.0, 0.0);
 		lowerTranslation = 0.0;
 		upperTranslation = 0.0;
 		motorForce = 0.0;

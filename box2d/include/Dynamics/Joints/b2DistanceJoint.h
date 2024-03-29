@@ -26,8 +26,8 @@ struct b2DistanceJointDef : public b2JointDef
 	b2DistanceJointDef()
 	{
 		type = e_distanceJoint;
-		anchorPoint1.Set(0.0, 0.0);
-		anchorPoint2.Set(0.0, 0.0);
+		b2Vec2_Set(&anchorPoint1, 0.0, 0.0);
+		b2Vec2_Set(&anchorPoint2, 0.0, 0.0);
 	}
 
 	b2Vec2 anchorPoint1;
