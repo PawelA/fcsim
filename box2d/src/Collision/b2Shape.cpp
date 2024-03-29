@@ -56,7 +56,8 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float6
 
 	// pRef is the reference point for forming triangles.
 	// It's location doesn't change the result (except for rounding error).
-	b2Vec2 pRef(0.0, 0.0);
+	b2Vec2 pRef;
+	b2Vec2_Set(&pRef, 0.0, 0.0);
 #if 0
 	// This code would put the reference point inside the polygon.
 	for (int32 i = 0; i < count; ++i)
@@ -118,7 +119,8 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 
 	// pRef is the reference point for forming triangles.
 	// It's location doesn't change the result (except for rounding error).
-	b2Vec2 pRef(0.0, 0.0);
+	b2Vec2 pRef;
+	b2Vec2_Set(&pRef, 0.0, 0.0);
 #if 0
 	// This code would put the reference point inside the polygon.
 	for (int32 i = 0; i < count; ++i)
@@ -416,15 +418,15 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 		b2Vec2 hc = h;
 		hc.x = b2Max(0.0, h.x - 2.0 * b2_linearSlop);
 		hc.y = b2Max(0.0, h.y - 2.0 * b2_linearSlop);
-		m_vertices[0] = b2Mul(localR, b2Vec2(h.x, h.y));
-		m_vertices[1] = b2Mul(localR, b2Vec2(-h.x, h.y));
-		m_vertices[2] = b2Mul(localR, b2Vec2(-h.x, -h.y));
-		m_vertices[3] = b2Mul(localR, b2Vec2(h.x, -h.y));
+		m_vertices[0] = b2Mul(localR, b2Vec2_Make(h.x, h.y));
+		m_vertices[1] = b2Mul(localR, b2Vec2_Make(-h.x, h.y));
+		m_vertices[2] = b2Mul(localR, b2Vec2_Make(-h.x, -h.y));
+		m_vertices[3] = b2Mul(localR, b2Vec2_Make(h.x, -h.y));
 
-		m_coreVertices[0] = b2Mul(localR, b2Vec2(hc.x, hc.y));
-		m_coreVertices[1] = b2Mul(localR, b2Vec2(-hc.x, hc.y));
-		m_coreVertices[2] = b2Mul(localR, b2Vec2(-hc.x, -hc.y));
-		m_coreVertices[3] = b2Mul(localR, b2Vec2(hc.x, -hc.y));
+		m_coreVertices[0] = b2Mul(localR, b2Vec2_Make(hc.x, hc.y));
+		m_coreVertices[1] = b2Mul(localR, b2Vec2_Make(-hc.x, hc.y));
+		m_coreVertices[2] = b2Mul(localR, b2Vec2_Make(-hc.x, -hc.y));
+		m_coreVertices[3] = b2Mul(localR, b2Vec2_Make(hc.x, -hc.y));
 	}
 	else
 	{
@@ -449,8 +451,10 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 	}
 
 	// Compute bounding box. TODO_ERIN optimize OBB
-	b2Vec2 minVertex(DBL_MAX, DBL_MAX);
-	b2Vec2 maxVertex(-DBL_MAX, -DBL_MAX);
+	b2Vec2 minVertex;
+	b2Vec2_Set(&minVertex, DBL_MAX, DBL_MAX);
+	b2Vec2 maxVertex;
+	b2Vec2_Set(&maxVertex, -DBL_MAX, -DBL_MAX);
 	m_maxRadius = 0.0;
 	for (int32 i = 0; i < m_vertexCount; ++i)
 	{

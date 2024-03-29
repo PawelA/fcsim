@@ -45,9 +45,6 @@ inline float64 b2InvSqrt(float64 x)
 // can be placed in a union.
 struct b2Vec2
 {
-	b2Vec2() {}
-	b2Vec2(float64 x, float64 y) : x(x), y(y) {}
-
 	float64 x, y;
 };
 
@@ -61,6 +58,13 @@ static void b2Vec2_Set(b2Vec2 *v, float64 x_, float64 y_)
 {
 	v->x = x_;
 	v->y = y_;
+}
+
+static b2Vec2 b2Vec2_Make(float64 x, float64 y)
+{
+	b2Vec2 v;
+	b2Vec2_Set(&v, x, y);
+	return v;
 }
 
 static float64 b2Vec2_Length(b2Vec2 *v)

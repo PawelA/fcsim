@@ -350,7 +350,8 @@ b2Vec2 b2PulleyJoint::GetGroundPoint2() const
 b2Vec2 b2PulleyJoint::GetReactionForce(float64 invTimeStep) const
 {
 	NOT_USED(invTimeStep);
-	b2Vec2 F(0.0, 0.0); // = (m_pulleyImpulse * invTimeStep) * m_u;
+	b2Vec2 F;
+	b2Vec2_Set(&F, 0.0, 0.0); // = (m_pulleyImpulse * invTimeStep) * m_u;
 	return F;
 }
 
