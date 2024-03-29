@@ -103,12 +103,6 @@ struct b2Mat22
 		col1.y = s; col2.y = c;
 	}
 
-	void Set(const b2Vec2& c1, const b2Vec2& c2)
-	{
-		col1 = c1;
-		col2 = c2;
-	}
-
 	void Set(float64 angle)
 	{
 		float64 c = fcsim_cos(angle), s = fcsim_sin(angle);
@@ -155,6 +149,12 @@ struct b2Mat22
 
 	b2Vec2 col1, col2;
 };
+
+static void b2Mat22_Set(b2Mat22 *m, const b2Vec2& c1, const b2Vec2& c2)
+{
+	m->col1 = c1;
+	m->col2 = c2;
+}
 
 inline float64 b2Dot(const b2Vec2& a, const b2Vec2& b)
 {
@@ -239,7 +239,7 @@ inline bool operator == (const b2Vec2& a, const b2Vec2& b)
 inline b2Mat22 operator + (const b2Mat22& A, const b2Mat22& B)
 {
 	b2Mat22 C;
-	C.Set(A.col1 + B.col1, A.col2 + B.col2);
+	b2Mat22_Set(&C, A.col1 + B.col1, A.col2 + B.col2);
 	return C;
 }
 
@@ -247,7 +247,7 @@ inline b2Mat22 operator + (const b2Mat22& A, const b2Mat22& B)
 inline b2Mat22 b2Mul(const b2Mat22& A, const b2Mat22& B)
 {
 	b2Mat22 C;
-	C.Set(b2Mul(A, B.col1), b2Mul(A, B.col2));
+	b2Mat22_Set(&C, b2Mul(A, B.col1), b2Mul(A, B.col2));
 	return C;
 }
 
@@ -257,7 +257,7 @@ inline b2Mat22 b2MulT(const b2Mat22& A, const b2Mat22& B)
 	b2Vec2 c1; b2Vec2_Set(&c1, b2Dot(A.col1, B.col1), b2Dot(A.col2, B.col1));
 	b2Vec2 c2; b2Vec2_Set(&c2, b2Dot(A.col1, B.col2), b2Dot(A.col2, B.col2));
 	b2Mat22 C;
-	C.Set(c1, c2);
+	b2Mat22_Set(&C, c1, c2);
 	return C;
 }
 
@@ -275,7 +275,7 @@ inline b2Vec2 b2Abs(const b2Vec2& a)
 inline b2Mat22 b2Abs(const b2Mat22& A)
 {
 	b2Mat22 B;
-	B.Set(b2Abs(A.col1), b2Abs(A.col2));
+	b2Mat22_Set(&B, b2Abs(A.col1), b2Abs(A.col2));
 	return B;
 }
 
