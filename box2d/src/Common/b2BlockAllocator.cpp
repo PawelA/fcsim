@@ -191,16 +191,3 @@ void b2BlockAllocator_Free(b2BlockAllocator *allocator, void* p, int32 size)
 	block->next = allocator->m_freeLists[index];
 	allocator->m_freeLists[index] = block;
 }
-
-void b2BlockAllocator::Clear()
-{
-	for (int32 i = 0; i < m_chunkCount; ++i)
-	{
-		b2Free(m_chunks[i].blocks);
-	}
-
-	m_chunkCount = 0;
-	memset(m_chunks, 0, m_chunkSpace * sizeof(b2Chunk));
-
-	memset(m_freeLists, 0, sizeof(m_freeLists));
-}
