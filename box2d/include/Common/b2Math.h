@@ -103,12 +103,6 @@ struct b2Mat22
 		col1.y = s; col2.y = c;
 	}
 
-	void SetZero()
-	{
-		col1.x = 0.0; col2.x = 0.0;
-		col1.y = 0.0; col2.y = 0.0;
-	}
-
 	b2Mat22 Invert() const
 	{
 		float64 a = col1.x, b = col2.x, c = col1.y, d = col2.y;
