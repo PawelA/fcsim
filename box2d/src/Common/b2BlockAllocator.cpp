@@ -148,7 +148,7 @@ void* b2BlockAllocator_Allocate(b2BlockAllocator *allocator, int32 size)
 	}
 }
 
-void b2BlockAllocator::Free(void* p, int32 size)
+void b2BlockAllocator_Free(b2BlockAllocator *allocator, void* p, int32 size)
 {
 	if (size == 0)
 	{
@@ -164,10 +164,10 @@ void b2BlockAllocator::Free(void* p, int32 size)
 	// Verify the memory address and size is valid.
 	int32 blockSize = b2BlockAllocator_s_blockSizes[index];
 	bool found = false;
-	int32 gap = (int32)((int8*)&m_chunks->blocks - (int8*)m_chunks);
-	for (int32 i = 0; i < m_chunkCount; ++i)
+	int32 gap = (int32)((int8*)&allocator->m_chunks->blocks - (int8*)allocator->m_chunks);
+	for (int32 i = 0; i < allocator->m_chunkCount; ++i)
 	{
-		b2Chunk* chunk = m_chunks + i;
+		b2Chunk* chunk = allocator->m_chunks + i;
 		if (chunk->blockSize != blockSize)
 		{
 			b2Assert(	(int8*)p + blockSize <= (int8*)chunk->blocks ||
@@ -188,8 +188,8 @@ void b2BlockAllocator::Free(void* p, int32 size)
 #endif
 
 	b2Block* block = (b2Block*)p;
-	block->next = m_freeLists[index];
-	m_freeLists[index] = block;
+	block->next = allocator->m_freeLists[index];
+	allocator->m_freeLists[index] = block;
 }
 
 void b2BlockAllocator::Clear()

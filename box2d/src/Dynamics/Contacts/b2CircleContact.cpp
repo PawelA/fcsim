@@ -30,7 +30,7 @@ b2Contact* b2CircleContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllo
 void b2CircleContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 {
 	((b2CircleContact*)contact)->~b2CircleContact();
-	allocator->Free(contact, sizeof(b2CircleContact));
+	b2BlockAllocator_Free(allocator, contact, sizeof(b2CircleContact));
 }
 
 b2CircleContact::b2CircleContact(b2Shape* s1, b2Shape* s2)

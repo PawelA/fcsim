@@ -232,11 +232,11 @@ void b2Shape::Destroy(b2Shape*& shape)
 	switch (shape->m_type)
 	{
 	case e_circleShape:
-		allocator.Free(shape, sizeof(b2CircleShape));
+		b2BlockAllocator_Free(&allocator, shape, sizeof(b2CircleShape));
 		break;
 
 	case e_polyShape:
-		allocator.Free(shape, sizeof(b2PolyShape));
+		b2BlockAllocator_Free(&allocator, shape, sizeof(b2PolyShape));
 		break;
 
 	default:

@@ -157,7 +157,7 @@ void b2World::CleanBodyList()
 		}
 
 		b0->~b2Body();
-		m_blockAllocator.Free(b0, sizeof(b2Body));
+		b2BlockAllocator_Free(&m_blockAllocator, b0, sizeof(b2Body));
 	}
 
 	// Reset the list.

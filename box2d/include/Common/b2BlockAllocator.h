@@ -34,8 +34,6 @@ struct b2Chunk;
 // See: http://www.codeproject.com/useritems/Small_Block_Allocator.asp
 struct b2BlockAllocator
 {
-	void Free(void* p, int32 size);
-
 	void Clear();
 
 	b2Chunk* m_chunks;
@@ -50,6 +48,8 @@ void b2BlockAllocator_ctor(b2BlockAllocator *allocator);
 void b2BlockAllocator_dtor(b2BlockAllocator *allocator);
 
 void* b2BlockAllocator_Allocate(b2BlockAllocator *allocator, int32 size);
+
+void b2BlockAllocator_Free(b2BlockAllocator *allocator, void* p, int32 size);
 
 extern int32 b2BlockAllocator_s_blockSizes[b2_blockSizes];
 extern uint8 b2BlockAllocator_s_blockSizeLookup[b2_maxBlockSize + 1];
