@@ -193,7 +193,8 @@ void b2Body::SetCenterPosition(const b2Vec2& position, float64 rotation)
 
 void b2Body::SynchronizeShapes()
 {
-	b2Mat22 R0(m_rotation0);
+	b2Mat22 R0;
+	b2Mat22_SetAngle(&R0, m_rotation0);
 	for (b2Shape* s = m_shapeList; s; s = s->m_next)
 	{
 		s->Synchronize(m_position0, R0, m_position, m_R);

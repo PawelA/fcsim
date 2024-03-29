@@ -93,20 +93,6 @@ static bool b2Vec2_IsValid(const b2Vec2 *v)
 
 struct b2Mat22
 {
-	b2Mat22() {}
-	b2Mat22(const b2Vec2& c1, const b2Vec2& c2)
-	{
-		col1 = c1;
-		col2 = c2;
-	}
-
-	explicit b2Mat22(float64 angle)
-	{
-		float64 c = fcsim_cos(angle), s = fcsim_sin(angle);
-		col1.x = c; col2.x = -s;
-		col1.y = s; col2.y = c;
-	}
-
 	b2Vec2 col1, col2;
 };
 

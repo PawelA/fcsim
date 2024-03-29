@@ -405,7 +405,8 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 {
 	b2Assert(def->type == e_boxShape || def->type == e_polyShape);
 	m_type = e_polyShape;
-	b2Mat22 localR(def->localRotation);
+	b2Mat22 localR;
+	b2Mat22_SetAngle(&localR, def->localRotation);
 
 	// Get the vertices transformed into the body frame.
 	if (def->type == e_boxShape)

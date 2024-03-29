@@ -46,7 +46,9 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 	b2Vec2 p2 = p2Start;
 	float64 a2 = a2Start;
 
-	b2Mat22 R1(a1), R2(a2);
+	b2Mat22 R1, R2;
+	b2Mat22_SetAngle(&R1, a1);
+	b2Mat22_SetAngle(&R2, a2);
 
 	shape1->QuickSync(p1, R1);
 	shape2->QuickSync(p2, R2);
