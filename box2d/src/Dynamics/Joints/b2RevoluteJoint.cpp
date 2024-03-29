@@ -217,7 +217,7 @@ bool b2RevoluteJoint::SolvePositionConstraints()
 	b2Vec2 p2 = b2->m_position + r2;
 	b2Vec2 ptpC = p2 - p1;
 
-	positionError = ptpC.Length();
+	positionError = b2Vec2_Length(&ptpC);
 
 	// Prevent overly large corrections.
 	//b2Vec2 dpMax(b2_maxLinearCorrection, b2_maxLinearCorrection);

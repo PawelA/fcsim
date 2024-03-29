@@ -109,7 +109,7 @@ void b2MouseJoint::SolveVelocityConstraints(const b2TimeStep* step)
 
 	b2Vec2 oldImpulse = m_impulse;
 	m_impulse += impulse;
-	float64 length = m_impulse.Length();
+	float64 length = b2Vec2_Length(&m_impulse);
 	if (length > step->dt * m_maxForce)
 	{
 		m_impulse *= step->dt * m_maxForce / length;

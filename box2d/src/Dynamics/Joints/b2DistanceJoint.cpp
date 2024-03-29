@@ -35,7 +35,7 @@ b2DistanceJoint::b2DistanceJoint(const b2DistanceJointDef* def)
 	m_localAnchor2 = b2MulT(m_body2->m_R, def->anchorPoint2 - m_body2->m_position);
 
 	b2Vec2 d = def->anchorPoint2 - def->anchorPoint1;
-	m_length = d.Length();
+	m_length = b2Vec2_Length(&d);
 	m_impulse = 0.0;
 }
 
@@ -47,7 +47,7 @@ void b2DistanceJoint::PrepareVelocitySolver()
 	m_u = m_body2->m_position + r2 - m_body1->m_position - r1;
 
 	// Handle singularity.
-	float64 length = m_u.Length();
+	float64 length = b2Vec2_Length(&m_u);
 	if (length > b2_linearSlop)
 	{
 		m_u *= 1.0 / length;
@@ -104,7 +104,7 @@ bool b2DistanceJoint::SolvePositionConstraints()
 	b2Vec2 r2 = b2Mul(m_body2->m_R, m_localAnchor2);
 	b2Vec2 d = m_body2->m_position + r2 - m_body1->m_position - r1;
 
-	float64 length = d.Length();
+	float64 length = b2Vec2_Length(&d);
 	d.x /= length;
 	d.y /= length;
 	float64 C = length - m_length;

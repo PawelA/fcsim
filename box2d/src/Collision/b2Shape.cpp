@@ -289,7 +289,7 @@ b2CircleShape::b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& 
 	m_R = m_body->m_R;
 	b2Vec2 r = b2Mul(m_body->m_R, m_localPosition);
 	m_position = m_body->m_position + r;
-	m_maxRadius = r.Length() + m_radius;
+	m_maxRadius = b2Vec2_Length(&r) + m_radius;
 
 	b2AABB aabb;
 	aabb.minVertex.Set(m_position.x - m_radius, m_position.y - m_radius);
@@ -351,7 +351,7 @@ void b2CircleShape::QuickSync(const b2Vec2& position, const b2Mat22& R)
 b2Vec2 b2CircleShape::Support(const b2Vec2& d) const
 {
 	b2Vec2 u = d;
-	float64 len = u.Length();
+	float64 len = b2Vec2_Length(&u);
 	u.x /= len;
 	u.y /= len;
 	return m_position + m_radius * u;
@@ -438,7 +438,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 			m_vertices[i] = b2Mul(localR, poly->vertices[i] - centroid);
 
 			b2Vec2 u = m_vertices[i];
-			float64 length = u.Length();
+			float64 length = b2Vec2_Length(&u);
 			if (length > MIN_VALUE)
 			{
 				u *= 1.0 / length;
@@ -457,7 +457,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 		b2Vec2 v = m_vertices[i];
 		minVertex = b2Min(minVertex, v);
 		maxVertex = b2Max(maxVertex, v);
-		m_maxRadius = b2Max(m_maxRadius, v.Length());
+		m_maxRadius = b2Max(m_maxRadius, b2Vec2_Length(&v));
 	}
 
 	m_localOBB.R.SetIdentity();
@@ -471,7 +471,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 		int32 i2 = i + 1 < m_vertexCount ? i + 1 : 0;
 		b2Vec2 edge = m_vertices[i2] - m_vertices[i1];
 		m_normals[i] = b2Cross(edge, 1.0);
-		m_normals[i].Normalize();
+		b2Vec2_Normalize(&m_normals[i]);
 	}
 
 	// Ensure the polygon in convex. TODO_ERIN compute convex hull.

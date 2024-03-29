@@ -197,7 +197,7 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 
 	// Get the normal of edge1.
 	b2Vec2 normal1Local1 = b2Cross(vert1s[vertex12] - vert1s[vertex11], 1.0);
-	float64 normal1Local1LenInv = 1.0 / normal1Local1.Length();
+	float64 normal1Local1LenInv = 1.0 / b2Vec2_Length(&normal1Local1);
 	normal1Local1.x *= normal1Local1LenInv;
 	normal1Local1.y *= normal1Local1LenInv;
 	b2Vec2 normal1 = b2Mul(poly1->m_R, normal1Local1);
@@ -212,7 +212,7 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 		int32 i2 = i + 1 < count2 ? i + 1 : 0;
 
 		b2Vec2 normal2Local2 = b2Cross(vert2s[i2] - vert2s[i1], 1.0);
-		float64 normal2Local2LenInv = 1.0 / normal2Local2.Length();
+		float64 normal2Local2LenInv = 1.0 / b2Vec2_Length(&normal2Local2);
 		normal2Local2.x *= normal2Local2LenInv;
 		normal2Local2.y *= normal2Local2LenInv;
 		float64 dot = b2Dot(normal2Local2, normal1Local2);
@@ -293,7 +293,7 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 
 	b2Vec2 dv = v12 - v11;
 	b2Vec2 sideNormal = b2Mul(poly1->m_R, v12 - v11);
-	float64 sideNormalLenInv = 1.0 / sideNormal.Length();
+	float64 sideNormalLenInv = 1.0 / b2Vec2_Length(&sideNormal);
 	sideNormal.x *= sideNormalLenInv;
 	sideNormal.y *= sideNormalLenInv;
 	b2Vec2 frontNormal = b2Cross(sideNormal, 1.0);

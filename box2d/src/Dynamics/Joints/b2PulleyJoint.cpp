@@ -53,8 +53,8 @@ b2PulleyJoint::b2PulleyJoint(const b2PulleyJointDef* def)
 	b2Vec2 d1 = def->groundPoint1 - def->anchorPoint1;
 	b2Vec2 d2 = def->groundPoint2 - def->anchorPoint2;
 
-	float64 length1 = b2Max(0.5 * b2_minPulleyLength, d1.Length());
-	float64 length2 = b2Max(0.5 * b2_minPulleyLength, d2.Length());
+	float64 length1 = b2Max(0.5 * b2_minPulleyLength, b2Vec2_Length(&d1));
+	float64 length2 = b2Max(0.5 * b2_minPulleyLength, b2Vec2_Length(&d2));
 
 	m_constant = length1 + m_ratio * length2;
 
@@ -84,8 +84,8 @@ void b2PulleyJoint::PrepareVelocitySolver()
 	m_u1 = p1 - s1;
 	m_u2 = p2 - s2;
 
-	float64 length1 = m_u1.Length();
-	float64 length2 = m_u2.Length();
+	float64 length1 = b2Vec2_Length(&m_u1);
+	float64 length2 = b2Vec2_Length(&m_u2);
 
 	if (length1 > b2_linearSlop)
 	{
@@ -224,8 +224,8 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		m_u1 = p1 - s1;
 		m_u2 = p2 - s2;
 
-		float64 length1 = m_u1.Length();
-		float64 length2 = m_u2.Length();
+		float64 length1 = b2Vec2_Length(&m_u1);
+		float64 length2 = b2Vec2_Length(&m_u2);
 
 		if (length1 > b2_linearSlop)
 		{
@@ -268,7 +268,7 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		b2Vec2 p1 = b1->m_position + r1;
 
 		m_u1 = p1 - s1;
-		float64 length1 = m_u1.Length();
+		float64 length1 = b2Vec2_Length(&m_u1);
 
 		if (length1 > b2_linearSlop)
 		{
@@ -299,7 +299,7 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		b2Vec2 p2 = b2->m_position + r2;
 
 		m_u2 = p2 - s2;
-		float64 length2 = m_u2.Length();
+		float64 length2 = b2Vec2_Length(&m_u2);
 
 		if (length2 > b2_linearSlop)
 		{
@@ -365,7 +365,7 @@ float64 b2PulleyJoint::GetLength1() const
 	b2Vec2 p = m_body1->m_position + b2Mul(m_body1->m_R, m_localAnchor1);
 	b2Vec2 s = m_ground->m_position + m_groundAnchor1;
 	b2Vec2 d = p - s;
-	return d.Length();
+	return b2Vec2_Length(&d);
 }
 
 float64 b2PulleyJoint::GetLength2() const
@@ -373,7 +373,7 @@ float64 b2PulleyJoint::GetLength2() const
 	b2Vec2 p = m_body2->m_position + b2Mul(m_body2->m_R, m_localAnchor2);
 	b2Vec2 s = m_ground->m_position + m_groundAnchor2;
 	b2Vec2 d = p - s;
-	return d.Length();
+	return b2Vec2_Length(&d);
 }
 
 float64 b2PulleyJoint::GetRatio() const

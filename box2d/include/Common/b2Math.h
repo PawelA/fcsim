@@ -75,25 +75,6 @@ struct b2Vec2
 		x *= a; y *= a;
 	}
 
-	float64 Length() const
-	{
-		return sqrt(x * x + y * y);
-	}
-
-	float64 Normalize()
-	{
-		float64 length = Length();
-		if (length < MIN_VALUE)
-		{
-			return 0.0;
-		}
-		float64 invLength = 1.0 / length;
-		x *= invLength;
-		y *= invLength;
-
-		return length;
-	}
-
 	bool IsValid() const
 	{
 		return b2IsValid(x) && b2IsValid(y);
@@ -101,6 +82,26 @@ struct b2Vec2
 
 	float64 x, y;
 };
+
+static float64 b2Vec2_Length(b2Vec2 *v)
+{
+	return sqrt(v->x * v->x + v->y * v->y);
+}
+
+static float64 b2Vec2_Normalize(b2Vec2 *v)
+{
+	float64 length = b2Vec2_Length(v);
+	if (length < MIN_VALUE)
+	{
+		return 0.0;
+	}
+	float64 invLength = 1.0 / length;
+	v->x *= invLength;
+	v->y *= invLength;
+
+	return length;
+}
+
 
 struct b2Mat22
 {

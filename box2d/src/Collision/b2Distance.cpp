@@ -31,7 +31,7 @@ static int32 ProcessTwo(b2Vec2* p1Out, b2Vec2* p2Out, b2Vec2* p1s, b2Vec2* p2s, 
 	// If in point[1] region
 	b2Vec2 r = -points[1];
 	b2Vec2 d = points[0] - points[1];
-	float64 length = d.Normalize();
+	float64 length = b2Vec2_Normalize(&d);
 	float64 lambda = b2Dot(r, d);
 	if (lambda <= 0.0 || length < MIN_VALUE)
 	{

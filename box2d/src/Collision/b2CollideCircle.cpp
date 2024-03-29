@@ -99,7 +99,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	int32 vertIndex1 = normalIndex;
 	int32 vertIndex2 = vertIndex1 + 1 < poly->m_vertexCount ? vertIndex1 + 1 : 0;
 	b2Vec2 e = poly->m_vertices[vertIndex2] - poly->m_vertices[vertIndex1];
-	float64 length = e.Length();
+	float64 length = b2Vec2_Length(&e);
 	e.x /= length;
 	e.y /= length;
 
@@ -107,7 +107,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	if (length < MIN_VALUE)
 	{
 		b2Vec2 d = xLocal - poly->m_vertices[vertIndex1];
-		float64 dist = d.Length();
+		float64 dist = b2Vec2_Length(&d);
 		d.x /= dist;
 		d.y /= dist;
 		if (dist > radius)
@@ -150,7 +150,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	}
 
 	b2Vec2 d = xLocal - p;
-	float64 dist = d.Length();
+	float64 dist = b2Vec2_Length(&d);
 	d.x /= dist;
 	d.y /= dist;
 	if (dist > radius)
