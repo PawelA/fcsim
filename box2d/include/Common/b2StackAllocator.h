@@ -36,8 +36,6 @@ struct b2StackEntry
 // if you try to interleave multiple allocate/free pairs.
 struct b2StackAllocator
 {
-	void Free(void* p);
-
 	int32 GetMaxAllocation() const;
 
 	char m_data[b2_stackSize];
@@ -55,5 +53,7 @@ void b2StackAllocator_ctor(b2StackAllocator *allocator);
 void b2StackAllocator_dtor(b2StackAllocator *allocator);
 
 void *b2StackAllocator_Allocate(struct b2StackAllocator *allocator, int32 size);
+
+void b2StackAllocator_Free(struct b2StackAllocator *allocator, void* p);
 
 #endif

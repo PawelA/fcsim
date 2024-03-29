@@ -124,9 +124,9 @@ b2Island::b2Island(int32 bodyCapacity, int32 contactCapacity, int32 jointCapacit
 b2Island::~b2Island()
 {
 	// Warning: the order should reverse the constructor order.
-	m_allocator->Free(m_joints);
-	m_allocator->Free(m_contacts);
-	m_allocator->Free(m_bodies);
+	b2StackAllocator_Free(m_allocator, m_joints);
+	b2StackAllocator_Free(m_allocator, m_contacts);
+	b2StackAllocator_Free(m_allocator, m_bodies);
 }
 
 void b2Island::Clear()

@@ -127,7 +127,7 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 
 b2ContactSolver::~b2ContactSolver()
 {
-	m_allocator->Free(m_constraints);
+	b2StackAllocator_Free(m_allocator, m_constraints);
 }
 
 void b2ContactSolver::PreSolve()
