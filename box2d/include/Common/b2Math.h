@@ -41,32 +41,12 @@ inline float64 b2InvSqrt(float64 x)
 	return 1.0 / sqrt(x);
 }
 
-struct b2Vec2;
-static void b2Vec2_Set(b2Vec2 *v, float64 x_, float64 y_);
-
 // b2Vec2 has no constructor so that it
 // can be placed in a union.
 struct b2Vec2
 {
 	b2Vec2() {}
 	b2Vec2(float64 x, float64 y) : x(x), y(y) {}
-
-	b2Vec2 operator -() { b2Vec2 v; b2Vec2_Set(&v, -x, -y); return v; }
-
-	void operator += (const b2Vec2& v)
-	{
-		x += v.x; y += v.y;
-	}
-
-	void operator -= (const b2Vec2& v)
-	{
-		x -= v.x; y -= v.y;
-	}
-
-	void operator *= (float64 a)
-	{
-		x *= a; y *= a;
-	}
 
 	float64 x, y;
 };
@@ -210,6 +190,27 @@ inline b2Vec2 b2MulT(const b2Mat22& A, const b2Vec2& v)
 	b2Vec2 u;
 	b2Vec2_Set(&u, b2Dot(v, A.col1), b2Dot(v, A.col2));
 	return u;
+}
+
+inline b2Vec2 operator - (const b2Vec2& v)
+{
+	b2Vec2 u; b2Vec2_Set(&u, -v.x, -v.y);
+	return u;
+}
+
+inline void operator += (b2Vec2& v, const b2Vec2& u)
+{
+	v.x += u.x; v.y += u.y;
+}
+
+inline void operator -= (b2Vec2& v, const b2Vec2& u)
+{
+	v.x -= u.x; v.y -= u.y;
+}
+
+inline void operator *= (b2Vec2& v, float64 a)
+{
+	v.x *= a; v.y *= a;
 }
 
 inline b2Vec2 operator + (const b2Vec2& a, const b2Vec2& b)
