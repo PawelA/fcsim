@@ -75,11 +75,6 @@ struct b2Vec2
 		x *= a; y *= a;
 	}
 
-	bool IsValid() const
-	{
-		return b2IsValid(x) && b2IsValid(y);
-	}
-
 	float64 x, y;
 };
 
@@ -102,6 +97,10 @@ static float64 b2Vec2_Normalize(b2Vec2 *v)
 	return length;
 }
 
+static bool b2Vec2_IsValid(const b2Vec2 *v)
+{
+	return b2IsValid(v->x) && b2IsValid(v->y);
+}
 
 struct b2Mat22
 {

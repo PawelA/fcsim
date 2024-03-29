@@ -82,7 +82,7 @@ inline bool b2AABB::IsValid() const
 {
 	b2Vec2 d = maxVertex - minVertex;
 	bool valid = d.x >= 0.0 && d.y >= 0;
-	valid = valid && minVertex.IsValid() && maxVertex.IsValid();
+	valid = valid && b2Vec2_IsValid(&minVertex) && b2Vec2_IsValid(&maxVertex);
 	return valid;
 }
 
