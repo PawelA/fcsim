@@ -93,7 +93,7 @@ void b2PulleyJoint::PrepareVelocitySolver()
 	}
 	else
 	{
-		m_u1.SetZero();
+		b2Vec2_SetZero(&m_u1);
 	}
 
 	if (length2 > b2_linearSlop)
@@ -102,7 +102,7 @@ void b2PulleyJoint::PrepareVelocitySolver()
 	}
 	else
 	{
-		m_u2.SetZero();
+		b2Vec2_SetZero(&m_u2);
 	}
 
 	if (length1 < m_maxLength1)
@@ -233,7 +233,7 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		}
 		else
 		{
-			m_u1.SetZero();
+			b2Vec2_SetZero(&m_u1);
 		}
 
 		if (length2 > b2_linearSlop)
@@ -242,7 +242,7 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		}
 		else
 		{
-			m_u2.SetZero();
+			b2Vec2_SetZero(&m_u2);
 		}
 
 		float64 C = m_constant - length1 - m_ratio * length2;
@@ -276,7 +276,7 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		}
 		else
 		{
-			m_u1.SetZero();
+			b2Vec2_SetZero(&m_u1);
 		}
 
 		float64 C = m_maxLength1 - length1;
@@ -307,7 +307,7 @@ bool b2PulleyJoint::SolvePositionConstraints()
 		}
 		else
 		{
-			m_u2.SetZero();
+			b2Vec2_SetZero(&m_u2);
 		}
 
 		float64 C = m_maxLength2 - length2;

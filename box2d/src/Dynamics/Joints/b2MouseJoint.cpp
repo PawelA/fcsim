@@ -35,7 +35,7 @@ b2MouseJoint::b2MouseJoint(const b2MouseJointDef* def)
 	m_localAnchor = b2MulT(m_body2->m_R, m_target - m_body2->m_position);
 
 	m_maxForce = def->maxForce;
-	m_impulse.SetZero();
+	b2Vec2_SetZero(&m_impulse);
 
 	float64 mass = m_body2->m_mass;
 

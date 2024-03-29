@@ -137,7 +137,7 @@ void b2RevoluteJoint::PrepareVelocitySolver()
 	}
 	else
 	{
-		m_ptpImpulse.SetZero();
+		b2Vec2_SetZero(&m_ptpImpulse);
 		m_motorImpulse = 0.0;
 		m_limitImpulse = 0.0;
 	}

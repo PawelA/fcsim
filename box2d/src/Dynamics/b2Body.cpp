@@ -211,7 +211,7 @@ void b2Body::QuickSyncShapes()
 void b2Body::Freeze()
 {
 	m_flags |= e_frozenFlag;
-	m_linearVelocity.SetZero();
+	b2Vec2_SetZero(&m_linearVelocity);
 	m_angularVelocity = 0.0;
 	for (b2Shape* s = m_shapeList; s; s = s->m_next)
 	{

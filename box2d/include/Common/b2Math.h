@@ -48,7 +48,6 @@ struct b2Vec2
 	b2Vec2() {}
 	b2Vec2(float64 x, float64 y) : x(x), y(y) {}
 
-	void SetZero() { x = 0.0; y = 0.0; }
 	void Set(float64 x_, float64 y_) { x = x_; y = y_; }
 
 	b2Vec2 operator -() { b2Vec2 v; v.Set(-x, -y); return v; }
@@ -77,6 +76,12 @@ struct b2Vec2
 
 	float64 x, y;
 };
+
+static void b2Vec2_SetZero(b2Vec2 *v)
+{
+	v->x = 0.0;
+	v->y = 0.0;
+}
 
 static float64 b2Vec2_Length(b2Vec2 *v)
 {
