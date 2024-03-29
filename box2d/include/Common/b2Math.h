@@ -53,13 +53,6 @@ struct b2Vec2
 
 	b2Vec2 operator -() { b2Vec2 v; b2Vec2_Set(&v, -x, -y); return v; }
 
-	static b2Vec2 Make(float64 x_, float64 y_)
-	{
-		b2Vec2 v;
-		b2Vec2_Set(&v, x_, y_);
-		return v;
-	}
-
 	void operator += (const b2Vec2& v)
 	{
 		x += v.x; y += v.y;
