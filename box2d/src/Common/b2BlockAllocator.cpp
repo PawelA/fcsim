@@ -22,7 +22,7 @@
 #include <memory>
 #include <climits>
 
-int32 b2BlockAllocator::s_blockSizes[b2_blockSizes] = 
+int32 b2BlockAllocator_s_blockSizes[b2_blockSizes] =
 {
 	16,		// 0
 	32,		// 1
@@ -39,8 +39,8 @@ int32 b2BlockAllocator::s_blockSizes[b2_blockSizes] =
 	512,	// 12
 	640,	// 13
 };
-uint8 b2BlockAllocator::s_blockSizeLookup[b2_maxBlockSize + 1];
-bool b2BlockAllocator::s_blockSizeLookupInitialized;
+uint8 b2BlockAllocator_s_blockSizeLookup[b2_maxBlockSize + 1];
+bool b2BlockAllocator_s_blockSizeLookupInitialized;
 
 struct b2Chunk
 {
@@ -64,24 +64,24 @@ b2BlockAllocator::b2BlockAllocator()
 	memset(m_chunks, 0, m_chunkSpace * sizeof(b2Chunk));
 	memset(m_freeLists, 0, sizeof(m_freeLists));
 
-	if (s_blockSizeLookupInitialized == false)
+	if (b2BlockAllocator_s_blockSizeLookupInitialized == false)
 	{
 		int32 j = 0;
 		for (int32 i = 1; i <= b2_maxBlockSize; ++i)
 		{
 			b2Assert(j < b2_blockSizes);
-			if (i <= s_blockSizes[j])
+			if (i <= b2BlockAllocator_s_blockSizes[j])
 			{
-				s_blockSizeLookup[i] = (uint8)j;
+				b2BlockAllocator_s_blockSizeLookup[i] = (uint8)j;
 			}
 			else
 			{
 				++j;
-				s_blockSizeLookup[i] = (uint8)j;
+				b2BlockAllocator_s_blockSizeLookup[i] = (uint8)j;
 			}
 		}
 
-		s_blockSizeLookupInitialized = true;
+		b2BlockAllocator_s_blockSizeLookupInitialized = true;
 	}
 }
 
@@ -102,7 +102,7 @@ void* b2BlockAllocator::Allocate(int32 size)
 
 	b2Assert(0 < size && size <= b2_maxBlockSize);
 
-	int32 index = s_blockSizeLookup[size];
+	int32 index = b2BlockAllocator_s_blockSizeLookup[size];
 	b2Assert(0 <= index && index < b2_blockSizes);
 
 	if (m_freeLists[index])
@@ -128,7 +128,7 @@ void* b2BlockAllocator::Allocate(int32 size)
 #if defined(_DEBUG)
 		memset(chunk->blocks, 0xcd, b2_chunkSize);
 #endif
-		int32 blockSize = s_blockSizes[index];
+		int32 blockSize = b2BlockAllocator_s_blockSizes[index];
 		chunk->blockSize = blockSize;
 		int32 blockCount = b2_chunkSize / blockSize;
 		b2Assert(blockCount * blockSize <= b2_chunkSize);
@@ -157,12 +157,12 @@ void b2BlockAllocator::Free(void* p, int32 size)
 
 	b2Assert(0 < size && size <= b2_maxBlockSize);
 
-	int32 index = s_blockSizeLookup[size];
+	int32 index = b2BlockAllocator_s_blockSizeLookup[size];
 	b2Assert(0 <= index && index < b2_blockSizes);
 
 #ifdef _DEBUG
 	// Verify the memory address and size is valid.
-	int32 blockSize = s_blockSizes[index];
+	int32 blockSize = b2BlockAllocator_s_blockSizes[index];
 	bool found = false;
 	int32 gap = (int32)((int8*)&m_chunks->blocks - (int8*)m_chunks);
 	for (int32 i = 0; i < m_chunkCount; ++i)

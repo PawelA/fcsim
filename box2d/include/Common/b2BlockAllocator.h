@@ -47,10 +47,10 @@ struct b2BlockAllocator
 	int32 m_chunkSpace;
 
 	b2Block* m_freeLists[b2_blockSizes];
-
-	static int32 s_blockSizes[b2_blockSizes];
-	static uint8 s_blockSizeLookup[b2_maxBlockSize + 1];
-	static bool s_blockSizeLookupInitialized;
 };
+
+extern int32 b2BlockAllocator_s_blockSizes[b2_blockSizes];
+extern uint8 b2BlockAllocator_s_blockSizeLookup[b2_maxBlockSize + 1];
+extern bool b2BlockAllocator_s_blockSizeLookupInitialized;
 
 #endif
