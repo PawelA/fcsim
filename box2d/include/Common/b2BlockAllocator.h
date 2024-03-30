@@ -32,9 +32,8 @@ struct b2Chunk;
 // This is a small block allocator used for allocating small
 // objects that persist for more than one time step.
 // See: http://www.codeproject.com/useritems/Small_Block_Allocator.asp
-class b2BlockAllocator
+struct b2BlockAllocator
 {
-public:
 	b2BlockAllocator();
 	~b2BlockAllocator();
 
@@ -42,8 +41,6 @@ public:
 	void Free(void* p, int32 size);
 
 	void Clear();
-
-private:
 
 	b2Chunk* m_chunks;
 	int32 m_chunkCount;
