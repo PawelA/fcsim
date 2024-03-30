@@ -38,42 +38,42 @@ b2Joint* b2Joint::Create(const b2JointDef* def, b2BlockAllocator* allocator)
 	{
 	case e_distanceJoint:
 		{
-			void* mem = allocator->Allocate(sizeof(b2DistanceJoint));
+			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2DistanceJoint));
 			joint = new (mem) b2DistanceJoint((b2DistanceJointDef*)def);
 		}
 		break;
 
 	case e_mouseJoint:
 		{
-			void* mem = allocator->Allocate(sizeof(b2MouseJoint));
+			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2MouseJoint));
 			joint = new (mem) b2MouseJoint((b2MouseJointDef*)def);
 		}
 		break;
 
 	case e_prismaticJoint:
 		{
-			void* mem = allocator->Allocate(sizeof(b2PrismaticJoint));
+			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2PrismaticJoint));
 			joint = new (mem) b2PrismaticJoint((b2PrismaticJointDef*)def);
 		}
 		break;
 
 	case e_revoluteJoint:
 		{
-			void* mem = allocator->Allocate(sizeof(b2RevoluteJoint));
+			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2RevoluteJoint));
 			joint = new (mem) b2RevoluteJoint((b2RevoluteJointDef*)def);
 		}
 		break;
 
 	case e_pulleyJoint:
 		{
-			void* mem = allocator->Allocate(sizeof(b2PulleyJoint));
+			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2PulleyJoint));
 			joint = new (mem) b2PulleyJoint((b2PulleyJointDef*)def);
 		}
 		break;
 
 	case e_gearJoint:
 		{
-			void* mem = allocator->Allocate(sizeof(b2GearJoint));
+			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2GearJoint));
 			joint = new (mem) b2GearJoint((b2GearJointDef*)def);
 		}
 		break;

@@ -208,14 +208,14 @@ b2Shape* b2Shape::Create(const b2ShapeDef* def,
 	{
 	case e_circleShape:
 		{
-			void* mem = body->m_world->m_blockAllocator.Allocate(sizeof(b2CircleShape));
+			void* mem = b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2CircleShape));
 			return new (mem) b2CircleShape(def, body, center);
 		}
 
 	case e_boxShape:
 	case e_polyShape:
 		{
-			void* mem = body->m_world->m_blockAllocator.Allocate(sizeof(b2PolyShape));
+			void* mem = b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2PolyShape));
 			return new (mem) b2PolyShape(def, body, center);
 		}
 	}

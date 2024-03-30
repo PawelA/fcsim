@@ -25,7 +25,7 @@
 
 b2Contact* b2PolyContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
 {
-	void* mem = allocator->Allocate(sizeof(b2PolyContact));
+	void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2PolyContact));
 	return new (mem) b2PolyContact(shape1, shape2);
 }
 

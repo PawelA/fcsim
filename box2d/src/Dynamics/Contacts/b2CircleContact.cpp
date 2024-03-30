@@ -23,7 +23,7 @@
 
 b2Contact* b2CircleContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
 {
-	void* mem = allocator->Allocate(sizeof(b2CircleContact));
+	void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2CircleContact));
 	return new (mem) b2CircleContact(shape1, shape2);
 }
 

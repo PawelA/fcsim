@@ -79,7 +79,7 @@ void b2World::SetFilter(b2CollisionFilter* filter)
 
 b2Body* b2World::CreateBody(const b2BodyDef* def)
 {
-	void* mem = m_blockAllocator.Allocate(sizeof(b2Body));
+	void* mem = b2BlockAllocator_Allocate(&m_blockAllocator, sizeof(b2Body));
 	b2Body* b = new (mem) b2Body(def, this);
 	b->m_prev = NULL;
 

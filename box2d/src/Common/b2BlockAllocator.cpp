@@ -95,7 +95,7 @@ void b2BlockAllocator_dtor(b2BlockAllocator *allocator)
 	b2Free(allocator->m_chunks);
 }
 
-void* b2BlockAllocator::Allocate(int32 size)
+void* b2BlockAllocator_Allocate(b2BlockAllocator *allocator, int32 size)
 {
 	if (size == 0)
 		return NULL;
@@ -105,25 +105,25 @@ void* b2BlockAllocator::Allocate(int32 size)
 	int32 index = b2BlockAllocator_s_blockSizeLookup[size];
 	b2Assert(0 <= index && index < b2_blockSizes);
 
-	if (m_freeLists[index])
+	if (allocator->m_freeLists[index])
 	{
-		b2Block* block = m_freeLists[index];
-		m_freeLists[index] = block->next;
+		b2Block* block = allocator->m_freeLists[index];
+		allocator->m_freeLists[index] = block->next;
 		return block;
 	}
 	else
 	{
-		if (m_chunkCount == m_chunkSpace)
+		if (allocator->m_chunkCount == allocator->m_chunkSpace)
 		{
-			b2Chunk* oldChunks = m_chunks;
-			m_chunkSpace += b2_chunkArrayIncrement;
-			m_chunks = (b2Chunk*)b2Alloc(m_chunkSpace * sizeof(b2Chunk));
-			memcpy(m_chunks, oldChunks, m_chunkCount * sizeof(b2Chunk));
-			memset(m_chunks + m_chunkCount, 0, b2_chunkArrayIncrement * sizeof(b2Chunk));
+			b2Chunk* oldChunks = allocator->m_chunks;
+			allocator->m_chunkSpace += b2_chunkArrayIncrement;
+			allocator->m_chunks = (b2Chunk*)b2Alloc(allocator->m_chunkSpace * sizeof(b2Chunk));
+			memcpy(allocator->m_chunks, oldChunks, allocator->m_chunkCount * sizeof(b2Chunk));
+			memset(allocator->m_chunks + allocator->m_chunkCount, 0, b2_chunkArrayIncrement * sizeof(b2Chunk));
 			b2Free(oldChunks);
 		}
 
-		b2Chunk* chunk = m_chunks + m_chunkCount;
+		b2Chunk* chunk = allocator->m_chunks + allocator->m_chunkCount;
 		chunk->blocks = (b2Block*)b2Alloc(b2_chunkSize);
 #if defined(_DEBUG)
 		memset(chunk->blocks, 0xcd, b2_chunkSize);
@@ -141,8 +141,8 @@ void* b2BlockAllocator::Allocate(int32 size)
 		b2Block* last = (b2Block*)((int8*)chunk->blocks + blockSize * (blockCount - 1));
 		last->next = NULL;
 
-		m_freeLists[index] = chunk->blocks->next;
-		++m_chunkCount;
+		allocator->m_freeLists[index] = chunk->blocks->next;
+		++allocator->m_chunkCount;
 
 		return chunk->blocks;
 	}
