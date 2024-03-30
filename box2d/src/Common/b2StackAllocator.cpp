@@ -76,8 +76,3 @@ void b2StackAllocator_Free(struct b2StackAllocator *allocator, void* p)
 
 	p = NULL;
 }
-
-int32 b2StackAllocator::GetMaxAllocation() const
-{
-	return m_maxAllocation;
-}
