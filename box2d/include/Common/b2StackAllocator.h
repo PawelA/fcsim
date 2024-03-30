@@ -34,9 +34,8 @@ struct b2StackEntry
 // This is a stack allocator used for fast per step allocations.
 // You must nest allocate/free pairs. The code will assert
 // if you try to interleave multiple allocate/free pairs.
-class b2StackAllocator
+struct b2StackAllocator
 {
-public:
 	b2StackAllocator();
 	~b2StackAllocator();
 
@@ -44,8 +43,6 @@ public:
 	void Free(void* p);
 
 	int32 GetMaxAllocation() const;
-
-private:
 
 	char m_data[b2_stackSize];
 	int32 m_index;
