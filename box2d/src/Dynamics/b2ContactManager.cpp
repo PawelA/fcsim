@@ -30,7 +30,7 @@ void* b2ContactManager::PairAdded(void* proxyUserData1, void* proxyUserData2)
 	b2Body* body1 = shape1->m_body;
 	b2Body* body2 = shape2->m_body;
 
-	if (body1->IsStatic() && body2->IsStatic())
+	if (b2Body_IsStatic(body1) && b2Body_IsStatic(body2))
 	{
 		return &m_nullContact;
 	}

@@ -130,7 +130,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 			d *= b2_linearSlop / length;
 		}
 
-		if (body1->IsStatic())
+		if (b2Body_IsStatic(body1))
 		{
 			body1->m_position = p1;
 		}
@@ -142,7 +142,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 		b2Mat22_SetAngle(&body1->m_R, a1);
 		body1->QuickSyncShapes();
 
-		if (body2->IsStatic())
+		if (b2Body_IsStatic(body2))
 		{
 			body2->m_position = p2;
 		}

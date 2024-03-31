@@ -67,9 +67,6 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // be offset from the body's origin.
 struct b2Body
 {
-	// Is this body static (immovable)?
-	bool IsStatic() const;
-
 	// Is this body frozen?
 	bool IsFrozen() const;
 
@@ -186,9 +183,9 @@ inline float64 b2Body_GetRotation(const b2Body *body)
 	return body->m_rotation;
 }
 
-inline bool b2Body::IsStatic() const
+inline bool b2Body_IsStatic(const b2Body *body)
 {
-	return (m_flags & e_staticFlag) == e_staticFlag;
+	return (body->m_flags & b2Body::e_staticFlag) == b2Body::e_staticFlag;
 }
 
 inline bool b2Body::IsFrozen() const
