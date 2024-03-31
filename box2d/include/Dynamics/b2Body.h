@@ -62,24 +62,22 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 	def->preventRotation = false;
 }
 
+enum
+{
+	b2Body_e_staticFlag		= 0x0001,
+	b2Body_e_frozenFlag		= 0x0002,
+	b2Body_e_islandFlag		= 0x0004,
+	b2Body_e_sleepFlag			= 0x0008,
+	b2Body_e_allowSleepFlag	= 0x0010,
+	b2Body_e_destroyFlag		= 0x0020,
+};
+
+
 // A rigid body. Internal computation are done in terms
 // of the center of mass position. The center of mass may
 // be offset from the body's origin.
 struct b2Body
 {
-	//--------------- Internals Below -------------------
-
-	// m_flags
-	enum
-	{
-		e_staticFlag		= 0x0001,
-		e_frozenFlag		= 0x0002,
-		e_islandFlag		= 0x0004,
-		e_sleepFlag			= 0x0008,
-		e_allowSleepFlag	= 0x0010,
-		e_destroyFlag		= 0x0020,
-	};
-
 	b2Body(const b2BodyDef* bd, b2World* world);
 	~b2Body();
 
@@ -159,22 +157,22 @@ inline float64 b2Body_GetRotation(const b2Body *body)
 
 inline bool b2Body_IsStatic(const b2Body *body)
 {
-	return (body->m_flags & b2Body::e_staticFlag) == b2Body::e_staticFlag;
+	return (body->m_flags & b2Body_e_staticFlag) == b2Body_e_staticFlag;
 }
 
 inline bool b2Body_IsFrozen(const b2Body *body)
 {
-	return (body->m_flags & b2Body::e_frozenFlag) == b2Body::e_frozenFlag;
+	return (body->m_flags & b2Body_e_frozenFlag) == b2Body_e_frozenFlag;
 }
 
 inline bool b2Body_IsSleeping(const b2Body *body)
 {
-	return (body->m_flags & b2Body::e_sleepFlag) == b2Body::e_sleepFlag;
+	return (body->m_flags & b2Body_e_sleepFlag) == b2Body_e_sleepFlag;
 }
 
 inline void b2Body_WakeUp(b2Body *body)
 {
-	body->m_flags &= ~b2Body::e_sleepFlag;
+	body->m_flags &= ~b2Body_e_sleepFlag;
 	body->m_sleepTime = 0.0;
 }
 

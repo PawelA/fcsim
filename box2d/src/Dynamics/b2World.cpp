@@ -102,7 +102,7 @@ b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def)
 // Body destruction is deferred to make contact processing more robust.
 void b2World_DestroyBody(b2World *world, b2Body* b)
 {
-	if (b->m_flags & b2Body::e_destroyFlag)
+	if (b->m_flags & b2Body_e_destroyFlag)
 	{
 		return;
 	}
@@ -123,7 +123,7 @@ void b2World_DestroyBody(b2World *world, b2Body* b)
 		world->m_bodyList = b->m_next;
 	}
 
-	b->m_flags |= b2Body::e_destroyFlag;
+	b->m_flags |= b2Body_e_destroyFlag;
 	b2Assert(world->m_bodyCount > 0);
 	--world->m_bodyCount;
 
@@ -140,7 +140,7 @@ static void b2World_CleanBodyList(b2World *world)
 	b2Body* b = world->m_bodyDestroyList;
 	while (b)
 	{
-		b2Assert((b->m_flags & b2Body::e_destroyFlag) != 0);
+		b2Assert((b->m_flags & b2Body_e_destroyFlag) != 0);
 
 		// Preserve the next pointer.
 		b2Body* b0 = b;
@@ -328,7 +328,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	// Clear all the island flags.
 	for (b2Body* b = world->m_bodyList; b; b = b->m_next)
 	{
-		b->m_flags &= ~b2Body::e_islandFlag;
+		b->m_flags &= ~b2Body_e_islandFlag;
 	}
 	for (b2Contact* c = world->m_contactList; c; c = c->m_next)
 	{
@@ -344,7 +344,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	b2Body** stack = (b2Body**)b2StackAllocator_Allocate(&world->m_stackAllocator, stackSize * sizeof(b2Body*));
 	for (b2Body* seed = world->m_bodyList; seed; seed = seed->m_next)
 	{
-		if (seed->m_flags & (b2Body::e_staticFlag | b2Body::e_islandFlag | b2Body::e_sleepFlag | b2Body::e_frozenFlag))
+		if (seed->m_flags & (b2Body_e_staticFlag | b2Body_e_islandFlag | b2Body_e_sleepFlag | b2Body_e_frozenFlag))
 		{
 			continue;
 		}
@@ -353,7 +353,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 		island.Clear();
 		int32 stackCount = 0;
 		stack[stackCount++] = seed;
-		seed->m_flags |= b2Body::e_islandFlag;
+		seed->m_flags |= b2Body_e_islandFlag;
 
 		// Perform a depth first search (DFS) on the constraint graph.
 		while (stackCount > 0)
@@ -363,11 +363,11 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 			island.Add(b);
 
 			// Make sure the body is awake.
-			b->m_flags &= ~b2Body::e_sleepFlag;
+			b->m_flags &= ~b2Body_e_sleepFlag;
 
 			// To keep islands as small as possible, we don't
 			// propagate islands across static bodies.
-			if (b->m_flags & b2Body::e_staticFlag)
+			if (b->m_flags & b2Body_e_staticFlag)
 			{
 				continue;
 			}
@@ -384,14 +384,14 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 				cn->contact->m_flags |= b2Contact::e_islandFlag;
 
 				b2Body* other = cn->other;
-				if (other->m_flags & b2Body::e_islandFlag)
+				if (other->m_flags & b2Body_e_islandFlag)
 				{
 					continue;
 				}
 
 				b2Assert(stackCount < stackSize);
 				stack[stackCount++] = other;
-				other->m_flags |= b2Body::e_islandFlag;
+				other->m_flags |= b2Body_e_islandFlag;
 			}
 
 			// Search all joints connect to this body.
@@ -406,14 +406,14 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 				jn->joint->m_islandFlag = true;
 
 				b2Body* other = jn->other;
-				if (other->m_flags & b2Body::e_islandFlag)
+				if (other->m_flags & b2Body_e_islandFlag)
 				{
 					continue;
 				}
 
 				b2Assert(stackCount < stackSize);
 				stack[stackCount++] = other;
-				other->m_flags |= b2Body::e_islandFlag;
+				other->m_flags |= b2Body_e_islandFlag;
 			}
 		}
 
@@ -431,9 +431,9 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 		{
 			// Allow static bodies to participate in other islands.
 			b2Body* b = island.m_bodies[i];
-			if (b->m_flags & b2Body::e_staticFlag)
+			if (b->m_flags & b2Body_e_staticFlag)
 			{
-				b->m_flags &= ~b2Body::e_islandFlag;
+				b->m_flags &= ~b2Body_e_islandFlag;
 			}
 
 			// Handle newly frozen bodies.

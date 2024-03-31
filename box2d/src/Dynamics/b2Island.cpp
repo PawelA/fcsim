@@ -251,13 +251,13 @@ void b2Island::UpdateSleep(float64 dt)
 			continue;
 		}
 
-		if ((b->m_flags & b2Body::e_allowSleepFlag) == 0)
+		if ((b->m_flags & b2Body_e_allowSleepFlag) == 0)
 		{
 			b->m_sleepTime = 0.0;
 			minSleepTime = 0.0;
 		}
 
-		if ((b->m_flags & b2Body::e_allowSleepFlag) == 0 ||
+		if ((b->m_flags & b2Body_e_allowSleepFlag) == 0 ||
 			b->m_angularVelocity * b->m_angularVelocity > angTolSqr ||
 			b2Dot(b->m_linearVelocity, b->m_linearVelocity) > linTolSqr)
 		{
@@ -276,7 +276,7 @@ void b2Island::UpdateSleep(float64 dt)
 		for (int32 i = 0; i < m_bodyCount; ++i)
 		{
 			b2Body* b = m_bodies[i];
-			b->m_flags |= b2Body::e_sleepFlag;
+			b->m_flags |= b2Body_e_sleepFlag;
 		}
 	}
 }

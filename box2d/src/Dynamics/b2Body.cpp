@@ -64,7 +64,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 	}
 	else
 	{
-		m_flags |= e_staticFlag;
+		m_flags |= b2Body_e_staticFlag;
 	}
 
 	// Compute the moment of inertia.
@@ -119,14 +119,14 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 	m_sleepTime = 0.0;
 	if (bd->allowSleep)
 	{
-		m_flags |= e_allowSleepFlag;
+		m_flags |= b2Body_e_allowSleepFlag;
 	}
 	if (bd->isSleeping)
 	{
-		m_flags |= e_sleepFlag;
+		m_flags |= b2Body_e_sleepFlag;
 	}
 
-	if ((m_flags & e_sleepFlag)  || m_invMass == 0.0)
+	if ((m_flags & b2Body_e_sleepFlag)  || m_invMass == 0.0)
 	{
 		b2Vec2_Set(&m_linearVelocity, 0.0, 0.0);
 		m_angularVelocity = 0.0;
@@ -167,7 +167,7 @@ void b2Body::QuickSyncShapes()
 
 void b2Body::Freeze()
 {
-	m_flags |= e_frozenFlag;
+	m_flags |= b2Body_e_frozenFlag;
 	b2Vec2_SetZero(&m_linearVelocity);
 	m_angularVelocity = 0.0;
 	for (b2Shape* s = m_shapeList; s; s = s->m_next)
