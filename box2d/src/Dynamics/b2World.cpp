@@ -84,8 +84,8 @@ void b2World_SetFilter(b2World *world, b2CollisionFilter* filter)
 
 b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def)
 {
-	void* mem = b2BlockAllocator_Allocate(&world->m_blockAllocator, sizeof(b2Body));
-	b2Body* b = new (mem) b2Body(def, world);
+	b2Body* b = (b2Body *)b2BlockAllocator_Allocate(&world->m_blockAllocator, sizeof(b2Body));
+	b2Body_ctor(b, def, world);
 	b->m_prev = NULL;
 
 	b->m_next = world->m_bodyList;
@@ -161,7 +161,7 @@ static void b2World_CleanBodyList(b2World *world)
 			b2World_DestroyJoint(world, jn0->joint);
 		}
 
-		b0->~b2Body();
+		b2Body_dtor(b0);
 		b2BlockAllocator_Free(&world->m_blockAllocator, b0, sizeof(b2Body));
 	}
 

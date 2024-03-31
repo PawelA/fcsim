@@ -22,122 +22,122 @@
 #include <Dynamics/Contacts/b2Contact.h>
 #include <Collision/b2Shape.h>
 
-b2Body::b2Body(const b2BodyDef* bd, b2World* world)
+void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world)
 {
-	m_flags = 0;
-	m_position = bd->position;
-	m_rotation = bd->rotation;
-	b2Mat22_SetAngle(&m_R, m_rotation);
-	m_position0 = m_position;
-	m_rotation0 = m_rotation;
-	m_world = world;
+	body->m_flags = 0;
+	body->m_position = bd->position;
+	body->m_rotation = bd->rotation;
+	b2Mat22_SetAngle(&body->m_R, body->m_rotation);
+	body->m_position0 = body->m_position;
+	body->m_rotation0 = body->m_rotation;
+	body->m_world = world;
 
-	m_linearDamping = b2Clamp(1.0 - bd->linearDamping, 0.0, 1.0);
-	m_angularDamping = b2Clamp(1.0 - bd->angularDamping, 0.0, 1.0);
+	body->m_linearDamping = b2Clamp(1.0 - bd->linearDamping, 0.0, 1.0);
+	body->m_angularDamping = b2Clamp(1.0 - bd->angularDamping, 0.0, 1.0);
 
-	b2Vec2_Set(&m_force, 0.0, 0.0);
-	m_torque = 0.0;
+	b2Vec2_Set(&body->m_force, 0.0, 0.0);
+	body->m_torque = 0.0;
 
-	m_mass = 0.0;
+	body->m_mass = 0.0;
 
 	b2MassData massDatas[b2_maxShapesPerBody];
 
 	// Compute the shape mass properties, the bodies total mass and COM.
-	m_shapeCount = 0;
-	b2Vec2_Set(&m_center, 0.0, 0.0);
+	body->m_shapeCount = 0;
+	b2Vec2_Set(&body->m_center, 0.0, 0.0);
 	for (int32 i = 0; i < b2_maxShapesPerBody; ++i)
 	{
 		const b2ShapeDef* sd = bd->shapes[i];
 		if (sd == NULL) break;
 		b2MassData* massData = massDatas + i;
 		sd->ComputeMass(massData);
-		m_mass += massData->mass;
-		m_center += massData->mass * (sd->localPosition + massData->center);
-		++m_shapeCount;
+		body->m_mass += massData->mass;
+		body->m_center += massData->mass * (sd->localPosition + massData->center);
+		++body->m_shapeCount;
 	}
 
 	// Compute center of mass, and shift the origin to the COM.
-	if (m_mass > 0.0)
+	if (body->m_mass > 0.0)
 	{
-		m_center *= 1.0 / m_mass;
-		m_position += b2Mul(m_R, m_center);
+		body->m_center *= 1.0 / body->m_mass;
+		body->m_position += b2Mul(body->m_R, body->m_center);
 	}
 	else
 	{
-		m_flags |= b2Body_e_staticFlag;
+		body->m_flags |= b2Body_e_staticFlag;
 	}
 
 	// Compute the moment of inertia.
-	m_I = 0.0;
-	for (int32 i = 0; i < m_shapeCount; ++i)
+	body->m_I = 0.0;
+	for (int32 i = 0; i < body->m_shapeCount; ++i)
 	{
 		const b2ShapeDef* sd = bd->shapes[i];
 		b2MassData* massData = massDatas + i;
-		m_I += massData->I;
-		b2Vec2 r = sd->localPosition + massData->center - m_center;
-		m_I += massData->mass * b2Dot(r, r);
+		body->m_I += massData->I;
+		b2Vec2 r = sd->localPosition + massData->center - body->m_center;
+		body->m_I += massData->mass * b2Dot(r, r);
 	}
 
-	if (m_mass > 0.0)
+	if (body->m_mass > 0.0)
 	{
-		m_invMass = 1.0 / m_mass;
+		body->m_invMass = 1.0 / body->m_mass;
 	}
 	else
 	{
-		m_invMass = 0.0;
+		body->m_invMass = 0.0;
 	}
 
-	if (m_I > 0.0 && bd->preventRotation == false)
+	if (body->m_I > 0.0 && bd->preventRotation == false)
 	{
-		m_invI = 1.0 / m_I;
+		body->m_invI = 1.0 / body->m_I;
 	}
 	else
 	{
-		m_I = 0.0;
-		m_invI = 0.0;
+		body->m_I = 0.0;
+		body->m_invI = 0.0;
 	}
 
 	// Compute the center of mass velocity.
-	m_linearVelocity = bd->linearVelocity + b2Cross(bd->angularVelocity, m_center);
-	m_angularVelocity = bd->angularVelocity;
+	body->m_linearVelocity = bd->linearVelocity + b2Cross(bd->angularVelocity, body->m_center);
+	body->m_angularVelocity = bd->angularVelocity;
 
-	m_jointList = NULL;
-	m_contactList = NULL;
-	m_prev = NULL;
-	m_next = NULL;
+	body->m_jointList = NULL;
+	body->m_contactList = NULL;
+	body->m_prev = NULL;
+	body->m_next = NULL;
 
 	// Create the shapes.
-	m_shapeList = NULL;
-	for (int32 i = 0; i < m_shapeCount; ++i)
+	body->m_shapeList = NULL;
+	for (int32 i = 0; i < body->m_shapeCount; ++i)
 	{
 		const b2ShapeDef* sd = bd->shapes[i];
-		b2Shape* shape = b2Shape::Create(sd, this, m_center);
-		shape->m_next = m_shapeList;
-		m_shapeList = shape;
+		b2Shape* shape = b2Shape::Create(sd, body, body->m_center);
+		shape->m_next = body->m_shapeList;
+		body->m_shapeList = shape;
 	}
 
-	m_sleepTime = 0.0;
+	body->m_sleepTime = 0.0;
 	if (bd->allowSleep)
 	{
-		m_flags |= b2Body_e_allowSleepFlag;
+		body->m_flags |= b2Body_e_allowSleepFlag;
 	}
 	if (bd->isSleeping)
 	{
-		m_flags |= b2Body_e_sleepFlag;
+		body->m_flags |= b2Body_e_sleepFlag;
 	}
 
-	if ((m_flags & b2Body_e_sleepFlag)  || m_invMass == 0.0)
+	if ((body->m_flags & b2Body_e_sleepFlag)  || body->m_invMass == 0.0)
 	{
-		b2Vec2_Set(&m_linearVelocity, 0.0, 0.0);
-		m_angularVelocity = 0.0;
+		b2Vec2_Set(&body->m_linearVelocity, 0.0, 0.0);
+		body->m_angularVelocity = 0.0;
 	}
 
-	m_userData = bd->userData;
+	body->m_userData = bd->userData;
 }
 
-b2Body::~b2Body()
+void b2Body_dtor(b2Body *body)
 {
-	b2Shape* s = m_shapeList;
+	b2Shape* s = body->m_shapeList;
 	while (s)
 	{
 		b2Shape* s0 = s;

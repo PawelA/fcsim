@@ -78,9 +78,6 @@ enum
 // be offset from the body's origin.
 struct b2Body
 {
-	b2Body(const b2BodyDef* bd, b2World* world);
-	~b2Body();
-
 	void SynchronizeShapes();
 	void QuickSyncShapes();
 
@@ -129,6 +126,10 @@ struct b2Body
 
 	void* m_userData;
 };
+
+void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world);
+
+void b2Body_dtor(b2Body *body);
 
 inline void b2BodyDef_AddShape(b2BodyDef *def, b2ShapeDef* shape)
 {
