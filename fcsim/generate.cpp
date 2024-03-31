@@ -558,7 +558,7 @@ void fcsim_get_level_block_desc_simul(struct fcsim_simul *simul, int id, struct 
 	b2Body *body = simul->level_block_bodies[id];
 	b2Vec2 pos;
 
-	pos = body->GetOriginPosition();
+	pos = b2Body_GetOriginPosition(body);
 	where->x = pos.x;
 	where->y = pos.y;
 	where->angle = body->GetRotation(); 
@@ -569,7 +569,7 @@ void fcsim_get_player_block_desc_simul(struct fcsim_simul *simul, int id, struct
 	b2Body *body = simul->player_block_bodies[id];
 	b2Vec2 pos;
 
-	pos = body->GetOriginPosition();
+	pos = b2Body_GetOriginPosition(body);
 	where->x = pos.x;
 	where->y = pos.y;
 	where->angle = body->GetRotation(); 
