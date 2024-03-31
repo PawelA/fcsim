@@ -43,8 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	void CleanBodyList();
-
 	b2BlockAllocator m_blockAllocator;
 	b2StackAllocator m_stackAllocator;
 

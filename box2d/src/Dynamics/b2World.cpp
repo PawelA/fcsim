@@ -132,11 +132,11 @@ void b2World_DestroyBody(b2World *world, b2Body* b)
 	world->m_bodyDestroyList = b;
 }
 
-void b2World::CleanBodyList()
+static void b2World_CleanBodyList(b2World *world)
 {
-	m_contactManager.m_destroyImmediate = true;
+	world->m_contactManager.m_destroyImmediate = true;
 
-	b2Body* b = m_bodyDestroyList;
+	b2Body* b = world->m_bodyDestroyList;
 	while (b)
 	{
 		b2Assert((b->m_flags & b2Body::e_destroyFlag) != 0);
@@ -152,22 +152,22 @@ void b2World::CleanBodyList()
 			b2JointNode* jn0 = jn;
 			jn = jn->next;
 
-			if (m_listener)
+			if (world->m_listener)
 			{
-				m_listener->NotifyJointDestroyed(jn0->joint);
+				world->m_listener->NotifyJointDestroyed(jn0->joint);
 			}
 
-			b2World_DestroyJoint(this, jn0->joint);
+			b2World_DestroyJoint(world, jn0->joint);
 		}
 
 		b0->~b2Body();
-		b2BlockAllocator_Free(&m_blockAllocator, b0, sizeof(b2Body));
+		b2BlockAllocator_Free(&world->m_blockAllocator, b0, sizeof(b2Body));
 	}
 
 	// Reset the list.
-	m_bodyDestroyList = NULL;
+	world->m_bodyDestroyList = NULL;
 
-	m_contactManager.m_destroyImmediate = false;
+	world->m_contactManager.m_destroyImmediate = false;
 }
 
 b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def)
@@ -316,7 +316,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	world->m_contactManager.CleanContactList();
 
 	// Handle deferred body destruction.
-	world->CleanBodyList();
+	b2World_CleanBodyList(world);
 
 	// Update contacts.
 	world->m_contactManager.Collide();
