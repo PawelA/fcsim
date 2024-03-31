@@ -537,7 +537,7 @@ struct fcsim_simul *fcsim_make_simul(struct fcsim_level *level)
 
 void fcsim_step(struct fcsim_simul *simul)
 {
-	simul->world.Step(1.0 / 30.0, 10);
+	b2World_Step(&simul->world, 1.0 / 30.0, 10);
 
 	b2Joint *joint = simul->world.GetJointList();
 	while (joint) {

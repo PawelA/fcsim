@@ -43,8 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	void Step(float64 timeStep, int32 iterations);
-
 	// Query the world for all shapes that potentially overlap the
 	// provided AABB. You provide a shape pointer buffer of specified
 	// size. The number of shapes found is returned.
@@ -108,6 +106,8 @@ void b2World_DestroyBody(b2World *world, b2Body* body);
 b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def);
 
 void b2World_DestroyJoint(b2World *world, b2Joint* joint);
+
+void b2World_Step(b2World *world, float64 timeStep, int32 iterations);
 
 inline b2Body* b2World::GetBodyList()
 {
