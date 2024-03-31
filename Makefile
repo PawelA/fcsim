@@ -64,7 +64,6 @@ obj-box2d-y = \
 	box2d/src/Dynamics/b2Body.o \
 	box2d/src/Dynamics/b2ContactManager.o \
 	box2d/src/Dynamics/b2Island.o \
-	box2d/src/Dynamics/b2WorldCallbacks.o \
 	box2d/src/Dynamics/b2World.o \
 	box2d/src/Dynamics/Contacts/b2CircleContact.o \
 	box2d/src/Dynamics/Contacts/b2Conservative.o \

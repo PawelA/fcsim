@@ -448,3 +448,14 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	}
 #endif
 }
+
+bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2)
+{
+	if (shape1->m_groupIndex == shape2->m_groupIndex && shape1->m_groupIndex != 0)
+	{
+		return shape1->m_groupIndex > 0;
+	}
+
+	bool collide = (shape1->m_maskBits & shape2->m_categoryBits) != 0 && (shape1->m_categoryBits & shape2->m_maskBits) != 0;
+	return collide;
+}

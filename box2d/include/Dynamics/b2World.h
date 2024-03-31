@@ -23,7 +23,6 @@
 #include "../Common/b2BlockAllocator.h"
 #include "../Common/b2StackAllocator.h"
 #include "b2ContactManager.h"
-#include "b2WorldCallbacks.h"
 
 struct b2AABB;
 struct b2BodyDef;
@@ -33,6 +32,10 @@ class b2Joint;
 class b2Shape;
 class b2Contact;
 class b2BroadPhase;
+
+typedef bool (*b2CollisionFilter)(b2Shape* shape1, b2Shape* shape2);
+
+bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2);
 
 struct b2TimeStep
 {
