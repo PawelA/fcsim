@@ -150,7 +150,7 @@ static void init_b2world(b2World *world)
 	b2Vec2_Set(&aabb.minVertex, -2000, -1450);
 	b2Vec2_Set(&aabb.maxVertex, 2000, 1450);
 	b2World_ctor(world, aabb, gravity, true);
-	world->SetFilter(&fcsim_collision_filter);
+	b2World_SetFilter(world, &fcsim_collision_filter);
 }
 
 struct block_physics {

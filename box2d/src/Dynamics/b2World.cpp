@@ -76,9 +76,9 @@ void b2World_SetListener(b2World *world, b2WorldListener* listener)
 	world->m_listener = listener;
 }
 
-void b2World::SetFilter(b2CollisionFilter* filter)
+void b2World_SetFilter(b2World *world, b2CollisionFilter* filter)
 {
-	m_filter = filter;
+	world->m_filter = filter;
 }
 
 b2Body* b2World::CreateBody(const b2BodyDef* def)
