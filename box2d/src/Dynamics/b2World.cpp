@@ -71,9 +71,9 @@ void b2World_dtor(b2World *world)
 	world->m_contactManager.~b2ContactManager();
 }
 
-void b2World::SetListener(b2WorldListener* listener)
+void b2World_SetListener(b2World *world, b2WorldListener* listener)
 {
-	m_listener = listener;
+	world->m_listener = listener;
 }
 
 void b2World::SetFilter(b2CollisionFilter* filter)
