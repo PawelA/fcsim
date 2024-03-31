@@ -19,12 +19,12 @@
 #include <Common/b2StackAllocator.h>
 #include <Common/b2Math.h>
 
-b2StackAllocator::b2StackAllocator()
+void b2StackAllocator_ctor(struct b2StackAllocator *allocator)
 {
-	m_index = 0;
-	m_allocation = 0;
-	m_maxAllocation = 0;
-	m_entryCount = 0;
+	allocator->m_index = 0;
+	allocator->m_allocation = 0;
+	allocator->m_maxAllocation = 0;
+	allocator->m_entryCount = 0;
 }
 
 b2StackAllocator::~b2StackAllocator()
