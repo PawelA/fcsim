@@ -470,18 +470,3 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	}
 #endif
 }
-
-int32 b2World::Query(const b2AABB& aabb, b2Shape** shapes, int32 maxCount)
-{
-	void** results = (void**)b2StackAllocator_Allocate(&m_stackAllocator, maxCount * sizeof(void*));
-
-	int32 count = m_broadPhase->Query(aabb, results, maxCount);
-
-	for (int32 i = 0; i < count; ++i)
-	{
-		shapes[i] = (b2Shape*)results[i];
-	}
-
-	b2StackAllocator_Free(&m_stackAllocator, results);
-	return count;
-}

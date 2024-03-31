@@ -43,11 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	// Query the world for all shapes that potentially overlap the
-	// provided AABB. You provide a shape pointer buffer of specified
-	// size. The number of shapes found is returned.
-	int32 Query(const b2AABB& aabb, b2Shape** shapes, int32 maxCount);
-
 	// You can use these to iterate over all the bodies, joints, and contacts.
 	b2Body* GetBodyList();
 	b2Joint* GetJointList();
