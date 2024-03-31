@@ -157,7 +157,7 @@ void b2World::CleanBodyList()
 				m_listener->NotifyJointDestroyed(jn0->joint);
 			}
 
-			DestroyJoint(jn0->joint);
+			b2World_DestroyJoint(this, jn0->joint);
 		}
 
 		b0->~b2Body();
@@ -213,7 +213,7 @@ b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def)
 	return j;
 }
 
-void b2World::DestroyJoint(b2Joint* j)
+void b2World_DestroyJoint(b2World *world, b2Joint* j)
 {
 	bool collideConnected = j->m_collideConnected;
 
@@ -228,9 +228,9 @@ void b2World::DestroyJoint(b2Joint* j)
 		j->m_next->m_prev = j->m_prev;
 	}
 
-	if (j == m_jointList)
+	if (j == world->m_jointList)
 	{
-		m_jointList = j->m_next;
+		world->m_jointList = j->m_next;
 	}
 
 	// Disconnect from island graph.
@@ -279,10 +279,10 @@ void b2World::DestroyJoint(b2Joint* j)
 	j->m_node2.prev = NULL;
 	j->m_node2.next = NULL;
 
-	b2Joint::Destroy(j, &m_blockAllocator);
+	b2Joint::Destroy(j, &world->m_blockAllocator);
 
-	b2Assert(m_jointCount > 0);
-	--m_jointCount;
+	b2Assert(world->m_jointCount > 0);
+	--world->m_jointCount;
 
 	// If the joint prevents collisions, then reset collision filtering.
 	if (collideConnected == false)
@@ -291,7 +291,7 @@ void b2World::DestroyJoint(b2Joint* j)
 		b2Body* b = body1->m_shapeCount < body2->m_shapeCount ? body1 : body2;
 		for (b2Shape* s = b->m_shapeList; s; s = s->m_next)
 		{
-			s->ResetProxy(m_broadPhase);
+			s->ResetProxy(world->m_broadPhase);
 		}
 	}
 }

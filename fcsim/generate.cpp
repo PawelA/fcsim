@@ -546,7 +546,7 @@ void fcsim_step(struct fcsim_simul *simul)
 		b2Vec2 a2 = joint->GetAnchor2();
 		b2Vec2 d = a1 - a2;
 		if (fabs(d.x) + fabs(d.y) > 50.0)
-			simul->world.DestroyJoint(joint);
+			b2World_DestroyJoint(&simul->world, joint);
 		joint = next;
 	}
 }

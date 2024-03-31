@@ -43,8 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	void DestroyJoint(b2Joint* joint);
-
 	// The world provides a single ground body with no collision shapes. You
 	// can use this to simplify the creation of joints.
 	b2Body* GetGroundBody();
@@ -112,6 +110,8 @@ b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def);
 void b2World_DestroyBody(b2World *world, b2Body* body);
 
 b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def);
+
+void b2World_DestroyJoint(b2World *world, b2Joint* joint);
 
 inline b2Body* b2World::GetGroundBody()
 {
