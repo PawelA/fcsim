@@ -140,7 +140,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 		}
 		body1->m_rotation = a1;
 		b2Mat22_SetAngle(&body1->m_R, a1);
-		body1->QuickSyncShapes();
+		b2Body_QuickSyncShapes(body1);
 
 		if (b2Body_IsStatic(body2))
 		{
@@ -153,7 +153,7 @@ bool b2Conservative(b2Shape* shape1, b2Shape* shape2)
 		body2->m_position = p2 + d;
 		body2->m_rotation = a2;
 		b2Mat22_SetAngle(&body2->m_R, a2);
-		body2->QuickSyncShapes();
+		b2Body_QuickSyncShapes(body2);
 
 		return true;
 	}

@@ -78,8 +78,6 @@ enum
 // be offset from the body's origin.
 struct b2Body
 {
-	void QuickSyncShapes();
-
 	// This is used to prevent connected bodies from colliding.
 	// It may lie, depending on the collideConnected flag.
 	bool IsConnected(const b2Body* other) const;
@@ -131,6 +129,8 @@ void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world);
 void b2Body_dtor(b2Body *body);
 
 void b2Body_SynchronizeShapes(b2Body *body);
+
+void b2Body_QuickSyncShapes(b2Body *body);
 
 inline void b2BodyDef_AddShape(b2BodyDef *def, b2ShapeDef* shape)
 {

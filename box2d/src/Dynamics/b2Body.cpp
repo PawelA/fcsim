@@ -157,11 +157,11 @@ void b2Body_SynchronizeShapes(b2Body *body)
 	}
 }
 
-void b2Body::QuickSyncShapes()
+void b2Body_QuickSyncShapes(b2Body *body)
 {
-	for (b2Shape* s = m_shapeList; s; s = s->m_next)
+	for (b2Shape* s = body->m_shapeList; s; s = s->m_next)
 	{
-		s->QuickSync(m_position, m_R);
+		s->QuickSync(body->m_position, body->m_R);
 	}
 }
 
