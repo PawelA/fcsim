@@ -43,10 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	// The world provides a single ground body with no collision shapes. You
-	// can use this to simplify the creation of joints.
-	b2Body* GetGroundBody();
-
 	void Step(float64 timeStep, int32 iterations);
 
 	// Query the world for all shapes that potentially overlap the
@@ -112,11 +108,6 @@ void b2World_DestroyBody(b2World *world, b2Body* body);
 b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def);
 
 void b2World_DestroyJoint(b2World *world, b2Joint* joint);
-
-inline b2Body* b2World::GetGroundBody()
-{
-	return m_groundBody;
-}
 
 inline b2Body* b2World::GetBodyList()
 {
