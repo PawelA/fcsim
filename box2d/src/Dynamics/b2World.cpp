@@ -60,14 +60,15 @@ void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity
 	world->m_groundBody = world->CreateBody(&bd);
 }
 
-b2World::~b2World()
+void b2World_dtor(b2World *world)
 {
-	DestroyBody(m_groundBody);
-	m_broadPhase->~b2BroadPhase();
-	b2Free(m_broadPhase);
+	world->DestroyBody(world->m_groundBody);
+	world->m_broadPhase->~b2BroadPhase();
+	b2Free(world->m_broadPhase);
 
-	b2BlockAllocator_dtor(&m_blockAllocator);
-	b2StackAllocator_dtor(&m_stackAllocator);
+	b2BlockAllocator_dtor(&world->m_blockAllocator);
+	b2StackAllocator_dtor(&world->m_stackAllocator);
+	world->m_contactManager.~b2ContactManager();
 }
 
 void b2World::SetListener(b2WorldListener* listener)

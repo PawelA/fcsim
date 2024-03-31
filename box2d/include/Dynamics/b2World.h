@@ -43,8 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	~b2World();
-
 	// Register a world listener to receive important events that can
 	// help prevent your code from crashing.
 	void SetListener(b2WorldListener* listener);
@@ -111,6 +109,8 @@ struct b2World
 };
 
 void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep);
+
+void b2World_dtor(b2World *world);
 
 inline b2Body* b2World::GetGroundBody()
 {
