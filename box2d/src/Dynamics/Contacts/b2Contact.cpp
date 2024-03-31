@@ -98,8 +98,8 @@ void b2Contact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 
 	if (contact->GetManifoldCount() > 0)
 	{
-		contact->m_shape1->m_body->WakeUp();
-		contact->m_shape2->m_body->WakeUp();
+		b2Body_WakeUp(contact->m_shape1->m_body);
+		b2Body_WakeUp(contact->m_shape2->m_body);
 	}
 
 	b2ShapeType type1 = contact->m_shape1->m_type;

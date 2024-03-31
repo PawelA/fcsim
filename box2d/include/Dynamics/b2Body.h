@@ -67,9 +67,6 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // be offset from the body's origin.
 struct b2Body
 {
-	// Wake up this body so it will begin simulating.
-	void WakeUp();
-
 	// Get the list of all shapes attached to this body.
 	b2Shape* GetShapeList();
 
@@ -189,10 +186,10 @@ inline bool b2Body_IsSleeping(const b2Body *body)
 	return (body->m_flags & b2Body::e_sleepFlag) == b2Body::e_sleepFlag;
 }
 
-inline void b2Body::WakeUp()
+inline void b2Body_WakeUp(b2Body *body)
 {
-	m_flags &= ~e_sleepFlag;
-	m_sleepTime = 0.0;
+	body->m_flags &= ~b2Body::e_sleepFlag;
+	body->m_sleepTime = 0.0;
 }
 
 inline b2Shape* b2Body::GetShapeList()

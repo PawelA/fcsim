@@ -55,7 +55,7 @@ b2MouseJoint::b2MouseJoint(const b2MouseJointDef* def)
 
 void b2MouseJoint::SetTarget(const b2Vec2& target)
 {
-	m_body2->WakeUp();
+	b2Body_WakeUp(m_body2);
 	m_target = target;
 }
 

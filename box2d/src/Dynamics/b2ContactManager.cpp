@@ -136,8 +136,8 @@ void b2ContactManager::DestroyContact(b2Contact* c)
 		b2Body* body2 = c->m_shape2->m_body;
 
 		// Wake up touching bodies.
-		body1->WakeUp();
-		body2->WakeUp();
+		b2Body_WakeUp(body1);
+		b2Body_WakeUp(body2);
 
 		// Remove from body 1
 		if (c->m_node1.prev)

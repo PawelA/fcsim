@@ -239,8 +239,8 @@ void b2World_DestroyJoint(b2World *world, b2Joint* j)
 	b2Body* body2 = j->m_body2;
 
 	// Wake up touching bodies.
-	body1->WakeUp();
-	body2->WakeUp();
+	b2Body_WakeUp(body1);
+	b2Body_WakeUp(body2);
 
 	// Remove from body 1
 	if (j->m_node1.prev)
