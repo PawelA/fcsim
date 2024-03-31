@@ -57,6 +57,7 @@ void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity
 	world->m_broadPhase = new (mem) b2BroadPhase(worldAABB, &world->m_contactManager);
 
 	b2BodyDef bd;
+	b2BodyDef_ctor(&bd);
 	world->m_groundBody = b2World_CreateBody(world, &bd);
 }
 

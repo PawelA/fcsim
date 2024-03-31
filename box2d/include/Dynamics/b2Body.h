@@ -34,21 +34,6 @@ struct b2ContactNode;
 
 struct b2BodyDef
 {
-	b2BodyDef()
-	{
-		userData = NULL;
-		memset(shapes, 0, sizeof(shapes));
-		b2Vec2_Set(&position, 0.0, 0.0);
-		rotation = 0.0;
-		b2Vec2_Set(&linearVelocity, 0.0, 0.0);
-		angularVelocity = 0.0;
-		linearDamping = 0.0;
-		angularDamping = 0.0;
-		allowSleep = true;
-		isSleeping = false;
-		preventRotation = false;
-	}
-
 	void* userData;
 	b2ShapeDef* shapes[b2_maxShapesPerBody];
 	b2Vec2 position;
@@ -63,6 +48,21 @@ struct b2BodyDef
 
 	void AddShape(b2ShapeDef* shape);
 };
+
+static void b2BodyDef_ctor(b2BodyDef *def)
+{
+	def->userData = NULL;
+	memset(def->shapes, 0, sizeof(def->shapes));
+	b2Vec2_Set(&def->position, 0.0, 0.0);
+	def->rotation = 0.0;
+	b2Vec2_Set(&def->linearVelocity, 0.0, 0.0);
+	def->angularVelocity = 0.0;
+	def->linearDamping = 0.0;
+	def->angularDamping = 0.0;
+	def->allowSleep = true;
+	def->isSleeping = false;
+	def->preventRotation = false;
+}
 
 // A rigid body. Internal computation are done in terms
 // of the center of mass position. The center of mass may

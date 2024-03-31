@@ -221,6 +221,8 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 	b2BodyDef body_def;
 	double x, y, angle;
 
+	b2BodyDef_ctor(&body_def);
+
 	if (shape->type == FCSIM_SHAPE_CIRC) {
 		circle_def.radius = shape->circ.radius;
 		shape_def = &circle_def;
