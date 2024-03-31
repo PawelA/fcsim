@@ -147,28 +147,6 @@ b2Body::~b2Body()
 	}
 }
 
-void b2Body::SetOriginPosition(const b2Vec2& position, float64 rotation)
-{
-	if (IsFrozen())
-	{
-		return;
-	}
-
-	m_rotation = rotation;
-	b2Mat22_SetAngle(&m_R, m_rotation);
-	m_position = position + b2Mul(m_R, m_center);
-
-	m_position0 = m_position;
-	m_rotation0 = m_rotation;
-
-	for (b2Shape* s = m_shapeList; s; s = s->m_next)
-	{
-		s->Synchronize(m_position, m_R, m_position, m_R);
-	}
-
-	m_world->m_broadPhase->Commit();
-}
-
 void b2Body::SetCenterPosition(const b2Vec2& position, float64 rotation)
 {
 	if (IsFrozen())
