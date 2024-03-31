@@ -85,14 +85,14 @@ void b2BlockAllocator_ctor(b2BlockAllocator *allocator)
 	}
 }
 
-b2BlockAllocator::~b2BlockAllocator()
+void b2BlockAllocator_dtor(b2BlockAllocator *allocator)
 {
-	for (int32 i = 0; i < m_chunkCount; ++i)
+	for (int32 i = 0; i < allocator->m_chunkCount; ++i)
 	{
-		b2Free(m_chunks[i].blocks);
+		b2Free(allocator->m_chunks[i].blocks);
 	}
 
-	b2Free(m_chunks);
+	b2Free(allocator->m_chunks);
 }
 
 void* b2BlockAllocator::Allocate(int32 size)

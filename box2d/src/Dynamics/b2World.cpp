@@ -63,6 +63,8 @@ b2World::~b2World()
 	DestroyBody(m_groundBody);
 	m_broadPhase->~b2BroadPhase();
 	b2Free(m_broadPhase);
+
+	b2BlockAllocator_dtor(&m_blockAllocator);
 }
 
 void b2World::SetListener(b2WorldListener* listener)
