@@ -67,40 +67,6 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // be offset from the body's origin.
 struct b2Body
 {
-	// Set/Get the linear velocity of the center of mass.
-	void SetLinearVelocity(const b2Vec2& v);
-	b2Vec2 GetLinearVelocity() const;
-
-	// Set/Get the angular velocity.
-	void SetAngularVelocity(float64 w);
-	float64 GetAngularVelocity() const;
-
-	// Apply a force at a world point. Additive.
-	void ApplyForce(const b2Vec2& force, const b2Vec2& point);
-
-	// Apply a torque. Additive.
-	void ApplyTorque(float64 torque);
-
-	// Apply an impulse at a point. This immediately modifies the velocity.
-	void ApplyImpulse(const b2Vec2& impulse, const b2Vec2& point);
-
-	float64 GetMass() const;
-
-	float64 GetInertia() const;
-
-	// Get the world coordinates of a point give the local coordinates
-	// relative to the body's center of mass.
-	b2Vec2 GetWorldPoint(const b2Vec2& localPoint);
-
-	// Get the world coordinates of a vector given the local coordinates.
-	b2Vec2 GetWorldVector(const b2Vec2& localVector);
-
-	// Returns a local point relative to the center of mass given a world point.
-	b2Vec2 GetLocalPoint(const b2Vec2& worldPoint);
-
-	// Returns a local vector given a world vector.
-	b2Vec2 GetLocalVector(const b2Vec2& worldVector);
-
 	// Is this body static (immovable)?
 	bool IsStatic() const;
 
@@ -218,82 +184,6 @@ inline b2Vec2 b2Body_GetOriginPosition(const b2Body *body)
 inline float64 b2Body_GetRotation(const b2Body *body)
 {
 	return body->m_rotation;
-}
-
-inline void b2Body::SetLinearVelocity(const b2Vec2& v)
-{
-	m_linearVelocity = v;
-}
-
-inline b2Vec2 b2Body::GetLinearVelocity() const
-{
-	return m_linearVelocity;
-}
-
-inline void b2Body::SetAngularVelocity(float64 w)
-{
-	m_angularVelocity = w;
-}
-
-inline float64 b2Body::GetAngularVelocity() const
-{
-	return m_angularVelocity;
-}
-
-inline void b2Body::ApplyForce(const b2Vec2& force, const b2Vec2& point)
-{
-	if (IsSleeping() == false)
-	{
-		m_force += force;
-		m_torque += b2Cross(point - m_position, force);
-	}
-}
-
-inline void b2Body::ApplyTorque(float64 torque)
-{
-	if (IsSleeping() == false)
-	{
-		m_torque += torque;
-	}
-}
-
-inline void b2Body::ApplyImpulse(const b2Vec2& impulse, const b2Vec2& point)
-{
-	if (IsSleeping() == false)
-	{
-		m_linearVelocity += m_invMass * impulse;
-		m_angularVelocity += m_invI * b2Cross(point - m_position, impulse);
-	}
-}
-
-inline float64 b2Body::GetMass() const
-{
-	return m_mass;
-}
-
-inline float64 b2Body::GetInertia() const
-{
-	return m_I;
-}
-
-inline b2Vec2 b2Body::GetWorldPoint(const b2Vec2& localPoint)
-{
-	return m_position + b2Mul(m_R, localPoint);
-}
-
-inline b2Vec2 b2Body::GetWorldVector(const b2Vec2& localVector)
-{
-	return b2Mul(m_R, localVector);
-}
-
-inline b2Vec2 b2Body::GetLocalPoint(const b2Vec2& worldPoint)
-{
-	return b2MulT(m_R, worldPoint - m_position);
-}
-
-inline b2Vec2 b2Body::GetLocalVector(const b2Vec2& worldVector)
-{
-	return b2MulT(m_R, worldVector);
 }
 
 inline bool b2Body::IsStatic() const
