@@ -539,7 +539,7 @@ void fcsim_step(struct fcsim_simul *simul)
 {
 	b2World_Step(&simul->world, 1.0 / 30.0, 10);
 
-	b2Joint *joint = simul->world.GetJointList();
+	b2Joint *joint = b2World_GetJointList(&simul->world);
 	while (joint) {
 		b2Joint *next = joint->GetNext();
 		b2Vec2 a1 = joint->GetAnchor1();

@@ -43,13 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	// You can use these to iterate over all the bodies, joints, and contacts.
-	b2Body* GetBodyList();
-	b2Joint* GetJointList();
-	b2Contact* GetContactList();
-
-	//--------------- Internals Below -------------------
-
 	void CleanBodyList();
 
 	b2BlockAllocator m_blockAllocator;
@@ -104,19 +97,19 @@ void b2World_DestroyJoint(b2World *world, b2Joint* joint);
 
 void b2World_Step(b2World *world, float64 timeStep, int32 iterations);
 
-inline b2Body* b2World::GetBodyList()
+inline b2Body* b2World_GetBodyList(b2World *world)
 {
-	return m_bodyList;
+	return world->m_bodyList;
 }
 
-inline b2Joint* b2World::GetJointList()
+inline b2Joint* b2World_GetJointList(b2World *world)
 {
-	return m_jointList;
+	return world->m_jointList;
 }
 
-inline b2Contact* b2World::GetContactList()
+inline b2Contact* b2World_GetContactList(b2World *world)
 {
-	return m_contactList;
+	return world->m_contactList;
 }
 
 extern int32 b2World_s_enablePositionCorrection;
