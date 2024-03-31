@@ -67,9 +67,6 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // be offset from the body's origin.
 struct b2Body
 {
-	// You can disable sleeping on this particular body.
-	void AllowSleeping(bool flag);
-
 	// Wake up this body so it will begin simulating.
 	void WakeUp();
 
@@ -190,19 +187,6 @@ inline bool b2Body_IsFrozen(const b2Body *body)
 inline bool b2Body_IsSleeping(const b2Body *body)
 {
 	return (body->m_flags & b2Body::e_sleepFlag) == b2Body::e_sleepFlag;
-}
-
-inline void b2Body::AllowSleeping(bool flag)
-{
-	if (flag)
-	{
-		m_flags |= e_allowSleepFlag;
-	}
-	else
-	{
-		m_flags &= ~e_allowSleepFlag;
-		WakeUp();
-	}
 }
 
 inline void b2Body::WakeUp()
