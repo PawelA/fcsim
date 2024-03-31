@@ -35,7 +35,6 @@ void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity
 	b2StackAllocator_ctor(&world->m_stackAllocator);
 	new (&world->m_contactManager) b2ContactManager();
 
-	world->m_listener = NULL;
 	world->m_filter = &b2_defaultFilter;
 
 	world->m_bodyList = NULL;
@@ -70,11 +69,6 @@ void b2World_dtor(b2World *world)
 	b2BlockAllocator_dtor(&world->m_blockAllocator);
 	b2StackAllocator_dtor(&world->m_stackAllocator);
 	world->m_contactManager.~b2ContactManager();
-}
-
-void b2World_SetListener(b2World *world, b2WorldListener* listener)
-{
-	world->m_listener = listener;
 }
 
 void b2World_SetFilter(b2World *world, b2CollisionFilter* filter)
@@ -152,11 +146,6 @@ static void b2World_CleanBodyList(b2World *world)
 		{
 			b2JointNode* jn0 = jn;
 			jn = jn->next;
-
-			if (world->m_listener)
-			{
-				world->m_listener->NotifyJointDestroyed(jn0->joint);
-			}
 
 			b2World_DestroyJoint(world, jn0->joint);
 		}
@@ -434,18 +423,6 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 			if (b->m_flags & b2Body_e_staticFlag)
 			{
 				b->m_flags &= ~b2Body_e_islandFlag;
-			}
-
-			// Handle newly frozen bodies.
-			if (b2Body_IsFrozen(b) && world->m_listener)
-			{
-				b2BoundaryResponse response = world->m_listener->NotifyBoundaryViolated(b);
-				if (response == b2_destroyBody)
-				{
-					b2World_DestroyBody(world, b);
-					b = NULL;
-					island.m_bodies[i] = NULL;
-				}
 			}
 		}
 	}

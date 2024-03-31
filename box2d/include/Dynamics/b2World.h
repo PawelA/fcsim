@@ -65,7 +65,6 @@ struct b2World
 
 	b2Body* m_groundBody;
 
-	b2WorldListener* m_listener;
 	b2CollisionFilter* m_filter;
 
 	int32 m_positionIterationCount;
@@ -74,10 +73,6 @@ struct b2World
 void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep);
 
 void b2World_dtor(b2World *world);
-	
-// Register a world listener to receive important events that can
-// help prevent your code from crashing.
-void b2World_SetListener(b2World *world, b2WorldListener* listener);
 
 // Register a collision filter to provide specific control over collision.
 // Otherwise the default filter is used (b2CollisionFilter).
