@@ -40,7 +40,7 @@ void* b2ContactManager::PairAdded(void* proxyUserData1, void* proxyUserData2)
 		return &m_nullContact;
 	}
 
-	if (body2->IsConnected(body1))
+	if (b2Body_IsConnected(body2, body1))
 	{
 		return &m_nullContact;
 	}

@@ -78,10 +78,6 @@ enum
 // be offset from the body's origin.
 struct b2Body
 {
-	// This is used to prevent connected bodies from colliding.
-	// It may lie, depending on the collideConnected flag.
-	bool IsConnected(const b2Body* other) const;
-
 	// This is called when the child shape has no proxy.
 	void Freeze();
 
@@ -178,9 +174,11 @@ inline void b2Body_WakeUp(b2Body *body)
 	body->m_sleepTime = 0.0;
 }
 
-inline bool b2Body::IsConnected(const b2Body* other) const
+// This is used to prevent connected bodies from colliding.
+// It may lie, depending on the collideConnected flag.
+inline bool b2Body_IsConnected(const b2Body *body, const b2Body* other)
 {
-	for (b2JointNode* jn = m_jointList; jn; jn = jn->next)
+	for (b2JointNode* jn = body->m_jointList; jn; jn = jn->next)
 	{
 		if (jn->other == other)
 			return jn->joint->m_collideConnected == false;
