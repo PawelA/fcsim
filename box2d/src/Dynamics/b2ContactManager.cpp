@@ -207,8 +207,8 @@ void b2ContactManager::Collide()
 {
 	for (b2Contact* c = m_world->m_contactList; c; c = c->m_next)
 	{
-		if (c->m_shape1->m_body->IsSleeping() &&
-			c->m_shape2->m_body->IsSleeping())
+		if (b2Body_IsSleeping(c->m_shape1->m_body) &&
+			b2Body_IsSleeping(c->m_shape2->m_body))
 		{
 			continue;
 		}

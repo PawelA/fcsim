@@ -462,7 +462,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 		b2Body* body1 = shape1->GetBody();
 		b2Body* body2 = shape2->GetBody();
 
-		if (body1->IsSleeping() && body2->IsSleeping())
+		if (b2Body_IsSleeping(body1) && b2Body_IsSleeping(body2))
 		{
 			continue;
 		}
