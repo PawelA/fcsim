@@ -28,7 +28,7 @@
 
 class b2Joint;
 class b2Contact;
-class b2World;
+struct b2World;
 struct b2JointNode;
 struct b2ContactNode;
 

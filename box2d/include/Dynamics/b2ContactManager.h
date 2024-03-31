@@ -22,7 +22,7 @@
 #include "../Collision/b2BroadPhase.h"
 #include "../Dynamics/Contacts/b2NullContact.h"
 
-class b2World;
+struct b2World;
 class b2Contact;
 
 class b2ContactManager : public b2PairCallback

@@ -41,9 +41,8 @@ struct b2TimeStep
 	int32 iterations;
 };
 
-class b2World
+struct b2World
 {
-public:
 	b2World(const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep);
 	~b2World();
 
