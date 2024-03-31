@@ -65,9 +65,8 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // A rigid body. Internal computation are done in terms
 // of the center of mass position. The center of mass may
 // be offset from the body's origin.
-class b2Body
+struct b2Body
 {
-public:
 	// Set the position of the body's origin and rotation (radians).
 	// This breaks any contacts and wakes the other bodies.
 	void SetOriginPosition(const b2Vec2& position, float64 rotation);

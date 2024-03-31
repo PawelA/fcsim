@@ -21,7 +21,7 @@
 
 #include "../../Common/b2Math.h"
 
-class b2Body;
+struct b2Body;
 class b2Joint;
 struct b2TimeStep;
 class b2BlockAllocator;

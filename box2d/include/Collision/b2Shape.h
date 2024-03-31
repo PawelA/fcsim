@@ -22,7 +22,7 @@
 #include "../Common/b2Math.h"
 #include "b2Collision.h"
 
-class b2Body;
+struct b2Body;
 class b2BroadPhase;
 
 struct b2MassData

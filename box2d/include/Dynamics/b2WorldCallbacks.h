@@ -21,7 +21,7 @@
 
 #include "../Common/b2Settings.h"
 
-class b2Body;
+struct b2Body;
 class b2Joint;
 class b2Shape;
 

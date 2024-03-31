@@ -23,7 +23,7 @@
 #include "../../Collision/b2Collision.h"
 #include "../../Collision/b2Shape.h"
 
-class b2Body;
+struct b2Body;
 class b2Contact;
 struct b2World;
 class b2BlockAllocator;

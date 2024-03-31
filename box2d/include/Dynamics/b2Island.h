@@ -23,7 +23,7 @@
 
 class b2StackAllocator;
 class b2Contact;
-class b2Body;
+struct b2Body;
 class b2Joint;
 struct b2TimeStep;
 
