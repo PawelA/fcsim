@@ -309,7 +309,7 @@ b2CircleShape::b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& 
 
 	if (m_proxyId == b2_nullProxy)
 	{
-		m_body->Freeze();
+		b2Body_Freeze(m_body);
 	}
 }
 
@@ -340,7 +340,7 @@ void b2CircleShape::Synchronize(const b2Vec2& position1, const b2Mat22& R1,
 	}
 	else
 	{
-		m_body->Freeze();
+		b2Body_Freeze(m_body);
 	}
 }
 
@@ -392,7 +392,7 @@ void b2CircleShape::ResetProxy(b2BroadPhase* broadPhase)
 
 	if (m_proxyId == b2_nullProxy)
 	{
-		m_body->Freeze();
+		b2Body_Freeze(m_body);
 	}
 }
 
@@ -512,7 +512,7 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 
 	if (m_proxyId == b2_nullProxy)
 	{
-		m_body->Freeze();
+		b2Body_Freeze(m_body);
 	}
 }
 
@@ -559,7 +559,7 @@ void b2PolyShape::Synchronize(	const b2Vec2& position1, const b2Mat22& R1,
 	}
 	else
 	{
-		m_body->Freeze();
+		b2Body_Freeze(m_body);
 	}
 }
 
@@ -635,7 +635,7 @@ void b2PolyShape::ResetProxy(b2BroadPhase* broadPhase)
 
 	if (m_proxyId == b2_nullProxy)
 	{
-		m_body->Freeze();
+		b2Body_Freeze(m_body);
 	}
 }
 

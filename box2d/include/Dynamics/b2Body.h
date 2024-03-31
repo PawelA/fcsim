@@ -78,9 +78,6 @@ enum
 // be offset from the body's origin.
 struct b2Body
 {
-	// This is called when the child shape has no proxy.
-	void Freeze();
-
 	uint32 m_flags;
 
 	b2Vec2 m_position;	// center of mass position
@@ -127,6 +124,9 @@ void b2Body_dtor(b2Body *body);
 void b2Body_SynchronizeShapes(b2Body *body);
 
 void b2Body_QuickSyncShapes(b2Body *body);
+
+// This is called when the child shape has no proxy.
+void b2Body_Freeze(b2Body *body);
 
 inline void b2BodyDef_AddShape(b2BodyDef *def, b2ShapeDef* shape)
 {

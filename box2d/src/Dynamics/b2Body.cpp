@@ -165,12 +165,12 @@ void b2Body_QuickSyncShapes(b2Body *body)
 	}
 }
 
-void b2Body::Freeze()
+void b2Body_Freeze(b2Body *body)
 {
-	m_flags |= b2Body_e_frozenFlag;
-	b2Vec2_SetZero(&m_linearVelocity);
-	m_angularVelocity = 0.0;
-	for (b2Shape* s = m_shapeList; s; s = s->m_next)
+	body->m_flags |= b2Body_e_frozenFlag;
+	b2Vec2_SetZero(&body->m_linearVelocity);
+	body->m_angularVelocity = 0.0;
+	for (b2Shape* s = body->m_shapeList; s; s = s->m_next)
 	{
 		s->DestroyProxy();
 	}
