@@ -26,8 +26,8 @@
 #include <Collision/b2Shape.h>
 #include <new>
 
-int32 b2World::s_enablePositionCorrection = 1;
-int32 b2World::s_enableWarmStarting = 1;
+int32 b2World_s_enablePositionCorrection = 1;
+int32 b2World_s_enableWarmStarting = 1;
 
 b2World::b2World(const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep)
 {

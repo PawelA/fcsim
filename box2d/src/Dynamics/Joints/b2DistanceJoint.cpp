@@ -63,7 +63,7 @@ void b2DistanceJoint::PrepareVelocitySolver()
 	b2Assert(m_mass > MIN_VALUE);
 	m_mass = 1.0 / m_mass;
 
-	if (b2World::s_enableWarmStarting)
+	if (b2World_s_enableWarmStarting)
 	{
 		b2Vec2 P = m_impulse * m_u;
 		m_body1->m_linearVelocity -= m_body1->m_invMass * P;

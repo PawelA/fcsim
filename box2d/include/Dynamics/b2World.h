@@ -109,9 +109,6 @@ struct b2World
 	b2CollisionFilter* m_filter;
 
 	int32 m_positionIterationCount;
-
-	static int32 s_enablePositionCorrection;
-	static int32 s_enableWarmStarting;
 };
 
 inline b2Body* b2World::GetGroundBody()
@@ -133,5 +130,8 @@ inline b2Contact* b2World::GetContactList()
 {
 	return m_contactList;
 }
+
+extern int32 b2World_s_enablePositionCorrection;
+extern int32 b2World_s_enableWarmStarting;
 
 #endif

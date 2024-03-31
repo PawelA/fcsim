@@ -127,7 +127,7 @@ void b2RevoluteJoint::PrepareVelocitySolver()
 		m_limitImpulse = 0.0;
 	}
 
-	if (b2World::s_enableWarmStarting)
+	if (b2World_s_enableWarmStarting)
 	{
 		b1->m_linearVelocity -= invMass1 * m_ptpImpulse;
 		b1->m_angularVelocity -= invI1 * (b2Cross(r1, m_ptpImpulse) + m_motorImpulse + m_limitImpulse);

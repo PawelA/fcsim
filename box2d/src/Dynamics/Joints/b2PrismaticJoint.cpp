@@ -146,7 +146,7 @@ void b2PrismaticJoint::PrepareVelocitySolver()
 		m_limitImpulse = 0.0;
 	}
 
-	if (b2World::s_enableWarmStarting)
+	if (b2World_s_enableWarmStarting)
 	{
 		b2Vec2 P1 = m_linearImpulse * m_linearJacobian.linear1 + (m_motorImpulse + m_limitImpulse) * m_motorJacobian.linear1;
 		b2Vec2 P2 = m_linearImpulse * m_linearJacobian.linear2 + (m_motorImpulse + m_limitImpulse) * m_motorJacobian.linear2;

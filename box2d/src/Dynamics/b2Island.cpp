@@ -197,7 +197,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	}
 
 	// Solve position constraints.
-	if (b2World::s_enablePositionCorrection)
+	if (b2World_s_enablePositionCorrection)
 	{
 		for (m_positionIterationCount = 0; m_positionIterationCount < step->iterations; ++m_positionIterationCount)
 		{
