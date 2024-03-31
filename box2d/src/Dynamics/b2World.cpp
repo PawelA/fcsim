@@ -21,7 +21,6 @@
 #include <Dynamics/b2Island.h>
 #include <Dynamics/Joints/b2Joint.h>
 #include <Dynamics/Contacts/b2Contact.h>
-#include <Dynamics/Contacts/b2Conservative.h>
 #include <Collision/b2Collision.h>
 #include <Collision/b2Shape.h>
 #include <new>
@@ -430,23 +429,6 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	b2StackAllocator_Free(&world->m_stackAllocator, stack);
 
 	world->m_broadPhase->Commit();
-	
-#if 0
-	for (b2Contact* c = world->m_contactList; c; c = c->GetNext())
-	{
-		b2Shape* shape1 = c->GetShape1();
-		b2Shape* shape2 = c->GetShape2();
-		b2Body* body1 = shape1->GetBody();
-		b2Body* body2 = shape2->GetBody();
-
-		if (b2Body_IsSleeping(body1) && b2Body_IsSleeping(body2))
-		{
-			continue;
-		}
-
-		b2Conservative(shape1, shape2);
-	}
-#endif
 }
 
 bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2)
