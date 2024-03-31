@@ -45,8 +45,6 @@ struct b2BodyDef
 	bool allowSleep;
 	bool isSleeping;
 	bool preventRotation;
-
-	void AddShape(b2ShapeDef* shape);
 };
 
 static void b2BodyDef_ctor(b2BodyDef *def)
@@ -221,13 +219,13 @@ public:
 	void* m_userData;
 };
 
-inline void b2BodyDef::AddShape(b2ShapeDef* shape)
+inline void b2BodyDef_AddShape(b2BodyDef *def, b2ShapeDef* shape)
 {
 	for (int32 i = 0; i < b2_maxShapesPerBody; ++i)
 	{
-		if (shapes[i] == NULL)
+		if (def->shapes[i] == NULL)
 		{
-			shapes[i] = shape;
+			def->shapes[i] = shape;
 			break;
 		}
 	}

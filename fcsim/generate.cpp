@@ -240,7 +240,7 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 	body_def.rotation = where->angle;
 	body_def.linearDamping = phys->linear_damping;
 	body_def.angularDamping = phys->angular_damping;
-	body_def.AddShape(shape_def);
+	b2BodyDef_AddShape(&body_def, shape_def);
 
 	return b2World_CreateBody(world, &body_def);
 }
