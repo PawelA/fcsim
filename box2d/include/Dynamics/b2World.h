@@ -43,10 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	// Create and destroy rigid bodies. Destruction is deferred until the
-	// the next call to Step. This is done so that bodies may be destroyed
-	// while you iterate through the contact list.
-	b2Body* CreateBody(const b2BodyDef* def);
 	void DestroyBody(b2Body* body);
 
 	b2Joint* CreateJoint(const b2JointDef* def);
@@ -111,6 +107,11 @@ void b2World_SetListener(b2World *world, b2WorldListener* listener);
 // Register a collision filter to provide specific control over collision.
 // Otherwise the default filter is used (b2CollisionFilter).
 void b2World_SetFilter(b2World *world, b2CollisionFilter* filter);
+
+// Create and destroy rigid bodies. Destruction is deferred until the
+// the next call to Step. This is done so that bodies may be destroyed
+// while you iterate through the contact list.
+b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def);
 
 inline b2Body* b2World::GetGroundBody()
 {

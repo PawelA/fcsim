@@ -240,7 +240,7 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 	body_def.angularDamping = phys->angular_damping;
 	body_def.AddShape(shape_def);
 
-	return world->CreateBody(&body_def);
+	return b2World_CreateBody(world, &body_def);
 }
 
 static void generate_joint(b2World *world, b2Body *b1, b2Body *b2, double x, double y, int spin)

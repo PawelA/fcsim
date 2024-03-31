@@ -57,7 +57,7 @@ void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity
 	world->m_broadPhase = new (mem) b2BroadPhase(worldAABB, &world->m_contactManager);
 
 	b2BodyDef bd;
-	world->m_groundBody = world->CreateBody(&bd);
+	world->m_groundBody = b2World_CreateBody(world, &bd);
 }
 
 void b2World_dtor(b2World *world)
@@ -81,19 +81,19 @@ void b2World_SetFilter(b2World *world, b2CollisionFilter* filter)
 	world->m_filter = filter;
 }
 
-b2Body* b2World::CreateBody(const b2BodyDef* def)
+b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def)
 {
-	void* mem = b2BlockAllocator_Allocate(&m_blockAllocator, sizeof(b2Body));
-	b2Body* b = new (mem) b2Body(def, this);
+	void* mem = b2BlockAllocator_Allocate(&world->m_blockAllocator, sizeof(b2Body));
+	b2Body* b = new (mem) b2Body(def, world);
 	b->m_prev = NULL;
 
-	b->m_next = m_bodyList;
-	if (m_bodyList)
+	b->m_next = world->m_bodyList;
+	if (world->m_bodyList)
 	{
-		m_bodyList->m_prev = b;
+		world->m_bodyList->m_prev = b;
 	}
-	m_bodyList = b;
-	++m_bodyCount;
+	world->m_bodyList = b;
+	++world->m_bodyCount;
 
 	return b;
 }
