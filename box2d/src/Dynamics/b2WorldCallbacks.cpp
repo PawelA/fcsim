@@ -19,11 +19,9 @@
 #include <Dynamics/b2WorldCallbacks.h>
 #include <Collision/b2Shape.h>
 
-b2CollisionFilter b2_defaultFilter;
-
 // Return true if contact calculations should be performed between these two shapes.
 // If you implement your own collision filter you may want to build from this implementation.
-bool b2CollisionFilter::ShouldCollide(b2Shape* shape1, b2Shape* shape2)
+bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2)
 {
 	if (shape1->m_groupIndex == shape2->m_groupIndex && shape1->m_groupIndex != 0)
 	{

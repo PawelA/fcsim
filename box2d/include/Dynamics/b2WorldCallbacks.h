@@ -19,22 +19,10 @@
 #ifndef B2_WORLD_CALLBACKS_H
 #define B2_WORLD_CALLBACKS_H
 
-#include "../Common/b2Settings.h"
-
-struct b2Body;
-class b2Joint;
 class b2Shape;
 
-// Implement this class to provide collision filtering. In other words, you can implement
-// this class if you want finer control over contact creation.
-class b2CollisionFilter
-{
-public:
-	virtual ~b2CollisionFilter() {}
+typedef bool (*b2CollisionFilter)(b2Shape* shape1, b2Shape* shape2);
 
-	// Return true if contact calculations should be performed between these two shapes.
-	virtual bool ShouldCollide(b2Shape* shape1, b2Shape* shape2);
-};
+bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2);
 
-extern b2CollisionFilter b2_defaultFilter;
 #endif

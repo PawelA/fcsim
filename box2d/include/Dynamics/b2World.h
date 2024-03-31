@@ -65,7 +65,7 @@ struct b2World
 
 	b2Body* m_groundBody;
 
-	b2CollisionFilter* m_filter;
+	b2CollisionFilter m_filter;
 
 	int32 m_positionIterationCount;
 };
@@ -76,7 +76,7 @@ void b2World_dtor(b2World *world);
 
 // Register a collision filter to provide specific control over collision.
 // Otherwise the default filter is used (b2CollisionFilter).
-void b2World_SetFilter(b2World *world, b2CollisionFilter* filter);
+void b2World_SetFilter(b2World *world, b2CollisionFilter filter);
 
 // Create and destroy rigid bodies. Destruction is deferred until the
 // the next call to Step. This is done so that bodies may be destroyed

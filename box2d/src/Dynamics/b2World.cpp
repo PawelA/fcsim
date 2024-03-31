@@ -35,7 +35,7 @@ void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity
 	b2StackAllocator_ctor(&world->m_stackAllocator);
 	new (&world->m_contactManager) b2ContactManager();
 
-	world->m_filter = &b2_defaultFilter;
+	world->m_filter = b2_defaultFilter;
 
 	world->m_bodyList = NULL;
 	world->m_contactList = NULL;
@@ -71,7 +71,7 @@ void b2World_dtor(b2World *world)
 	world->m_contactManager.~b2ContactManager();
 }
 
-void b2World_SetFilter(b2World *world, b2CollisionFilter* filter)
+void b2World_SetFilter(b2World *world, b2CollisionFilter filter)
 {
 	world->m_filter = filter;
 }

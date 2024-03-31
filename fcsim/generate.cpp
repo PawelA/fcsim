@@ -112,34 +112,30 @@ void joint_map_init(struct joint_map *map)
 	map->next_joint_id = 0;
 }
 
-class _collision_filter : public b2CollisionFilter {
-	bool ShouldCollide(b2Shape *s1, b2Shape *s2)
-	{
-		struct body_data *data1;
-		struct body_data *data2;
-		int i, j;
+bool fcsim_collision_filter(b2Shape *s1, b2Shape *s2)
+{
+	struct body_data *data1;
+	struct body_data *data2;
+	int i, j;
 
-		if (!b2_defaultFilter.ShouldCollide(s1, s2))
-			return false;
+	if (!b2_defaultFilter(s1, s2))
+		return false;
 
-		data1 = (struct body_data *)s1->GetUserData();
-		data2 = (struct body_data *)s2->GetUserData();
+	data1 = (struct body_data *)s1->GetUserData();
+	data2 = (struct body_data *)s2->GetUserData();
 
-		if (!data1 || !data2)
-			return true;
-
-		for (i = 0; i < data1->joint_cnt; i++) {
-			for (j = 0; j < data2->joint_cnt; j++) {
-				if (data1->joint_ids[i] == data2->joint_ids[j])
-					return false;
-			}
-		}
-
+	if (!data1 || !data2)
 		return true;
-	}
-};
 
-static _collision_filter fcsim_collision_filter;
+	for (i = 0; i < data1->joint_cnt; i++) {
+		for (j = 0; j < data2->joint_cnt; j++) {
+			if (data1->joint_ids[i] == data2->joint_ids[j])
+				return false;
+		}
+	}
+
+	return true;
+}
 
 static void init_b2world(b2World *world)
 {
@@ -150,7 +146,7 @@ static void init_b2world(b2World *world)
 	b2Vec2_Set(&aabb.minVertex, -2000, -1450);
 	b2Vec2_Set(&aabb.maxVertex, 2000, 1450);
 	b2World_ctor(world, aabb, gravity, true);
-	b2World_SetFilter(world, &fcsim_collision_filter);
+	b2World_SetFilter(world, fcsim_collision_filter);
 }
 
 struct block_physics {

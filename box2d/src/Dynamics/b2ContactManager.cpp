@@ -45,7 +45,7 @@ void* b2ContactManager::PairAdded(void* proxyUserData1, void* proxyUserData2)
 		return &m_nullContact;
 	}
 
-	if (m_world->m_filter != NULL && m_world->m_filter->ShouldCollide(shape1, shape2) == false)
+	if (m_world->m_filter != NULL && m_world->m_filter(shape1, shape2) == false)
 	{
 		return &m_nullContact;
 	}
