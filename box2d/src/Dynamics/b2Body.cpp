@@ -147,13 +147,13 @@ void b2Body_dtor(b2Body *body)
 	}
 }
 
-void b2Body::SynchronizeShapes()
+void b2Body_SynchronizeShapes(b2Body *body)
 {
 	b2Mat22 R0;
-	b2Mat22_SetAngle(&R0, m_rotation0);
-	for (b2Shape* s = m_shapeList; s; s = s->m_next)
+	b2Mat22_SetAngle(&R0, body->m_rotation0);
+	for (b2Shape* s = body->m_shapeList; s; s = s->m_next)
 	{
-		s->Synchronize(m_position0, R0, m_position, m_R);
+		s->Synchronize(body->m_position0, R0, body->m_position, body->m_R);
 	}
 }
 

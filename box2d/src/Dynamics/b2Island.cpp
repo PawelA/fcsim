@@ -230,7 +230,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 
 		b2Mat22_SetAngle(&b->m_R, b->m_rotation);
 
-		b->SynchronizeShapes();
+		b2Body_SynchronizeShapes(b);
 		b2Vec2_Set(&b->m_force, 0.0, 0.0);
 		b->m_torque = 0.0;
 	}
