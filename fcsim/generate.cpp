@@ -256,7 +256,7 @@ static void generate_joint(b2World *world, b2Body *b1, b2Body *b2, double x, dou
 		joint_def.motorSpeed = spin;
 		joint_def.enableMotor = true;
 	}
-	world->CreateJoint(&joint_def);
+	b2World_CreateJoint(world, &joint_def);
 }
 
 static void get_rect_desc(struct fcsim_rect *rect, struct fcsim_shape *shape, struct fcsim_where *where)

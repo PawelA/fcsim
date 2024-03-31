@@ -170,19 +170,19 @@ void b2World::CleanBodyList()
 	m_contactManager.m_destroyImmediate = false;
 }
 
-b2Joint* b2World::CreateJoint(const b2JointDef* def)
+b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def)
 {
-	b2Joint* j = b2Joint::Create(def, &m_blockAllocator);
+	b2Joint* j = b2Joint::Create(def, &world->m_blockAllocator);
 
 	// Connect to the world list.
 	j->m_prev = NULL;
-	j->m_next = m_jointList;
-	if (m_jointList)
+	j->m_next = world->m_jointList;
+	if (world->m_jointList)
 	{
-		m_jointList->m_prev = j;
+		world->m_jointList->m_prev = j;
 	}
-	m_jointList = j;
-	++m_jointCount;
+	world->m_jointList = j;
+	++world->m_jointCount;
 
 	// Connect to the bodies
 	j->m_node1.joint = j;
@@ -206,7 +206,7 @@ b2Joint* b2World::CreateJoint(const b2JointDef* def)
 		b2Body* b = def->body1->m_shapeCount < def->body2->m_shapeCount ? def->body1 : def->body2;
 		for (b2Shape* s = b->m_shapeList; s; s = s->m_next)
 		{
-			s->ResetProxy(m_broadPhase);
+			s->ResetProxy(world->m_broadPhase);
 		}
 	}
 

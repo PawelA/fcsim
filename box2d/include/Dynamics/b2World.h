@@ -43,7 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	b2Joint* CreateJoint(const b2JointDef* def);
 	void DestroyJoint(b2Joint* joint);
 
 	// The world provides a single ground body with no collision shapes. You
@@ -111,6 +110,8 @@ void b2World_SetFilter(b2World *world, b2CollisionFilter* filter);
 // while you iterate through the contact list.
 b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def);
 void b2World_DestroyBody(b2World *world, b2Body* body);
+
+b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def);
 
 inline b2Body* b2World::GetGroundBody()
 {
