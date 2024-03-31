@@ -67,11 +67,6 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // be offset from the body's origin.
 struct b2Body
 {
-	// Get the next body in the world's body list.
-	b2Body* GetNext();
-
-	void* GetUserData();
-
 	//--------------- Internals Below -------------------
 
 	// m_flags
@@ -181,16 +176,6 @@ inline void b2Body_WakeUp(b2Body *body)
 {
 	body->m_flags &= ~b2Body::e_sleepFlag;
 	body->m_sleepTime = 0.0;
-}
-
-inline b2Body* b2Body::GetNext()
-{
-	return m_next;
-}
-
-inline void* b2Body::GetUserData()
-{
-	return m_userData;
 }
 
 inline bool b2Body::IsConnected(const b2Body* other) const
