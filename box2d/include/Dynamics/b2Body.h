@@ -67,16 +67,6 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // be offset from the body's origin.
 struct b2Body
 {
-	// Get the position of the body's center of mass. The body's center of mass
-	// does not necessarily coincide with the body's origin. It depends on how the
-	// shapes are created.
-	b2Vec2 GetCenterPosition() const;
-
-	// Get the rotation in radians.
-	float64 GetRotation() const;
-
-	const b2Mat22& GetRotationMatrix() const;
-
 	// Set/Get the linear velocity of the center of mass.
 	void SetLinearVelocity(const b2Vec2& v);
 	b2Vec2 GetLinearVelocity() const;
@@ -225,19 +215,9 @@ inline b2Vec2 b2Body_GetOriginPosition(const b2Body *body)
 	return body->m_position - b2Mul(body->m_R, body->m_center);
 }
 
-inline b2Vec2 b2Body::GetCenterPosition() const
+inline float64 b2Body_GetRotation(const b2Body *body)
 {
-	return m_position;
-}
-
-inline float64 b2Body::GetRotation() const
-{
-	return m_rotation;
-}
-
-inline const b2Mat22& b2Body::GetRotationMatrix() const
-{
-	return m_R;
+	return body->m_rotation;
 }
 
 inline void b2Body::SetLinearVelocity(const b2Vec2& v)
