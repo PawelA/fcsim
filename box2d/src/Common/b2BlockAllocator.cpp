@@ -53,16 +53,16 @@ struct b2Block
 	b2Block* next;
 };
 
-b2BlockAllocator::b2BlockAllocator()
+void b2BlockAllocator_ctor(b2BlockAllocator *allocator)
 {
 	b2Assert(b2_blockSizes < UCHAR_MAX);
 
-	m_chunkSpace = b2_chunkArrayIncrement;
-	m_chunkCount = 0;
-	m_chunks = (b2Chunk*)b2Alloc(m_chunkSpace * sizeof(b2Chunk));
+	allocator->m_chunkSpace = b2_chunkArrayIncrement;
+	allocator->m_chunkCount = 0;
+	allocator->m_chunks = (b2Chunk*)b2Alloc(allocator->m_chunkSpace * sizeof(b2Chunk));
 
-	memset(m_chunks, 0, m_chunkSpace * sizeof(b2Chunk));
-	memset(m_freeLists, 0, sizeof(m_freeLists));
+	memset(allocator->m_chunks, 0, allocator->m_chunkSpace * sizeof(b2Chunk));
+	memset(allocator->m_freeLists, 0, sizeof(allocator->m_freeLists));
 
 	if (b2BlockAllocator_s_blockSizeLookupInitialized == false)
 	{

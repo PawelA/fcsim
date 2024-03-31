@@ -31,6 +31,8 @@ int32 b2World::s_enableWarmStarting = 1;
 
 b2World::b2World(const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep)
 {
+	b2BlockAllocator_ctor(&m_blockAllocator);
+
 	m_listener = NULL;
 	m_filter = &b2_defaultFilter;
 
