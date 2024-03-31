@@ -62,7 +62,7 @@ void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity
 
 void b2World_dtor(b2World *world)
 {
-	world->DestroyBody(world->m_groundBody);
+	b2World_DestroyBody(world, world->m_groundBody);
 	world->m_broadPhase->~b2BroadPhase();
 	b2Free(world->m_broadPhase);
 
@@ -99,7 +99,7 @@ b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def)
 }
 
 // Body destruction is deferred to make contact processing more robust.
-void b2World::DestroyBody(b2Body* b)
+void b2World_DestroyBody(b2World *world, b2Body* b)
 {
 	if (b->m_flags & b2Body::e_destroyFlag)
 	{
@@ -117,19 +117,19 @@ void b2World::DestroyBody(b2Body* b)
 		b->m_next->m_prev = b->m_prev;
 	}
 
-	if (b == m_bodyList)
+	if (b == world->m_bodyList)
 	{
-		m_bodyList = b->m_next;
+		world->m_bodyList = b->m_next;
 	}
 
 	b->m_flags |= b2Body::e_destroyFlag;
-	b2Assert(m_bodyCount > 0);
-	--m_bodyCount;
+	b2Assert(world->m_bodyCount > 0);
+	--world->m_bodyCount;
 
 	// Add to the deferred destruction list.
 	b->m_prev = NULL;
-	b->m_next = m_bodyDestroyList;
-	m_bodyDestroyList = b;
+	b->m_next = world->m_bodyDestroyList;
+	world->m_bodyDestroyList = b;
 }
 
 void b2World::CleanBodyList()
@@ -441,7 +441,7 @@ void b2World::Step(float64 dt, int32 iterations)
 				b2BoundaryResponse response = m_listener->NotifyBoundaryViolated(b);
 				if (response == b2_destroyBody)
 				{
-					DestroyBody(b);
+					b2World_DestroyBody(this, b);
 					b = NULL;
 					island.m_bodies[i] = NULL;
 				}
