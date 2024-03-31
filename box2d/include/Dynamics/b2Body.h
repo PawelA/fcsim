@@ -67,15 +67,6 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // be offset from the body's origin.
 struct b2Body
 {
-	// Get the list of all shapes attached to this body.
-	b2Shape* GetShapeList();
-
-	// Get the list of all contacts attached to this body.
-	b2ContactNode* GetContactList();
-
-	// Get the list of all joints attached to this body.
-	b2JointNode* GetJointList();
-
 	// Get the next body in the world's body list.
 	b2Body* GetNext();
 
@@ -190,21 +181,6 @@ inline void b2Body_WakeUp(b2Body *body)
 {
 	body->m_flags &= ~b2Body::e_sleepFlag;
 	body->m_sleepTime = 0.0;
-}
-
-inline b2Shape* b2Body::GetShapeList()
-{
-	return m_shapeList;
-}
-
-inline b2ContactNode* b2Body::GetContactList()
-{
-	return m_contactList;
-}
-
-inline b2JointNode* b2Body::GetJointList()
-{
-	return m_jointList;
 }
 
 inline b2Body* b2Body::GetNext()
