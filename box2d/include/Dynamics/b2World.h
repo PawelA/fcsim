@@ -43,7 +43,6 @@ struct b2TimeStep
 
 struct b2World
 {
-	b2World(const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep);
 	~b2World();
 
 	// Register a world listener to receive important events that can
@@ -110,6 +109,8 @@ struct b2World
 
 	int32 m_positionIterationCount;
 };
+
+void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep);
 
 inline b2Body* b2World::GetGroundBody()
 {

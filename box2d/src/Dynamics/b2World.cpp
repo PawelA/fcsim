@@ -29,34 +29,35 @@
 int32 b2World_s_enablePositionCorrection = 1;
 int32 b2World_s_enableWarmStarting = 1;
 
-b2World::b2World(const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep)
+void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep)
 {
-	b2BlockAllocator_ctor(&m_blockAllocator);
-	b2StackAllocator_ctor(&m_stackAllocator);
+	b2BlockAllocator_ctor(&world->m_blockAllocator);
+	b2StackAllocator_ctor(&world->m_stackAllocator);
+	new (&world->m_contactManager) b2ContactManager();
 
-	m_listener = NULL;
-	m_filter = &b2_defaultFilter;
+	world->m_listener = NULL;
+	world->m_filter = &b2_defaultFilter;
 
-	m_bodyList = NULL;
-	m_contactList = NULL;
-	m_jointList = NULL;
+	world->m_bodyList = NULL;
+	world->m_contactList = NULL;
+	world->m_jointList = NULL;
 
-	m_bodyCount = 0;
-	m_contactCount = 0;
-	m_jointCount = 0;
+	world->m_bodyCount = 0;
+	world->m_contactCount = 0;
+	world->m_jointCount = 0;
 
-	m_bodyDestroyList = NULL;
+	world->m_bodyDestroyList = NULL;
 
-	m_allowSleep = doSleep;
+	world->m_allowSleep = doSleep;
 
-	m_gravity = gravity;
+	world->m_gravity = gravity;
 
-	m_contactManager.m_world = this;
+	world->m_contactManager.m_world = world;
 	void* mem = b2Alloc(sizeof(b2BroadPhase));
-	m_broadPhase = new (mem) b2BroadPhase(worldAABB, &m_contactManager);
+	world->m_broadPhase = new (mem) b2BroadPhase(worldAABB, &world->m_contactManager);
 
 	b2BodyDef bd;
-	m_groundBody = CreateBody(&bd);
+	world->m_groundBody = world->CreateBody(&bd);
 }
 
 b2World::~b2World()

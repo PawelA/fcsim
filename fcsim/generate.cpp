@@ -149,7 +149,7 @@ static void init_b2world(b2World *world)
 	b2Vec2_Set(&gravity, 0, 300);
 	b2Vec2_Set(&aabb.minVertex, -2000, -1450);
 	b2Vec2_Set(&aabb.maxVertex, 2000, 1450);
-	new (world) b2World(aabb, gravity, true);
+	b2World_ctor(world, aabb, gravity, true);
 	world->SetFilter(&fcsim_collision_filter);
 }
 
