@@ -27,10 +27,10 @@ void b2StackAllocator_ctor(struct b2StackAllocator *allocator)
 	allocator->m_entryCount = 0;
 }
 
-b2StackAllocator::~b2StackAllocator()
+void b2StackAllocator_dtor(struct b2StackAllocator *allocator)
 {
-	b2Assert(m_index == 0);
-	b2Assert(m_entryCount == 0);
+	b2Assert(allocator->m_index == 0);
+	b2Assert(allocator->m_entryCount == 0);
 }
 
 void* b2StackAllocator::Allocate(int32 size)

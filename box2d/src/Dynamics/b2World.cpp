@@ -66,6 +66,7 @@ b2World::~b2World()
 	b2Free(m_broadPhase);
 
 	b2BlockAllocator_dtor(&m_blockAllocator);
+	b2StackAllocator_dtor(&m_stackAllocator);
 }
 
 void b2World::SetListener(b2WorldListener* listener)
