@@ -67,10 +67,6 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // be offset from the body's origin.
 struct b2Body
 {
-	// Set the position of the body's center of mass and rotation (radians).
-	// This breaks any contacts and wakes the other bodies.
-	void SetCenterPosition(const b2Vec2& position, float64 rotation);
-
 	// Get the position of the body's center of mass. The body's center of mass
 	// does not necessarily coincide with the body's origin. It depends on how the
 	// shapes are created.
