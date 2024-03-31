@@ -437,7 +437,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 			}
 
 			// Handle newly frozen bodies.
-			if (b->IsFrozen() && world->m_listener)
+			if (b2Body_IsFrozen(b) && world->m_listener)
 			{
 				b2BoundaryResponse response = world->m_listener->NotifyBoundaryViolated(b);
 				if (response == b2_destroyBody)

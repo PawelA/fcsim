@@ -67,9 +67,6 @@ static void b2BodyDef_ctor(b2BodyDef *def)
 // be offset from the body's origin.
 struct b2Body
 {
-	// Is this body frozen?
-	bool IsFrozen() const;
-
 	// Is this body sleeping (not simulating).
 	bool IsSleeping() const;
 
@@ -188,9 +185,9 @@ inline bool b2Body_IsStatic(const b2Body *body)
 	return (body->m_flags & b2Body::e_staticFlag) == b2Body::e_staticFlag;
 }
 
-inline bool b2Body::IsFrozen() const
+inline bool b2Body_IsFrozen(const b2Body *body)
 {
-	return (m_flags & e_frozenFlag) == e_frozenFlag;
+	return (body->m_flags & b2Body::e_frozenFlag) == b2Body::e_frozenFlag;
 }
 
 inline bool b2Body::IsSleeping() const
