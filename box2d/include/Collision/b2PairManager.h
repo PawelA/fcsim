@@ -112,8 +112,6 @@ struct b2PairCallback
 class b2PairManager
 {
 public:
-	b2PairManager();
-
 	void Initialize(b2BroadPhase* broadPhase, b2PairCallback* callback);
 
 	void AddBufferedPair(int32 proxyId1, int32 proxyId2);
@@ -143,5 +141,7 @@ public:
 
 	uint16 m_hashTable[b2_tableCapacity];
 };
+
+void b2PairManager_ctor(b2PairManager *manager);
 
 #endif

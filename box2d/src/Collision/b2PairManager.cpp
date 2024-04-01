@@ -62,25 +62,25 @@ inline bool operator < (const b2BufferedPair& pair1, const b2BufferedPair& pair2
 }
 
 
-b2PairManager::b2PairManager()
+void b2PairManager_ctor(b2PairManager *manager)
 {
 	b2Assert(b2IsPowerOfTwo(b2_tableCapacity) == true);
 	b2Assert(b2_tableCapacity >= b2_maxPairs);
 	for (int32 i = 0; i < b2_tableCapacity; ++i)
 	{
-		m_hashTable[i] = b2_nullPair;
+		manager->m_hashTable[i] = b2_nullPair;
 	}
-	m_freePair = 0;
+	manager->m_freePair = 0;
 	for (int32 i = 0; i < b2_maxPairs; ++i)
 	{
-		m_pairs[i].proxyId1 = b2_nullProxy;
-		m_pairs[i].proxyId2 = b2_nullProxy;
-		m_pairs[i].userData = NULL;
-		m_pairs[i].status = 0;
-		m_pairs[i].next = uint16(i + 1);
+		manager->m_pairs[i].proxyId1 = b2_nullProxy;
+		manager->m_pairs[i].proxyId2 = b2_nullProxy;
+		manager->m_pairs[i].userData = NULL;
+		manager->m_pairs[i].status = 0;
+		manager->m_pairs[i].next = uint16(i + 1);
 	}
-	m_pairs[b2_maxPairs-1].next = b2_nullPair;
-	m_pairCount = 0;
+	manager->m_pairs[b2_maxPairs-1].next = b2_nullPair;
+	manager->m_pairCount = 0;
 }
 
 void b2PairManager::Initialize(b2BroadPhase* broadPhase, b2PairCallback* callback)
