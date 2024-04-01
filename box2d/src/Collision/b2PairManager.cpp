@@ -214,13 +214,13 @@ void b2PairManager::AddBufferedPair(int32 id1, int32 id2)
 	b2Pair* pair = AddPair(id1, id2);
 
 	// If this pair is not in the pair buffer ...
-	if (pair->IsBuffered() == false)
+	if (b2Pair_IsBuffered(pair) == false)
 	{
 		// This must be a newly added pair.
-		b2Assert(pair->IsFinal() == false);
+		b2Assert(b2Pair_IsFinal(pair) == false);
 
 		// Add it to the pair buffer.
-		pair->SetBuffered();
+		b2Pair_SetBuffered(pair);
 		m_pairBuffer[m_pairBufferCount].proxyId1 = pair->proxyId1;
 		m_pairBuffer[m_pairBufferCount].proxyId2 = pair->proxyId2;
 		++m_pairBufferCount;
@@ -229,7 +229,7 @@ void b2PairManager::AddBufferedPair(int32 id1, int32 id2)
 	}
 
 	// Confirm this pair for the subsequent call to Commit.
-	pair->ClearRemoved();
+	b2Pair_ClearRemoved(pair);
 
 	if (b2BroadPhase::s_validate)
 	{
@@ -252,12 +252,12 @@ void b2PairManager::RemoveBufferedPair(int32 id1, int32 id2)
 	}
 
 	// If this pair is not in the pair buffer ...
-	if (pair->IsBuffered() == false)
+	if (b2Pair_IsBuffered(pair) == false)
 	{
 		// This must be an old pair.
-		b2Assert(pair->IsFinal() == true);
+		b2Assert(b2Pair_IsFinal(pair) == true);
 
-		pair->SetBuffered();
+		b2Pair_SetBuffered(pair);
 		m_pairBuffer[m_pairBufferCount].proxyId1 = pair->proxyId1;
 		m_pairBuffer[m_pairBufferCount].proxyId2 = pair->proxyId2;
 		++m_pairBufferCount;
@@ -265,7 +265,7 @@ void b2PairManager::RemoveBufferedPair(int32 id1, int32 id2)
 		b2Assert(m_pairBufferCount <= m_pairCount);
 	}
 
-	pair->SetRemoved();
+	b2Pair_SetRemoved(pair);
 
 	if (b2BroadPhase::s_validate)
 	{
@@ -282,8 +282,8 @@ void b2PairManager::Commit()
 	for (int32 i = 0; i < m_pairBufferCount; ++i)
 	{
 		b2Pair* pair = Find(m_pairBuffer[i].proxyId1, m_pairBuffer[i].proxyId2);
-		b2Assert(pair->IsBuffered());
-		pair->ClearBuffered();
+		b2Assert(b2Pair_IsBuffered(pair));
+		b2Pair_ClearBuffered(pair);
 
 		b2Assert(pair->proxyId1 < b2_maxProxies && pair->proxyId2 < b2_maxProxies);
 
@@ -293,12 +293,12 @@ void b2PairManager::Commit()
 		b2Assert(proxy1->IsValid());
 		b2Assert(proxy2->IsValid());
 
-		if (pair->IsRemoved())
+		if (b2Pair_IsRemoved(pair))
 		{
 			// It is possible a pair was added then removed before a commit. Therefore,
 			// we should be careful not to tell the user the pair was removed when the
 			// the user didn't receive a matching add.
-			if (pair->IsFinal() == true)
+			if (b2Pair_IsFinal(pair) == true)
 			{
 				m_callback->PairRemoved(proxy1->userData, proxy2->userData, pair->userData);
 			}
@@ -312,10 +312,10 @@ void b2PairManager::Commit()
 		{
 			b2Assert(m_broadPhase->TestOverlap(proxy1, proxy2) == true);
 
-			if (pair->IsFinal() == false)
+			if (b2Pair_IsFinal(pair) == false)
 			{
 				pair->userData = m_callback->PairAdded(proxy1->userData, proxy2->userData);
-				pair->SetFinal();
+				b2Pair_SetFinal(pair);
 			}
 		}
 	}
@@ -348,7 +348,7 @@ void b2PairManager::ValidateBuffer()
 		}
 
 		b2Pair* pair = Find(m_pairBuffer[i].proxyId1, m_pairBuffer[i].proxyId2);
-		b2Assert(pair->IsBuffered());
+		b2Assert(b2Pair_IsBuffered(pair));
 
 		b2Assert(pair->proxyId1 != pair->proxyId2);
 		b2Assert(pair->proxyId1 < b2_maxProxies);
@@ -372,9 +372,9 @@ void b2PairManager::ValidateTable()
 		while (index != b2_nullPair)
 		{
 			b2Pair* pair = m_pairs + index;
-			b2Assert(pair->IsBuffered() == false);
-			b2Assert(pair->IsFinal() == true);
-			b2Assert(pair->IsRemoved() == false);
+			b2Assert(b2Pair_IsBuffered(pair) == false);
+			b2Assert(b2Pair_IsFinal(pair) == true);
+			b2Assert(b2Pair_IsRemoved(pair) == false);
 
 			b2Assert(pair->proxyId1 != pair->proxyId2);
 			b2Assert(pair->proxyId1 < b2_maxProxies);
