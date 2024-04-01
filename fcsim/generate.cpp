@@ -217,6 +217,8 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 	b2BodyDef body_def;
 	double x, y, angle;
 
+	b2BoxDef_ctor(&box_def);
+	b2CircleDef_ctor(&circle_def);
 	b2BodyDef_ctor(&body_def);
 
 	if (shape->type == FCSIM_SHAPE_CIRC) {

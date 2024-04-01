@@ -83,47 +83,47 @@ void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData);
 
 struct b2CircleDef
 {
-	b2CircleDef()
-	{
-		b2ShapeDef_ctor(&m_shapeDef);
-		m_shapeDef.type = e_circleShape;
-		radius = 1.0;
-	}
-
 	b2ShapeDef m_shapeDef;
 
 	float64 radius;
 };
 
+static void b2CircleDef_ctor(b2CircleDef *circleDef)
+{
+	b2ShapeDef_ctor(&circleDef->m_shapeDef);
+	circleDef->m_shapeDef.type = e_circleShape;
+	circleDef->radius = 1.0;
+}
+
 struct b2BoxDef
 {
-	b2BoxDef()
-	{
-		b2ShapeDef_ctor(&m_shapeDef);
-		m_shapeDef.type = e_boxShape;
-		b2Vec2_Set(&extents, 1.0, 1.0);
-	}
-
 	b2ShapeDef m_shapeDef;
 
 	b2Vec2 extents;
 };
 
+static void b2BoxDef_ctor(b2BoxDef *boxDef)
+{
+	b2ShapeDef_ctor(&boxDef->m_shapeDef);
+	boxDef->m_shapeDef.type = e_boxShape;
+	b2Vec2_Set(&boxDef->extents, 1.0, 1.0);
+}
+
 // Convex polygon, vertices must be in CCW order.
 struct b2PolyDef
 {
-	b2PolyDef()
-	{
-		b2ShapeDef_ctor(&m_shapeDef);
-		m_shapeDef.type = e_polyShape;
-		vertexCount = 0;
-	}
-
 	b2ShapeDef m_shapeDef;
 
 	b2Vec2 vertices[b2_maxPolyVertices];
 	int32 vertexCount;
 };
+
+static void b2PolyDef_ctor(b2PolyDef *polyDef)
+{
+	b2ShapeDef_ctor(&polyDef->m_shapeDef);
+	polyDef->m_shapeDef.type = e_polyShape;
+	polyDef->vertexCount = 0;
+}
 
 // Shapes are created automatically when a body is created.
 // Client code does not normally interact with shapes.
