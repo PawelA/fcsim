@@ -118,39 +118,39 @@ static b2Pair* b2PairManager_Find(b2PairManager *manager, int32 proxyId1, int32 
 }
 
 // Returns existing pair or creates a new one.
-b2Pair* b2PairManager::AddPair(int32 proxyId1, int32 proxyId2)
+static b2Pair* b2PairManager_AddPair(b2PairManager *manager, int32 proxyId1, int32 proxyId2)
 {
 	if (proxyId1 > proxyId2) b2Swap(proxyId1, proxyId2);
 
 	int32 hash = Hash(proxyId1, proxyId2) & b2_tableMask;
 
-	b2Pair* pair = b2PairManager_FindHash(this, proxyId1, proxyId2, hash);
+	b2Pair* pair = b2PairManager_FindHash(manager, proxyId1, proxyId2, hash);
 	if (pair != NULL)
 	{
 		return pair;
 	}
 
-	b2Assert(m_pairCount < b2_maxPairs && m_freePair != b2_nullPair);
+	b2Assert(manager->m_pairCount < b2_maxPairs && manager->m_freePair != b2_nullPair);
 
-	uint16 pairIndex = m_freePair;
-	pair = m_pairs + pairIndex;
-	m_freePair = pair->next;
+	uint16 pairIndex = manager->m_freePair;
+	pair = manager->m_pairs + pairIndex;
+	manager->m_freePair = pair->next;
 
 	pair->proxyId1 = (uint16)proxyId1;
 	pair->proxyId2 = (uint16)proxyId2;
 	pair->status = 0;
 	pair->userData = NULL;
-	pair->next = m_hashTable[hash];
+	pair->next = manager->m_hashTable[hash];
 
-	m_hashTable[hash] = pairIndex;
+	manager->m_hashTable[hash] = pairIndex;
 
-	++m_pairCount;
+	++manager->m_pairCount;
 
 	return pair;
 }
 
 // Removes a pair. The pair must exist.
-void* b2PairManager::RemovePair(int32 proxyId1, int32 proxyId2)
+static void* b2PairManager_RemovePair(b2PairManager *manager, int32 proxyId1, int32 proxyId2)
 {
 	b2Assert(m_pairCount > 0);
 
@@ -158,31 +158,31 @@ void* b2PairManager::RemovePair(int32 proxyId1, int32 proxyId2)
 
 	int32 hash = Hash(proxyId1, proxyId2) & b2_tableMask;
 
-	uint16* node = &m_hashTable[hash];
+	uint16* node = &manager->m_hashTable[hash];
 	while (*node != b2_nullPair)
 	{
-		if (Equals(m_pairs[*node], proxyId1, proxyId2))
+		if (Equals(manager->m_pairs[*node], proxyId1, proxyId2))
 		{
 			uint16 index = *node;
-			*node = m_pairs[*node].next;
+			*node = manager->m_pairs[*node].next;
 
-			b2Pair* pair = m_pairs + index;
+			b2Pair* pair = manager->m_pairs + index;
 			void* userData = pair->userData;
 
 			// Scrub
-			pair->next = m_freePair;
+			pair->next = manager->m_freePair;
 			pair->proxyId1 = b2_nullProxy;
 			pair->proxyId2 = b2_nullProxy;
 			pair->userData = NULL;
 			pair->status = 0;
 
-			m_freePair = index;
-			--m_pairCount;
+			manager->m_freePair = index;
+			--manager->m_pairCount;
 			return userData;
 		}
 		else
 		{
-			node = &m_pairs[*node].next;
+			node = &manager->m_pairs[*node].next;
 		}
 	}
 
@@ -211,7 +211,7 @@ void b2PairManager_AddBufferedPair(b2PairManager *manager, int32 id1, int32 id2)
 	b2Assert(id1 != b2_nullProxy && id2 != b2_nullProxy);
 	b2Assert(manager->m_pairBufferCount < b2_maxPairs);
 
-	b2Pair* pair = manager->AddPair(id1, id2);
+	b2Pair* pair = b2PairManager_AddPair(manager, id1, id2);
 
 	// If this pair is not in the pair buffer ...
 	if (b2Pair_IsBuffered(pair) == false)
@@ -322,7 +322,7 @@ void b2PairManager_Commit(b2PairManager *manager)
 
 	for (int32 i = 0; i < removeCount; ++i)
 	{
-		manager->RemovePair(manager->m_pairBuffer[i].proxyId1, manager->m_pairBuffer[i].proxyId2);
+		b2PairManager_RemovePair(manager, manager->m_pairBuffer[i].proxyId1, manager->m_pairBuffer[i].proxyId2);
 	}
 
 	manager->m_pairBufferCount = 0;

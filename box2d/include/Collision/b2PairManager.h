@@ -111,9 +111,6 @@ struct b2PairCallback
 
 struct b2PairManager
 {
-	b2Pair* AddPair(int32 proxyId1, int32 proxyId2);
-	void* RemovePair(int32 proxyId1, int32 proxyId2);
-
 	void ValidateBuffer();
 	void ValidateTable();
 
