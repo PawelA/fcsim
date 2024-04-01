@@ -25,22 +25,15 @@
 struct b2World;
 class b2Contact;
 
-class b2ContactManager : public b2PairCallback
+struct b2ContactManager
 {
-public:
-	b2ContactManager() : m_world(NULL), m_destroyImmediate(false) {}
-
-	// Implements PairCallback
-	void* PairAdded(void* proxyUserData1, void* proxyUserData2);
-
-	// Implements PairCallback
-	void PairRemoved(void* proxyUserData1, void* proxyUserData2, void* pairUserData);
-
 	void Collide();
 
 	void CleanContactList();
 
 	void DestroyContact(b2Contact* contact);
+
+	b2PairCallback m_pairCallback;
 
 	b2World* m_world;
 
@@ -50,5 +43,24 @@ public:
 
 	bool m_destroyImmediate;
 };
+
+// Implements PairCallback
+void* b2ContactManager_PairAdded(b2PairCallback *callback,
+				 void* proxyUserData1,
+				 void* proxyUserData2);
+
+// Implements PairCallback
+void b2ContactManager_PairRemoved(b2PairCallback *callback,
+				  void* proxyUserData1,
+				  void* proxyUserData2,
+				  void* pairUserData);
+
+static void b2ContactManager_ctor(b2ContactManager *manager)
+{
+	manager->m_world = NULL;
+	manager->m_destroyImmediate = false;
+	manager->m_pairCallback.PairAdded = b2ContactManager_PairAdded;
+	manager->m_pairCallback.PairRemoved = b2ContactManager_PairRemoved;
+}
 
 #endif

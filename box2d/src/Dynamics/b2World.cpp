@@ -32,7 +32,7 @@ void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity
 {
 	b2BlockAllocator_ctor(&world->m_blockAllocator);
 	b2StackAllocator_ctor(&world->m_stackAllocator);
-	new (&world->m_contactManager) b2ContactManager();
+	b2ContactManager_ctor(&world->m_contactManager);
 
 	world->m_filter = b2_defaultFilter;
 
@@ -52,7 +52,7 @@ void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity
 
 	world->m_contactManager.m_world = world;
 	void* mem = b2Alloc(sizeof(b2BroadPhase));
-	world->m_broadPhase = new (mem) b2BroadPhase(worldAABB, &world->m_contactManager);
+	world->m_broadPhase = new (mem) b2BroadPhase(worldAABB, &world->m_contactManager.m_pairCallback);
 
 	b2BodyDef bd;
 	b2BodyDef_ctor(&bd);

@@ -98,18 +98,15 @@ struct b2BufferedPair
 	uint16 proxyId2;
 };
 
-class b2PairCallback
+struct b2PairCallback
 {
-public:
-	virtual ~b2PairCallback() {}
-
 	// This should return the new pair user data. It is okay if the
 	// user data is null.
-	virtual void* PairAdded(void* proxyUserData1, void* proxyUserData2) = 0;
+	void* (*PairAdded)(b2PairCallback *callback, void* proxyUserData1, void* proxyUserData2);
 
 	// This should free the pair's user data. In extreme circumstances, it is possible
 	// this will be called with null pairUserData because the pair never existed.
-	virtual void PairRemoved(void* proxyUserData1, void* proxyUserData2, void* pairUserData) = 0;
+	void (*PairRemoved)(b2PairCallback *callback, void* proxyUserData1, void* proxyUserData2, void* pairUserData);
 };
 
 class b2PairManager

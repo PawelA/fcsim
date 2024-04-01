@@ -22,8 +22,9 @@
 
 // This is a callback from the broadphase when two AABB proxies begin
 // to overlap. We create a b2Contact to manage the narrow phase.
-void* b2ContactManager::PairAdded(void* proxyUserData1, void* proxyUserData2)
+void* b2ContactManager_PairAdded(b2PairCallback *callback, void* proxyUserData1, void* proxyUserData2)
 {
+	b2ContactManager *manager = (b2ContactManager *)callback;
 	b2Shape* shape1 = (b2Shape*)proxyUserData1;
 	b2Shape* shape2 = (b2Shape*)proxyUserData2;
 
@@ -32,22 +33,22 @@ void* b2ContactManager::PairAdded(void* proxyUserData1, void* proxyUserData2)
 
 	if (b2Body_IsStatic(body1) && b2Body_IsStatic(body2))
 	{
-		return &m_nullContact;
+		return &manager->m_nullContact;
 	}
 
 	if (shape1->m_body == shape2->m_body)
 	{
-		return &m_nullContact;
+		return &manager->m_nullContact;
 	}
 
 	if (b2Body_IsConnected(body2, body1))
 	{
-		return &m_nullContact;
+		return &manager->m_nullContact;
 	}
 
-	if (m_world->m_filter != NULL && m_world->m_filter(shape1, shape2) == false)
+	if (manager->m_world->m_filter != NULL && manager->m_world->m_filter(shape1, shape2) == false)
 	{
-		return &m_nullContact;
+		return &manager->m_nullContact;
 	}
 
 	// Ensure that body2 is dynamic (body1 is static or dynamic).
@@ -58,23 +59,23 @@ void* b2ContactManager::PairAdded(void* proxyUserData1, void* proxyUserData2)
 	}
 
 	// Call the factory.
-	b2Contact* contact = b2Contact::Create(shape1, shape2, &m_world->m_blockAllocator);
+	b2Contact* contact = b2Contact::Create(shape1, shape2, &manager->m_world->m_blockAllocator);
 
 	if (contact == NULL)
 	{
-		return &m_nullContact;
+		return &manager->m_nullContact;
 	}
 	else
 	{
 		// Insert into the world.
 		contact->m_prev = NULL;
-		contact->m_next = m_world->m_contactList;
-		if (m_world->m_contactList != NULL)
+		contact->m_next = manager->m_world->m_contactList;
+		if (manager->m_world->m_contactList != NULL)
 		{
-			m_world->m_contactList->m_prev = contact;
+			manager->m_world->m_contactList->m_prev = contact;
 		}
-		m_world->m_contactList = contact;
-		++m_world->m_contactCount;
+		manager->m_world->m_contactList = contact;
+		++manager->m_world->m_contactCount;
 	}
 
 	return contact;
@@ -82,8 +83,9 @@ void* b2ContactManager::PairAdded(void* proxyUserData1, void* proxyUserData2)
 
 // This is a callback from the broadphase when two AABB proxies cease
 // to overlap. We destroy the b2Contact.
-void b2ContactManager::PairRemoved(void* proxyUserData1, void* proxyUserData2, void* pairUserData)
+void b2ContactManager_PairRemoved(b2PairCallback *callback, void* proxyUserData1, void* proxyUserData2, void* pairUserData)
 {
+	b2ContactManager *manager = (b2ContactManager *)callback;
 	NOT_USED(proxyUserData1);
 	NOT_USED(proxyUserData2);
 
@@ -93,13 +95,13 @@ void b2ContactManager::PairRemoved(void* proxyUserData1, void* proxyUserData2, v
 	}
 
 	b2Contact* c = (b2Contact*)pairUserData;
-	if (c != &m_nullContact)
+	if (c != &manager->m_nullContact)
 	{
-		b2Assert(m_world->m_contactCount > 0);
+		b2Assert(manager->m_world->m_contactCount > 0);
 
-		if (m_destroyImmediate == true)
+		if (manager->m_destroyImmediate == true)
 		{
-			DestroyContact(c);
+			manager->DestroyContact(c);
 			c = NULL;
 		}
 		else

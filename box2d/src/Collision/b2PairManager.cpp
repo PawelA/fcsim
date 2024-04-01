@@ -300,7 +300,7 @@ void b2PairManager::Commit()
 			// the user didn't receive a matching add.
 			if (b2Pair_IsFinal(pair) == true)
 			{
-				m_callback->PairRemoved(proxy1->userData, proxy2->userData, pair->userData);
+				m_callback->PairRemoved(m_callback, proxy1->userData, proxy2->userData, pair->userData);
 			}
 
 			// Store the ids so we can actually remove the pair below.
@@ -314,7 +314,7 @@ void b2PairManager::Commit()
 
 			if (b2Pair_IsFinal(pair) == false)
 			{
-				pair->userData = m_callback->PairAdded(proxy1->userData, proxy2->userData);
+				pair->userData = m_callback->PairAdded(m_callback, proxy1->userData, proxy2->userData);
 				b2Pair_SetFinal(pair);
 			}
 		}
