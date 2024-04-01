@@ -186,9 +186,9 @@ void b2ContactManager::DestroyContact(b2Contact* c)
 }
 
 // Destroy any contacts marked for deferred destruction.
-void b2ContactManager::CleanContactList()
+void b2ContactManager_CleanContactList(b2ContactManager *manager)
 {
-	b2Contact* c = m_world->m_contactList;
+	b2Contact* c = manager->m_world->m_contactList;
 	while (c != NULL)
 	{
 		b2Contact* c0 = c;
@@ -196,7 +196,7 @@ void b2ContactManager::CleanContactList()
 
 		if (c0->m_flags & b2Contact::e_destroyFlag)
 		{
-			DestroyContact(c0);
+			manager->DestroyContact(c0);
 			c0 = NULL;
 		}
 	}

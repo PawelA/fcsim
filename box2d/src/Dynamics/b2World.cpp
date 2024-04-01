@@ -302,7 +302,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	world->m_positionIterationCount = 0;
 
 	// Handle deferred contact destruction.
-	world->m_contactManager.CleanContactList();
+	b2ContactManager_CleanContactList(&world->m_contactManager);
 
 	// Handle deferred body destruction.
 	b2World_CleanBodyList(world);
