@@ -67,7 +67,7 @@ static int32 BinarySearch(b2Bound* bounds, int32 count, uint16 value)
 b2BroadPhase::b2BroadPhase(const b2AABB& worldAABB, b2PairCallback* callback)
 {
 	b2PairManager_ctor(&m_pairManager);
-	m_pairManager.Initialize(this, callback);
+	b2PairManager_Initialize(&m_pairManager, this, callback);
 
 	b2Assert(worldAABB.IsValid());
 	m_worldAABB = worldAABB;

@@ -83,10 +83,10 @@ void b2PairManager_ctor(b2PairManager *manager)
 	manager->m_pairCount = 0;
 }
 
-void b2PairManager::Initialize(b2BroadPhase* broadPhase, b2PairCallback* callback)
+void b2PairManager_Initialize(b2PairManager *manager, b2BroadPhase* broadPhase, b2PairCallback* callback)
 {
-	m_broadPhase = broadPhase;
-	m_callback = callback;
+	manager->m_broadPhase = broadPhase;
+	manager->m_callback = callback;
 }
 
 b2Pair* b2PairManager::Find(int32 proxyId1, int32 proxyId2, uint32 hash)
