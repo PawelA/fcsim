@@ -44,20 +44,6 @@ enum b2ShapeType
 
 struct b2ShapeDef
 {
-	b2ShapeDef()
-	{
-		type = e_unknownShape;
-		userData = NULL;
-		b2Vec2_Set(&localPosition, 0.0, 0.0);
-		localRotation = 0.0;
-		friction = 0.2;
-		restitution = 0.0;
-		density = 0.0;
-		categoryBits = 0x0001;
-		maskBits = 0xFFFF;
-		groupIndex = 0;
-	}
-
 	void ComputeMass(b2MassData* massData) const;
 
 	b2ShapeType type;
@@ -81,10 +67,25 @@ struct b2ShapeDef
 	int16 groupIndex;
 };
 
+static void b2ShapeDef_ctor(b2ShapeDef *def)
+{
+	def->type = e_unknownShape;
+	def->userData = NULL;
+	b2Vec2_Set(&def->localPosition, 0.0, 0.0);
+	def->localRotation = 0.0;
+	def->friction = 0.2;
+	def->restitution = 0.0;
+	def->density = 0.0;
+	def->categoryBits = 0x0001;
+	def->maskBits = 0xFFFF;
+	def->groupIndex = 0;
+}
+
 struct b2CircleDef
 {
 	b2CircleDef()
 	{
+		b2ShapeDef_ctor(&m_shapeDef);
 		m_shapeDef.type = e_circleShape;
 		radius = 1.0;
 	}
@@ -98,6 +99,7 @@ struct b2BoxDef
 {
 	b2BoxDef()
 	{
+		b2ShapeDef_ctor(&m_shapeDef);
 		m_shapeDef.type = e_boxShape;
 		b2Vec2_Set(&extents, 1.0, 1.0);
 	}
@@ -112,6 +114,7 @@ struct b2PolyDef
 {
 	b2PolyDef()
 	{
+		b2ShapeDef_ctor(&m_shapeDef);
 		m_shapeDef.type = e_polyShape;
 		vertexCount = 0;
 	}
