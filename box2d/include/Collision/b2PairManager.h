@@ -111,9 +111,6 @@ struct b2PairCallback
 
 struct b2PairManager
 {
-	void AddBufferedPair(int32 proxyId1, int32 proxyId2);
-	void RemoveBufferedPair(int32 proxyId1, int32 proxyId2);
-
 	void Commit();
 
 	b2Pair* Find(int32 proxyId1, int32 proxyId2);
@@ -140,5 +137,9 @@ struct b2PairManager
 void b2PairManager_ctor(b2PairManager *manager);
 
 void b2PairManager_Initialize(b2PairManager *manager, b2BroadPhase* broadPhase, b2PairCallback* callback);
+
+void b2PairManager_AddBufferedPair(b2PairManager *manager, int32 proxyId1, int32 proxyId2);
+
+void b2PairManager_RemoveBufferedPair(b2PairManager *manager, int32 proxyId1, int32 proxyId2);
 
 #endif

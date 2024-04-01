@@ -206,12 +206,12 @@ We may add a pair that is not in the pair manager or pair buffer.
 We may add a pair that is already in the pair manager and pair buffer.
 If the added pair is not a new pair, then it must be in the pair buffer (because RemovePair was called).
 */
-void b2PairManager::AddBufferedPair(int32 id1, int32 id2)
+void b2PairManager_AddBufferedPair(b2PairManager *manager, int32 id1, int32 id2)
 {
 	b2Assert(id1 != b2_nullProxy && id2 != b2_nullProxy);
-	b2Assert(m_pairBufferCount < b2_maxPairs);
+	b2Assert(manager->m_pairBufferCount < b2_maxPairs);
 
-	b2Pair* pair = AddPair(id1, id2);
+	b2Pair* pair = manager->AddPair(id1, id2);
 
 	// If this pair is not in the pair buffer ...
 	if (b2Pair_IsBuffered(pair) == false)
@@ -221,11 +221,11 @@ void b2PairManager::AddBufferedPair(int32 id1, int32 id2)
 
 		// Add it to the pair buffer.
 		b2Pair_SetBuffered(pair);
-		m_pairBuffer[m_pairBufferCount].proxyId1 = pair->proxyId1;
-		m_pairBuffer[m_pairBufferCount].proxyId2 = pair->proxyId2;
-		++m_pairBufferCount;
+		manager->m_pairBuffer[manager->m_pairBufferCount].proxyId1 = pair->proxyId1;
+		manager->m_pairBuffer[manager->m_pairBufferCount].proxyId2 = pair->proxyId2;
+		++manager->m_pairBufferCount;
 
-		b2Assert(m_pairBufferCount <= m_pairCount);
+		b2Assert(manager->m_pairBufferCount <= manager->m_pairCount);
 	}
 
 	// Confirm this pair for the subsequent call to Commit.
@@ -233,17 +233,17 @@ void b2PairManager::AddBufferedPair(int32 id1, int32 id2)
 
 	if (b2BroadPhase::s_validate)
 	{
-		ValidateBuffer();
+		manager->ValidateBuffer();
 	}
 }
 
 // Buffer a pair for removal.
-void b2PairManager::RemoveBufferedPair(int32 id1, int32 id2)
+void b2PairManager_RemoveBufferedPair(b2PairManager *manager, int32 id1, int32 id2)
 {
 	b2Assert(id1 != b2_nullProxy && id2 != b2_nullProxy);
-	b2Assert(m_pairBufferCount < b2_maxPairs);
+	b2Assert(manager->m_pairBufferCount < b2_maxPairs);
 
-	b2Pair* pair = Find(id1, id2);
+	b2Pair* pair = manager->Find(id1, id2);
 
 	if (pair == NULL)
 	{
@@ -258,18 +258,18 @@ void b2PairManager::RemoveBufferedPair(int32 id1, int32 id2)
 		b2Assert(b2Pair_IsFinal(pair) == true);
 
 		b2Pair_SetBuffered(pair);
-		m_pairBuffer[m_pairBufferCount].proxyId1 = pair->proxyId1;
-		m_pairBuffer[m_pairBufferCount].proxyId2 = pair->proxyId2;
-		++m_pairBufferCount;
+		manager->m_pairBuffer[manager->m_pairBufferCount].proxyId1 = pair->proxyId1;
+		manager->m_pairBuffer[manager->m_pairBufferCount].proxyId2 = pair->proxyId2;
+		++manager->m_pairBufferCount;
 
-		b2Assert(m_pairBufferCount <= m_pairCount);
+		b2Assert(manager->m_pairBufferCount <= manager->m_pairCount);
 	}
 
 	b2Pair_SetRemoved(pair);
 
 	if (b2BroadPhase::s_validate)
 	{
-		ValidateBuffer();
+		manager->ValidateBuffer();
 	}
 }
 

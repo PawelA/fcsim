@@ -305,7 +305,7 @@ uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
 		b2Assert(m_queryResults[i] < b2_maxProxies);
 		b2Assert(m_proxyPool[m_queryResults[i]].IsValid());
 
-		m_pairManager.AddBufferedPair(proxyId, m_queryResults[i]);
+		b2PairManager_AddBufferedPair(&m_pairManager, proxyId, m_queryResults[i]);
 	}
 
 	m_pairManager.Commit();
@@ -371,7 +371,7 @@ void b2BroadPhase::DestroyProxy(int32 proxyId)
 	for (int32 i = 0; i < m_queryResultCount; ++i)
 	{
 		b2Assert(m_proxyPool[m_queryResults[i]].IsValid());
-		m_pairManager.RemoveBufferedPair(proxyId, m_queryResults[i]);
+		b2PairManager_RemoveBufferedPair(&m_pairManager, proxyId, m_queryResults[i]);
 	}
 
 	m_pairManager.Commit();
@@ -466,7 +466,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 				{
 					if (TestOverlap(newValues, prevProxy))
 					{
-						m_pairManager.AddBufferedPair(proxyId, prevProxyId);
+						b2PairManager_AddBufferedPair(&m_pairManager, proxyId, prevProxyId);
 					}
 
 					++prevProxy->upperBounds[axis];
@@ -501,7 +501,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 				{
 					if (TestOverlap(newValues, nextProxy))
 					{
-						m_pairManager.AddBufferedPair(proxyId, nextProxyId);
+						b2PairManager_AddBufferedPair(&m_pairManager, proxyId, nextProxyId);
 					}
 
 					--nextProxy->lowerBounds[axis];
@@ -541,7 +541,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 				{
 					if (TestOverlap(oldValues, nextProxy))
 					{
-						m_pairManager.RemoveBufferedPair(proxyId, nextProxyId);
+						b2PairManager_RemoveBufferedPair(&m_pairManager, proxyId, nextProxyId);
 					}
 
 					--nextProxy->upperBounds[axis];
@@ -577,7 +577,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 				{
 					if (TestOverlap(oldValues, prevProxy))
 					{
-						m_pairManager.RemoveBufferedPair(proxyId, prevProxyId);
+						b2PairManager_RemoveBufferedPair(&m_pairManager, proxyId, prevProxyId);
 					}
 
 					++prevProxy->lowerBounds[axis];
