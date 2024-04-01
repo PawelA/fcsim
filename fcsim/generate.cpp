@@ -221,10 +221,10 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 
 	if (shape->type == FCSIM_SHAPE_CIRC) {
 		circle_def.radius = shape->circ.radius;
-		shape_def = &circle_def;
+		shape_def = &circle_def.m_shapeDef;
 	} else {
 		b2Vec2_Set(&box_def.extents, shape->rect.w/2, shape->rect.h/2);
-		shape_def = &box_def;
+		shape_def = &box_def.m_shapeDef;
 	}
 	shape_def->density = phys->density;
 	shape_def->friction = phys->friction;

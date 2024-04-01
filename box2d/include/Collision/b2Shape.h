@@ -58,8 +58,6 @@ struct b2ShapeDef
 		groupIndex = 0;
 	}
 
-	virtual ~b2ShapeDef() {}
-
 	void ComputeMass(b2MassData* massData) const;
 
 	b2ShapeType type;
@@ -83,36 +81,42 @@ struct b2ShapeDef
 	int16 groupIndex;
 };
 
-struct b2CircleDef : public b2ShapeDef
+struct b2CircleDef
 {
 	b2CircleDef()
 	{
-		type = e_circleShape;
+		m_shapeDef.type = e_circleShape;
 		radius = 1.0;
 	}
+
+	b2ShapeDef m_shapeDef;
 
 	float64 radius;
 };
 
-struct b2BoxDef : public b2ShapeDef
+struct b2BoxDef
 {
 	b2BoxDef()
 	{
-		type = e_boxShape;
+		m_shapeDef.type = e_boxShape;
 		b2Vec2_Set(&extents, 1.0, 1.0);
 	}
+
+	b2ShapeDef m_shapeDef;
 
 	b2Vec2 extents;
 };
 
 // Convex polygon, vertices must be in CCW order.
-struct b2PolyDef : public b2ShapeDef
+struct b2PolyDef
 {
 	b2PolyDef()
 	{
-		type = e_polyShape;
+		m_shapeDef.type = e_polyShape;
 		vertexCount = 0;
 	}
+
+	b2ShapeDef m_shapeDef;
 
 	b2Vec2 vertices[b2_maxPolyVertices];
 	int32 vertexCount;
