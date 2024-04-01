@@ -20,6 +20,8 @@
 #include <Dynamics/b2World.h>
 #include <Dynamics/b2Body.h>
 
+static void b2ContactManager_DestroyContact(b2ContactManager *manager, b2Contact* c);
+
 // This is a callback from the broadphase when two AABB proxies begin
 // to overlap. We create a b2Contact to manage the narrow phase.
 void* b2ContactManager_PairAdded(b2PairCallback *callback, void* proxyUserData1, void* proxyUserData2)
@@ -101,7 +103,7 @@ void b2ContactManager_PairRemoved(b2PairCallback *callback, void* proxyUserData1
 
 		if (manager->m_destroyImmediate == true)
 		{
-			manager->DestroyContact(c);
+			b2ContactManager_DestroyContact(manager, c);
 			c = NULL;
 		}
 		else
@@ -111,9 +113,9 @@ void b2ContactManager_PairRemoved(b2PairCallback *callback, void* proxyUserData1
 	}
 }
 
-void b2ContactManager::DestroyContact(b2Contact* c)
+static void b2ContactManager_DestroyContact(b2ContactManager *manager, b2Contact* c)
 {
-	b2Assert(m_world->m_contactCount > 0);
+	b2Assert(manager->m_world->m_contactCount > 0);
 
 	// Remove from the world.
 	if (c->m_prev)
@@ -126,9 +128,9 @@ void b2ContactManager::DestroyContact(b2Contact* c)
 		c->m_next->m_prev = c->m_prev;
 	}
 
-	if (c == m_world->m_contactList)
+	if (c == manager->m_world->m_contactList)
 	{
-		m_world->m_contactList = c->m_next;
+		manager->m_world->m_contactList = c->m_next;
 	}
 
 	// If there are contact points, then disconnect from the island graph.
@@ -181,8 +183,8 @@ void b2ContactManager::DestroyContact(b2Contact* c)
 	}
 
 	// Call the factory.
-	b2Contact::Destroy(c, &m_world->m_blockAllocator);
-	--m_world->m_contactCount;
+	b2Contact::Destroy(c, &manager->m_world->m_blockAllocator);
+	--manager->m_world->m_contactCount;
 }
 
 // Destroy any contacts marked for deferred destruction.
@@ -196,7 +198,7 @@ void b2ContactManager_CleanContactList(b2ContactManager *manager)
 
 		if (c0->m_flags & b2Contact::e_destroyFlag)
 		{
-			manager->DestroyContact(c0);
+			b2ContactManager_DestroyContact(manager, c0);
 			c0 = NULL;
 		}
 	}

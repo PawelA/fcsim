@@ -27,8 +27,6 @@ class b2Contact;
 
 struct b2ContactManager
 {
-	void DestroyContact(b2Contact* contact);
-
 	b2PairCallback m_pairCallback;
 
 	b2World* m_world;
