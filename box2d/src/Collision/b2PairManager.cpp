@@ -273,15 +273,15 @@ void b2PairManager_RemoveBufferedPair(b2PairManager *manager, int32 id1, int32 i
 	}
 }
 
-void b2PairManager::Commit()
+void b2PairManager_Commit(b2PairManager *manager)
 {
 	int32 removeCount = 0;
 
-	b2Proxy* proxies = m_broadPhase->m_proxyPool;
+	b2Proxy* proxies = manager->m_broadPhase->m_proxyPool;
 
-	for (int32 i = 0; i < m_pairBufferCount; ++i)
+	for (int32 i = 0; i < manager->m_pairBufferCount; ++i)
 	{
-		b2Pair* pair = Find(m_pairBuffer[i].proxyId1, m_pairBuffer[i].proxyId2);
+		b2Pair* pair = manager->Find(manager->m_pairBuffer[i].proxyId1, manager->m_pairBuffer[i].proxyId2);
 		b2Assert(b2Pair_IsBuffered(pair));
 		b2Pair_ClearBuffered(pair);
 
@@ -300,21 +300,21 @@ void b2PairManager::Commit()
 			// the user didn't receive a matching add.
 			if (b2Pair_IsFinal(pair) == true)
 			{
-				m_callback->PairRemoved(m_callback, proxy1->userData, proxy2->userData, pair->userData);
+				manager->m_callback->PairRemoved(manager->m_callback, proxy1->userData, proxy2->userData, pair->userData);
 			}
 
 			// Store the ids so we can actually remove the pair below.
-			m_pairBuffer[removeCount].proxyId1 = pair->proxyId1;
-			m_pairBuffer[removeCount].proxyId2 = pair->proxyId2;
+			manager->m_pairBuffer[removeCount].proxyId1 = pair->proxyId1;
+			manager->m_pairBuffer[removeCount].proxyId2 = pair->proxyId2;
 			++removeCount;
 		}
 		else
 		{
-			b2Assert(m_broadPhase->TestOverlap(proxy1, proxy2) == true);
+			b2Assert(manager->m_broadPhase->TestOverlap(proxy1, proxy2) == true);
 
 			if (b2Pair_IsFinal(pair) == false)
 			{
-				pair->userData = m_callback->PairAdded(m_callback, proxy1->userData, proxy2->userData);
+				pair->userData = manager->m_callback->PairAdded(manager->m_callback, proxy1->userData, proxy2->userData);
 				b2Pair_SetFinal(pair);
 			}
 		}
@@ -322,14 +322,14 @@ void b2PairManager::Commit()
 
 	for (int32 i = 0; i < removeCount; ++i)
 	{
-		RemovePair(m_pairBuffer[i].proxyId1, m_pairBuffer[i].proxyId2);
+		manager->RemovePair(manager->m_pairBuffer[i].proxyId1, manager->m_pairBuffer[i].proxyId2);
 	}
 
-	m_pairBufferCount = 0;
+	manager->m_pairBufferCount = 0;
 
 	if (b2BroadPhase::s_validate)
 	{
-		ValidateTable();
+		manager->ValidateTable();
 	}
 }
 

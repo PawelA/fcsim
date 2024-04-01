@@ -308,7 +308,7 @@ uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
 		b2PairManager_AddBufferedPair(&m_pairManager, proxyId, m_queryResults[i]);
 	}
 
-	m_pairManager.Commit();
+	b2PairManager_Commit(&m_pairManager);
 
 	if (s_validate)
 	{
@@ -374,7 +374,7 @@ void b2BroadPhase::DestroyProxy(int32 proxyId)
 		b2PairManager_RemoveBufferedPair(&m_pairManager, proxyId, m_queryResults[i]);
 	}
 
-	m_pairManager.Commit();
+	b2PairManager_Commit(&m_pairManager);
 
 	// Prepare for next query.
 	m_queryResultCount = 0;
@@ -604,7 +604,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 
 void b2BroadPhase::Commit()
 {
-	m_pairManager.Commit();
+	b2PairManager_Commit(&m_pairManager);
 }
 
 int32 b2BroadPhase::Query(const b2AABB& aabb, void** userData, int32 maxCount)
