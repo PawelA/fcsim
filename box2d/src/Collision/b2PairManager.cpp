@@ -89,13 +89,13 @@ void b2PairManager_Initialize(b2PairManager *manager, b2BroadPhase* broadPhase, 
 	manager->m_callback = callback;
 }
 
-b2Pair* b2PairManager::Find(int32 proxyId1, int32 proxyId2, uint32 hash)
+static b2Pair* b2PairManager_FindHash(b2PairManager *manager, int32 proxyId1, int32 proxyId2, uint32 hash)
 {
-	int32 index = m_hashTable[hash];
+	int32 index = manager->m_hashTable[hash];
 
-	while (index != b2_nullPair && Equals(m_pairs[index], proxyId1, proxyId2) == false)
+	while (index != b2_nullPair && Equals(manager->m_pairs[index], proxyId1, proxyId2) == false)
 	{
-		index = m_pairs[index].next;
+		index = manager->m_pairs[index].next;
 	}
 
 	if (index == b2_nullPair)
@@ -105,16 +105,16 @@ b2Pair* b2PairManager::Find(int32 proxyId1, int32 proxyId2, uint32 hash)
 
 	b2Assert(index < b2_maxPairs);
 
-	return m_pairs + index;
+	return manager->m_pairs + index;
 }
 
-b2Pair* b2PairManager::Find(int32 proxyId1, int32 proxyId2)
+static b2Pair* b2PairManager_Find(b2PairManager *manager, int32 proxyId1, int32 proxyId2)
 {
 	if (proxyId1 > proxyId2) b2Swap(proxyId1, proxyId2);
 
 	int32 hash = Hash(proxyId1, proxyId2) & b2_tableMask;
 
-	return Find(proxyId1, proxyId2, hash);
+	return b2PairManager_FindHash(manager, proxyId1, proxyId2, hash);
 }
 
 // Returns existing pair or creates a new one.
@@ -124,7 +124,7 @@ b2Pair* b2PairManager::AddPair(int32 proxyId1, int32 proxyId2)
 
 	int32 hash = Hash(proxyId1, proxyId2) & b2_tableMask;
 
-	b2Pair* pair = Find(proxyId1, proxyId2, hash);
+	b2Pair* pair = b2PairManager_FindHash(this, proxyId1, proxyId2, hash);
 	if (pair != NULL)
 	{
 		return pair;
@@ -243,7 +243,7 @@ void b2PairManager_RemoveBufferedPair(b2PairManager *manager, int32 id1, int32 i
 	b2Assert(id1 != b2_nullProxy && id2 != b2_nullProxy);
 	b2Assert(manager->m_pairBufferCount < b2_maxPairs);
 
-	b2Pair* pair = manager->Find(id1, id2);
+	b2Pair* pair = b2PairManager_Find(manager, id1, id2);
 
 	if (pair == NULL)
 	{
@@ -281,7 +281,7 @@ void b2PairManager_Commit(b2PairManager *manager)
 
 	for (int32 i = 0; i < manager->m_pairBufferCount; ++i)
 	{
-		b2Pair* pair = manager->Find(manager->m_pairBuffer[i].proxyId1, manager->m_pairBuffer[i].proxyId2);
+		b2Pair* pair = b2PairManager_Find(manager, manager->m_pairBuffer[i].proxyId1, manager->m_pairBuffer[i].proxyId2);
 		b2Assert(b2Pair_IsBuffered(pair));
 		b2Pair_ClearBuffered(pair);
 
