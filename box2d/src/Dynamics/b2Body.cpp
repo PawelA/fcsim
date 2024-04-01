@@ -50,7 +50,7 @@ void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world)
 		const b2ShapeDef* sd = bd->shapes[i];
 		if (sd == NULL) break;
 		b2MassData* massData = massDatas + i;
-		sd->ComputeMass(massData);
+		b2ShapeDef_ComputeMass(sd, massData);
 		body->m_mass += massData->mass;
 		body->m_center += massData->mass * (sd->localPosition + massData->center);
 		++body->m_shapeCount;

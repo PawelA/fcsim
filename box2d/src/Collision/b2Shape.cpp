@@ -157,21 +157,21 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 	return c;
 }
 
-void b2ShapeDef::ComputeMass(b2MassData* massData) const
+void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData)
 {
-	if (density == 0.0)
+	if (shapeDef->density == 0.0)
 	{
 		massData->mass = 0.0;
 		b2Vec2_Set(&massData->center, 0.0, 0.0);
 		massData->I = 0.0;
 	}
 
-	switch (type)
+	switch (shapeDef->type)
 	{
 	case e_circleShape:
 		{
-			b2CircleDef* circle = (b2CircleDef*)this;
-			massData->mass = density * b2_pi * circle->radius * circle->radius;
+			b2CircleDef* circle = (b2CircleDef*)shapeDef;
+			massData->mass = shapeDef->density * b2_pi * circle->radius * circle->radius;
 			b2Vec2_Set(&massData->center, 0.0, 0.0);
 			massData->I = 0.5 * (massData->mass) * circle->radius * circle->radius;
 		}
@@ -179,8 +179,8 @@ void b2ShapeDef::ComputeMass(b2MassData* massData) const
 
 	case e_boxShape:
 		{
-			b2BoxDef* box = (b2BoxDef*)this;
-			massData->mass = 4.0 * density * box->extents.x * box->extents.y;
+			b2BoxDef* box = (b2BoxDef*)shapeDef;
+			massData->mass = 4.0 * shapeDef->density * box->extents.x * box->extents.y;
 			b2Vec2_Set(&massData->center, 0.0, 0.0);
 			massData->I = massData->mass / 3.0 * b2Dot(box->extents, box->extents);
 		}
@@ -188,8 +188,8 @@ void b2ShapeDef::ComputeMass(b2MassData* massData) const
 
 	case e_polyShape:
 		{
-			b2PolyDef* poly = (b2PolyDef*)this;
-			PolyMass(massData, poly->vertices, poly->vertexCount, density);
+			b2PolyDef* poly = (b2PolyDef*)shapeDef;
+			PolyMass(massData, poly->vertices, poly->vertexCount, shapeDef->density);
 		}
 		break;
 

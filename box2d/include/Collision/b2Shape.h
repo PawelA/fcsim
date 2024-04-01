@@ -44,8 +44,6 @@ enum b2ShapeType
 
 struct b2ShapeDef
 {
-	void ComputeMass(b2MassData* massData) const;
-
 	b2ShapeType type;
 	void* userData;
 	b2Vec2 localPosition;
@@ -80,6 +78,8 @@ static void b2ShapeDef_ctor(b2ShapeDef *def)
 	def->maskBits = 0xFFFF;
 	def->groupIndex = 0;
 }
+
+void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData);
 
 struct b2CircleDef
 {
