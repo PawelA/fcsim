@@ -27,8 +27,6 @@ class b2Contact;
 
 struct b2ContactManager
 {
-	void Collide();
-
 	void CleanContactList();
 
 	void DestroyContact(b2Contact* contact);
@@ -62,5 +60,7 @@ static void b2ContactManager_ctor(b2ContactManager *manager)
 	manager->m_pairCallback.PairAdded = b2ContactManager_PairAdded;
 	manager->m_pairCallback.PairRemoved = b2ContactManager_PairRemoved;
 }
+
+void b2ContactManager_Collide(b2ContactManager *manager);
 
 #endif

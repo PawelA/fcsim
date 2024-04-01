@@ -308,7 +308,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	b2World_CleanBodyList(world);
 
 	// Update contacts.
-	world->m_contactManager.Collide();
+	b2ContactManager_Collide(&world->m_contactManager);
 
 	// Size the island for the worst case.
 	b2Island island(world->m_bodyCount, world->m_contactCount, world->m_jointCount, &world->m_stackAllocator);

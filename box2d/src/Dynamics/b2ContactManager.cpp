@@ -205,9 +205,9 @@ void b2ContactManager::CleanContactList()
 // This is the top level collision call for the time step. Here
 // all the narrow phase collision is processed for the world
 // contact list.
-void b2ContactManager::Collide()
+void b2ContactManager_Collide(b2ContactManager *manager)
 {
-	for (b2Contact* c = m_world->m_contactList; c; c = c->m_next)
+	for (b2Contact* c = manager->m_world->m_contactList; c; c = c->m_next)
 	{
 		if (b2Body_IsSleeping(c->m_shape1->m_body) &&
 			b2Body_IsSleeping(c->m_shape2->m_body))
