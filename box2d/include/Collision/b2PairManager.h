@@ -109,9 +109,8 @@ struct b2PairCallback
 	void (*PairRemoved)(b2PairCallback *callback, void* proxyUserData1, void* proxyUserData2, void* pairUserData);
 };
 
-class b2PairManager
+struct b2PairManager
 {
-public:
 	void Initialize(b2BroadPhase* broadPhase, b2PairCallback* callback);
 
 	void AddBufferedPair(int32 proxyId1, int32 proxyId2);
@@ -119,7 +118,6 @@ public:
 
 	void Commit();
 
-private:
 	b2Pair* Find(int32 proxyId1, int32 proxyId2);
 	b2Pair* Find(int32 proxyId1, int32 proxyId2, uint32 hashValue);
 
@@ -129,7 +127,6 @@ private:
 	void ValidateBuffer();
 	void ValidateTable();
 
-public:
 	b2BroadPhase *m_broadPhase;
 	b2PairCallback *m_callback;
 	b2Pair m_pairs[b2_maxPairs];

@@ -99,8 +99,6 @@ private:
 	void IncrementTimeStamp();
 
 public:
-	friend class b2PairManager;
-
 	b2PairManager m_pairManager;
 
 	b2Proxy m_proxyPool[b2_maxProxies];
