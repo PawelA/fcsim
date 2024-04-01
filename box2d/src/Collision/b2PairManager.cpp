@@ -230,11 +230,6 @@ void b2PairManager_AddBufferedPair(b2PairManager *manager, int32 id1, int32 id2)
 
 	// Confirm this pair for the subsequent call to Commit.
 	b2Pair_ClearRemoved(pair);
-
-	if (b2BroadPhase::s_validate)
-	{
-		manager->ValidateBuffer();
-	}
 }
 
 // Buffer a pair for removal.
@@ -266,11 +261,6 @@ void b2PairManager_RemoveBufferedPair(b2PairManager *manager, int32 id1, int32 i
 	}
 
 	b2Pair_SetRemoved(pair);
-
-	if (b2BroadPhase::s_validate)
-	{
-		manager->ValidateBuffer();
-	}
 }
 
 void b2PairManager_Commit(b2PairManager *manager)
@@ -326,70 +316,4 @@ void b2PairManager_Commit(b2PairManager *manager)
 	}
 
 	manager->m_pairBufferCount = 0;
-
-	if (b2BroadPhase::s_validate)
-	{
-		manager->ValidateTable();
-	}
-}
-
-void b2PairManager::ValidateBuffer()
-{
-#ifdef _DEBUG
-	b2Assert(m_pairBufferCount <= m_pairCount);
-
-	std::sort(m_pairBuffer, m_pairBuffer + m_pairBufferCount);
-
-	for (int32 i = 0; i < m_pairBufferCount; ++i)
-	{
-		if (i > 0)
-		{
-			b2Assert(Equals(m_pairBuffer[i], m_pairBuffer[i-1]) == false);
-		}
-
-		b2Pair* pair = Find(m_pairBuffer[i].proxyId1, m_pairBuffer[i].proxyId2);
-		b2Assert(b2Pair_IsBuffered(pair));
-
-		b2Assert(pair->proxyId1 != pair->proxyId2);
-		b2Assert(pair->proxyId1 < b2_maxProxies);
-		b2Assert(pair->proxyId2 < b2_maxProxies);
-
-		b2Proxy* proxy1 = m_broadPhase->m_proxyPool + pair->proxyId1;
-		b2Proxy* proxy2 = m_broadPhase->m_proxyPool + pair->proxyId2;
-
-		b2Assert(proxy1->IsValid() == true);
-		b2Assert(proxy2->IsValid() == true);
-	}
-#endif
-}
-
-void b2PairManager::ValidateTable()
-{
-#ifdef _DEBUG
-	for (int32 i = 0; i < b2_tableCapacity; ++i)
-	{
-		uint16 index = m_hashTable[i];
-		while (index != b2_nullPair)
-		{
-			b2Pair* pair = m_pairs + index;
-			b2Assert(b2Pair_IsBuffered(pair) == false);
-			b2Assert(b2Pair_IsFinal(pair) == true);
-			b2Assert(b2Pair_IsRemoved(pair) == false);
-
-			b2Assert(pair->proxyId1 != pair->proxyId2);
-			b2Assert(pair->proxyId1 < b2_maxProxies);
-			b2Assert(pair->proxyId2 < b2_maxProxies);
-
-			b2Proxy* proxy1 = m_broadPhase->m_proxyPool + pair->proxyId1;
-			b2Proxy* proxy2 = m_broadPhase->m_proxyPool + pair->proxyId2;
-
-			b2Assert(proxy1->IsValid() == true);
-			b2Assert(proxy2->IsValid() == true);
-
-			b2Assert(m_broadPhase->TestOverlap(proxy1, proxy2) == true);
-
-			index = pair->next;
-		}
-	}
-#endif
 }

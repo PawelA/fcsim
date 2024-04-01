@@ -111,9 +111,6 @@ struct b2PairCallback
 
 struct b2PairManager
 {
-	void ValidateBuffer();
-	void ValidateTable();
-
 	b2BroadPhase *m_broadPhase;
 	b2PairCallback *m_callback;
 	b2Pair m_pairs[b2_maxPairs];
