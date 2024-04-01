@@ -36,25 +36,25 @@ const uint16 b2_nullProxy = USHRT_MAX;
 const int32 b2_tableCapacity = b2_maxPairs;	// must be a power of two
 const int32 b2_tableMask = b2_tableCapacity - 1;
 
+enum
+{
+	b2Pair_e_pairBuffered	= 0x0001,
+	b2Pair_e_pairRemoved	= 0x0002,
+	b2Pair_e_pairFinal		= 0x0004,
+};
+
 struct b2Pair
 {
-	enum
-	{
-		e_pairBuffered	= 0x0001,
-		e_pairRemoved	= 0x0002,
-		e_pairFinal		= 0x0004,
-	};
+	void SetBuffered()		{ status |= b2Pair_e_pairBuffered; }
+	void ClearBuffered()	{ status &= ~b2Pair_e_pairBuffered; }
+	bool IsBuffered()		{ return (status & b2Pair_e_pairBuffered) == b2Pair_e_pairBuffered; }
 
-	void SetBuffered()		{ status |= e_pairBuffered; }
-	void ClearBuffered()	{ status &= ~e_pairBuffered; }
-	bool IsBuffered()		{ return (status & e_pairBuffered) == e_pairBuffered; }
+	void SetRemoved()		{ status |= b2Pair_e_pairRemoved; }
+	void ClearRemoved()		{ status &= ~b2Pair_e_pairRemoved; }
+	bool IsRemoved()		{ return (status & b2Pair_e_pairRemoved) == b2Pair_e_pairRemoved; }
 
-	void SetRemoved()		{ status |= e_pairRemoved; }
-	void ClearRemoved()		{ status &= ~e_pairRemoved; }
-	bool IsRemoved()		{ return (status & e_pairRemoved) == e_pairRemoved; }
-
-	void SetFinal()		{ status |= e_pairFinal; }
-	bool IsFinal()		{ return (status & e_pairFinal) == e_pairFinal; }
+	void SetFinal()		{ status |= b2Pair_e_pairFinal; }
+	bool IsFinal()		{ return (status & b2Pair_e_pairFinal) == b2Pair_e_pairFinal; }
 
 	void* userData;
 	uint16 proxyId1;
