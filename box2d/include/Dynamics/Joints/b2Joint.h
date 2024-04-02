@@ -45,18 +45,6 @@ enum b2LimitState
 	e_equalLimits
 };
 
-struct b2Jacobian
-{
-	b2Vec2 linear1;
-	float64 angular1;
-	b2Vec2 linear2;
-	float64 angular2;
-
-	void SetZero();
-	void Set(const b2Vec2& x1, float64 a1, const b2Vec2& x2, float64 a2);
-	float64 Compute(const b2Vec2& x1, float64 a1, const b2Vec2& x2, float64 a2);
-};
-
 struct b2JointNode
 {
 	b2Body* other;
@@ -109,23 +97,6 @@ struct b2Joint
 
 	void* m_userData;
 };
-
-inline void b2Jacobian::SetZero()
-{
-	b2Vec2_SetZero(&linear1); angular1 = 0.0;
-	b2Vec2_SetZero(&linear2); angular2 = 0.0;
-}
-
-inline void b2Jacobian::Set(const b2Vec2& x1, float64 a1, const b2Vec2& x2, float64 a2)
-{
-	linear1 = x1; angular1 = a1;
-	linear2 = x2; angular2 = a2;
-}
-
-inline float64 b2Jacobian::Compute(const b2Vec2& x1, float64 a1, const b2Vec2& x2, float64 a2)
-{
-	return b2Dot(linear1, x1) + angular1 * a1 + b2Dot(linear2, x2) + angular2 * a2;
-}
 
 b2Joint* b2Joint_Create(const b2JointDef* def, b2BlockAllocator* allocator);
 void b2Joint_Destroy(b2Joint* joint, b2BlockAllocator* allocator);
