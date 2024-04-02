@@ -226,10 +226,12 @@ b2Shape* b2Shape_Create(const b2ShapeDef* def,
 	return NULL;
 }
 
+static void b2Shape_dtor(b2Shape *shape);
+
 void b2Shape_Destroy(b2Shape*& shape)
 {
 	b2BlockAllocator& allocator = shape->m_body->m_world->m_blockAllocator;
-	shape->~b2Shape();
+	b2Shape_dtor(shape);
 
 	switch (shape->m_type)
 	{
@@ -248,41 +250,41 @@ void b2Shape_Destroy(b2Shape*& shape)
 	shape = NULL;
 }
 
-b2Shape::b2Shape(const b2ShapeDef* def, b2Body* body)
+static void b2Shape_ctor(b2Shape *shape, const b2ShapeDef* def, b2Body* body)
 {
-	m_userData = def->userData;
-	m_friction = def->friction;
-	m_restitution = def->restitution;
-	m_body = body;
+	shape->m_userData = def->userData;
+	shape->m_friction = def->friction;
+	shape->m_restitution = def->restitution;
+	shape->m_body = body;
 
-	m_proxyId = b2_nullProxy;
-	m_maxRadius = 0.0;
+	shape->m_proxyId = b2_nullProxy;
+	shape->m_maxRadius = 0.0;
 
-	m_categoryBits = def->categoryBits;
-	m_maskBits = def->maskBits;
-	m_groupIndex = def->groupIndex;
+	shape->m_categoryBits = def->categoryBits;
+	shape->m_maskBits = def->maskBits;
+	shape->m_groupIndex = def->groupIndex;
 }
 
-b2Shape::~b2Shape()
+static void b2Shape_dtor(b2Shape *shape)
 {
-	if (m_proxyId != b2_nullProxy)
+	if (shape->m_proxyId != b2_nullProxy)
 	{
-		m_body->m_world->m_broadPhase->DestroyProxy(m_proxyId);
+		shape->m_body->m_world->m_broadPhase->DestroyProxy(shape->m_proxyId);
 	}
 }
 
-void b2Shape::DestroyProxy()
+void b2Shape_DestroyProxy(b2Shape *shape)
 {
-	if (m_proxyId != b2_nullProxy)
+	if (shape->m_proxyId != b2_nullProxy)
 	{
-		m_body->m_world->m_broadPhase->DestroyProxy(m_proxyId);
-		m_proxyId = b2_nullProxy;
+		shape->m_body->m_world->m_broadPhase->DestroyProxy(shape->m_proxyId);
+		shape->m_proxyId = b2_nullProxy;
 	}
 }
 
 b2CircleShape::b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& localCenter)
-: m_shape(def, body)
 {
+	b2Shape_ctor(&m_shape, def, body);
 	m_shape.TestPoint = b2CircleShape_TestPoint;
 	m_shape.ResetProxy = b2CircleShape_ResetProxy;
 	m_shape.Synchronize = b2CircleShape_Synchronize;
@@ -416,8 +418,8 @@ void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 
 b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 			 const b2Vec2& newOrigin)
-: m_shape(def, body)
 {
+	b2Shape_ctor(&m_shape, def, body);
 	m_shape.TestPoint = b2PolyShape_TestPoint;
 	m_shape.ResetProxy = b2PolyShape_ResetProxy;
 	m_shape.Synchronize = b2PolyShape_Synchronize;

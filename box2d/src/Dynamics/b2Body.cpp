@@ -172,6 +172,6 @@ void b2Body_Freeze(b2Body *body)
 	body->m_angularVelocity = 0.0;
 	for (b2Shape* s = body->m_shapeList; s; s = s->m_next)
 	{
-		s->DestroyProxy();
+		b2Shape_DestroyProxy(s);
 	}
 }

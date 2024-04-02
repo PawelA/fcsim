@@ -144,14 +144,6 @@ public:
 
 	b2Vec2 (*Support)(const b2Shape *shape, const b2Vec2& d);
 
-	//--------------- Internals Below -------------------
-
-	b2Shape(const b2ShapeDef* def, b2Body* body);
-
-	~b2Shape();
-
-	void DestroyProxy();
-
 	b2Shape* m_next;
 
 	b2Mat22 m_R;
@@ -245,5 +237,7 @@ b2Shape* b2Shape_Create(const b2ShapeDef* def,
 			b2Body* body, const b2Vec2& newOrigin);
 
 void b2Shape_Destroy(b2Shape*& shape);
+
+void b2Shape_DestroyProxy(b2Shape *shape);
 
 #endif
