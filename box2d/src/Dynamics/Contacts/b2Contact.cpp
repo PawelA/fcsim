@@ -26,18 +26,23 @@
 #include <Dynamics/b2World.h>
 #include <Dynamics/b2Body.h>
 
-b2ContactRegister b2Contact::s_registers[e_shapeTypeCount][e_shapeTypeCount];
-bool b2Contact::s_initialized = false;
+static b2ContactRegister s_registers[e_shapeTypeCount][e_shapeTypeCount];
+static bool s_initialized = false;
 
-void b2Contact::InitializeRegisters()
+static void AddType(b2ContactCreateFcn* createFcn,
+		    b2ContactDestroyFcn* destoryFcn,
+		    b2ShapeType type1, b2ShapeType type2);
+
+static void InitializeRegisters()
 {
 	AddType(b2CircleContact::Create, b2CircleContact::Destroy, e_circleShape, e_circleShape);
 	AddType(b2PolyAndCircleContact::Create, b2PolyAndCircleContact::Destroy, e_polyShape, e_circleShape);
 	AddType(b2PolyContact::Create, b2PolyContact::Destroy, e_polyShape, e_polyShape);
 }
 
-void b2Contact::AddType(b2ContactCreateFcn* createFcn, b2ContactDestroyFcn* destoryFcn,
-					  b2ShapeType type1, b2ShapeType type2)
+static void AddType(b2ContactCreateFcn* createFcn,
+		    b2ContactDestroyFcn* destoryFcn,
+		    b2ShapeType type1, b2ShapeType type2)
 {
 	b2Assert(e_unknownShape < type1 && type1 < e_shapeTypeCount);
 	b2Assert(e_unknownShape < type2 && type2 < e_shapeTypeCount);

@@ -61,18 +61,12 @@ public:
 		e_destroyFlag		= 0x0002,
 	};
 
-	static void AddType(b2ContactCreateFcn* createFcn, b2ContactDestroyFcn* destroyFcn,
-						b2ShapeType type1, b2ShapeType type2);
-	static void InitializeRegisters();
 	static b2Contact* Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
 	static void Destroy(b2Contact* contact, b2BlockAllocator* allocator);
 
 	b2Contact() : m_shape1(NULL), m_shape2(NULL) {}
 	b2Contact(b2Shape* shape1, b2Shape* shape2);
 	virtual ~b2Contact() {}
-
-	static b2ContactRegister s_registers[e_shapeTypeCount][e_shapeTypeCount];
-	static bool s_initialized;
 
 	uint32 m_flags;
 
