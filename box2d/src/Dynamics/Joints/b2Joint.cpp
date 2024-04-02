@@ -17,12 +17,7 @@
 */
 
 #include <Dynamics/Joints/b2Joint.h>
-#include <Dynamics/Joints/b2DistanceJoint.h>
-#include <Dynamics/Joints/b2MouseJoint.h>
 #include <Dynamics/Joints/b2RevoluteJoint.h>
-#include <Dynamics/Joints/b2PrismaticJoint.h>
-#include <Dynamics/Joints/b2PulleyJoint.h>
-#include <Dynamics/Joints/b2GearJoint.h>
 #include <Dynamics/b2Body.h>
 #include <Dynamics/b2World.h>
 #include <Common/b2BlockAllocator.h>
@@ -36,45 +31,10 @@ b2Joint* b2Joint::Create(const b2JointDef* def, b2BlockAllocator* allocator)
 
 	switch (def->type)
 	{
-	case e_distanceJoint:
-		{
-			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2DistanceJoint));
-			joint = new (mem) b2DistanceJoint((b2DistanceJointDef*)def);
-		}
-		break;
-
-	case e_mouseJoint:
-		{
-			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2MouseJoint));
-			joint = new (mem) b2MouseJoint((b2MouseJointDef*)def);
-		}
-		break;
-
-	case e_prismaticJoint:
-		{
-			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2PrismaticJoint));
-			joint = new (mem) b2PrismaticJoint((b2PrismaticJointDef*)def);
-		}
-		break;
-
 	case e_revoluteJoint:
 		{
 			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2RevoluteJoint));
 			joint = new (mem) b2RevoluteJoint((b2RevoluteJointDef*)def);
-		}
-		break;
-
-	case e_pulleyJoint:
-		{
-			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2PulleyJoint));
-			joint = new (mem) b2PulleyJoint((b2PulleyJointDef*)def);
-		}
-		break;
-
-	case e_gearJoint:
-		{
-			void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2GearJoint));
-			joint = new (mem) b2GearJoint((b2GearJointDef*)def);
 		}
 		break;
 
@@ -91,28 +51,8 @@ void b2Joint::Destroy(b2Joint* joint, b2BlockAllocator* allocator)
 	joint->~b2Joint();
 	switch (joint->m_type)
 	{
-	case e_distanceJoint:
-		b2BlockAllocator_Free(allocator, joint, sizeof(b2DistanceJoint));
-		break;
-
-	case e_mouseJoint:
-		b2BlockAllocator_Free(allocator, joint, sizeof(b2MouseJoint));
-		break;
-
-	case e_prismaticJoint:
-		b2BlockAllocator_Free(allocator, joint, sizeof(b2PrismaticJoint));
-		break;
-
 	case e_revoluteJoint:
 		b2BlockAllocator_Free(allocator, joint, sizeof(b2RevoluteJoint));
-		break;
-
-	case e_pulleyJoint:
-		b2BlockAllocator_Free(allocator, joint, sizeof(b2PulleyJoint));
-		break;
-
-	case e_gearJoint:
-		b2BlockAllocator_Free(allocator, joint, sizeof(b2GearJoint));
 		break;
 
 	default:

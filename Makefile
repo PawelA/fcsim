@@ -70,12 +70,7 @@ obj-box2d-y = \
 	box2d/src/Dynamics/Contacts/b2ContactSolver.o \
 	box2d/src/Dynamics/Contacts/b2PolyAndCircleContact.o \
 	box2d/src/Dynamics/Contacts/b2PolyContact.o \
-	box2d/src/Dynamics/Joints/b2DistanceJoint.o \
-	box2d/src/Dynamics/Joints/b2GearJoint.o \
 	box2d/src/Dynamics/Joints/b2Joint.o \
-	box2d/src/Dynamics/Joints/b2MouseJoint.o \
-	box2d/src/Dynamics/Joints/b2PrismaticJoint.o \
-	box2d/src/Dynamics/Joints/b2PulleyJoint.o \
 	box2d/src/Dynamics/Joints/b2RevoluteJoint.o
 
 obj-y += $(obj-box2d-y)

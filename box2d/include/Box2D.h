@@ -30,11 +30,6 @@
 
 #include "Dynamics/Contacts/b2Contact.h"
 
-#include "Dynamics/Joints/b2DistanceJoint.h"
-#include "Dynamics/Joints/b2MouseJoint.h"
-#include "Dynamics/Joints/b2PrismaticJoint.h"
 #include "Dynamics/Joints/b2RevoluteJoint.h"
-#include "Dynamics/Joints/b2PulleyJoint.h"
-#include "Dynamics/Joints/b2GearJoint.h"
 
 #endif
