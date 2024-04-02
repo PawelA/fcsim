@@ -161,7 +161,7 @@ static void b2World_CleanBodyList(b2World *world)
 
 b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def)
 {
-	b2Joint* j = b2Joint::Create(def, &world->m_blockAllocator);
+	b2Joint* j = b2Joint_Create(def, &world->m_blockAllocator);
 
 	// Connect to the world list.
 	j->m_prev = NULL;
@@ -268,7 +268,7 @@ void b2World_DestroyJoint(b2World *world, b2Joint* j)
 	j->m_node2.prev = NULL;
 	j->m_node2.next = NULL;
 
-	b2Joint::Destroy(j, &world->m_blockAllocator);
+	b2Joint_Destroy(j, &world->m_blockAllocator);
 
 	b2Assert(world->m_jointCount > 0);
 	--world->m_jointCount;

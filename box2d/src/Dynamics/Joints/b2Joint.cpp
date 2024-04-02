@@ -25,7 +25,7 @@
 
 #include <new>
 
-b2Joint* b2Joint::Create(const b2JointDef* def, b2BlockAllocator* allocator)
+b2Joint* b2Joint_Create(const b2JointDef* def, b2BlockAllocator* allocator)
 {
 	b2Joint* joint = NULL;
 
@@ -47,7 +47,7 @@ b2Joint* b2Joint::Create(const b2JointDef* def, b2BlockAllocator* allocator)
 	return joint;
 }
 
-void b2Joint::Destroy(b2Joint* joint, b2BlockAllocator* allocator)
+void b2Joint_Destroy(b2Joint* joint, b2BlockAllocator* allocator)
 {
 	joint->~b2Joint();
 	switch (joint->m_type)
