@@ -24,7 +24,7 @@
 class b2StackAllocator;
 class b2Contact;
 struct b2Body;
-class b2Joint;
+struct b2Joint;
 struct b2TimeStep;
 
 class b2Island

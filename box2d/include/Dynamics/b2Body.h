@@ -26,7 +26,7 @@
 #include <cstring>
 #include <memory>
 
-class b2Joint;
+struct b2Joint;
 class b2Contact;
 struct b2World;
 struct b2JointNode;

@@ -28,7 +28,7 @@ struct b2AABB;
 struct b2BodyDef;
 struct b2JointDef;
 struct b2Body;
-class b2Joint;
+struct b2Joint;
 struct b2Shape;
 class b2Contact;
 class b2BroadPhase;
