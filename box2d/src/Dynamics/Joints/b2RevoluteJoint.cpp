@@ -35,33 +35,34 @@
 // J = [0 0 -1 0 0 1]
 // K = invI1 + invI2
 
-b2RevoluteJoint::b2RevoluteJoint(const b2RevoluteJointDef* def)
-: m_joint(def)
+void b2RevoluteJoint_ctor(b2RevoluteJoint *rev_joint, const b2RevoluteJointDef* def)
 {
-	m_joint.GetAnchor1 = b2RevoluteJoint_GetAnchor1;
-	m_joint.GetAnchor2 = b2RevoluteJoint_GetAnchor2;
-	m_joint.GetReactionForce = b2RevoluteJoint_GetReactionForce;
-	m_joint.GetReactionTorque = b2RevoluteJoint_GetReactionTorque;
-	m_joint.PrepareVelocitySolver = b2RevoluteJoint_PrepareVelocitySolver;
-	m_joint.SolveVelocityConstraints = b2RevoluteJoint_SolveVelocityConstraints;
-	m_joint.SolvePositionConstraints = b2RevoluteJoint_SolvePositionConstraints;
+	new (&rev_joint->m_joint) b2Joint(def);
 
-	m_localAnchor1 = b2MulT(m_joint.m_body1->m_R, def->anchorPoint - m_joint.m_body1->m_position);
-	m_localAnchor2 = b2MulT(m_joint.m_body2->m_R, def->anchorPoint - m_joint.m_body2->m_position);
+	rev_joint->m_joint.GetAnchor1 = b2RevoluteJoint_GetAnchor1;
+	rev_joint->m_joint.GetAnchor2 = b2RevoluteJoint_GetAnchor2;
+	rev_joint->m_joint.GetReactionForce = b2RevoluteJoint_GetReactionForce;
+	rev_joint->m_joint.GetReactionTorque = b2RevoluteJoint_GetReactionTorque;
+	rev_joint->m_joint.PrepareVelocitySolver = b2RevoluteJoint_PrepareVelocitySolver;
+	rev_joint->m_joint.SolveVelocityConstraints = b2RevoluteJoint_SolveVelocityConstraints;
+	rev_joint->m_joint.SolvePositionConstraints = b2RevoluteJoint_SolvePositionConstraints;
 
-	m_intialAngle = m_joint.m_body2->m_rotation - m_joint.m_body1->m_rotation;
+	rev_joint->m_localAnchor1 = b2MulT(rev_joint->m_joint.m_body1->m_R, def->anchorPoint - rev_joint->m_joint.m_body1->m_position);
+	rev_joint->m_localAnchor2 = b2MulT(rev_joint->m_joint.m_body2->m_R, def->anchorPoint - rev_joint->m_joint.m_body2->m_position);
 
-	b2Vec2_Set(&m_ptpImpulse, 0.0, 0.0);
-	m_motorImpulse = 0.0;
-	m_limitImpulse = 0.0;
-	m_limitPositionImpulse = 0.0;
+	rev_joint->m_intialAngle = rev_joint->m_joint.m_body2->m_rotation - rev_joint->m_joint.m_body1->m_rotation;
 
-	m_lowerAngle = def->lowerAngle;
-	m_upperAngle = def->upperAngle;
-	m_maxMotorTorque = def->motorTorque;
-	m_motorSpeed = def->motorSpeed;
-	m_enableLimit = def->enableLimit;
-	m_enableMotor = def->enableMotor;
+	b2Vec2_Set(&rev_joint->m_ptpImpulse, 0.0, 0.0);
+	rev_joint->m_motorImpulse = 0.0;
+	rev_joint->m_limitImpulse = 0.0;
+	rev_joint->m_limitPositionImpulse = 0.0;
+
+	rev_joint->m_lowerAngle = def->lowerAngle;
+	rev_joint->m_upperAngle = def->upperAngle;
+	rev_joint->m_maxMotorTorque = def->motorTorque;
+	rev_joint->m_motorSpeed = def->motorSpeed;
+	rev_joint->m_enableLimit = def->enableLimit;
+	rev_joint->m_enableMotor = def->enableMotor;
 }
 
 void b2RevoluteJoint_PrepareVelocitySolver(b2Joint *joint)
@@ -323,35 +324,6 @@ b2Vec2 b2RevoluteJoint_GetAnchor2(b2Joint *joint)
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 	b2Body* b2 = joint->m_body2;
 	return b2->m_position + b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
-}
-
-float64 b2RevoluteJoint::GetJointAngle() const
-{
-	b2Body* b1 = m_joint.m_body1;
-	b2Body* b2 = m_joint.m_body2;
-	return b2->m_rotation - b1->m_rotation;
-}
-
-float64 b2RevoluteJoint::GetJointSpeed() const
-{
-	b2Body* b1 = m_joint.m_body1;
-	b2Body* b2 = m_joint.m_body2;
-	return b2->m_angularVelocity - b1->m_angularVelocity;
-}
-
-float64 b2RevoluteJoint::GetMotorTorque(float64 invTimeStep) const
-{
-	return invTimeStep * m_motorImpulse;
-}
-
-void b2RevoluteJoint::SetMotorSpeed(float64 speed)
-{
-	m_motorSpeed = speed;
-}
-
-void b2RevoluteJoint::SetMotorTorque(float64 torque)
-{
-	m_maxMotorTorque = torque;
 }
 
 b2Vec2 b2RevoluteJoint_GetReactionForce(b2Joint *joint, float64 invTimeStep)

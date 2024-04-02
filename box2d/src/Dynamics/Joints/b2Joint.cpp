@@ -34,7 +34,7 @@ b2Joint* b2Joint::Create(const b2JointDef* def, b2BlockAllocator* allocator)
 	case e_revoluteJoint:
 		{
 			b2RevoluteJoint* revoluteJoint = (b2RevoluteJoint *)b2BlockAllocator_Allocate(allocator, sizeof(b2RevoluteJoint));
-			new (revoluteJoint) b2RevoluteJoint((b2RevoluteJointDef*)def);
+			b2RevoluteJoint_ctor(revoluteJoint, (b2RevoluteJointDef*)def);
 			joint = &revoluteJoint->m_joint;
 		}
 		break;

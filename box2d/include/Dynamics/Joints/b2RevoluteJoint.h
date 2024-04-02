@@ -47,17 +47,6 @@ struct b2RevoluteJointDef : public b2JointDef
 class b2RevoluteJoint
 {
 public:
-	float64 GetJointAngle() const;
-	float64 GetJointSpeed() const;
-	float64 GetMotorTorque(float64 invTimeStep) const;
-
-	void SetMotorSpeed(float64 speed);
-	void SetMotorTorque(float64 torque);
-
-	//--------------- Internals Below -------------------
-
-	b2RevoluteJoint(const b2RevoluteJointDef* def);
-
 	b2Joint m_joint;
 
 	b2Vec2 m_localAnchor1;
@@ -90,5 +79,7 @@ void b2RevoluteJoint_PrepareVelocitySolver(b2Joint *joint);
 void b2RevoluteJoint_SolveVelocityConstraints(b2Joint *joint, const b2TimeStep* step);
 
 bool b2RevoluteJoint_SolvePositionConstraints(b2Joint *joint);
+
+void b2RevoluteJoint_ctor(b2RevoluteJoint *joint, const b2RevoluteJointDef* def);
 
 #endif
