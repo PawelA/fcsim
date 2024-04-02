@@ -97,15 +97,6 @@ public:
 
 	bool (*SolvePositionConstraints)(b2Joint *joint);
 
-	b2JointType GetType() const;
-
-	b2Body* GetBody1();
-	b2Body* GetBody2();
-
-	b2Joint* GetNext();
-
-	void* GetUserData();
-	
 	//--------------- Internals Below -------------------
 
 	static b2Joint* Create(const b2JointDef* def, b2BlockAllocator* allocator);
@@ -141,31 +132,6 @@ inline void b2Jacobian::Set(const b2Vec2& x1, float64 a1, const b2Vec2& x2, floa
 inline float64 b2Jacobian::Compute(const b2Vec2& x1, float64 a1, const b2Vec2& x2, float64 a2)
 {
 	return b2Dot(linear1, x1) + angular1 * a1 + b2Dot(linear2, x2) + angular2 * a2;
-}
-
-inline b2JointType b2Joint::GetType() const
-{
-	return m_type;
-}
-
-inline b2Body* b2Joint::GetBody1()
-{
-	return m_body1;
-}
-
-inline b2Body* b2Joint::GetBody2()
-{
-	return m_body2;
-}
-
-inline b2Joint* b2Joint::GetNext()
-{
-	return m_next;
-}
-
-inline void* b2Joint::GetUserData()
-{
-	return m_userData;
 }
 
 #endif

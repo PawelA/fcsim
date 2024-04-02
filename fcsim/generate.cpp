@@ -541,7 +541,7 @@ void fcsim_step(struct fcsim_simul *simul)
 
 	b2Joint *joint = b2World_GetJointList(&simul->world);
 	while (joint) {
-		b2Joint *next = joint->GetNext();
+		b2Joint *next = joint->m_next;
 		b2Vec2 a1 = joint->GetAnchor1(joint);
 		b2Vec2 a2 = joint->GetAnchor2(joint);
 		b2Vec2 d = a1 - a2;
