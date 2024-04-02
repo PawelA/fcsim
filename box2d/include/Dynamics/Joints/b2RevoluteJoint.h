@@ -44,15 +44,9 @@ struct b2RevoluteJointDef : public b2JointDef
 	bool enableMotor;
 };
 
-class b2RevoluteJoint : public b2Joint
+class b2RevoluteJoint
 {
 public:
-	b2Vec2 GetAnchor1() const;
-	b2Vec2 GetAnchor2() const;
-
-	b2Vec2 GetReactionForce(float64 invTimeStep) const;
-	float64 GetReactionTorque(float64 invTimeStep) const;
-
 	float64 GetJointAngle() const;
 	float64 GetJointSpeed() const;
 	float64 GetMotorTorque(float64 invTimeStep) const;
@@ -64,10 +58,7 @@ public:
 
 	b2RevoluteJoint(const b2RevoluteJointDef* def);
 
-	void PrepareVelocitySolver();
-	void SolveVelocityConstraints(const b2TimeStep* step);
-
-	bool SolvePositionConstraints();
+	b2Joint m_joint;
 
 	b2Vec2 m_localAnchor1;
 	b2Vec2 m_localAnchor2;
@@ -88,5 +79,16 @@ public:
 	bool m_enableMotor;
 	b2LimitState m_limitState;
 };
+
+b2Vec2 b2RevoluteJoint_GetAnchor1(b2Joint *joint);
+b2Vec2 b2RevoluteJoint_GetAnchor2(b2Joint *joint);
+
+b2Vec2 b2RevoluteJoint_GetReactionForce(b2Joint *joint, float64 invTimeStep);
+float64 b2RevoluteJoint_GetReactionTorque(b2Joint *joint, float64 invTimeStep);
+
+void b2RevoluteJoint_PrepareVelocitySolver(b2Joint *joint);
+void b2RevoluteJoint_SolveVelocityConstraints(b2Joint *joint, const b2TimeStep* step);
+
+bool b2RevoluteJoint_SolvePositionConstraints(b2Joint *joint);
 
 #endif

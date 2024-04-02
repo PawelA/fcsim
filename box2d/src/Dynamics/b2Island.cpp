@@ -163,7 +163,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 
 	for (int32 i = 0; i < m_jointCount; ++i)
 	{
-		m_joints[i]->PrepareVelocitySolver();
+		m_joints[i]->PrepareVelocitySolver(m_joints[i]);
 	}
 
 	// Solve velocity constraints.
@@ -173,7 +173,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	
 		for (int32 j = 0; j < m_jointCount; ++j)
 		{
-			m_joints[j]->SolveVelocityConstraints(step);
+			m_joints[j]->SolveVelocityConstraints(m_joints[j], step);
 		}
 	}
 
@@ -191,11 +191,6 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		b2Mat22_SetAngle(&b->m_R, b->m_rotation);
 	}
 
-	for (int32 i = 0; i < m_jointCount; ++i)
-	{
-		m_joints[i]->PreparePositionSolver();
-	}
-
 	// Solve position constraints.
 	if (b2World_s_enablePositionCorrection)
 	{
@@ -206,7 +201,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 			bool jointsOkay = true;
 			for (int i = 0; i < m_jointCount; ++i)
 			{
-				bool jointOkay = m_joints[i]->SolvePositionConstraints();
+				bool jointOkay = m_joints[i]->SolvePositionConstraints(m_joints[i]);
 				jointsOkay = jointsOkay && jointOkay;
 			}
 

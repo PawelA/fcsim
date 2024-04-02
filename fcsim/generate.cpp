@@ -542,8 +542,8 @@ void fcsim_step(struct fcsim_simul *simul)
 	b2Joint *joint = b2World_GetJointList(&simul->world);
 	while (joint) {
 		b2Joint *next = joint->GetNext();
-		b2Vec2 a1 = joint->GetAnchor1();
-		b2Vec2 a2 = joint->GetAnchor2();
+		b2Vec2 a1 = joint->GetAnchor1(joint);
+		b2Vec2 a2 = joint->GetAnchor2(joint);
 		b2Vec2 d = a1 - a2;
 		if (fabs(d.x) + fabs(d.y) > 50.0)
 			b2World_DestroyJoint(&simul->world, joint);

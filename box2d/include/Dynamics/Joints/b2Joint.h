@@ -86,16 +86,21 @@ struct b2JointDef
 class b2Joint
 {
 public:
+	b2Vec2 (*GetAnchor1)(b2Joint *joint);
+	b2Vec2 (*GetAnchor2)(b2Joint *joint);
+
+	b2Vec2 (*GetReactionForce)(b2Joint *joint, float64 invTimeStep);
+	float64 (*GetReactionTorque)(b2Joint *joint, float64 invTimeStep);
+
+	void (*PrepareVelocitySolver)(b2Joint *joint);
+	void (*SolveVelocityConstraints)(b2Joint *joint, const b2TimeStep* step);
+
+	bool (*SolvePositionConstraints)(b2Joint *joint);
+
 	b2JointType GetType() const;
 
 	b2Body* GetBody1();
 	b2Body* GetBody2();
-
-	virtual b2Vec2 GetAnchor1() const = 0;
-	virtual b2Vec2 GetAnchor2() const = 0;
-
-	virtual b2Vec2 GetReactionForce(float64 invTimeStep) const = 0;
-	virtual float64 GetReactionTorque(float64 invTimeStep) const = 0;
 
 	b2Joint* GetNext();
 
@@ -107,15 +112,6 @@ public:
 	static void Destroy(b2Joint* joint, b2BlockAllocator* allocator);
 
 	b2Joint(const b2JointDef* def);
-	virtual ~b2Joint() {}
-
-	virtual void PrepareVelocitySolver() = 0;
-	virtual void SolveVelocityConstraints(const b2TimeStep* step) = 0;
-
-	// This returns true if the position errors are within tolerance.
-	virtual void PreparePositionSolver() {}
-	virtual bool SolvePositionConstraints() = 0;
-
 	b2JointType m_type;
 	b2Joint* m_prev;
 	b2Joint* m_next;

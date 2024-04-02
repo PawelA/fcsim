@@ -36,12 +36,20 @@
 // K = invI1 + invI2
 
 b2RevoluteJoint::b2RevoluteJoint(const b2RevoluteJointDef* def)
-: b2Joint(def)
+: m_joint(def)
 {
-	m_localAnchor1 = b2MulT(m_body1->m_R, def->anchorPoint - m_body1->m_position);
-	m_localAnchor2 = b2MulT(m_body2->m_R, def->anchorPoint - m_body2->m_position);
+	m_joint.GetAnchor1 = b2RevoluteJoint_GetAnchor1;
+	m_joint.GetAnchor2 = b2RevoluteJoint_GetAnchor2;
+	m_joint.GetReactionForce = b2RevoluteJoint_GetReactionForce;
+	m_joint.GetReactionTorque = b2RevoluteJoint_GetReactionTorque;
+	m_joint.PrepareVelocitySolver = b2RevoluteJoint_PrepareVelocitySolver;
+	m_joint.SolveVelocityConstraints = b2RevoluteJoint_SolveVelocityConstraints;
+	m_joint.SolvePositionConstraints = b2RevoluteJoint_SolvePositionConstraints;
 
-	m_intialAngle = m_body2->m_rotation - m_body1->m_rotation;
+	m_localAnchor1 = b2MulT(m_joint.m_body1->m_R, def->anchorPoint - m_joint.m_body1->m_position);
+	m_localAnchor2 = b2MulT(m_joint.m_body2->m_R, def->anchorPoint - m_joint.m_body2->m_position);
+
+	m_intialAngle = m_joint.m_body2->m_rotation - m_joint.m_body1->m_rotation;
 
 	b2Vec2_Set(&m_ptpImpulse, 0.0, 0.0);
 	m_motorImpulse = 0.0;
@@ -56,14 +64,15 @@ b2RevoluteJoint::b2RevoluteJoint(const b2RevoluteJointDef* def)
 	m_enableMotor = def->enableMotor;
 }
 
-void b2RevoluteJoint::PrepareVelocitySolver()
+void b2RevoluteJoint_PrepareVelocitySolver(b2Joint *joint)
 {
-	b2Body* b1 = m_body1;
-	b2Body* b2 = m_body2;
+	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
+	b2Body* b1 = joint->m_body1;
+	b2Body* b2 = joint->m_body2;
 
 	// Compute the effective mass matrix.
-	b2Vec2 r1 = b2Mul(b1->m_R, m_localAnchor1);
-	b2Vec2 r2 = b2Mul(b2->m_R, m_localAnchor2);
+	b2Vec2 r1 = b2Mul(b1->m_R, revoluteJoint->m_localAnchor1);
+	b2Vec2 r2 = b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
 
 	// K    = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
 	//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
@@ -84,79 +93,81 @@ void b2RevoluteJoint::PrepareVelocitySolver()
 	K3.col1.y = -invI2 * r2.x * r2.y;	K3.col2.y =  invI2 * r2.x * r2.x;
 
 	b2Mat22 K = K1 + K2 + K3;
-	m_ptpMass = b2Mat22_Invert(&K);
+	revoluteJoint->m_ptpMass = b2Mat22_Invert(&K);
 
-	m_motorMass = 1.0 / (invI1 + invI2);
+	revoluteJoint->m_motorMass = 1.0 / (invI1 + invI2);
 
-	if (m_enableMotor == false)
+	if (revoluteJoint->m_enableMotor == false)
 	{
-		m_motorImpulse = 0.0;
+		revoluteJoint->m_motorImpulse = 0.0;
 	}
 
-	if (m_enableLimit)
+	if (revoluteJoint->m_enableLimit)
 	{
-		float64 jointAngle = b2->m_rotation - b1->m_rotation - m_intialAngle;
-		if (b2Abs(m_upperAngle - m_lowerAngle) < 2.0 * b2_angularSlop)
+		float64 jointAngle = b2->m_rotation - b1->m_rotation - revoluteJoint->m_intialAngle;
+		if (b2Abs(revoluteJoint->m_upperAngle - revoluteJoint->m_lowerAngle) < 2.0 * b2_angularSlop)
 		{
-			m_limitState = e_equalLimits;
+			revoluteJoint->m_limitState = e_equalLimits;
 		}
-		else if (jointAngle <= m_lowerAngle)
+		else if (jointAngle <= revoluteJoint->m_lowerAngle)
 		{
-			if (m_limitState != e_atLowerLimit)
+			if (revoluteJoint->m_limitState != e_atLowerLimit)
 			{
-				m_limitImpulse = 0.0;
+				revoluteJoint->m_limitImpulse = 0.0;
 			}
-			m_limitState = e_atLowerLimit;
+			revoluteJoint->m_limitState = e_atLowerLimit;
 		}
-		else if (jointAngle >= m_upperAngle)
+		else if (jointAngle >= revoluteJoint->m_upperAngle)
 		{
-			if (m_limitState != e_atUpperLimit)
+			if (revoluteJoint->m_limitState != e_atUpperLimit)
 			{
-				m_limitImpulse = 0.0;
+				revoluteJoint->m_limitImpulse = 0.0;
 			}
-			m_limitState = e_atUpperLimit;
+			revoluteJoint->m_limitState = e_atUpperLimit;
 		}
 		else
 		{
-			m_limitState = e_inactiveLimit;
-			m_limitImpulse = 0.0;
+			revoluteJoint->m_limitState = e_inactiveLimit;
+			revoluteJoint->m_limitImpulse = 0.0;
 		}
 	}
 	else
 	{
-		m_limitImpulse = 0.0;
+		revoluteJoint->m_limitImpulse = 0.0;
 	}
 
 	if (b2World_s_enableWarmStarting)
 	{
-		b1->m_linearVelocity -= invMass1 * m_ptpImpulse;
-		b1->m_angularVelocity -= invI1 * (b2Cross(r1, m_ptpImpulse) + m_motorImpulse + m_limitImpulse);
+		b1->m_linearVelocity -= invMass1 * revoluteJoint->m_ptpImpulse;
+		b1->m_angularVelocity -= invI1 * (b2Cross(r1, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse + revoluteJoint->m_limitImpulse);
 
-		b2->m_linearVelocity += invMass2 * m_ptpImpulse;
-		b2->m_angularVelocity += invI2 * (b2Cross(r2, m_ptpImpulse) + m_motorImpulse + m_limitImpulse);
+		b2->m_linearVelocity += invMass2 * revoluteJoint->m_ptpImpulse;
+		b2->m_angularVelocity += invI2 * (b2Cross(r2, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse + revoluteJoint->m_limitImpulse);
 	}
 	else
 	{
-		b2Vec2_SetZero(&m_ptpImpulse);
-		m_motorImpulse = 0.0;
-		m_limitImpulse = 0.0;
+		b2Vec2_SetZero(&revoluteJoint->m_ptpImpulse);
+		revoluteJoint->m_motorImpulse = 0.0;
+		revoluteJoint->m_limitImpulse = 0.0;
 	}
 
-	m_limitPositionImpulse = 0.0;
+	revoluteJoint->m_limitPositionImpulse = 0.0;
 }
 
-void b2RevoluteJoint::SolveVelocityConstraints(const b2TimeStep* step)
+void b2RevoluteJoint_SolveVelocityConstraints(b2Joint *joint, const b2TimeStep* step)
 {
-	b2Body* b1 = m_body1;
-	b2Body* b2 = m_body2;
+	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 
-	b2Vec2 r1 = b2Mul(b1->m_R, m_localAnchor1);
-	b2Vec2 r2 = b2Mul(b2->m_R, m_localAnchor2);
+	b2Body* b1 = joint->m_body1;
+	b2Body* b2 = joint->m_body2;
+
+	b2Vec2 r1 = b2Mul(b1->m_R, revoluteJoint->m_localAnchor1);
+	b2Vec2 r2 = b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
 
 	// Solve point-to-point constraint
 	b2Vec2 ptpCdot = b2->m_linearVelocity + b2Cross(b2->m_angularVelocity, r2) - b1->m_linearVelocity - b2Cross(b1->m_angularVelocity, r1);
-	b2Vec2 ptpImpulse = -b2Mul(m_ptpMass, ptpCdot);
-	m_ptpImpulse += ptpImpulse;
+	b2Vec2 ptpImpulse = -b2Mul(revoluteJoint->m_ptpMass, ptpCdot);
+	revoluteJoint->m_ptpImpulse += ptpImpulse;
 
 	b1->m_linearVelocity -= b1->m_invMass * ptpImpulse;
 	b1->m_angularVelocity -= b1->m_invI * b2Cross(r1, ptpImpulse);
@@ -164,37 +175,37 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2TimeStep* step)
 	b2->m_linearVelocity += b2->m_invMass * ptpImpulse;
 	b2->m_angularVelocity += b2->m_invI * b2Cross(r2, ptpImpulse);
 
-	if (m_enableMotor && m_limitState != e_equalLimits)
+	if (revoluteJoint->m_enableMotor && revoluteJoint->m_limitState != e_equalLimits)
 	{
-		float64 motorCdot = b2->m_angularVelocity - b1->m_angularVelocity - m_motorSpeed;
-		float64 motorImpulse = -m_motorMass * motorCdot;
-		float64 oldMotorImpulse = m_motorImpulse;
-		m_motorImpulse = b2Clamp(m_motorImpulse + motorImpulse, -step->dt * m_maxMotorTorque, step->dt * m_maxMotorTorque);
-		motorImpulse = m_motorImpulse - oldMotorImpulse;
+		float64 motorCdot = b2->m_angularVelocity - b1->m_angularVelocity - revoluteJoint->m_motorSpeed;
+		float64 motorImpulse = -revoluteJoint->m_motorMass * motorCdot;
+		float64 oldMotorImpulse = revoluteJoint->m_motorImpulse;
+		revoluteJoint->m_motorImpulse = b2Clamp(revoluteJoint->m_motorImpulse + motorImpulse, -step->dt * revoluteJoint->m_maxMotorTorque, step->dt * revoluteJoint->m_maxMotorTorque);
+		motorImpulse = revoluteJoint->m_motorImpulse - oldMotorImpulse;
 		b1->m_angularVelocity -= b1->m_invI * motorImpulse;
 		b2->m_angularVelocity += b2->m_invI * motorImpulse;
 	}
 
-	if (m_enableLimit && m_limitState != e_inactiveLimit)
+	if (revoluteJoint->m_enableLimit && revoluteJoint->m_limitState != e_inactiveLimit)
 	{
 		float64 limitCdot = b2->m_angularVelocity - b1->m_angularVelocity;
-		float64 limitImpulse = -m_motorMass * limitCdot;
+		float64 limitImpulse = -revoluteJoint->m_motorMass * limitCdot;
 
-		if (m_limitState == e_equalLimits)
+		if (revoluteJoint->m_limitState == e_equalLimits)
 		{
-			m_limitImpulse += limitImpulse;
+			revoluteJoint->m_limitImpulse += limitImpulse;
 		}
-		else if (m_limitState == e_atLowerLimit)
+		else if (revoluteJoint->m_limitState == e_atLowerLimit)
 		{
-			float64 oldLimitImpulse = m_limitImpulse;
-			m_limitImpulse = b2Max(m_limitImpulse + limitImpulse, 0.0);
-			limitImpulse = m_limitImpulse - oldLimitImpulse;
+			float64 oldLimitImpulse = revoluteJoint->m_limitImpulse;
+			revoluteJoint->m_limitImpulse = b2Max(revoluteJoint->m_limitImpulse + limitImpulse, 0.0);
+			limitImpulse = revoluteJoint->m_limitImpulse - oldLimitImpulse;
 		}
-		else if (m_limitState == e_atUpperLimit)
+		else if (revoluteJoint->m_limitState == e_atUpperLimit)
 		{
-			float64 oldLimitImpulse = m_limitImpulse;
-			m_limitImpulse = b2Min(m_limitImpulse + limitImpulse, 0.0);
-			limitImpulse = m_limitImpulse - oldLimitImpulse;
+			float64 oldLimitImpulse = revoluteJoint->m_limitImpulse;
+			revoluteJoint->m_limitImpulse = b2Min(revoluteJoint->m_limitImpulse + limitImpulse, 0.0);
+			limitImpulse = revoluteJoint->m_limitImpulse - oldLimitImpulse;
 		}
 
 		b1->m_angularVelocity -= b1->m_invI * limitImpulse;
@@ -202,16 +213,18 @@ void b2RevoluteJoint::SolveVelocityConstraints(const b2TimeStep* step)
 	}
 }
 
-bool b2RevoluteJoint::SolvePositionConstraints()
+bool b2RevoluteJoint_SolvePositionConstraints(b2Joint *joint)
 {
-	b2Body* b1 = m_body1;
-	b2Body* b2 = m_body2;
+	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
+
+	b2Body* b1 = joint->m_body1;
+	b2Body* b2 = joint->m_body2;
 
 	float64 positionError = 0.0;
 
 	// Solve point-to-point position error.
-	b2Vec2 r1 = b2Mul(b1->m_R, m_localAnchor1);
-	b2Vec2 r2 = b2Mul(b2->m_R, m_localAnchor2);
+	b2Vec2 r1 = b2Mul(b1->m_R, revoluteJoint->m_localAnchor1);
+	b2Vec2 r2 = b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
 
 	b2Vec2 p1 = b1->m_position + r1;
 	b2Vec2 p2 = b2->m_position + r2;
@@ -252,41 +265,41 @@ bool b2RevoluteJoint::SolvePositionConstraints()
 	// Handle limits.
 	float64 angularError = 0.0;
 
-	if (m_enableLimit && m_limitState != e_inactiveLimit)
+	if (revoluteJoint->m_enableLimit && revoluteJoint->m_limitState != e_inactiveLimit)
 	{
-		float64 angle = b2->m_rotation - b1->m_rotation - m_intialAngle;
+		float64 angle = b2->m_rotation - b1->m_rotation - revoluteJoint->m_intialAngle;
 		float64 limitImpulse = 0.0;
 
-		if (m_limitState == e_equalLimits)
+		if (revoluteJoint->m_limitState == e_equalLimits)
 		{
 			// Prevent large angular corrections
 			float64 limitC = b2Clamp(angle, -b2_maxAngularCorrection, b2_maxAngularCorrection);
-			limitImpulse = -m_motorMass * limitC;
+			limitImpulse = -revoluteJoint->m_motorMass * limitC;
 			angularError = b2Abs(limitC);
 		}
-		else if (m_limitState == e_atLowerLimit)
+		else if (revoluteJoint->m_limitState == e_atLowerLimit)
 		{
-			float64 limitC = angle - m_lowerAngle;
+			float64 limitC = angle - revoluteJoint->m_lowerAngle;
 			angularError = b2Max(0.0, -limitC);
 
 			// Prevent large angular corrections and allow some slop.
 			limitC = b2Clamp(limitC + b2_angularSlop, -b2_maxAngularCorrection, 0.0);
-			limitImpulse = -m_motorMass * limitC;
-			float64 oldLimitImpulse = m_limitPositionImpulse;
-			m_limitPositionImpulse = b2Max(m_limitPositionImpulse + limitImpulse, 0.0);
-			limitImpulse = m_limitPositionImpulse - oldLimitImpulse;
+			limitImpulse = -revoluteJoint->m_motorMass * limitC;
+			float64 oldLimitImpulse = revoluteJoint->m_limitPositionImpulse;
+			revoluteJoint->m_limitPositionImpulse = b2Max(revoluteJoint->m_limitPositionImpulse + limitImpulse, 0.0);
+			limitImpulse = revoluteJoint->m_limitPositionImpulse - oldLimitImpulse;
 		}
-		else if (m_limitState == e_atUpperLimit)
+		else if (revoluteJoint->m_limitState == e_atUpperLimit)
 		{
-			float64 limitC = angle - m_upperAngle;
+			float64 limitC = angle - revoluteJoint->m_upperAngle;
 			angularError = b2Max(0.0, limitC);
 
 			// Prevent large angular corrections and allow some slop.
 			limitC = b2Clamp(limitC - b2_angularSlop, 0.0, b2_maxAngularCorrection);
-			limitImpulse = -m_motorMass * limitC;
-			float64 oldLimitImpulse = m_limitPositionImpulse;
-			m_limitPositionImpulse = b2Min(m_limitPositionImpulse + limitImpulse, 0.0);
-			limitImpulse = m_limitPositionImpulse - oldLimitImpulse;
+			limitImpulse = -revoluteJoint->m_motorMass * limitC;
+			float64 oldLimitImpulse = revoluteJoint->m_limitPositionImpulse;
+			revoluteJoint->m_limitPositionImpulse = b2Min(revoluteJoint->m_limitPositionImpulse + limitImpulse, 0.0);
+			limitImpulse = revoluteJoint->m_limitPositionImpulse - oldLimitImpulse;
 		}
 
 		b1->m_rotation -= b1->m_invI * limitImpulse;
@@ -298,29 +311,31 @@ bool b2RevoluteJoint::SolvePositionConstraints()
 	return positionError <= b2_linearSlop && angularError <= b2_angularSlop;
 }
 
-b2Vec2 b2RevoluteJoint::GetAnchor1() const
+b2Vec2 b2RevoluteJoint_GetAnchor1(b2Joint *joint)
 {
-	b2Body* b1 = m_body1;
-	return b1->m_position + b2Mul(b1->m_R, m_localAnchor1);
+	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
+	b2Body* b1 = joint->m_body1;
+	return b1->m_position + b2Mul(b1->m_R, revoluteJoint->m_localAnchor1);
 }
 
-b2Vec2 b2RevoluteJoint::GetAnchor2() const
+b2Vec2 b2RevoluteJoint_GetAnchor2(b2Joint *joint)
 {
-	b2Body* b2 = m_body2;
-	return b2->m_position + b2Mul(b2->m_R, m_localAnchor2);
+	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
+	b2Body* b2 = joint->m_body2;
+	return b2->m_position + b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
 }
 
 float64 b2RevoluteJoint::GetJointAngle() const
 {
-	b2Body* b1 = m_body1;
-	b2Body* b2 = m_body2;
+	b2Body* b1 = m_joint.m_body1;
+	b2Body* b2 = m_joint.m_body2;
 	return b2->m_rotation - b1->m_rotation;
 }
 
 float64 b2RevoluteJoint::GetJointSpeed() const
 {
-	b2Body* b1 = m_body1;
-	b2Body* b2 = m_body2;
+	b2Body* b1 = m_joint.m_body1;
+	b2Body* b2 = m_joint.m_body2;
 	return b2->m_angularVelocity - b1->m_angularVelocity;
 }
 
@@ -339,12 +354,14 @@ void b2RevoluteJoint::SetMotorTorque(float64 torque)
 	m_maxMotorTorque = torque;
 }
 
-b2Vec2 b2RevoluteJoint::GetReactionForce(float64 invTimeStep) const
+b2Vec2 b2RevoluteJoint_GetReactionForce(b2Joint *joint, float64 invTimeStep)
 {
-	return invTimeStep * m_ptpImpulse;
+	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
+	return invTimeStep * revoluteJoint->m_ptpImpulse;
 }
 
-float64 b2RevoluteJoint::GetReactionTorque(float64 invTimeStep) const
+float64 b2RevoluteJoint_GetReactionTorque(b2Joint *joint, float64 invTimeStep)
 {
-	return invTimeStep * m_limitImpulse;
+	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
+	return invTimeStep * revoluteJoint->m_limitImpulse;
 }
