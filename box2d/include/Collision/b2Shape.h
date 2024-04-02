@@ -144,8 +144,6 @@ public:
 
 	b2Vec2 (*Support)(const b2Shape *shape, const b2Vec2& d);
 
-	void* GetUserData();
-
 	b2ShapeType GetType() const;
 
 	// Get the parent body of this shape.
@@ -264,9 +262,9 @@ inline b2ShapeType b2Shape::GetType() const
 	return m_type;
 }
 
-inline void* b2Shape::GetUserData()
+inline void* b2Shape_GetUserData(b2Shape *shape)
 {
-	return m_userData;
+	return shape->m_userData;
 }
 
 inline b2Body* b2Shape::GetBody()

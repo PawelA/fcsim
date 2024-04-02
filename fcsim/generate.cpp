@@ -121,8 +121,8 @@ bool fcsim_collision_filter(b2Shape *s1, b2Shape *s2)
 	if (!b2_defaultFilter(s1, s2))
 		return false;
 
-	data1 = (struct body_data *)s1->GetUserData();
-	data2 = (struct body_data *)s2->GetUserData();
+	data1 = (struct body_data *)b2Shape_GetUserData(s1);
+	data2 = (struct body_data *)b2Shape_GetUserData(s2);
 
 	if (!data1 || !data2)
 		return true;
