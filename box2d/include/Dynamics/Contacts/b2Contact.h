@@ -57,12 +57,6 @@ public:
 		return m_manifoldCount;
 	}
 
-	b2Contact* GetNext();
-
-	b2Shape* GetShape1();
-
-	b2Shape* GetShape2();
-
 	//--------------- Internals Below -------------------
 
 	// m_flags
@@ -104,20 +98,5 @@ public:
 	float64 m_friction;
 	float64 m_restitution;
 };
-
-inline b2Contact* b2Contact::GetNext()
-{
-	return m_next;
-}
-
-inline b2Shape* b2Contact::GetShape1()
-{
-	return m_shape1;
-}
-
-inline b2Shape* b2Contact::GetShape2()
-{
-	return m_shape2;
-}
 
 #endif
