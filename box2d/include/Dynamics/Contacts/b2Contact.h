@@ -61,10 +61,6 @@ public:
 		e_destroyFlag		= 0x0002,
 	};
 
-	b2Contact() : m_shape1(NULL), m_shape2(NULL) {}
-	b2Contact(b2Shape* shape1, b2Shape* shape2);
-	virtual ~b2Contact() {}
-
 	uint32 m_flags;
 
 	// World pool and list pointers.
@@ -87,5 +83,7 @@ public:
 
 b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
 void b2Contact_Destroy(b2Contact* contact, b2BlockAllocator* allocator);
+
+void b2Contact_ctor(b2Contact *contact, b2Shape* s1, b2Shape* s2);
 
 #endif

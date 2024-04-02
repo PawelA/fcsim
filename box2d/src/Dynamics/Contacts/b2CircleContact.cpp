@@ -43,8 +43,8 @@ static b2Manifold *b2CircleContact_GetManifolds(b2Contact *contact)
 }
 
 b2CircleContact::b2CircleContact(b2Shape* s1, b2Shape* s2)
-: contact(s1, s2)
 {
+	b2Contact_ctor(&contact, s1, s2);
 	contact.Evaluate = b2CircleContact_Evaluate;
 	contact.GetManifolds = b2CircleContact_GetManifolds;
 	b2Assert(m_shape1->m_type == e_circleShape);

@@ -44,8 +44,8 @@ static b2Manifold *b2PolyContact_GetManifolds(b2Contact *contact)
 }
 
 b2PolyContact::b2PolyContact(b2Shape* s1, b2Shape* s2)
-	: contact(s1, s2)
 {
+	b2Contact_ctor(&contact, s1, s2);
 	contact.Evaluate = b2PolyContact_Evaluate;
 	contact.GetManifolds = b2PolyContact_GetManifolds;
 	b2Assert(m_shape1->m_type == e_polyShape);

@@ -43,8 +43,8 @@ static b2Manifold *b2PolyAndCircleContact_GetManifolds(b2Contact *contact)
 }
 
 b2PolyAndCircleContact::b2PolyAndCircleContact(b2Shape* s1, b2Shape* s2)
-: contact(s1, s2)
 {
+	b2Contact_ctor(&contact, s1, s2);
 	contact.Evaluate = b2PolyAndCircleContact_Evaluate;
 	contact.GetManifolds = b2PolyAndCircleContact_GetManifolds;
 	b2Assert(m_shape1->m_type == e_polyShape);

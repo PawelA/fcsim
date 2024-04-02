@@ -117,27 +117,27 @@ void b2Contact_Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 	destroyFcn(contact, allocator);
 }
 
-b2Contact::b2Contact(b2Shape* s1, b2Shape* s2)
+void b2Contact_ctor(b2Contact *contact, b2Shape* s1, b2Shape* s2)
 {
-	m_flags = 0;
+	contact->m_flags = 0;
 
-	m_shape1 = s1;
-	m_shape2 = s2;
+	contact->m_shape1 = s1;
+	contact->m_shape2 = s2;
 
-	m_manifoldCount = 0;
+	contact->m_manifoldCount = 0;
 
-	m_friction = sqrt(m_shape1->m_friction * m_shape2->m_friction);
-	m_restitution = b2Max(m_shape1->m_restitution, m_shape2->m_restitution);
-	m_prev = NULL;
-	m_next = NULL;
+	contact->m_friction = sqrt(contact->m_shape1->m_friction * contact->m_shape2->m_friction);
+	contact->m_restitution = b2Max(contact->m_shape1->m_restitution, contact->m_shape2->m_restitution);
+	contact->m_prev = NULL;
+	contact->m_next = NULL;
 
-	m_node1.contact = NULL;
-	m_node1.prev = NULL;
-	m_node1.next = NULL;
-	m_node1.other = NULL;
+	contact->m_node1.contact = NULL;
+	contact->m_node1.prev = NULL;
+	contact->m_node1.next = NULL;
+	contact->m_node1.other = NULL;
 
-	m_node2.contact = NULL;
-	m_node2.prev = NULL;
-	m_node2.next = NULL;
-	m_node2.other = NULL;
+	contact->m_node2.contact = NULL;
+	contact->m_node2.prev = NULL;
+	contact->m_node2.next = NULL;
+	contact->m_node2.other = NULL;
 }
