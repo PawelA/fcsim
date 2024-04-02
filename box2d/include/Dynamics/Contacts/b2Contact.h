@@ -52,11 +52,6 @@ public:
 	b2Manifold* (*GetManifolds)(struct b2Contact *contact);
 	void (*Evaluate)(struct b2Contact *contact);
 
-	int32 GetManifoldCount() const
-	{
-		return m_manifoldCount;
-	}
-
 	//--------------- Internals Below -------------------
 
 	// m_flags

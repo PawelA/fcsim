@@ -29,7 +29,7 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 	m_constraintCount = 0;
 	for (int32 i = 0; i < contactCount; ++i)
 	{
-		m_constraintCount += contacts[i]->GetManifoldCount();
+		m_constraintCount += contacts[i]->m_manifoldCount;
 	}
 
 	m_constraints = (b2ContactConstraint*)b2StackAllocator_Allocate(m_allocator, m_constraintCount * sizeof(b2ContactConstraint));
@@ -40,7 +40,7 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 		b2Contact* contact = contacts[i];
 		b2Body* b1 = contact->m_shape1->m_body;
 		b2Body* b2 = contact->m_shape2->m_body;
-		int32 manifoldCount = contact->GetManifoldCount();
+		int32 manifoldCount = contact->m_manifoldCount;
 		b2Manifold* manifolds = contact->GetManifolds(contact);
 		float64 friction = contact->m_friction;
 		float64 restitution = contact->m_restitution;

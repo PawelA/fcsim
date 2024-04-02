@@ -78,7 +78,7 @@ b2Contact* b2Contact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator*
 		else
 		{
 			b2Contact* c = createFcn(shape2, shape1, allocator);
-			for (int32 i = 0; i < c->GetManifoldCount(); ++i)
+			for (int32 i = 0; i < c->m_manifoldCount; ++i)
 			{
 				b2Manifold* m = c->GetManifolds(c) + i;
 				m->normal = -m->normal;
@@ -96,7 +96,7 @@ void b2Contact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 {
 	b2Assert(s_initialized == true);
 
-	if (contact->GetManifoldCount() > 0)
+	if (contact->m_manifoldCount > 0)
 	{
 		b2Body_WakeUp(contact->m_shape1->m_body);
 		b2Body_WakeUp(contact->m_shape2->m_body);

@@ -134,7 +134,7 @@ static void b2ContactManager_DestroyContact(b2ContactManager *manager, b2Contact
 	}
 
 	// If there are contact points, then disconnect from the island graph.
-	if (c->GetManifoldCount() > 0)
+	if (c->m_manifoldCount > 0)
 	{
 		b2Body* body1 = c->m_shape1->m_body;
 		b2Body* body2 = c->m_shape2->m_body;
@@ -217,10 +217,10 @@ void b2ContactManager_Collide(b2ContactManager *manager)
 			continue;
 		}
 
-		int32 oldCount = c->GetManifoldCount();
+		int32 oldCount = c->m_manifoldCount;
 		c->Evaluate(c);
 
-		int32 newCount = c->GetManifoldCount();
+		int32 newCount = c->m_manifoldCount;
 
 		if (oldCount == 0 && newCount > 0)
 		{
