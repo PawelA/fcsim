@@ -201,6 +201,12 @@ void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData)
 	}
 }
 
+static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def, b2Body* body, const b2Vec2& localCenter);
+
+static void b2PolyShape_ctor(b2PolyShape *polyShape,
+			     const b2ShapeDef* def, b2Body* body,
+			     const b2Vec2& newOrigin);
+
 b2Shape* b2Shape_Create(const b2ShapeDef* def,
 					 b2Body* body, const b2Vec2& center)
 {
@@ -208,16 +214,16 @@ b2Shape* b2Shape_Create(const b2ShapeDef* def,
 	{
 	case e_circleShape:
 		{
-			void* mem = b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2CircleShape));
-			new (mem) b2CircleShape(def, body, center);
+			b2CircleShape* mem = (b2CircleShape *)b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2CircleShape));
+			b2CircleShape_ctor(mem, def, body, center);
 			return (b2Shape *)mem;
 		}
 
 	case e_boxShape:
 	case e_polyShape:
 		{
-			void* mem = b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2PolyShape));
-			new (mem) b2PolyShape(def, body, center);
+			b2PolyShape* mem = (b2PolyShape *)b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2PolyShape));
+			b2PolyShape_ctor(mem, def, body, center);
 			return (b2Shape *)mem;
 		}
 	}
@@ -282,44 +288,44 @@ void b2Shape_DestroyProxy(b2Shape *shape)
 	}
 }
 
-b2CircleShape::b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& localCenter)
+static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def, b2Body* body, const b2Vec2& localCenter)
 {
-	b2Shape_ctor(&m_shape, def, body);
-	m_shape.TestPoint = b2CircleShape_TestPoint;
-	m_shape.ResetProxy = b2CircleShape_ResetProxy;
-	m_shape.Synchronize = b2CircleShape_Synchronize;
-	m_shape.QuickSync = b2CircleShape_QuickSync;
-	m_shape.Support = b2CircleShape_Support;
+	b2Shape_ctor(&circleShape->m_shape, def, body);
+	circleShape->m_shape.TestPoint = b2CircleShape_TestPoint;
+	circleShape->m_shape.ResetProxy = b2CircleShape_ResetProxy;
+	circleShape->m_shape.Synchronize = b2CircleShape_Synchronize;
+	circleShape->m_shape.QuickSync = b2CircleShape_QuickSync;
+	circleShape->m_shape.Support = b2CircleShape_Support;
 
 	b2Assert(def->type == e_circleShape);
 	const b2CircleDef* circle = (const b2CircleDef*)def;
 
-	m_localPosition = def->localPosition - localCenter;
-	m_shape.m_type = e_circleShape;
-	m_radius = circle->radius;
+	circleShape->m_localPosition = def->localPosition - localCenter;
+	circleShape->m_shape.m_type = e_circleShape;
+	circleShape->m_radius = circle->radius;
 
-	m_shape.m_R = m_shape.m_body->m_R;
-	b2Vec2 r = b2Mul(m_shape.m_body->m_R, m_localPosition);
-	m_shape.m_position = m_shape.m_body->m_position + r;
-	m_shape.m_maxRadius = b2Vec2_Length(&r) + m_radius;
+	circleShape->m_shape.m_R = circleShape->m_shape.m_body->m_R;
+	b2Vec2 r = b2Mul(circleShape->m_shape.m_body->m_R, circleShape->m_localPosition);
+	circleShape->m_shape.m_position = circleShape->m_shape.m_body->m_position + r;
+	circleShape->m_shape.m_maxRadius = b2Vec2_Length(&r) + circleShape->m_radius;
 
 	b2AABB aabb;
-	b2Vec2_Set(&aabb.minVertex, m_shape.m_position.x - m_radius, m_shape.m_position.y - m_radius);
-	b2Vec2_Set(&aabb.maxVertex, m_shape.m_position.x + m_radius, m_shape.m_position.y + m_radius);
+	b2Vec2_Set(&aabb.minVertex, circleShape->m_shape.m_position.x - circleShape->m_radius, circleShape->m_shape.m_position.y - circleShape->m_radius);
+	b2Vec2_Set(&aabb.maxVertex, circleShape->m_shape.m_position.x + circleShape->m_radius, circleShape->m_shape.m_position.y + circleShape->m_radius);
 
-	b2BroadPhase* broadPhase = m_shape.m_body->m_world->m_broadPhase;
+	b2BroadPhase* broadPhase = circleShape->m_shape.m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		m_shape.m_proxyId = broadPhase->CreateProxy(aabb, this);
+		circleShape->m_shape.m_proxyId = broadPhase->CreateProxy(aabb, circleShape);
 	}
 	else
 	{
-		m_shape.m_proxyId = b2_nullProxy;
+		circleShape->m_shape.m_proxyId = b2_nullProxy;
 	}
 
-	if (m_shape.m_proxyId == b2_nullProxy)
+	if (circleShape->m_shape.m_proxyId == b2_nullProxy)
 	{
-		b2Body_Freeze(m_shape.m_body);
+		b2Body_Freeze(circleShape->m_shape.m_body);
 	}
 }
 
@@ -416,61 +422,62 @@ void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 
 
 
-b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
-			 const b2Vec2& newOrigin)
+static void b2PolyShape_ctor(b2PolyShape *polyShape,
+			     const b2ShapeDef* def, b2Body* body,
+			     const b2Vec2& newOrigin)
 {
-	b2Shape_ctor(&m_shape, def, body);
-	m_shape.TestPoint = b2PolyShape_TestPoint;
-	m_shape.ResetProxy = b2PolyShape_ResetProxy;
-	m_shape.Synchronize = b2PolyShape_Synchronize;
-	m_shape.QuickSync = b2PolyShape_QuickSync;
-	m_shape.Support = b2PolyShape_Support;
+	b2Shape_ctor(&polyShape->m_shape, def, body);
+	polyShape->m_shape.TestPoint = b2PolyShape_TestPoint;
+	polyShape->m_shape.ResetProxy = b2PolyShape_ResetProxy;
+	polyShape->m_shape.Synchronize = b2PolyShape_Synchronize;
+	polyShape->m_shape.QuickSync = b2PolyShape_QuickSync;
+	polyShape->m_shape.Support = b2PolyShape_Support;
 
 	b2Assert(def->type == e_boxShape || def->type == e_polyShape);
-	m_shape.m_type = e_polyShape;
+	polyShape->m_shape.m_type = e_polyShape;
 	b2Mat22 localR;
 	b2Mat22_SetAngle(&localR, def->localRotation);
 
 	// Get the vertices transformed into the body frame.
 	if (def->type == e_boxShape)
 	{
-		m_localCentroid = def->localPosition - newOrigin;
+		polyShape->m_localCentroid = def->localPosition - newOrigin;
 
 		const b2BoxDef* box = (const b2BoxDef*)def;
-		m_vertexCount = 4;
+		polyShape->m_vertexCount = 4;
 		b2Vec2 h = box->extents;
 		b2Vec2 hc = h;
 		hc.x = b2Max(0.0, h.x - 2.0 * b2_linearSlop);
 		hc.y = b2Max(0.0, h.y - 2.0 * b2_linearSlop);
-		m_vertices[0] = b2Mul(localR, b2Vec2_Make(h.x, h.y));
-		m_vertices[1] = b2Mul(localR, b2Vec2_Make(-h.x, h.y));
-		m_vertices[2] = b2Mul(localR, b2Vec2_Make(-h.x, -h.y));
-		m_vertices[3] = b2Mul(localR, b2Vec2_Make(h.x, -h.y));
+		polyShape->m_vertices[0] = b2Mul(localR, b2Vec2_Make(h.x, h.y));
+		polyShape->m_vertices[1] = b2Mul(localR, b2Vec2_Make(-h.x, h.y));
+		polyShape->m_vertices[2] = b2Mul(localR, b2Vec2_Make(-h.x, -h.y));
+		polyShape->m_vertices[3] = b2Mul(localR, b2Vec2_Make(h.x, -h.y));
 
-		m_coreVertices[0] = b2Mul(localR, b2Vec2_Make(hc.x, hc.y));
-		m_coreVertices[1] = b2Mul(localR, b2Vec2_Make(-hc.x, hc.y));
-		m_coreVertices[2] = b2Mul(localR, b2Vec2_Make(-hc.x, -hc.y));
-		m_coreVertices[3] = b2Mul(localR, b2Vec2_Make(hc.x, -hc.y));
+		polyShape->m_coreVertices[0] = b2Mul(localR, b2Vec2_Make(hc.x, hc.y));
+		polyShape->m_coreVertices[1] = b2Mul(localR, b2Vec2_Make(-hc.x, hc.y));
+		polyShape->m_coreVertices[2] = b2Mul(localR, b2Vec2_Make(-hc.x, -hc.y));
+		polyShape->m_coreVertices[3] = b2Mul(localR, b2Vec2_Make(hc.x, -hc.y));
 	}
 	else
 	{
 		const b2PolyDef* poly = (const b2PolyDef*)def;
-		m_vertexCount = poly->vertexCount;
-		b2Assert(3 <= m_vertexCount && m_vertexCount <= b2_maxPolyVertices);
+		polyShape->m_vertexCount = poly->vertexCount;
+		b2Assert(3 <= polyShape->m_vertexCount && polyShape->m_vertexCount <= b2_maxPolyVertices);
 		b2Vec2 centroid = PolyCentroid(poly->vertices, poly->vertexCount);
-		m_localCentroid = def->localPosition + b2Mul(localR, centroid) - newOrigin;
-		for (int32 i = 0; i < m_vertexCount; ++i)
+		polyShape->m_localCentroid = def->localPosition + b2Mul(localR, centroid) - newOrigin;
+		for (int32 i = 0; i < polyShape->m_vertexCount; ++i)
 		{
-			m_vertices[i] = b2Mul(localR, poly->vertices[i] - centroid);
+			polyShape->m_vertices[i] = b2Mul(localR, poly->vertices[i] - centroid);
 
-			b2Vec2 u = m_vertices[i];
+			b2Vec2 u = polyShape->m_vertices[i];
 			float64 length = b2Vec2_Length(&u);
 			if (length > MIN_VALUE)
 			{
 				u *= 1.0 / length;
 			}
 
-			m_coreVertices[i] = m_vertices[i] - 2.0 * b2_linearSlop * u;
+			polyShape->m_coreVertices[i] = polyShape->m_vertices[i] - 2.0 * b2_linearSlop * u;
 		}
 	}
 
@@ -479,63 +486,63 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 	b2Vec2_Set(&minVertex, DBL_MAX, DBL_MAX);
 	b2Vec2 maxVertex;
 	b2Vec2_Set(&maxVertex, -DBL_MAX, -DBL_MAX);
-	m_shape.m_maxRadius = 0.0;
-	for (int32 i = 0; i < m_vertexCount; ++i)
+	polyShape->m_shape.m_maxRadius = 0.0;
+	for (int32 i = 0; i < polyShape->m_vertexCount; ++i)
 	{
-		b2Vec2 v = m_vertices[i];
+		b2Vec2 v = polyShape->m_vertices[i];
 		minVertex = b2Min(minVertex, v);
 		maxVertex = b2Max(maxVertex, v);
-		m_shape.m_maxRadius = b2Max(m_shape.m_maxRadius, b2Vec2_Length(&v));
+		polyShape->m_shape.m_maxRadius = b2Max(polyShape->m_shape.m_maxRadius, b2Vec2_Length(&v));
 	}
 
-	b2Mat22_SetIdentity(&m_localOBB.R);
-	m_localOBB.center = 0.5 * (minVertex + maxVertex);
-	m_localOBB.extents = 0.5 * (maxVertex - minVertex);
+	b2Mat22_SetIdentity(&polyShape->m_localOBB.R);
+	polyShape->m_localOBB.center = 0.5 * (minVertex + maxVertex);
+	polyShape->m_localOBB.extents = 0.5 * (maxVertex - minVertex);
 
 	// Compute the edge normals and next index map.
-	for (int32 i = 0; i < m_vertexCount; ++i)
+	for (int32 i = 0; i < polyShape->m_vertexCount; ++i)
 	{
 		int32 i1 = i;
-		int32 i2 = i + 1 < m_vertexCount ? i + 1 : 0;
-		b2Vec2 edge = m_vertices[i2] - m_vertices[i1];
-		m_normals[i] = b2Cross(edge, 1.0);
-		b2Vec2_Normalize(&m_normals[i]);
+		int32 i2 = i + 1 < polyShape->m_vertexCount ? i + 1 : 0;
+		b2Vec2 edge = polyShape->m_vertices[i2] - polyShape->m_vertices[i1];
+		polyShape->m_normals[i] = b2Cross(edge, 1.0);
+		b2Vec2_Normalize(&polyShape->m_normals[i]);
 	}
 
 	// Ensure the polygon in convex. TODO_ERIN compute convex hull.
-	for (int32 i = 0; i < m_vertexCount; ++i)
+	for (int32 i = 0; i < polyShape->m_vertexCount; ++i)
 	{
 		int32 i1 = i;
-		int32 i2 = i + 1 < m_vertexCount ? i + 1 : 0;
+		int32 i2 = i + 1 < polyShape->m_vertexCount ? i + 1 : 0;
 		NOT_USED(i1);
 		NOT_USED(i2);
-		b2Assert(b2Cross(m_normals[i1], m_normals[i2]) > MIN_VALUE);
+		b2Assert(b2Cross(polyShape->m_normals[i1], polyShape->m_normals[i2]) > MIN_VALUE);
 	}
 
-	m_shape.m_R = m_shape.m_body->m_R;
-	m_shape.m_position = m_shape.m_body->m_position + b2Mul(m_shape.m_body->m_R, m_localCentroid);
+	polyShape->m_shape.m_R = polyShape->m_shape.m_body->m_R;
+	polyShape->m_shape.m_position = polyShape->m_shape.m_body->m_position + b2Mul(polyShape->m_shape.m_body->m_R, polyShape->m_localCentroid);
 
-	b2Mat22 R = b2Mul(m_shape.m_R, m_localOBB.R);
+	b2Mat22 R = b2Mul(polyShape->m_shape.m_R, polyShape->m_localOBB.R);
 	b2Mat22 absR = b2Abs(R);
-	b2Vec2 h = b2Mul(absR, m_localOBB.extents);
-	b2Vec2 position = m_shape.m_position + b2Mul(m_shape.m_R, m_localOBB.center);
+	b2Vec2 h = b2Mul(absR, polyShape->m_localOBB.extents);
+	b2Vec2 position = polyShape->m_shape.m_position + b2Mul(polyShape->m_shape.m_R, polyShape->m_localOBB.center);
 	b2AABB aabb;
 	aabb.minVertex = position - h;
 	aabb.maxVertex = position + h;
 
-	b2BroadPhase* broadPhase = m_shape.m_body->m_world->m_broadPhase;
+	b2BroadPhase* broadPhase = polyShape->m_shape.m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		m_shape.m_proxyId = broadPhase->CreateProxy(aabb, this);
+		polyShape->m_shape.m_proxyId = broadPhase->CreateProxy(aabb, polyShape);
 	}
 	else
 	{
-		m_shape.m_proxyId = b2_nullProxy;
+		polyShape->m_shape.m_proxyId = b2_nullProxy;
 	}
 
-	if (m_shape.m_proxyId == b2_nullProxy)
+	if (polyShape->m_shape.m_proxyId == b2_nullProxy)
 	{
-		b2Body_Freeze(m_shape.m_body);
+		b2Body_Freeze(polyShape->m_shape.m_body);
 	}
 }
 

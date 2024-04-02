@@ -167,8 +167,6 @@ struct b2Shape
 
 struct b2CircleShape
 {
-	b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& newOrigin);
-
 	b2Shape m_shape;
 
 	// Local position in parent body
@@ -197,8 +195,6 @@ b2Vec2 b2CircleShape_Support(const b2Shape *shape, const b2Vec2& d);
 // some collision algorithms.
 struct b2PolyShape
 {
-	b2PolyShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& newOrigin);
-
 	b2Shape m_shape;
 
 	// Local position of the shape centroid in parent body frame.
