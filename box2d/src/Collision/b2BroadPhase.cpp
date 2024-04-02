@@ -406,7 +406,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 		return;
 	}
 
-	if (aabb.IsValid() == false)
+	if (b2AABB_IsValid(&aabb) == false)
 	{
 		b2Assert(false);
 		return;

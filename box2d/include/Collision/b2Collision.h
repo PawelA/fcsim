@@ -60,8 +60,6 @@ struct b2Manifold
 
 struct b2AABB
 {
-	bool IsValid() const;
-
 	b2Vec2 minVertex, maxVertex;
 };
 
@@ -78,11 +76,11 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* poly1, const b2PolyS
 
 float64 b2Distance(b2Vec2* x1, b2Vec2* x2, const b2Shape* shape1, const b2Shape* shape2);
 
-inline bool b2AABB::IsValid() const
+inline bool b2AABB_IsValid(const b2AABB *aabb)
 {
-	b2Vec2 d = maxVertex - minVertex;
+	b2Vec2 d = aabb->maxVertex - aabb->minVertex;
 	bool valid = d.x >= 0.0 && d.y >= 0;
-	valid = valid && b2Vec2_IsValid(&minVertex) && b2Vec2_IsValid(&maxVertex);
+	valid = valid && b2Vec2_IsValid(&aabb->minVertex) && b2Vec2_IsValid(&aabb->maxVertex);
 	return valid;
 }
 
