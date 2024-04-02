@@ -127,9 +127,8 @@ static void b2PolyDef_ctor(b2PolyDef *polyDef)
 
 // Shapes are created automatically when a body is created.
 // Client code does not normally interact with shapes.
-class b2Shape
+struct b2Shape
 {
-public:
 	bool (*TestPoint)(b2Shape *shape, const b2Vec2& p);
 
 	// Remove and then add proxy from the broad-phase.
@@ -166,9 +165,8 @@ public:
 	int16 m_groupIndex;
 };
 
-class b2CircleShape
+struct b2CircleShape
 {
-public:
 	b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& newOrigin);
 
 	b2Shape m_shape;
@@ -197,9 +195,8 @@ b2Vec2 b2CircleShape_Support(const b2Shape *shape, const b2Vec2& d);
 // coordinates, the polygon rotation is equal to the body rotation. However,
 // the polygon position is centered on the polygon centroid. This simplifies
 // some collision algorithms.
-class b2PolyShape
+struct b2PolyShape
 {
-public:
 	b2PolyShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& newOrigin);
 
 	b2Shape m_shape;

@@ -22,9 +22,9 @@
 #include "../Common/b2Math.h"
 #include <climits>
 
-class b2Shape;
-class b2CircleShape;
-class b2PolyShape;
+struct b2Shape;
+struct b2CircleShape;
+struct b2PolyShape;
 
 // We use contact ids to facilitate warm starting.
 const uint8 b2_nullFeature = UCHAR_MAX;
