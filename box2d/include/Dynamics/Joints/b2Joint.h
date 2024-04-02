@@ -67,21 +67,21 @@ struct b2JointNode
 
 struct b2JointDef
 {
-	b2JointDef()
-	{
-		type = e_unknownJoint;
-		userData = NULL;
-		body1 = NULL;
-		body2 = NULL;
-		collideConnected = false;
-	}
-
 	b2JointType type;
 	void* userData;
 	b2Body* body1;
 	b2Body* body2;
 	bool collideConnected;
 };
+
+static void b2JointDef_ctor(b2JointDef *joint_def)
+{
+	joint_def->type = e_unknownJoint;
+	joint_def->userData = NULL;
+	joint_def->body1 = NULL;
+	joint_def->body2 = NULL;
+	joint_def->collideConnected = false;
+}
 
 struct b2Joint
 {

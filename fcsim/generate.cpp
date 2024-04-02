@@ -247,16 +247,17 @@ static void generate_joint(b2World *world, b2Body *b1, b2Body *b2, double x, dou
 {
 	b2RevoluteJointDef joint_def;
 
-	joint_def.body1 = b1;
-	joint_def.body2 = b2;
+	b2RevoluteJointDef_ctor(&joint_def);
+	joint_def.m_jointDef.body1 = b1;
+	joint_def.m_jointDef.body2 = b2;
 	b2Vec2_Set(&joint_def.anchorPoint, x, y);
-	joint_def.collideConnected = true;
+	joint_def.m_jointDef.collideConnected = true;
 	if (spin != 0) {
 		joint_def.motorTorque = 50000000;
 		joint_def.motorSpeed = spin;
 		joint_def.enableMotor = true;
 	}
-	b2World_CreateJoint(world, &joint_def);
+	b2World_CreateJoint(world, &joint_def.m_jointDef);
 }
 
 static void get_rect_desc(struct fcsim_rect *rect, struct fcsim_shape *shape, struct fcsim_where *where)

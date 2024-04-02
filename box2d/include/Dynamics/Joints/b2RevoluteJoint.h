@@ -21,19 +21,9 @@
 
 #include "b2Joint.h"
 
-struct b2RevoluteJointDef : public b2JointDef
+struct b2RevoluteJointDef
 {
-	b2RevoluteJointDef()
-	{
-		type = e_revoluteJoint;
-		b2Vec2_Set(&anchorPoint, 0.0, 0.0);
-		lowerAngle = 0.0;
-		upperAngle = 0.0;
-		motorTorque = 0.0;
-		motorSpeed = 0.0;
-		enableLimit = false;
-		enableMotor = false;
-	}
+	b2JointDef m_jointDef;
 
 	b2Vec2 anchorPoint;
 	float64 lowerAngle;
@@ -43,6 +33,19 @@ struct b2RevoluteJointDef : public b2JointDef
 	bool enableLimit;
 	bool enableMotor;
 };
+
+static void b2RevoluteJointDef_ctor(b2RevoluteJointDef *rev_joint_def)
+{
+	b2JointDef_ctor(&rev_joint_def->m_jointDef);
+	rev_joint_def->m_jointDef.type = e_revoluteJoint;
+	b2Vec2_Set(&rev_joint_def->anchorPoint, 0.0, 0.0);
+	rev_joint_def->lowerAngle = 0.0;
+	rev_joint_def->upperAngle = 0.0;
+	rev_joint_def->motorTorque = 0.0;
+	rev_joint_def->motorSpeed = 0.0;
+	rev_joint_def->enableLimit = false;
+	rev_joint_def->enableMotor = false;
+}
 
 struct b2RevoluteJoint
 {

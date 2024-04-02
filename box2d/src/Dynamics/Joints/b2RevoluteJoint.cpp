@@ -37,7 +37,7 @@
 
 void b2RevoluteJoint_ctor(b2RevoluteJoint *rev_joint, const b2RevoluteJointDef* def)
 {
-	b2Joint_ctor(&rev_joint->m_joint, def);
+	b2Joint_ctor(&rev_joint->m_joint, &def->m_jointDef);
 
 	rev_joint->m_joint.GetAnchor1 = b2RevoluteJoint_GetAnchor1;
 	rev_joint->m_joint.GetAnchor2 = b2RevoluteJoint_GetAnchor2;
