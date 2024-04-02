@@ -19,7 +19,7 @@
 #ifndef B2_CONTACT_MANAGER_H
 #define B2_CONTACT_MANAGER_H
 
-#include "../Collision/b2BroadPhase.h"
+#include "../Collision/b2PairManager.h"
 #include "../Dynamics/Contacts/b2NullContact.h"
 
 struct b2World;

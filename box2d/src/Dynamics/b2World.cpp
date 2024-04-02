@@ -22,6 +22,7 @@
 #include <Dynamics/Joints/b2Joint.h>
 #include <Dynamics/Contacts/b2Contact.h>
 #include <Collision/b2Collision.h>
+#include <Collision/b2BroadPhase.h>
 #include <Collision/b2Shape.h>
 #include <new>
 
