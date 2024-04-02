@@ -80,7 +80,7 @@ b2Contact* b2Contact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator*
 			b2Contact* c = createFcn(shape2, shape1, allocator);
 			for (int32 i = 0; i < c->GetManifoldCount(); ++i)
 			{
-				b2Manifold* m = c->GetManifolds() + i;
+				b2Manifold* m = c->GetManifolds(c) + i;
 				m->normal = -m->normal;
 			}
 			return c;

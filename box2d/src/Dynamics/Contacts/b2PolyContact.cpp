@@ -25,8 +25,9 @@
 
 b2Contact* b2PolyContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
 {
-	void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2PolyContact));
-	return new (mem) b2PolyContact(shape1, shape2);
+	b2PolyContact *poly_contact = (b2PolyContact *)b2BlockAllocator_Allocate(allocator, sizeof(b2PolyContact));
+	new (poly_contact) b2PolyContact(shape1, shape2);
+	return &poly_contact->contact;
 }
 
 void b2PolyContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
@@ -35,31 +36,41 @@ void b2PolyContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 	b2BlockAllocator_Free(allocator, contact, sizeof(b2PolyContact));
 }
 
-b2PolyContact::b2PolyContact(b2Shape* s1, b2Shape* s2)
-	: b2Contact(s1, s2)
+static void b2PolyContact_Evaluate(b2Contact *contact);
+static b2Manifold *b2PolyContact_GetManifolds(b2Contact *contact)
 {
+	b2PolyContact *poly_contact = (b2PolyContact *)contact;
+	return &poly_contact->m_manifold;
+}
+
+b2PolyContact::b2PolyContact(b2Shape* s1, b2Shape* s2)
+	: contact(s1, s2)
+{
+	contact.Evaluate = b2PolyContact_Evaluate;
+	contact.GetManifolds = b2PolyContact_GetManifolds;
 	b2Assert(m_shape1->m_type == e_polyShape);
 	b2Assert(m_shape2->m_type == e_polyShape);
 	m_manifold.pointCount = 0;
 }
 
-void b2PolyContact::Evaluate()
+void b2PolyContact_Evaluate(b2Contact *contact)
 {
+	b2PolyContact *poly_contact = (b2PolyContact *)contact;
 	b2Manifold m0;
-	memcpy(&m0, &m_manifold, sizeof(b2Manifold));
+	memcpy(&m0, &poly_contact->m_manifold, sizeof(b2Manifold));
 
-	b2CollidePoly(&m_manifold, (b2PolyShape*)m_shape1, (b2PolyShape*)m_shape2, false);
+	b2CollidePoly(&poly_contact->m_manifold, (b2PolyShape*)contact->m_shape1, (b2PolyShape*)contact->m_shape2, false);
 
 	// Match contact ids to facilitate warm starting.
-	if (m_manifold.pointCount > 0)
+	if (poly_contact->m_manifold.pointCount > 0)
 	{
 		bool match[b2_maxManifoldPoints] = {false, false};
 
 		// Match old contact ids to new contact ids and copy the
 		// stored impulses to warm start the solver.
-		for (int32 i = 0; i < m_manifold.pointCount; ++i)
+		for (int32 i = 0; i < poly_contact->m_manifold.pointCount; ++i)
 		{
-			b2ContactPoint* cp = m_manifold.points + i;
+			b2ContactPoint* cp = poly_contact->m_manifold.points + i;
 			cp->normalImpulse = 0.0;
 			cp->tangentImpulse = 0.0;
 			b2ContactID id = cp->id;
@@ -75,17 +86,17 @@ void b2PolyContact::Evaluate()
 				if (id0.key == id.key)
 				{
 					match[j] = true;
-					m_manifold.points[i].normalImpulse = m0.points[j].normalImpulse;
-					m_manifold.points[i].tangentImpulse = m0.points[j].tangentImpulse;
+					poly_contact->m_manifold.points[i].normalImpulse = m0.points[j].normalImpulse;
+					poly_contact->m_manifold.points[i].tangentImpulse = m0.points[j].tangentImpulse;
 					break;
 				}
 			}
 		}
 
-		m_manifoldCount = 1;
+		contact->m_manifoldCount = 1;
 	}
 	else
 	{
-		m_manifoldCount = 0;
+		contact->m_manifoldCount = 0;
 	}
 }

@@ -23,8 +23,9 @@
 
 b2Contact* b2CircleContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
 {
-	void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2CircleContact));
-	return new (mem) b2CircleContact(shape1, shape2);
+	b2CircleContact *circ_contact = (b2CircleContact *)b2BlockAllocator_Allocate(allocator, sizeof(b2CircleContact));
+	new (circ_contact) b2CircleContact(shape1, shape2);
+	return &circ_contact->contact;
 }
 
 void b2CircleContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
@@ -33,9 +34,19 @@ void b2CircleContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 	b2BlockAllocator_Free(allocator, contact, sizeof(b2CircleContact));
 }
 
-b2CircleContact::b2CircleContact(b2Shape* s1, b2Shape* s2)
-: b2Contact(s1, s2)
+static void b2CircleContact_Evaluate(b2Contact *contact);
+
+static b2Manifold *b2CircleContact_GetManifolds(b2Contact *contact)
 {
+	b2CircleContact *circ_contact = (b2CircleContact *)contact;
+	return &circ_contact->m_manifold;
+}
+
+b2CircleContact::b2CircleContact(b2Shape* s1, b2Shape* s2)
+: contact(s1, s2)
+{
+	contact.Evaluate = b2CircleContact_Evaluate;
+	contact.GetManifolds = b2CircleContact_GetManifolds;
 	b2Assert(m_shape1->m_type == e_circleShape);
 	b2Assert(m_shape2->m_type == e_circleShape);
 	m_manifold.pointCount = 0;
@@ -43,17 +54,18 @@ b2CircleContact::b2CircleContact(b2Shape* s1, b2Shape* s2)
 	m_manifold.points[0].tangentImpulse = 0.0;
 }
 
-void b2CircleContact::Evaluate()
+static void b2CircleContact_Evaluate(b2Contact *contact)
 {
-	b2CollideCircle(&m_manifold, (b2CircleShape*)m_shape1, (b2CircleShape*)m_shape2, false);
+	b2CircleContact *circ_contact = (b2CircleContact *)contact;
+	b2CollideCircle(&circ_contact->m_manifold, (b2CircleShape*)contact->m_shape1, (b2CircleShape*)contact->m_shape2, false);
 
-	if (m_manifold.pointCount > 0)
+	if (circ_contact->m_manifold.pointCount > 0)
 	{
-		m_manifoldCount = 1;
+		contact->m_manifoldCount = 1;
 	}
 	else
 	{
-		m_manifoldCount = 0;
+		contact->m_manifoldCount = 0;
 	}
 
 }

@@ -23,8 +23,9 @@
 
 b2Contact* b2PolyAndCircleContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
 {
-	void* mem = b2BlockAllocator_Allocate(allocator, sizeof(b2PolyAndCircleContact));
-	return new (mem) b2PolyAndCircleContact(shape1, shape2);
+	b2PolyAndCircleContact *pc_contact = (b2PolyAndCircleContact *)b2BlockAllocator_Allocate(allocator, sizeof(b2PolyAndCircleContact));
+	new (pc_contact) b2PolyAndCircleContact(shape1, shape2);
+	return &pc_contact->contact;
 }
 
 void b2PolyAndCircleContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
@@ -33,9 +34,19 @@ void b2PolyAndCircleContact::Destroy(b2Contact* contact, b2BlockAllocator* alloc
 	b2BlockAllocator_Free(allocator, contact, sizeof(b2PolyAndCircleContact));
 }
 
-b2PolyAndCircleContact::b2PolyAndCircleContact(b2Shape* s1, b2Shape* s2)
-: b2Contact(s1, s2)
+static void b2PolyAndCircleContact_Evaluate(b2Contact *contact);
+
+static b2Manifold *b2PolyAndCircleContact_GetManifolds(b2Contact *contact)
 {
+	b2PolyAndCircleContact *pc_contact = (b2PolyAndCircleContact *)contact;
+	return &pc_contact->m_manifold;
+}
+
+b2PolyAndCircleContact::b2PolyAndCircleContact(b2Shape* s1, b2Shape* s2)
+: contact(s1, s2)
+{
+	contact.Evaluate = b2PolyAndCircleContact_Evaluate;
+	contact.GetManifolds = b2PolyAndCircleContact_GetManifolds;
 	b2Assert(m_shape1->m_type == e_polyShape);
 	b2Assert(m_shape2->m_type == e_circleShape);
 	m_manifold.pointCount = 0;
@@ -43,16 +54,17 @@ b2PolyAndCircleContact::b2PolyAndCircleContact(b2Shape* s1, b2Shape* s2)
 	m_manifold.points[0].tangentImpulse = 0.0;
 }
 
-void b2PolyAndCircleContact::Evaluate()
+static void b2PolyAndCircleContact_Evaluate(b2Contact *contact)
 {
-	b2CollidePolyAndCircle(&m_manifold, (b2PolyShape*)m_shape1, (b2CircleShape*)m_shape2, false);
+	b2PolyAndCircleContact *pc_contact = (b2PolyAndCircleContact *)contact;
+	b2CollidePolyAndCircle(&pc_contact->m_manifold, (b2PolyShape*)contact->m_shape1, (b2CircleShape*)contact->m_shape2, false);
 
-	if (m_manifold.pointCount > 0)
+	if (pc_contact->m_manifold.pointCount > 0)
 	{
-		m_manifoldCount = 1;
+		contact->m_manifoldCount = 1;
 	}
 	else
 	{
-		m_manifoldCount = 0;
+		contact->m_manifoldCount = 0;
 	}
 }

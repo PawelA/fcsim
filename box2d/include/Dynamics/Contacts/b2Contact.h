@@ -49,7 +49,9 @@ struct b2ContactRegister
 class b2Contact
 {
 public:
-	virtual b2Manifold* GetManifolds() = 0;
+	b2Manifold* (*GetManifolds)(struct b2Contact *contact);
+	void (*Evaluate)(struct b2Contact *contact);
+
 	int32 GetManifoldCount() const
 	{
 		return m_manifoldCount;
@@ -80,7 +82,6 @@ public:
 	b2Contact(b2Shape* shape1, b2Shape* shape2);
 	virtual ~b2Contact() {}
 
-	virtual void Evaluate() = 0;
 	static b2ContactRegister s_registers[e_shapeTypeCount][e_shapeTypeCount];
 	static bool s_initialized;
 

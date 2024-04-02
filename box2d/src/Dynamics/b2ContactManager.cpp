@@ -97,7 +97,7 @@ void b2ContactManager_PairRemoved(b2PairCallback *callback, void* proxyUserData1
 	}
 
 	b2Contact* c = (b2Contact*)pairUserData;
-	if (c != &manager->m_nullContact)
+	if (c != &manager->m_nullContact.contact)
 	{
 		b2Assert(manager->m_world->m_contactCount > 0);
 
@@ -218,7 +218,7 @@ void b2ContactManager_Collide(b2ContactManager *manager)
 		}
 
 		int32 oldCount = c->GetManifoldCount();
-		c->Evaluate();
+		c->Evaluate(c);
 
 		int32 newCount = c->GetManifoldCount();
 

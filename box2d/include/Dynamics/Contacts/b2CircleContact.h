@@ -25,7 +25,7 @@
 
 struct b2BlockAllocator;
 
-class b2CircleContact : public b2Contact
+class b2CircleContact
 {
 public:
 	static b2Contact* Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
@@ -34,11 +34,7 @@ public:
 	b2CircleContact(b2Shape* shape1, b2Shape* shape2);
 	~b2CircleContact() {}
 
-	void Evaluate();
-	b2Manifold* GetManifolds()
-	{
-		return &m_manifold;
-	}
+	b2Contact contact;
 
 	b2Manifold m_manifold;
 };

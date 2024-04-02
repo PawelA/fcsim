@@ -23,7 +23,7 @@
 
 struct b2BlockAllocator;
 
-class b2PolyContact : public b2Contact
+class b2PolyContact
 {
 public:
 	static b2Contact* Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
@@ -32,11 +32,7 @@ public:
 	b2PolyContact(b2Shape* shape1, b2Shape* shape2);
 	~b2PolyContact() {}
 
-	void Evaluate();
-	b2Manifold* GetManifolds()
-	{
-		return &m_manifold;
-	}
+	b2Contact contact;
 
 	b2Manifold m_manifold;
 };

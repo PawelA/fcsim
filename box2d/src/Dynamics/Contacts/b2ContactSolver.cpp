@@ -41,7 +41,7 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 		b2Body* b1 = contact->m_shape1->m_body;
 		b2Body* b2 = contact->m_shape2->m_body;
 		int32 manifoldCount = contact->GetManifoldCount();
-		b2Manifold* manifolds = contact->GetManifolds();
+		b2Manifold* manifolds = contact->GetManifolds(contact);
 		float64 friction = contact->m_friction;
 		float64 restitution = contact->m_restitution;
 
