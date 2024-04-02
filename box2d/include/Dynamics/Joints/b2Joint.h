@@ -97,7 +97,6 @@ public:
 
 	bool (*SolvePositionConstraints)(b2Joint *joint);
 
-	b2Joint(const b2JointDef* def);
 	b2JointType m_type;
 	b2Joint* m_prev;
 	b2Joint* m_next;
@@ -131,5 +130,7 @@ inline float64 b2Jacobian::Compute(const b2Vec2& x1, float64 a1, const b2Vec2& x
 
 b2Joint* b2Joint_Create(const b2JointDef* def, b2BlockAllocator* allocator);
 void b2Joint_Destroy(b2Joint* joint, b2BlockAllocator* allocator);
+
+void b2Joint_ctor(b2Joint *joint, const b2JointDef* def);
 
 #endif

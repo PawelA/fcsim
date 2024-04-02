@@ -62,14 +62,14 @@ void b2Joint_Destroy(b2Joint* joint, b2BlockAllocator* allocator)
 	}
 }
 
-b2Joint::b2Joint(const b2JointDef* def)
+void b2Joint_ctor(b2Joint *joint, const b2JointDef* def)
 {
-	m_type = def->type;
-	m_prev = NULL;
-	m_next = NULL;
-	m_body1 = def->body1;
-	m_body2 = def->body2;
-	m_collideConnected = def->collideConnected;
-	m_islandFlag = false;
-	m_userData = def->userData;
+	joint->m_type = def->type;
+	joint->m_prev = NULL;
+	joint->m_next = NULL;
+	joint->m_body1 = def->body1;
+	joint->m_body2 = def->body2;
+	joint->m_collideConnected = def->collideConnected;
+	joint->m_islandFlag = false;
+	joint->m_userData = def->userData;
 }
