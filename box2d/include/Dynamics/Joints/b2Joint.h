@@ -24,7 +24,7 @@
 struct b2Body;
 struct b2Joint;
 struct b2TimeStep;
-class b2BlockAllocator;
+struct b2BlockAllocator;
 
 enum b2JointType
 {

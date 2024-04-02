@@ -26,7 +26,7 @@
 struct b2Body;
 class b2Contact;
 struct b2World;
-class b2BlockAllocator;
+struct b2BlockAllocator;
 
 typedef b2Contact* b2ContactCreateFcn(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
 typedef void b2ContactDestroyFcn(b2Contact* contact, b2BlockAllocator* allocator);

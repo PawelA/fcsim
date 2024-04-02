@@ -23,7 +23,7 @@
 #include "../../Collision/b2Collision.h"
 #include "b2Contact.h"
 
-class b2BlockAllocator;
+struct b2BlockAllocator;
 
 class b2CircleContact : public b2Contact
 {

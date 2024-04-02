@@ -21,7 +21,7 @@
 
 #include "b2Contact.h"
 
-class b2BlockAllocator;
+struct b2BlockAllocator;
 
 class b2PolyContact : public b2Contact
 {
