@@ -24,17 +24,19 @@
 #define B2_PAIR_MANAGER_H
 
 #include "../Common/b2Settings.h"
-#include "../Common/b2Math.h"
+#include "../Common/b2Vec.h"
 
-#include <climits>
+#include <limits.h>
 
-class b2BroadPhase;
+typedef struct b2BroadPhase b2BroadPhase;
+struct b2BroadPhase;
+typedef struct b2Proxy b2Proxy;
 struct b2Proxy;
 
-const uint16 b2_nullPair = USHRT_MAX;
-const uint16 b2_nullProxy = USHRT_MAX;
-const int32 b2_tableCapacity = b2_maxPairs;	// must be a power of two
-const int32 b2_tableMask = b2_tableCapacity - 1;
+#define b2_nullPair USHRT_MAX
+#define b2_nullProxy USHRT_MAX
+#define b2_tableCapacity b2_maxPairs	// must be a power of two
+#define b2_tableMask (b2_tableCapacity - 1)
 
 enum
 {
@@ -43,6 +45,7 @@ enum
 	b2Pair_e_pairFinal		= 0x0004,
 };
 
+typedef struct b2Pair b2Pair;
 struct b2Pair
 {
 	void* userData;
@@ -92,12 +95,14 @@ inline bool b2Pair_IsFinal(b2Pair *pair)
 	return (pair->status & b2Pair_e_pairFinal) == b2Pair_e_pairFinal;
 }
 
+typedef struct b2BufferedPair b2BufferedPair;
 struct b2BufferedPair
 {
 	uint16 proxyId1;
 	uint16 proxyId2;
 };
 
+typedef struct b2PairCallback b2PairCallback;
 struct b2PairCallback
 {
 	// This should return the new pair user data. It is okay if the
@@ -109,6 +114,7 @@ struct b2PairCallback
 	void (*PairRemoved)(b2PairCallback *callback, void* proxyUserData1, void* proxyUserData2, void* pairUserData);
 };
 
+typedef struct b2PairManager b2PairManager;
 struct b2PairManager
 {
 	b2BroadPhase *m_broadPhase;

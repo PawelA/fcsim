@@ -21,17 +21,20 @@
 
 #include "b2Settings.h"
 
-const int32 b2_chunkSize = 4096;
-const int32 b2_maxBlockSize = 640;
-const int32 b2_blockSizes = 14;
-const int32 b2_chunkArrayIncrement = 128;
+#define b2_chunkSize 4096
+#define b2_maxBlockSize 640
+#define b2_blockSizes 14
+#define b2_chunkArrayIncrement 128
 
+typedef struct b2Block b2Block;
 struct b2Block;
+typedef struct b2Chunk b2Chunk;
 struct b2Chunk;
 
 // This is a small block allocator used for allocating small
 // objects that persist for more than one time step.
 // See: http://www.codeproject.com/useritems/Small_Block_Allocator.asp
+typedef struct b2BlockAllocator b2BlockAllocator;
 struct b2BlockAllocator
 {
 	b2Chunk* m_chunks;

@@ -21,6 +21,7 @@
 
 #include "b2Joint.h"
 
+typedef struct b2RevoluteJointDef b2RevoluteJointDef;
 struct b2RevoluteJointDef
 {
 	b2JointDef m_jointDef;
@@ -34,19 +35,7 @@ struct b2RevoluteJointDef
 	bool enableMotor;
 };
 
-static void b2RevoluteJointDef_ctor(b2RevoluteJointDef *rev_joint_def)
-{
-	b2JointDef_ctor(&rev_joint_def->m_jointDef);
-	rev_joint_def->m_jointDef.type = e_revoluteJoint;
-	b2Vec2_Set(&rev_joint_def->anchorPoint, 0.0, 0.0);
-	rev_joint_def->lowerAngle = 0.0;
-	rev_joint_def->upperAngle = 0.0;
-	rev_joint_def->motorTorque = 0.0;
-	rev_joint_def->motorSpeed = 0.0;
-	rev_joint_def->enableLimit = false;
-	rev_joint_def->enableMotor = false;
-}
-
+typedef struct b2RevoluteJoint b2RevoluteJoint;
 struct b2RevoluteJoint
 {
 	b2Joint m_joint;
@@ -71,6 +60,12 @@ struct b2RevoluteJoint
 	b2LimitState m_limitState;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void b2RevoluteJointDef_ctor(b2RevoluteJointDef *rev_joint_def);
+
 b2Vec2 b2RevoluteJoint_GetAnchor1(b2Joint *joint);
 b2Vec2 b2RevoluteJoint_GetAnchor2(b2Joint *joint);
 
@@ -83,5 +78,9 @@ void b2RevoluteJoint_SolveVelocityConstraints(b2Joint *joint, const b2TimeStep* 
 bool b2RevoluteJoint_SolvePositionConstraints(b2Joint *joint);
 
 void b2RevoluteJoint_ctor(b2RevoluteJoint *joint, const b2RevoluteJointDef* def);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

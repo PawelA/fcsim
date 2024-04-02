@@ -19,24 +19,31 @@
 #ifndef B2_WORLD_H
 #define B2_WORLD_H
 
-#include "../Common/b2Math.h"
+#include "../Common/b2Vec.h"
 #include "../Common/b2BlockAllocator.h"
 #include "../Common/b2StackAllocator.h"
 #include "b2ContactManager.h"
 
+typedef struct b2AABB b2AABB;
+typedef struct b2BodyDef b2BodyDef;
+typedef struct b2JointDef b2JointDef;
+typedef struct b2Body b2Body;
+typedef struct b2Joint b2Joint;
+typedef struct b2Shape b2Shape;
+typedef struct b2Contact b2Contact;
+typedef struct b2BroadPhase b2BroadPhase;
 struct b2AABB;
 struct b2BodyDef;
 struct b2JointDef;
 struct b2Body;
 struct b2Joint;
 struct b2Shape;
-class b2Contact;
-class b2BroadPhase;
+struct b2Contact;
+struct b2BroadPhase;
 
 typedef bool (*b2CollisionFilter)(b2Shape* shape1, b2Shape* shape2);
 
-bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2);
-
+typedef struct b2TimeStep b2TimeStep;
 struct b2TimeStep
 {
 	float64 dt;			// time step
@@ -44,6 +51,7 @@ struct b2TimeStep
 	int32 iterations;
 };
 
+typedef struct b2World b2World;
 struct b2World
 {
 	b2BlockAllocator m_blockAllocator;
@@ -73,7 +81,13 @@ struct b2World
 	int32 m_positionIterationCount;
 };
 
-void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2);
+
+void b2World_ctor(b2World *world, const b2AABB* worldAABB, b2Vec2 gravity, bool doSleep);
 
 void b2World_dtor(b2World *world);
 
@@ -110,5 +124,9 @@ inline b2Contact* b2World_GetContactList(b2World *world)
 
 extern int32 b2World_s_enablePositionCorrection;
 extern int32 b2World_s_enableWarmStarting;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -19,18 +19,22 @@
 #ifndef CONTACT_H
 #define CONTACT_H
 
-#include "../../Common/b2Math.h"
 #include "../../Collision/b2Collision.h"
 #include "../../Collision/b2Shape.h"
 
+typedef struct b2Body b2Body;
+typedef struct b2Contact b2Contact;
+typedef struct b2World b2World;
+typedef struct b2BlockAllocator b2BlockAllocator;
 struct b2Body;
-class b2Contact;
+struct b2Contact;
 struct b2World;
 struct b2BlockAllocator;
 
 typedef b2Contact* b2ContactCreateFcn(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
 typedef void b2ContactDestroyFcn(b2Contact* contact, b2BlockAllocator* allocator);
 
+typedef struct b2ContactNode b2ContactNode;
 struct b2ContactNode
 {
 	b2Body* other;
@@ -39,6 +43,7 @@ struct b2ContactNode
 	b2ContactNode* next;
 };
 
+typedef struct b2ContactRegister b2ContactRegister;
 struct b2ContactRegister
 {
 	b2ContactCreateFcn* createFcn;
@@ -46,20 +51,17 @@ struct b2ContactRegister
 	bool primary;
 };
 
-class b2Contact
+enum
 {
-public:
+	b2Contact_e_islandFlag		= 0x0001,
+	b2Contact_e_destroyFlag		= 0x0002,
+};
+
+typedef struct b2Contact b2Contact;
+struct b2Contact
+{
 	b2Manifold* (*GetManifolds)(struct b2Contact *contact);
 	void (*Evaluate)(struct b2Contact *contact);
-
-	//--------------- Internals Below -------------------
-
-	// m_flags
-	enum
-	{
-		e_islandFlag		= 0x0001,
-		e_destroyFlag		= 0x0002,
-	};
 
 	uint32 m_flags;
 

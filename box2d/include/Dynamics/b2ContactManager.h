@@ -23,8 +23,9 @@
 #include "../Dynamics/Contacts/b2NullContact.h"
 
 struct b2World;
-class b2Contact;
+struct b2Contact;
 
+typedef struct b2ContactManager b2ContactManager;
 struct b2ContactManager
 {
 	b2PairCallback m_pairCallback;

@@ -1,6 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 #include <fcsim.h>
-#include <Box2D.h>
+#include <fcsim_funcs.h>
+#include <Dynamics/b2World.h>
+#include <Dynamics/b2Body.h>
+#include <Dynamics/Joints/b2RevoluteJoint.h>
 
 struct fcsim_simul {
 	b2World world;
@@ -142,10 +147,13 @@ static void init_b2world(b2World *world)
 	b2Vec2 gravity;
 	b2AABB aabb;
 
-	b2Vec2_Set(&gravity, 0, 300);
-	b2Vec2_Set(&aabb.minVertex, -2000, -1450);
-	b2Vec2_Set(&aabb.maxVertex, 2000, 1450);
-	b2World_ctor(world, aabb, gravity, true);
+	gravity.x = 0;
+	gravity.y = 300;
+	aabb.minVertex.x = -2000;
+	aabb.minVertex.y = -1450;
+	aabb.maxVertex.x = 2000;
+	aabb.maxVertex.y = 1450;
+	b2World_ctor(world, &aabb, gravity, true);
 	b2World_SetFilter(world, fcsim_collision_filter);
 }
 
@@ -225,7 +233,8 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 		circle_def.radius = shape->circ.radius;
 		shape_def = &circle_def.m_shapeDef;
 	} else {
-		b2Vec2_Set(&box_def.extents, shape->rect.w/2, shape->rect.h/2);
+		box_def.extents.x = shape->rect.w / 2;
+		box_def.extents.y = shape->rect.h / 2;
 		shape_def = &box_def.m_shapeDef;
 	}
 	shape_def->density = phys->density;
@@ -234,7 +243,8 @@ static b2Body *generate_body(b2World *world, struct fcsim_shape *shape, struct f
 	shape_def->categoryBits = phys->category_bits;
 	shape_def->maskBits = phys->mask_bits;
 	shape_def->userData = data;
-	b2Vec2_Set(&body_def.position, where->x, where->y);
+	body_def.position.x = where->x;
+	body_def.position.y = where->y;
 	body_def.rotation = where->angle;
 	body_def.linearDamping = phys->linear_damping;
 	body_def.angularDamping = phys->angular_damping;
@@ -250,7 +260,8 @@ static void generate_joint(b2World *world, b2Body *b1, b2Body *b2, double x, dou
 	b2RevoluteJointDef_ctor(&joint_def);
 	joint_def.m_jointDef.body1 = b1;
 	joint_def.m_jointDef.body2 = b2;
-	b2Vec2_Set(&joint_def.anchorPoint, x, y);
+	joint_def.anchorPoint.x = x;
+	joint_def.anchorPoint.y = y;
 	joint_def.m_jointDef.collideConnected = true;
 	if (spin != 0) {
 		joint_def.motorTorque = 50000000;
@@ -545,8 +556,7 @@ void fcsim_step(struct fcsim_simul *simul)
 		b2Joint *next = joint->m_next;
 		b2Vec2 a1 = joint->GetAnchor1(joint);
 		b2Vec2 a2 = joint->GetAnchor2(joint);
-		b2Vec2 d = a1 - a2;
-		if (fabs(d.x) + fabs(d.y) > 50.0)
+		if (fabs(a1.x - a2.x) + fabs(a1.y - a2.y) > 50.0)
 			b2World_DestroyJoint(&simul->world, joint);
 		joint = next;
 	}

@@ -16,6 +16,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <Common/b2Math.h>
 #include <Collision/b2BroadPhase.h>
 #include <algorithm>
 #include <cstring>
@@ -396,6 +397,14 @@ void b2BroadPhase::DestroyProxy(int32 proxyId)
 	{
 		Validate();
 	}
+}
+
+static bool b2AABB_IsValid(const b2AABB *aabb)
+{ 
+	b2Vec2 d = aabb->maxVertex - aabb->minVertex;
+	bool valid = d.x >= 0.0 && d.y >= 0;
+	valid = valid && b2Vec2_IsValid(&aabb->minVertex) && b2Vec2_IsValid(&aabb->maxVertex);
+	return valid;
 }
 
 void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)

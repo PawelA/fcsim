@@ -19,9 +19,12 @@
 #ifndef B2_COLLISION_H
 #define B2_COLLISION_H
 
-#include "../Common/b2Math.h"
-#include <climits>
+#include "../Common/b2Vec.h"
+#include <limits.h>
 
+typedef struct b2Shape b2Shape;
+typedef struct b2CircleShape b2CircleShape;
+typedef struct b2PolyShape b2PolyShape;
 struct b2Shape;
 struct b2CircleShape;
 struct b2PolyShape;
@@ -29,6 +32,7 @@ struct b2PolyShape;
 // We use contact ids to facilitate warm starting.
 const uint8 b2_nullFeature = UCHAR_MAX;
 
+typedef union b2ContactID b2ContactID;
 union b2ContactID
 {
 	struct Features
@@ -41,6 +45,7 @@ union b2ContactID
 	uint32 key;
 };
 
+typedef struct b2ContactPoint b2ContactPoint;
 struct b2ContactPoint
 {
 	b2Vec2 position;
@@ -51,6 +56,7 @@ struct b2ContactPoint
 };
 
 // A manifold for two touching convex shapes.
+typedef struct b2Manifold b2Manifold;
 struct b2Manifold
 {
 	b2ContactPoint points[b2_maxManifoldPoints];
@@ -58,11 +64,13 @@ struct b2Manifold
 	int32 pointCount;
 };
 
+typedef struct b2AABB b2AABB;
 struct b2AABB
 {
 	b2Vec2 minVertex, maxVertex;
 };
 
+typedef struct b2OBB b2OBB;
 struct b2OBB
 {
 	b2Mat22 R;
@@ -75,28 +83,5 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* poly1, const b2PolyShape* poly2, bool conservative);
 
 float64 b2Distance(b2Vec2* x1, b2Vec2* x2, const b2Shape* shape1, const b2Shape* shape2);
-
-inline bool b2AABB_IsValid(const b2AABB *aabb)
-{
-	b2Vec2 d = aabb->maxVertex - aabb->minVertex;
-	bool valid = d.x >= 0.0 && d.y >= 0;
-	valid = valid && b2Vec2_IsValid(&aabb->minVertex) && b2Vec2_IsValid(&aabb->maxVertex);
-	return valid;
-}
-
-inline bool b2TestOverlap(const b2AABB& a, const b2AABB& b)
-{
-	b2Vec2 d1, d2;
-	d1 = b.minVertex - a.maxVertex;
-	d2 = a.minVertex - b.maxVertex;
-
-	if (d1.x > 0.0 || d1.y > 0.0)
-		return false;
-
-	if (d2.x > 0.0 || d2.y > 0.0)
-		return false;
-
-	return true;
-}
 
 #endif

@@ -19,6 +19,8 @@
 #ifndef B2_SETTINGS_H
 #define B2_SETTINGS_H
 
+#include <stdbool.h>
+
 #define NOT_USED(x) x
 #define b2Assert(A)
 
@@ -48,11 +50,11 @@ const float64 b2_timeUnitsPerSecond = 1.0;
 // Global tuning constants based on MKS units.
 
 // Collision
-const int32 b2_maxManifoldPoints = 2;
-const int32 b2_maxShapesPerBody = 64;
-const int32 b2_maxPolyVertices = 8;
-const int32 b2_maxProxies = 4096;				// this must be a power of two
-const int32 b2_maxPairs = 32768;	// this must be a power of two
+#define b2_maxManifoldPoints 2
+#define b2_maxShapesPerBody 64
+#define b2_maxPolyVertices 8
+#define b2_maxProxies 4096				// this must be a power of two
+#define b2_maxPairs 32768	// this must be a power of two
 
 // Dynamics
 const float64 b2_linearSlop = 0.15;

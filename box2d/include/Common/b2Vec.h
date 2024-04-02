@@ -16,43 +16,21 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef B2_STACK_ALLOCATOR_H
-#define B2_STACK_ALLOCATOR_H
+#ifndef B2_VEC_H
+#define B2_VEC_H
 
 #include "b2Settings.h"
 
-#define b2_stackSize  100 * 1024	// 100k
-#define b2_maxStackEntries  32
-
-struct b2StackEntry
+typedef struct b2Vec2 b2Vec2;
+struct b2Vec2
 {
-	char* data;
-	int32 size;
-	bool usedMalloc;
+	float64 x, y;
 };
 
-// This is a stack allocator used for fast per step allocations.
-// You must nest allocate/free pairs. The code will assert
-// if you try to interleave multiple allocate/free pairs.
-typedef struct b2StackAllocator b2StackAllocator;
-struct b2StackAllocator
+typedef struct b2Mat22 b2Mat22;
+struct b2Mat22
 {
-	char m_data[b2_stackSize];
-	int32 m_index;
-
-	int32 m_allocation;
-	int32 m_maxAllocation;
-
-	struct b2StackEntry m_entries[b2_maxStackEntries];
-	int32 m_entryCount;
+	b2Vec2 col1, col2;
 };
-
-void b2StackAllocator_ctor(b2StackAllocator *allocator);
-
-void b2StackAllocator_dtor(b2StackAllocator *allocator);
-
-void *b2StackAllocator_Allocate(struct b2StackAllocator *allocator, int32 size);
-
-void b2StackAllocator_Free(struct b2StackAllocator *allocator, void* p);
 
 #endif

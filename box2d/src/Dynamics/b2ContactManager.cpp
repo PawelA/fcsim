@@ -16,6 +16,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <Common/b2Math.h>
 #include <Dynamics/b2ContactManager.h>
 #include <Dynamics/b2World.h>
 #include <Dynamics/b2Body.h>
@@ -108,7 +109,7 @@ void b2ContactManager_PairRemoved(b2PairCallback *callback, void* proxyUserData1
 		}
 		else
 		{
-			c->m_flags |= b2Contact::e_destroyFlag;
+			c->m_flags |= b2Contact_e_destroyFlag;
 		}
 	}
 }
@@ -196,7 +197,7 @@ void b2ContactManager_CleanContactList(b2ContactManager *manager)
 		b2Contact* c0 = c;
 		c = c->m_next;
 
-		if (c0->m_flags & b2Contact::e_destroyFlag)
+		if (c0->m_flags & b2Contact_e_destroyFlag)
 		{
 			b2ContactManager_DestroyContact(manager, c0);
 			c0 = NULL;

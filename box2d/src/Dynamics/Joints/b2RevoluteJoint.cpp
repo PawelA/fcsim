@@ -35,6 +35,19 @@
 // J = [0 0 -1 0 0 1]
 // K = invI1 + invI2
 
+void b2RevoluteJointDef_ctor(b2RevoluteJointDef *rev_joint_def)
+{
+	b2JointDef_ctor(&rev_joint_def->m_jointDef);
+	rev_joint_def->m_jointDef.type = e_revoluteJoint;
+	b2Vec2_Set(&rev_joint_def->anchorPoint, 0.0, 0.0);
+	rev_joint_def->lowerAngle = 0.0;
+	rev_joint_def->upperAngle = 0.0;
+	rev_joint_def->motorTorque = 0.0;
+	rev_joint_def->motorSpeed = 0.0;
+	rev_joint_def->enableLimit = false;
+	rev_joint_def->enableMotor = false;
+}
+
 void b2RevoluteJoint_ctor(b2RevoluteJoint *rev_joint, const b2RevoluteJointDef* def)
 {
 	b2Joint_ctor(&rev_joint->m_joint, &def->m_jointDef);

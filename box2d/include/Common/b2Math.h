@@ -20,6 +20,7 @@
 #define B2_MATH_H
 
 #include "b2Settings.h"
+#include "b2Vec.h"
 #include <fcsim_funcs.h>
 #include <cmath>
 #include <cfloat>
@@ -35,13 +36,6 @@ inline bool b2IsValid(float64 x)
 	return finite(x) != 0;
 #endif
 }
-
-// b2Vec2 has no constructor so that it
-// can be placed in a union.
-struct b2Vec2
-{
-	float64 x, y;
-};
 
 static void b2Vec2_SetZero(b2Vec2 *v)
 {
@@ -85,11 +79,6 @@ static bool b2Vec2_IsValid(const b2Vec2 *v)
 {
 	return b2IsValid(v->x) && b2IsValid(v->y);
 }
-
-struct b2Mat22
-{
-	b2Vec2 col1, col2;
-};
 
 static void b2Mat22_Set(b2Mat22 *m, const b2Vec2& c1, const b2Vec2& c2)
 {

@@ -19,12 +19,15 @@
 #ifndef B2_SHAPE_H
 #define B2_SHAPE_H
 
-#include "../Common/b2Math.h"
+#include "../Common/b2Vec.h"
 #include "b2Collision.h"
 
+typedef struct b2Body b2Body;
+typedef struct b2BroadPhase b2BroadPhase;
 struct b2Body;
-class b2BroadPhase;
+struct b2BroadPhase;
 
+typedef struct b2MassData b2MassData;
 struct b2MassData
 {
 	float64 mass;
@@ -41,7 +44,9 @@ enum b2ShapeType
 	e_meshShape,
 	e_shapeTypeCount,
 };
+typedef enum b2ShapeType b2ShapeType;
 
+typedef struct b2ShapeDef b2ShapeDef;
 struct b2ShapeDef
 {
 	b2ShapeType type;
@@ -65,22 +70,7 @@ struct b2ShapeDef
 	int16 groupIndex;
 };
 
-static void b2ShapeDef_ctor(b2ShapeDef *def)
-{
-	def->type = e_unknownShape;
-	def->userData = NULL;
-	b2Vec2_Set(&def->localPosition, 0.0, 0.0);
-	def->localRotation = 0.0;
-	def->friction = 0.2;
-	def->restitution = 0.0;
-	def->density = 0.0;
-	def->categoryBits = 0x0001;
-	def->maskBits = 0xFFFF;
-	def->groupIndex = 0;
-}
-
-void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData);
-
+typedef struct b2CircleDef b2CircleDef;
 struct b2CircleDef
 {
 	b2ShapeDef m_shapeDef;
@@ -88,13 +78,7 @@ struct b2CircleDef
 	float64 radius;
 };
 
-static void b2CircleDef_ctor(b2CircleDef *circleDef)
-{
-	b2ShapeDef_ctor(&circleDef->m_shapeDef);
-	circleDef->m_shapeDef.type = e_circleShape;
-	circleDef->radius = 1.0;
-}
-
+typedef struct b2BoxDef b2BoxDef;
 struct b2BoxDef
 {
 	b2ShapeDef m_shapeDef;
@@ -102,14 +86,8 @@ struct b2BoxDef
 	b2Vec2 extents;
 };
 
-static void b2BoxDef_ctor(b2BoxDef *boxDef)
-{
-	b2ShapeDef_ctor(&boxDef->m_shapeDef);
-	boxDef->m_shapeDef.type = e_boxShape;
-	b2Vec2_Set(&boxDef->extents, 1.0, 1.0);
-}
-
 // Convex polygon, vertices must be in CCW order.
+typedef struct b2PolyDef b2PolyDef;
 struct b2PolyDef
 {
 	b2ShapeDef m_shapeDef;
@@ -118,30 +96,24 @@ struct b2PolyDef
 	int32 vertexCount;
 };
 
-static void b2PolyDef_ctor(b2PolyDef *polyDef)
-{
-	b2ShapeDef_ctor(&polyDef->m_shapeDef);
-	polyDef->m_shapeDef.type = e_polyShape;
-	polyDef->vertexCount = 0;
-}
-
 // Shapes are created automatically when a body is created.
 // Client code does not normally interact with shapes.
+typedef struct b2Shape b2Shape;
 struct b2Shape
 {
-	bool (*TestPoint)(b2Shape *shape, const b2Vec2& p);
+	bool (*TestPoint)(b2Shape *shape, b2Vec2 p);
 
 	// Remove and then add proxy from the broad-phase.
 	// This is used to refresh the collision filters.
 	void (*ResetProxy)(b2Shape *shape, b2BroadPhase* broadPhase);
 
 	void (*Synchronize)(b2Shape *shape,
-			    const b2Vec2& position1, const b2Mat22& R1,
-			    const b2Vec2& position2, const b2Mat22& R2);
+			    b2Vec2 position1, const b2Mat22* R1,
+			    b2Vec2 position2, const b2Mat22* R2);
 
-	void (*QuickSync)(b2Shape *shape, const b2Vec2& position, const b2Mat22& R);
+	void (*QuickSync)(b2Shape *shape, b2Vec2 position, const b2Mat22* R);
 
-	b2Vec2 (*Support)(const b2Shape *shape, const b2Vec2& d);
+	b2Vec2 (*Support)(const b2Shape *shape, b2Vec2 d);
 
 	b2Shape* m_next;
 
@@ -165,6 +137,7 @@ struct b2Shape
 	int16 m_groupIndex;
 };
 
+typedef struct b2CircleShape b2CircleShape;
 struct b2CircleShape
 {
 	b2Shape m_shape;
@@ -174,18 +147,6 @@ struct b2CircleShape
 	float64 m_radius;
 };
 
-bool b2CircleShape_TestPoint(b2Shape *shape, const b2Vec2& p);
-
-void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase);
-
-void b2CircleShape_Synchronize(b2Shape *shape,
-			       const b2Vec2& position1, const b2Mat22& R1,
-			       const b2Vec2& position2, const b2Mat22& R2);
-
-void b2CircleShape_QuickSync(b2Shape *shape, const b2Vec2& position, const b2Mat22& R);
-
-b2Vec2 b2CircleShape_Support(const b2Shape *shape, const b2Vec2& d);
-
 // A convex polygon. The position of the polygon (m_position) is the
 // position of the centroid. The vertices of the incoming polygon are pre-rotated
 // according to the local rotation. The vertices are also shifted to be centered
@@ -193,6 +154,7 @@ b2Vec2 b2CircleShape_Support(const b2Shape *shape, const b2Vec2& d);
 // coordinates, the polygon rotation is equal to the body rotation. However,
 // the polygon position is centered on the polygon centroid. This simplifies
 // some collision algorithms.
+typedef struct b2PolyShape b2PolyShape;
 struct b2PolyShape
 {
 	b2Shape m_shape;
@@ -209,17 +171,53 @@ struct b2PolyShape
 	b2Vec2 m_normals[b2_maxPolyVertices];
 };
 
-bool b2PolyShape_TestPoint(b2Shape *shape, const b2Vec2& p);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void b2ShapeDef_ctor(b2ShapeDef *def);
+
+static void b2CircleDef_ctor(b2CircleDef *circleDef)
+{
+	b2ShapeDef_ctor(&circleDef->m_shapeDef);
+	circleDef->m_shapeDef.type = e_circleShape;
+	circleDef->radius = 1.0;
+}
+
+void b2BoxDef_ctor(b2BoxDef *boxDef);
+
+static void b2PolyDef_ctor(b2PolyDef *polyDef)
+{
+	b2ShapeDef_ctor(&polyDef->m_shapeDef);
+	polyDef->m_shapeDef.type = e_polyShape;
+	polyDef->vertexCount = 0;
+}
+
+void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData);
+
+bool b2CircleShape_TestPoint(b2Shape *shape, b2Vec2 p);
+
+void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase);
+
+void b2CircleShape_Synchronize(b2Shape *shape,
+			       b2Vec2 position1, const b2Mat22* R1,
+			       b2Vec2 position2, const b2Mat22* R2);
+
+void b2CircleShape_QuickSync(b2Shape *shape, b2Vec2 position, const b2Mat22* R);
+
+b2Vec2 b2CircleShape_Support(const b2Shape *shape, b2Vec2 d);
+
+bool b2PolyShape_TestPoint(b2Shape *shape, b2Vec2 p);
 
 void b2PolyShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase);
 
 void b2PolyShape_Synchronize(b2Shape *shape,
-			     const b2Vec2& position1, const b2Mat22& R1,
-			     const b2Vec2& position2, const b2Mat22& R2);
+			     b2Vec2 position1, const b2Mat22* R1,
+			     b2Vec2 position2, const b2Mat22* R2);
 
-void b2PolyShape_QuickSync(b2Shape *shape, const b2Vec2& position, const b2Mat22& R);
+void b2PolyShape_QuickSync(b2Shape *shape, b2Vec2 position, const b2Mat22* R);
 
-b2Vec2 b2PolyShape_Support(const b2Shape *shape, const b2Vec2& d);
+b2Vec2 b2PolyShape_Support(const b2Shape *shape, b2Vec2 d);
 
 inline void* b2Shape_GetUserData(b2Shape *shape)
 {
@@ -227,10 +225,14 @@ inline void* b2Shape_GetUserData(b2Shape *shape)
 }
 
 b2Shape* b2Shape_Create(const b2ShapeDef* def,
-			b2Body* body, const b2Vec2& newOrigin);
+			b2Body* body, b2Vec2 newOrigin);
 
-void b2Shape_Destroy(b2Shape*& shape);
+void b2Shape_Destroy(b2Shape* shape);
 
 void b2Shape_DestroyProxy(b2Shape *shape);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

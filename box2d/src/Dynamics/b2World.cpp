@@ -29,7 +29,7 @@
 int32 b2World_s_enablePositionCorrection = 1;
 int32 b2World_s_enableWarmStarting = 1;
 
-void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity, bool doSleep)
+void b2World_ctor(b2World *world, const b2AABB *worldAABB, b2Vec2 gravity, bool doSleep)
 {
 	b2BlockAllocator_ctor(&world->m_blockAllocator);
 	b2StackAllocator_ctor(&world->m_stackAllocator);
@@ -53,7 +53,7 @@ void b2World_ctor(b2World *world, const b2AABB& worldAABB, const b2Vec2& gravity
 
 	world->m_contactManager.m_world = world;
 	void* mem = b2Alloc(sizeof(b2BroadPhase));
-	world->m_broadPhase = new (mem) b2BroadPhase(worldAABB, &world->m_contactManager.m_pairCallback);
+	world->m_broadPhase = new (mem) b2BroadPhase(*worldAABB, &world->m_contactManager.m_pairCallback);
 
 	b2BodyDef bd;
 	b2BodyDef_ctor(&bd);
@@ -321,7 +321,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	}
 	for (b2Contact* c = world->m_contactList; c; c = c->m_next)
 	{
-		c->m_flags &= ~b2Contact::e_islandFlag;
+		c->m_flags &= ~b2Contact_e_islandFlag;
 	}
 	for (b2Joint* j = world->m_jointList; j; j = j->m_next)
 	{
@@ -364,13 +364,13 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 			// Search all contacts connected to this body.
 			for (b2ContactNode* cn = b->m_contactList; cn; cn = cn->next)
 			{
-				if (cn->contact->m_flags & b2Contact::e_islandFlag)
+				if (cn->contact->m_flags & b2Contact_e_islandFlag)
 				{
 					continue;
 				}
 
 				island.Add(cn->contact);
-				cn->contact->m_flags |= b2Contact::e_islandFlag;
+				cn->contact->m_flags |= b2Contact_e_islandFlag;
 
 				b2Body* other = cn->other;
 				if (other->m_flags & b2Body_e_islandFlag)

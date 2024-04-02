@@ -19,19 +19,17 @@
 #ifndef B2_BODY_H
 #define B2_BODY_H
 
-#include "../Common/b2Math.h"
+#include "../Common/b2Vec.h"
 #include "../Dynamics/Joints/b2Joint.h"
 #include "../Collision/b2Shape.h"
 
-#include <cstring>
-#include <memory>
-
 struct b2Joint;
-class b2Contact;
+struct b2Contact;
 struct b2World;
 struct b2JointNode;
 struct b2ContactNode;
 
+typedef struct b2BodyDef b2BodyDef;
 struct b2BodyDef
 {
 	void* userData;
@@ -47,21 +45,6 @@ struct b2BodyDef
 	bool preventRotation;
 };
 
-static void b2BodyDef_ctor(b2BodyDef *def)
-{
-	def->userData = NULL;
-	memset(def->shapes, 0, sizeof(def->shapes));
-	b2Vec2_Set(&def->position, 0.0, 0.0);
-	def->rotation = 0.0;
-	b2Vec2_Set(&def->linearVelocity, 0.0, 0.0);
-	def->angularVelocity = 0.0;
-	def->linearDamping = 0.0;
-	def->angularDamping = 0.0;
-	def->allowSleep = true;
-	def->isSleeping = false;
-	def->preventRotation = false;
-}
-
 enum
 {
 	b2Body_e_staticFlag		= 0x0001,
@@ -76,6 +59,7 @@ enum
 // A rigid body. Internal computation are done in terms
 // of the center of mass position. The center of mass may
 // be offset from the body's origin.
+typedef struct b2Body b2Body;
 struct b2Body
 {
 	uint32 m_flags;
@@ -117,6 +101,12 @@ struct b2Body
 	void* m_userData;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void b2BodyDef_ctor(b2BodyDef *def);
+
 void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world);
 
 void b2Body_dtor(b2Body *body);
@@ -143,10 +133,7 @@ inline void b2BodyDef_AddShape(b2BodyDef *def, b2ShapeDef* shape)
 // Get the position of the body's origin. The body's origin does not
 // necessarily coincide with the center of mass. It depends on how the
 // shapes are created.
-inline b2Vec2 b2Body_GetOriginPosition(const b2Body *body)
-{
-	return body->m_position - b2Mul(body->m_R, body->m_center);
-}
+b2Vec2 b2Body_GetOriginPosition(const b2Body *body);
 
 inline float64 b2Body_GetRotation(const b2Body *body)
 {
@@ -186,5 +173,9 @@ inline bool b2Body_IsConnected(const b2Body *body, const b2Body* other)
 
 	return false;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

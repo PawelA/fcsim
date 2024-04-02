@@ -19,9 +19,10 @@
 #ifndef B2_NULL_CONTACT_H
 #define B2_NULL_CONTACT_H
 
-#include "../../Common/b2Math.h"
 #include "b2Contact.h"
+#include <stddef.h>
 
+typedef struct b2NullContact b2NullContact;
 struct b2NullContact
 {
 	b2Contact contact;

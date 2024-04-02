@@ -19,7 +19,8 @@
 #ifndef JOINT_H
 #define JOINT_H
 
-#include "../../Common/b2Math.h"
+#include "../../Common/b2Vec.h"
+#include <stddef.h>
 
 struct b2Body;
 struct b2Joint;
@@ -36,6 +37,7 @@ enum b2JointType
 	e_mouseJoint,
 	e_gearJoint
 };
+typedef enum b2JointType b2JointType;
 
 enum b2LimitState
 {
@@ -44,7 +46,9 @@ enum b2LimitState
 	e_atUpperLimit,
 	e_equalLimits
 };
+typedef enum b2LimitState b2LimitState;
 
+typedef struct b2JointNode b2JointNode;
 struct b2JointNode
 {
 	b2Body* other;
@@ -53,6 +57,7 @@ struct b2JointNode
 	b2JointNode* next;
 };
 
+typedef struct b2JointDef b2JointDef;
 struct b2JointDef
 {
 	b2JointType type;
@@ -71,6 +76,7 @@ static void b2JointDef_ctor(b2JointDef *joint_def)
 	joint_def->collideConnected = false;
 }
 
+typedef struct b2Joint b2Joint;
 struct b2Joint
 {
 	b2Vec2 (*GetAnchor1)(b2Joint *joint);
@@ -98,9 +104,18 @@ struct b2Joint
 	void* m_userData;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 b2Joint* b2Joint_Create(const b2JointDef* def, b2BlockAllocator* allocator);
+
 void b2Joint_Destroy(b2Joint* joint, b2BlockAllocator* allocator);
 
 void b2Joint_ctor(b2Joint *joint, const b2JointDef* def);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

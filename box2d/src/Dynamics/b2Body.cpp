@@ -16,11 +16,28 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <Common/b2Math.h>
 #include <Dynamics/b2Body.h>
 #include <Dynamics/b2World.h>
 #include <Dynamics/Joints/b2Joint.h>
 #include <Dynamics/Contacts/b2Contact.h>
 #include <Collision/b2Shape.h>
+#include <string.h>
+
+void b2BodyDef_ctor(b2BodyDef *def) 
+{
+	def->userData = NULL;
+	memset(def->shapes, 0, sizeof(def->shapes));
+	b2Vec2_Set(&def->position, 0.0, 0.0);
+	def->rotation = 0.0;
+	b2Vec2_Set(&def->linearVelocity, 0.0, 0.0);
+	def->angularVelocity = 0.0;
+	def->linearDamping = 0.0;
+	def->angularDamping = 0.0;
+	def->allowSleep = true;
+	def->isSleeping = false;
+	def->preventRotation = false;
+}
 
 void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world)
 {
@@ -147,13 +164,18 @@ void b2Body_dtor(b2Body *body)
 	}
 }
 
+b2Vec2 b2Body_GetOriginPosition(const b2Body *body)
+{
+        return body->m_position - b2Mul(body->m_R, body->m_center);
+}
+
 void b2Body_SynchronizeShapes(b2Body *body)
 {
 	b2Mat22 R0;
 	b2Mat22_SetAngle(&R0, body->m_rotation0);
 	for (b2Shape* s = body->m_shapeList; s; s = s->m_next)
 	{
-		s->Synchronize(s, body->m_position0, R0, body->m_position, body->m_R);
+		s->Synchronize(s, body->m_position0, &R0, body->m_position, &body->m_R);
 	}
 }
 
@@ -161,7 +183,7 @@ void b2Body_QuickSyncShapes(b2Body *body)
 {
 	for (b2Shape* s = body->m_shapeList; s; s = s->m_next)
 	{
-		s->QuickSync(s, body->m_position, body->m_R);
+		s->QuickSync(s, body->m_position, &body->m_R);
 	}
 }
 

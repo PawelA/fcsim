@@ -16,6 +16,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <Common/b2Math.h>
 #include <Collision/b2BroadPhase.h>
 #include <Collision/b2Shape.h>
 #include <Dynamics/b2Body.h>
@@ -158,6 +159,20 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 	return c;
 }
 
+void b2ShapeDef_ctor(b2ShapeDef *def)
+{
+	def->type = e_unknownShape;
+	def->userData = NULL;
+	b2Vec2_Set(&def->localPosition, 0.0, 0.0);
+	def->localRotation = 0.0;
+	def->friction = 0.2;
+	def->restitution = 0.0;
+	def->density = 0.0;
+	def->categoryBits = 0x0001;
+	def->maskBits = 0xFFFF;
+	def->groupIndex = 0;
+}
+
 void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData)
 {
 	if (shapeDef->density == 0.0)
@@ -202,6 +217,13 @@ void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData)
 	}
 }
 
+void b2BoxDef_ctor(b2BoxDef *boxDef)
+{
+	b2ShapeDef_ctor(&boxDef->m_shapeDef);
+	boxDef->m_shapeDef.type = e_boxShape;
+	b2Vec2_Set(&boxDef->extents, 1.0, 1.0);
+} 
+
 static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def, b2Body* body, const b2Vec2& localCenter);
 
 static void b2PolyShape_ctor(b2PolyShape *polyShape,
@@ -209,7 +231,7 @@ static void b2PolyShape_ctor(b2PolyShape *polyShape,
 			     const b2Vec2& newOrigin);
 
 b2Shape* b2Shape_Create(const b2ShapeDef* def,
-					 b2Body* body, const b2Vec2& center)
+			b2Body* body, b2Vec2 center)
 {
 	switch (def->type)
 	{
@@ -235,7 +257,7 @@ b2Shape* b2Shape_Create(const b2ShapeDef* def,
 
 static void b2Shape_dtor(b2Shape *shape);
 
-void b2Shape_Destroy(b2Shape*& shape)
+void b2Shape_Destroy(b2Shape* shape)
 {
 	b2BlockAllocator& allocator = shape->m_body->m_world->m_blockAllocator;
 	b2Shape_dtor(shape);
@@ -253,8 +275,6 @@ void b2Shape_Destroy(b2Shape*& shape)
 	default:
 		b2Assert(false);
 	}
-
-	shape = NULL;
 }
 
 static void b2Shape_ctor(b2Shape *shape, const b2ShapeDef* def, b2Body* body)
@@ -331,11 +351,11 @@ static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def
 }
 
 void b2CircleShape_Synchronize(b2Shape *shape,
-			       const b2Vec2& position1, const b2Mat22& R1,
-			       const b2Vec2& position2, const b2Mat22& R2)
+			       b2Vec2 position1, const b2Mat22 *R1,
+			       b2Vec2 position2, const b2Mat22 *R2)
 {
 	b2CircleShape *circleShape = (b2CircleShape *)shape;
-	shape->m_R = R2;
+	shape->m_R = *R2;
 	shape->m_position = position2 + b2Mul(shape->m_R, circleShape->m_localPosition);
 
 	if (shape->m_proxyId == b2_nullProxy)
@@ -344,7 +364,7 @@ void b2CircleShape_Synchronize(b2Shape *shape,
 	}
 
 	// Compute an AABB that covers the swept shape (may miss some rotation effect).
-	b2Vec2 p1 = position1 + b2Mul(R1, circleShape->m_localPosition);
+	b2Vec2 p1 = position1 + b2Mul(*R1, circleShape->m_localPosition);
 	b2Vec2 lower = b2Min(p1, shape->m_position);
 	b2Vec2 upper = b2Max(p1, shape->m_position);
 
@@ -363,14 +383,14 @@ void b2CircleShape_Synchronize(b2Shape *shape,
 	}
 }
 
-void b2CircleShape_QuickSync(b2Shape *shape, const b2Vec2& position, const b2Mat22& R)
+void b2CircleShape_QuickSync(b2Shape *shape, b2Vec2 position, const b2Mat22 *R)
 {
 	b2CircleShape *circleShape = (b2CircleShape *)shape;
-	shape->m_R = R;
-	shape->m_position = position + b2Mul(R, circleShape->m_localPosition);
+	shape->m_R = *R;
+	shape->m_position = position + b2Mul(*R, circleShape->m_localPosition);
 }
 
-b2Vec2 b2CircleShape_Support(const b2Shape *shape, const b2Vec2& d)
+b2Vec2 b2CircleShape_Support(const b2Shape *shape, b2Vec2 d)
 {
 	b2CircleShape *circleShape = (b2CircleShape *)shape;
 	b2Vec2 u = d;
@@ -380,7 +400,7 @@ b2Vec2 b2CircleShape_Support(const b2Shape *shape, const b2Vec2& d)
 	return shape->m_position + circleShape->m_radius * u;
 }
 
-bool b2CircleShape_TestPoint(b2Shape *shape, const b2Vec2& p)
+bool b2CircleShape_TestPoint(b2Shape *shape, b2Vec2 p)
 {
 	b2CircleShape *circleShape = (b2CircleShape *)shape;
 	b2Vec2 d = p - shape->m_position;
@@ -548,10 +568,12 @@ static void b2PolyShape_ctor(b2PolyShape *polyShape,
 }
 
 void b2PolyShape_Synchronize(b2Shape *shape,
-			     const b2Vec2& position1, const b2Mat22& R1,
-			     const b2Vec2& position2, const b2Mat22& R2)
+			     b2Vec2 position1, const b2Mat22 *_R1,
+			     b2Vec2 position2, const b2Mat22 *_R2)
 {
 	b2PolyShape *polyShape = (b2PolyShape *)shape;
+	b2Mat22 R1 = *_R1;
+	b2Mat22 R2 = *_R2;
 	// The body transform is copied for convenience.
 	shape->m_R = R2;
 	shape->m_position = position2 + b2Mul(R2, polyShape->m_localCentroid);
@@ -596,14 +618,14 @@ void b2PolyShape_Synchronize(b2Shape *shape,
 	}
 }
 
-void b2PolyShape_QuickSync(b2Shape *shape, const b2Vec2& position, const b2Mat22& R)
+void b2PolyShape_QuickSync(b2Shape *shape, b2Vec2 position, const b2Mat22 *R)
 {
 	b2PolyShape *polyShape = (b2PolyShape *)shape;
-	shape->m_R = R;
-	shape->m_position = position + b2Mul(R, polyShape->m_localCentroid);
+	shape->m_R = *R;
+	shape->m_position = position + b2Mul(*R, polyShape->m_localCentroid);
 }
 
-b2Vec2 b2PolyShape_Support(const b2Shape *shape, const b2Vec2& d)
+b2Vec2 b2PolyShape_Support(const b2Shape *shape, b2Vec2 d)
 {
 	b2PolyShape *polyShape = (b2PolyShape *)shape;
 	b2Vec2 dLocal = b2MulT(shape->m_R, d);
@@ -623,7 +645,7 @@ b2Vec2 b2PolyShape_Support(const b2Shape *shape, const b2Vec2& d)
 	return shape->m_position + b2Mul(shape->m_R, polyShape->m_coreVertices[bestIndex]);
 }
 
-bool b2PolyShape_TestPoint(b2Shape *shape, const b2Vec2& p)
+bool b2PolyShape_TestPoint(b2Shape *shape, b2Vec2 p)
 {
 	b2PolyShape *polyShape = (b2PolyShape *)shape;
 	b2Vec2 pLocal = b2MulT(shape->m_R, p - shape->m_position);
