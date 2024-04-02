@@ -59,7 +59,7 @@ static void AddType(b2ContactCreateFcn* createFcn,
 	}
 }
 
-b2Contact* b2Contact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
+b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
 {
 	if (s_initialized == false)
 	{
@@ -97,7 +97,7 @@ b2Contact* b2Contact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator*
 	}
 }
 
-void b2Contact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
+void b2Contact_Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 {
 	b2Assert(s_initialized == true);
 
