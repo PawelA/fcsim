@@ -22,16 +22,8 @@
 #include "../../Common/b2Math.h"
 #include "b2Contact.h"
 
-static void b2NullContact_Evaluate(struct b2Contact *contact);
-static b2Manifold* b2NullContact_GetManifolds(struct b2Contact *contact);
-
 struct b2NullContact
 {
-	b2NullContact() {
-		contact.Evaluate = b2NullContact_Evaluate;
-		contact.GetManifolds = b2NullContact_GetManifolds;
-	}
-
 	b2Contact contact;
 };
 
@@ -42,6 +34,12 @@ static void b2NullContact_Evaluate(struct b2Contact *contact)
 static b2Manifold* b2NullContact_GetManifolds(struct b2Contact *contact)
 {
 	return NULL;
+}
+
+static void b2NullContact_ctor(b2NullContact *null_contact)
+{
+	null_contact->contact.Evaluate = b2NullContact_Evaluate;
+	null_contact->contact.GetManifolds = b2NullContact_GetManifolds;
 }
 
 #endif

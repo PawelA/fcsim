@@ -51,6 +51,7 @@ void b2ContactManager_PairRemoved(b2PairCallback *callback,
 
 static void b2ContactManager_ctor(b2ContactManager *manager)
 {
+	b2NullContact_ctor(&manager->m_nullContact);
 	manager->m_world = NULL;
 	manager->m_destroyImmediate = false;
 	manager->m_pairCallback.PairAdded = b2ContactManager_PairAdded;
