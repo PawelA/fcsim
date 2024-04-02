@@ -68,8 +68,8 @@ static float64 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2Pol
 
 	// Convert normal from into poly2's frame.
 	b2Assert(edge1 < poly1->m_vertexCount);
-	b2Vec2 normal = b2Mul(poly1->m_R, poly1->m_normals[edge1]);
-	b2Vec2 normalLocal2 = b2MulT(poly2->m_R, normal);
+	b2Vec2 normal = b2Mul(poly1->m_shape.m_R, poly1->m_normals[edge1]);
+	b2Vec2 normalLocal2 = b2MulT(poly2->m_shape.m_R, normal);
 
 	// Find support vertex on poly2 for -normal.
 	int32 vertexIndex2 = 0;
@@ -84,8 +84,8 @@ static float64 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2Pol
 		}
 	}
 
-	b2Vec2 v1 = poly1->m_position + b2Mul(poly1->m_R, vert1s[edge1]);
-	b2Vec2 v2 = poly2->m_position + b2Mul(poly2->m_R, vert2s[vertexIndex2]);
+	b2Vec2 v1 = poly1->m_shape.m_position + b2Mul(poly1->m_shape.m_R, vert1s[edge1]);
+	b2Vec2 v2 = poly2->m_shape.m_position + b2Mul(poly2->m_shape.m_R, vert2s[vertexIndex2]);
 	float64 separation = b2Dot(v2 - v1, normal);
 	return separation;
 }
@@ -96,8 +96,8 @@ static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 	int32 count1 = poly1->m_vertexCount;
 
 	// Vector pointing from the origin of poly1 to the origin of poly2.
-	b2Vec2 d = poly2->m_position - poly1->m_position;
-	b2Vec2 dLocal1 = b2MulT(poly1->m_R, d);
+	b2Vec2 d = poly2->m_shape.m_position - poly1->m_shape.m_position;
+	b2Vec2 dLocal1 = b2MulT(poly1->m_shape.m_R, d);
 
 	// Find edge normal on poly1 that has the largest projection onto d.
 	int32 edge = 0;
@@ -200,8 +200,8 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 	float64 normal1Local1LenInv = 1.0 / b2Vec2_Length(&normal1Local1);
 	normal1Local1.x *= normal1Local1LenInv;
 	normal1Local1.y *= normal1Local1LenInv;
-	b2Vec2 normal1 = b2Mul(poly1->m_R, normal1Local1);
-	b2Vec2 normal1Local2 = b2MulT(poly2->m_R, normal1);
+	b2Vec2 normal1 = b2Mul(poly1->m_shape.m_R, normal1Local1);
+	b2Vec2 normal1Local2 = b2MulT(poly2->m_shape.m_R, normal1);
 
 	// Find the incident edge on poly2.
 	int32 vertex21 = 0, vertex22 = 0;
@@ -225,12 +225,12 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 	}
 
 	// Build the clip vertices for the incident edge.
-	c[0].v = poly2->m_position + b2Mul(poly2->m_R, vert2s[vertex21]);
+	c[0].v = poly2->m_shape.m_position + b2Mul(poly2->m_shape.m_R, vert2s[vertex21]);
 	c[0].id.features.referenceFace = (uint8)edge1;
 	c[0].id.features.incidentEdge = (uint8)vertex21;
 	c[0].id.features.incidentVertex = (uint8)vertex21;
 
-	c[1].v = poly2->m_position + b2Mul(poly2->m_R, vert2s[vertex22]);
+	c[1].v = poly2->m_shape.m_position + b2Mul(poly2->m_shape.m_R, vert2s[vertex22]);
 	c[1].id.features.referenceFace = (uint8)edge1;
 	c[1].id.features.incidentEdge = (uint8)vertex21;
 	c[1].id.features.incidentVertex = (uint8)vertex22;
@@ -292,14 +292,14 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	b2Vec2 v12 = edge1 + 1 < count1 ? vert1s[edge1+1] : vert1s[0];
 
 	b2Vec2 dv = v12 - v11;
-	b2Vec2 sideNormal = b2Mul(poly1->m_R, v12 - v11);
+	b2Vec2 sideNormal = b2Mul(poly1->m_shape.m_R, v12 - v11);
 	float64 sideNormalLenInv = 1.0 / b2Vec2_Length(&sideNormal);
 	sideNormal.x *= sideNormalLenInv;
 	sideNormal.y *= sideNormalLenInv;
 	b2Vec2 frontNormal = b2Cross(sideNormal, 1.0);
 
-	v11 = poly1->m_position + b2Mul(poly1->m_R, v11);
-	v12 = poly1->m_position + b2Mul(poly1->m_R, v12);
+	v11 = poly1->m_shape.m_position + b2Mul(poly1->m_shape.m_R, v11);
+	v12 = poly1->m_shape.m_position + b2Mul(poly1->m_shape.m_R, v12);
 
 	float64 frontOffset = b2Dot(frontNormal, v11);
 	float64 sideOffset1 = -b2Dot(sideNormal, v11);

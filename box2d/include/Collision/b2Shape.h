@@ -130,7 +130,19 @@ static void b2PolyDef_ctor(b2PolyDef *polyDef)
 class b2Shape
 {
 public:
-	virtual bool TestPoint(const b2Vec2& p) = 0;
+	bool (*TestPoint)(b2Shape *shape, const b2Vec2& p);
+
+	// Remove and then add proxy from the broad-phase.
+	// This is used to refresh the collision filters.
+	void (*ResetProxy)(b2Shape *shape, b2BroadPhase* broadPhase);
+
+	void (*Synchronize)(b2Shape *shape,
+			    const b2Vec2& position1, const b2Mat22& R1,
+			    const b2Vec2& position2, const b2Mat22& R2);
+
+	void (*QuickSync)(b2Shape *shape, const b2Vec2& position, const b2Mat22& R);
+
+	b2Vec2 (*Support)(const b2Shape *shape, const b2Vec2& d);
 
 	void* GetUserData();
 
@@ -145,29 +157,20 @@ public:
 	// Get the world rotation.
 	const b2Mat22& GetRotationMatrix() const;
 
-	// Remove and then add proxy from the broad-phase.
-	// This is used to refresh the collision filters.
-	virtual void ResetProxy(b2BroadPhase* broadPhase) = 0;
-
 	// Get the next shape in the parent body's shape list.
 	b2Shape* GetNext();
 
 	//--------------- Internals Below -------------------
 
-	static b2Shape* Create(	const b2ShapeDef* def,
-							b2Body* body, const b2Vec2& newOrigin);
+	static b2Shape* Create(const b2ShapeDef* def,
+			       b2Body* body, const b2Vec2& newOrigin);
 
 	static void Destroy(b2Shape*& shape);
 
 	b2Shape(const b2ShapeDef* def, b2Body* body);
 
-	virtual ~b2Shape();
+	~b2Shape();
 
-	virtual void Synchronize(	const b2Vec2& position1, const b2Mat22& R1,
-								const b2Vec2& position2, const b2Mat22& R2) = 0;
-	virtual void QuickSync(const b2Vec2& position, const b2Mat22& R) = 0;
-
-	virtual b2Vec2 Support(const b2Vec2& d) const = 0;
 	float64 GetMaxRadius() const;
 
 	void DestroyProxy();
@@ -194,27 +197,29 @@ public:
 	int16 m_groupIndex;
 };
 
-class b2CircleShape : public b2Shape
+class b2CircleShape
 {
 public:
-	bool TestPoint(const b2Vec2& p);
-
-	void ResetProxy(b2BroadPhase* broadPhase);
-
-	//--------------- Internals Below -------------------
-
 	b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& newOrigin);
 
-	void Synchronize(	const b2Vec2& position1, const b2Mat22& R1,
-						const b2Vec2& position2, const b2Mat22& R2);
-	void QuickSync(const b2Vec2& position, const b2Mat22& R);
-
-	b2Vec2 Support(const b2Vec2& d) const;
+	b2Shape m_shape;
 
 	// Local position in parent body
 	b2Vec2 m_localPosition;
 	float64 m_radius;
 };
+
+bool b2CircleShape_TestPoint(b2Shape *shape, const b2Vec2& p);
+
+void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase);
+
+void b2CircleShape_Synchronize(b2Shape *shape,
+			       const b2Vec2& position1, const b2Mat22& R1,
+			       const b2Vec2& position2, const b2Mat22& R2);
+
+void b2CircleShape_QuickSync(b2Shape *shape, const b2Vec2& position, const b2Mat22& R);
+
+b2Vec2 b2CircleShape_Support(const b2Shape *shape, const b2Vec2& d);
 
 // A convex polygon. The position of the polygon (m_position) is the
 // position of the centroid. The vertices of the incoming polygon are pre-rotated
@@ -223,22 +228,12 @@ public:
 // coordinates, the polygon rotation is equal to the body rotation. However,
 // the polygon position is centered on the polygon centroid. This simplifies
 // some collision algorithms.
-class b2PolyShape : public b2Shape
+class b2PolyShape
 {
 public:
-	bool TestPoint(const b2Vec2& p);
-
-	void ResetProxy(b2BroadPhase* broadPhase);
-
-	//--------------- Internals Below -------------------
-
 	b2PolyShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& newOrigin);
 
-	void Synchronize(	const b2Vec2& position1, const b2Mat22& R1,
-						const b2Vec2& position2, const b2Mat22& R2);
-	void QuickSync(const b2Vec2& position, const b2Mat22& R);
-
-	b2Vec2 Support(const b2Vec2& d) const;
+	b2Shape m_shape;
 
 	// Local position of the shape centroid in parent body frame.
 	b2Vec2 m_localCentroid;
@@ -251,6 +246,18 @@ public:
 	int32 m_vertexCount;
 	b2Vec2 m_normals[b2_maxPolyVertices];
 };
+
+bool b2PolyShape_TestPoint(b2Shape *shape, const b2Vec2& p);
+
+void b2PolyShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase);
+
+void b2PolyShape_Synchronize(b2Shape *shape,
+			     const b2Vec2& position1, const b2Mat22& R1,
+			     const b2Vec2& position2, const b2Mat22& R2);
+
+void b2PolyShape_QuickSync(b2Shape *shape, const b2Vec2& position, const b2Mat22& R);
+
+b2Vec2 b2PolyShape_Support(const b2Shape *shape, const b2Vec2& d);
 
 inline b2ShapeType b2Shape::GetType() const
 {

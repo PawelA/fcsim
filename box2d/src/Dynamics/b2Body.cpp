@@ -153,7 +153,7 @@ void b2Body_SynchronizeShapes(b2Body *body)
 	b2Mat22_SetAngle(&R0, body->m_rotation0);
 	for (b2Shape* s = body->m_shapeList; s; s = s->m_next)
 	{
-		s->Synchronize(body->m_position0, R0, body->m_position, body->m_R);
+		s->Synchronize(s, body->m_position0, R0, body->m_position, body->m_R);
 	}
 }
 
@@ -161,7 +161,7 @@ void b2Body_QuickSyncShapes(b2Body *body)
 {
 	for (b2Shape* s = body->m_shapeList; s; s = s->m_next)
 	{
-		s->QuickSync(body->m_position, body->m_R);
+		s->QuickSync(s, body->m_position, body->m_R);
 	}
 }
 

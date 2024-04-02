@@ -209,14 +209,16 @@ b2Shape* b2Shape::Create(const b2ShapeDef* def,
 	case e_circleShape:
 		{
 			void* mem = b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2CircleShape));
-			return new (mem) b2CircleShape(def, body, center);
+			new (mem) b2CircleShape(def, body, center);
+			return (b2Shape *)mem;
 		}
 
 	case e_boxShape:
 	case e_polyShape:
 		{
 			void* mem = b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2PolyShape));
-			return new (mem) b2PolyShape(def, body, center);
+			new (mem) b2PolyShape(def, body, center);
+			return (b2Shape *)mem;
 		}
 	}
 
@@ -279,120 +281,133 @@ void b2Shape::DestroyProxy()
 }
 
 b2CircleShape::b2CircleShape(const b2ShapeDef* def, b2Body* body, const b2Vec2& localCenter)
-: b2Shape(def, body)
+: m_shape(def, body)
 {
+	m_shape.TestPoint = b2CircleShape_TestPoint;
+	m_shape.ResetProxy = b2CircleShape_ResetProxy;
+	m_shape.Synchronize = b2CircleShape_Synchronize;
+	m_shape.QuickSync = b2CircleShape_QuickSync;
+	m_shape.Support = b2CircleShape_Support;
+
 	b2Assert(def->type == e_circleShape);
 	const b2CircleDef* circle = (const b2CircleDef*)def;
 
 	m_localPosition = def->localPosition - localCenter;
-	m_type = e_circleShape;
+	m_shape.m_type = e_circleShape;
 	m_radius = circle->radius;
 
-	m_R = m_body->m_R;
-	b2Vec2 r = b2Mul(m_body->m_R, m_localPosition);
-	m_position = m_body->m_position + r;
-	m_maxRadius = b2Vec2_Length(&r) + m_radius;
+	m_shape.m_R = m_shape.m_body->m_R;
+	b2Vec2 r = b2Mul(m_shape.m_body->m_R, m_localPosition);
+	m_shape.m_position = m_shape.m_body->m_position + r;
+	m_shape.m_maxRadius = b2Vec2_Length(&r) + m_radius;
 
 	b2AABB aabb;
-	b2Vec2_Set(&aabb.minVertex, m_position.x - m_radius, m_position.y - m_radius);
-	b2Vec2_Set(&aabb.maxVertex, m_position.x + m_radius, m_position.y + m_radius);
+	b2Vec2_Set(&aabb.minVertex, m_shape.m_position.x - m_radius, m_shape.m_position.y - m_radius);
+	b2Vec2_Set(&aabb.maxVertex, m_shape.m_position.x + m_radius, m_shape.m_position.y + m_radius);
 
-	b2BroadPhase* broadPhase = m_body->m_world->m_broadPhase;
+	b2BroadPhase* broadPhase = m_shape.m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		m_proxyId = broadPhase->CreateProxy(aabb, this);
+		m_shape.m_proxyId = broadPhase->CreateProxy(aabb, this);
 	}
 	else
 	{
-		m_proxyId = b2_nullProxy;
+		m_shape.m_proxyId = b2_nullProxy;
 	}
 
-	if (m_proxyId == b2_nullProxy)
+	if (m_shape.m_proxyId == b2_nullProxy)
 	{
-		b2Body_Freeze(m_body);
+		b2Body_Freeze(m_shape.m_body);
 	}
 }
 
-void b2CircleShape::Synchronize(const b2Vec2& position1, const b2Mat22& R1,
-								const b2Vec2& position2, const b2Mat22& R2)
+void b2CircleShape_Synchronize(b2Shape *shape,
+			       const b2Vec2& position1, const b2Mat22& R1,
+			       const b2Vec2& position2, const b2Mat22& R2)
 {
-	m_R = R2;
-	m_position = position2 + b2Mul(m_R, m_localPosition);
+	b2CircleShape *circleShape = (b2CircleShape *)shape;
+	shape->m_R = R2;
+	shape->m_position = position2 + b2Mul(shape->m_R, circleShape->m_localPosition);
 
-	if (m_proxyId == b2_nullProxy)
+	if (shape->m_proxyId == b2_nullProxy)
 	{
 		return;
 	}
 
 	// Compute an AABB that covers the swept shape (may miss some rotation effect).
-	b2Vec2 p1 = position1 + b2Mul(R1, m_localPosition);
-	b2Vec2 lower = b2Min(p1, m_position);
-	b2Vec2 upper = b2Max(p1, m_position);
+	b2Vec2 p1 = position1 + b2Mul(R1, circleShape->m_localPosition);
+	b2Vec2 lower = b2Min(p1, shape->m_position);
+	b2Vec2 upper = b2Max(p1, shape->m_position);
 
 	b2AABB aabb;
-	b2Vec2_Set(&aabb.minVertex, lower.x - m_radius, lower.y - m_radius);
-	b2Vec2_Set(&aabb.maxVertex, upper.x + m_radius, upper.y + m_radius);
+	b2Vec2_Set(&aabb.minVertex, lower.x - circleShape->m_radius, lower.y - circleShape->m_radius);
+	b2Vec2_Set(&aabb.maxVertex, upper.x + circleShape->m_radius, upper.y + circleShape->m_radius);
 
-	b2BroadPhase* broadPhase = m_body->m_world->m_broadPhase;
+	b2BroadPhase* broadPhase = shape->m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		broadPhase->MoveProxy(m_proxyId, aabb);
+		broadPhase->MoveProxy(shape->m_proxyId, aabb);
 	}
 	else
 	{
-		b2Body_Freeze(m_body);
+		b2Body_Freeze(shape->m_body);
 	}
 }
 
-void b2CircleShape::QuickSync(const b2Vec2& position, const b2Mat22& R)
+void b2CircleShape_QuickSync(b2Shape *shape, const b2Vec2& position, const b2Mat22& R)
 {
-	m_R = R;
-	m_position = position + b2Mul(R, m_localPosition);
+	b2CircleShape *circleShape = (b2CircleShape *)shape;
+	shape->m_R = R;
+	shape->m_position = position + b2Mul(R, circleShape->m_localPosition);
 }
 
-b2Vec2 b2CircleShape::Support(const b2Vec2& d) const
+b2Vec2 b2CircleShape_Support(const b2Shape *shape, const b2Vec2& d)
 {
+	b2CircleShape *circleShape = (b2CircleShape *)shape;
 	b2Vec2 u = d;
 	float64 len = b2Vec2_Length(&u);
 	u.x /= len;
 	u.y /= len;
-	return m_position + m_radius * u;
+	return shape->m_position + circleShape->m_radius * u;
 }
 
-bool b2CircleShape::TestPoint(const b2Vec2& p)
+bool b2CircleShape_TestPoint(b2Shape *shape, const b2Vec2& p)
 {
-	b2Vec2 d = p - m_position;
-	return b2Dot(d, d) <= m_radius * m_radius;
+	b2CircleShape *circleShape = (b2CircleShape *)shape;
+	b2Vec2 d = p - shape->m_position;
+	return b2Dot(d, d) <= circleShape->m_radius * circleShape->m_radius;
 }
 
-void b2CircleShape::ResetProxy(b2BroadPhase* broadPhase)
+void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 {
-	if (m_proxyId == b2_nullProxy)
+	b2CircleShape *circleShape = (b2CircleShape *)shape;
+
+	if (shape->m_proxyId == b2_nullProxy)
 	{
 		return;
 	}
 
-	b2Proxy* proxy = broadPhase->GetProxy(m_proxyId);
+	b2Proxy* proxy = broadPhase->GetProxy(shape->m_proxyId);
 
-	broadPhase->DestroyProxy(m_proxyId);
+	broadPhase->DestroyProxy(shape->m_proxyId);
 	proxy = NULL;
 
 	b2AABB aabb;
-	b2Vec2_Set(&aabb.minVertex, m_position.x - m_radius, m_position.y - m_radius);
-	b2Vec2_Set(&aabb.maxVertex, m_position.x + m_radius, m_position.y + m_radius);
+	b2Vec2_Set(&aabb.minVertex, shape->m_position.x - circleShape->m_radius, shape->m_position.y - circleShape->m_radius);
+	b2Vec2_Set(&aabb.maxVertex, shape->m_position.x + circleShape->m_radius, shape->m_position.y + circleShape->m_radius);
 
 	if (broadPhase->InRange(aabb))
 	{
-		m_proxyId = broadPhase->CreateProxy(aabb, this);
+		shape->m_proxyId = broadPhase->CreateProxy(aabb, shape);
 	}
 	else
 	{
-		m_proxyId = b2_nullProxy;
+		shape->m_proxyId = b2_nullProxy;
 	}
 
-	if (m_proxyId == b2_nullProxy)
+	if (shape->m_proxyId == b2_nullProxy)
 	{
-		b2Body_Freeze(m_body);
+		b2Body_Freeze(shape->m_body);
 	}
 }
 
@@ -400,11 +415,17 @@ void b2CircleShape::ResetProxy(b2BroadPhase* broadPhase)
 
 
 b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
-					 const b2Vec2& newOrigin)
-: b2Shape(def, body)
+			 const b2Vec2& newOrigin)
+: m_shape(def, body)
 {
+	m_shape.TestPoint = b2PolyShape_TestPoint;
+	m_shape.ResetProxy = b2PolyShape_ResetProxy;
+	m_shape.Synchronize = b2PolyShape_Synchronize;
+	m_shape.QuickSync = b2PolyShape_QuickSync;
+	m_shape.Support = b2PolyShape_Support;
+
 	b2Assert(def->type == e_boxShape || def->type == e_polyShape);
-	m_type = e_polyShape;
+	m_shape.m_type = e_polyShape;
 	b2Mat22 localR;
 	b2Mat22_SetAngle(&localR, def->localRotation);
 
@@ -456,13 +477,13 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 	b2Vec2_Set(&minVertex, DBL_MAX, DBL_MAX);
 	b2Vec2 maxVertex;
 	b2Vec2_Set(&maxVertex, -DBL_MAX, -DBL_MAX);
-	m_maxRadius = 0.0;
+	m_shape.m_maxRadius = 0.0;
 	for (int32 i = 0; i < m_vertexCount; ++i)
 	{
 		b2Vec2 v = m_vertices[i];
 		minVertex = b2Min(minVertex, v);
 		maxVertex = b2Max(maxVertex, v);
-		m_maxRadius = b2Max(m_maxRadius, b2Vec2_Length(&v));
+		m_shape.m_maxRadius = b2Max(m_shape.m_maxRadius, b2Vec2_Length(&v));
 	}
 
 	b2Mat22_SetIdentity(&m_localOBB.R);
@@ -489,41 +510,43 @@ b2PolyShape::b2PolyShape(const b2ShapeDef* def, b2Body* body,
 		b2Assert(b2Cross(m_normals[i1], m_normals[i2]) > MIN_VALUE);
 	}
 
-	m_R = m_body->m_R;
-	m_position = m_body->m_position + b2Mul(m_body->m_R, m_localCentroid);
+	m_shape.m_R = m_shape.m_body->m_R;
+	m_shape.m_position = m_shape.m_body->m_position + b2Mul(m_shape.m_body->m_R, m_localCentroid);
 
-	b2Mat22 R = b2Mul(m_R, m_localOBB.R);
+	b2Mat22 R = b2Mul(m_shape.m_R, m_localOBB.R);
 	b2Mat22 absR = b2Abs(R);
 	b2Vec2 h = b2Mul(absR, m_localOBB.extents);
-	b2Vec2 position = m_position + b2Mul(m_R, m_localOBB.center);
+	b2Vec2 position = m_shape.m_position + b2Mul(m_shape.m_R, m_localOBB.center);
 	b2AABB aabb;
 	aabb.minVertex = position - h;
 	aabb.maxVertex = position + h;
 
-	b2BroadPhase* broadPhase = m_body->m_world->m_broadPhase;
+	b2BroadPhase* broadPhase = m_shape.m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		m_proxyId = broadPhase->CreateProxy(aabb, this);
+		m_shape.m_proxyId = broadPhase->CreateProxy(aabb, this);
 	}
 	else
 	{
-		m_proxyId = b2_nullProxy;
+		m_shape.m_proxyId = b2_nullProxy;
 	}
 
-	if (m_proxyId == b2_nullProxy)
+	if (m_shape.m_proxyId == b2_nullProxy)
 	{
-		b2Body_Freeze(m_body);
+		b2Body_Freeze(m_shape.m_body);
 	}
 }
 
-void b2PolyShape::Synchronize(	const b2Vec2& position1, const b2Mat22& R1,
-								const b2Vec2& position2, const b2Mat22& R2)
+void b2PolyShape_Synchronize(b2Shape *shape,
+			     const b2Vec2& position1, const b2Mat22& R1,
+			     const b2Vec2& position2, const b2Mat22& R2)
 {
+	b2PolyShape *polyShape = (b2PolyShape *)shape;
 	// The body transform is copied for convenience.
-	m_R = R2;
-	m_position = position2 + b2Mul(R2, m_localCentroid);
+	shape->m_R = R2;
+	shape->m_position = position2 + b2Mul(R2, polyShape->m_localCentroid);
 
-	if (m_proxyId == b2_nullProxy)
+	if (shape->m_proxyId == b2_nullProxy)
 	{
 		return;
 	}
@@ -531,19 +554,19 @@ void b2PolyShape::Synchronize(	const b2Vec2& position1, const b2Mat22& R1,
 	b2AABB aabb1, aabb2;
 
 	{
-		b2Mat22 obbR = b2Mul(R1, m_localOBB.R);
+		b2Mat22 obbR = b2Mul(R1, polyShape->m_localOBB.R);
 		b2Mat22 absR = b2Abs(obbR);
-		b2Vec2 h = b2Mul(absR, m_localOBB.extents);
-		b2Vec2 center = position1 + b2Mul(R1, m_localCentroid + m_localOBB.center);
+		b2Vec2 h = b2Mul(absR, polyShape->m_localOBB.extents);
+		b2Vec2 center = position1 + b2Mul(R1, polyShape->m_localCentroid + polyShape->m_localOBB.center);
 		aabb1.minVertex = center - h;
 		aabb1.maxVertex = center + h;
 	}
 
 	{
-		b2Mat22 obbR = b2Mul(R2, m_localOBB.R);
+		b2Mat22 obbR = b2Mul(R2, polyShape->m_localOBB.R);
 		b2Mat22 absR = b2Abs(obbR);
-		b2Vec2 h = b2Mul(absR, m_localOBB.extents);
-		b2Vec2 center = position2 + b2Mul(R2, m_localCentroid + m_localOBB.center);
+		b2Vec2 h = b2Mul(absR, polyShape->m_localOBB.extents);
+		b2Vec2 center = position2 + b2Mul(R2, polyShape->m_localCentroid + polyShape->m_localOBB.center);
 		aabb2.minVertex = center - h;
 		aabb2.maxVertex = center + h;
 	}
@@ -552,32 +575,34 @@ void b2PolyShape::Synchronize(	const b2Vec2& position1, const b2Mat22& R1,
 	aabb.minVertex = b2Min(aabb1.minVertex, aabb2.minVertex);
 	aabb.maxVertex = b2Max(aabb1.maxVertex, aabb2.maxVertex);
 
-	b2BroadPhase* broadPhase = m_body->m_world->m_broadPhase;
+	b2BroadPhase* broadPhase = shape->m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		broadPhase->MoveProxy(m_proxyId, aabb);
+		broadPhase->MoveProxy(shape->m_proxyId, aabb);
 	}
 	else
 	{
-		b2Body_Freeze(m_body);
+		b2Body_Freeze(shape->m_body);
 	}
 }
 
-void b2PolyShape::QuickSync(const b2Vec2& position, const b2Mat22& R)
+void b2PolyShape_QuickSync(b2Shape *shape, const b2Vec2& position, const b2Mat22& R)
 {
-	m_R = R;
-	m_position = position + b2Mul(R, m_localCentroid);
+	b2PolyShape *polyShape = (b2PolyShape *)shape;
+	shape->m_R = R;
+	shape->m_position = position + b2Mul(R, polyShape->m_localCentroid);
 }
 
-b2Vec2 b2PolyShape::Support(const b2Vec2& d) const
+b2Vec2 b2PolyShape_Support(const b2Shape *shape, const b2Vec2& d)
 {
-	b2Vec2 dLocal = b2MulT(m_R, d);
+	b2PolyShape *polyShape = (b2PolyShape *)shape;
+	b2Vec2 dLocal = b2MulT(shape->m_R, d);
 
 	int32 bestIndex = 0;
-	float64 bestValue = b2Dot(m_coreVertices[0], dLocal);
-	for (int32 i = 1; i < m_vertexCount; ++i)
+	float64 bestValue = b2Dot(polyShape->m_coreVertices[0], dLocal);
+	for (int32 i = 1; i < polyShape->m_vertexCount; ++i)
 	{
-		float64 value = b2Dot(m_coreVertices[i], dLocal);
+		float64 value = b2Dot(polyShape->m_coreVertices[i], dLocal);
 		if (value > bestValue)
 		{
 			bestIndex = i;
@@ -585,16 +610,17 @@ b2Vec2 b2PolyShape::Support(const b2Vec2& d) const
 		}
 	}
 
-	return m_position + b2Mul(m_R, m_coreVertices[bestIndex]);
+	return shape->m_position + b2Mul(shape->m_R, polyShape->m_coreVertices[bestIndex]);
 }
 
-bool b2PolyShape::TestPoint(const b2Vec2& p)
+bool b2PolyShape_TestPoint(b2Shape *shape, const b2Vec2& p)
 {
-	b2Vec2 pLocal = b2MulT(m_R, p - m_position);
+	b2PolyShape *polyShape = (b2PolyShape *)shape;
+	b2Vec2 pLocal = b2MulT(shape->m_R, p - shape->m_position);
 
-	for (int32 i = 0; i < m_vertexCount; ++i)
+	for (int32 i = 0; i < polyShape->m_vertexCount; ++i)
 	{
-		float64 dot = b2Dot(m_normals[i], pLocal - m_vertices[i]);
+		float64 dot = b2Dot(polyShape->m_normals[i], pLocal - polyShape->m_vertices[i]);
 		if (dot > 0.0)
 		{
 			return false;
@@ -604,38 +630,39 @@ bool b2PolyShape::TestPoint(const b2Vec2& p)
 	return true;
 }
 
-void b2PolyShape::ResetProxy(b2BroadPhase* broadPhase)
+void b2PolyShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 {
-	if (m_proxyId == b2_nullProxy)
+	b2PolyShape *polyShape = (b2PolyShape *)shape;
+	if (shape->m_proxyId == b2_nullProxy)
 	{
 		return;
 	}
 
-	b2Proxy* proxy = broadPhase->GetProxy(m_proxyId);
+	b2Proxy* proxy = broadPhase->GetProxy(shape->m_proxyId);
 
-	broadPhase->DestroyProxy(m_proxyId);
+	broadPhase->DestroyProxy(shape->m_proxyId);
 	proxy = NULL;
 
-	b2Mat22 R = b2Mul(m_R, m_localOBB.R);
+	b2Mat22 R = b2Mul(shape->m_R, polyShape->m_localOBB.R);
 	b2Mat22 absR = b2Abs(R);
-	b2Vec2 h = b2Mul(absR, m_localOBB.extents);
-	b2Vec2 position = m_position + b2Mul(m_R, m_localOBB.center);
+	b2Vec2 h = b2Mul(absR, polyShape->m_localOBB.extents);
+	b2Vec2 position = shape->m_position + b2Mul(shape->m_R, polyShape->m_localOBB.center);
 	b2AABB aabb;
 	aabb.minVertex = position - h;
 	aabb.maxVertex = position + h;
 
 	if (broadPhase->InRange(aabb))
 	{
-		m_proxyId = broadPhase->CreateProxy(aabb, this);
+		shape->m_proxyId = broadPhase->CreateProxy(aabb, shape);
 	}
 	else
 	{
-		m_proxyId = b2_nullProxy;
+		shape->m_proxyId = b2_nullProxy;
 	}
 
-	if (m_proxyId == b2_nullProxy)
+	if (shape->m_proxyId == b2_nullProxy)
 	{
-		b2Body_Freeze(m_body);
+		b2Body_Freeze(shape->m_body);
 	}
 }
 

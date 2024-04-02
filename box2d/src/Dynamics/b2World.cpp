@@ -195,7 +195,7 @@ b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def)
 		b2Body* b = def->body1->m_shapeCount < def->body2->m_shapeCount ? def->body1 : def->body2;
 		for (b2Shape* s = b->m_shapeList; s; s = s->m_next)
 		{
-			s->ResetProxy(world->m_broadPhase);
+			s->ResetProxy(s, world->m_broadPhase);
 		}
 	}
 
@@ -280,7 +280,7 @@ void b2World_DestroyJoint(b2World *world, b2Joint* j)
 		b2Body* b = body1->m_shapeCount < body2->m_shapeCount ? body1 : body2;
 		for (b2Shape* s = b->m_shapeList; s; s = s->m_next)
 		{
-			s->ResetProxy(world->m_broadPhase);
+			s->ResetProxy(s, world->m_broadPhase);
 		}
 	}
 }

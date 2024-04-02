@@ -161,8 +161,8 @@ float64 b2Distance(b2Vec2* p1Out, b2Vec2* p2Out, const b2Shape* shape1, const b2
 	for (int32 iter = 0; iter < maxIterations; ++iter)
 	{
 		b2Vec2 v = *p2Out - *p1Out;
-		b2Vec2 w1 = shape1->Support(v);
-		b2Vec2 w2 = shape2->Support(-v);
+		b2Vec2 w1 = shape1->Support(shape1, v);
+		b2Vec2 w2 = shape2->Support(shape2, -v);
 
 		vSqr = b2Dot(v, v);
 		b2Vec2 w = w2 - w1;

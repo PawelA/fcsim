@@ -23,7 +23,7 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 {
 	manifold->pointCount = 0;
 
-	b2Vec2 d = circle2->m_position - circle1->m_position;
+	b2Vec2 d = circle2->m_shape.m_position - circle1->m_shape.m_position;
 	float64 distSqr = b2Dot(d, d);
 	float64 radiusSum = circle1->m_radius + circle2->m_radius;
 	if (distSqr > radiusSum * radiusSum && conservative == false)
@@ -49,7 +49,7 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 	manifold->pointCount = 1;
 	manifold->points[0].id.key = 0;
 	manifold->points[0].separation = separation;
-	manifold->points[0].position = circle2->m_position - circle2->m_radius * manifold->normal;
+	manifold->points[0].position = circle2->m_shape.m_position - circle2->m_radius * manifold->normal;
 }
 
 void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const b2CircleShape* circle, bool conservative)
@@ -59,7 +59,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	manifold->pointCount = 0;
 
 	// Compute circle position in the frame of the polygon.
-	b2Vec2 xLocal = b2MulT(poly->m_R, circle->m_position - poly->m_position);
+	b2Vec2 xLocal = b2MulT(poly->m_shape.m_R, circle->m_shape.m_position - poly->m_shape.m_position);
 
 	// Find the min separating edge.
 	int32 normalIndex = 0;
@@ -85,12 +85,12 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	if (separation < MIN_VALUE)
 	{
 		manifold->pointCount = 1;
-		manifold->normal = b2Mul(poly->m_R, poly->m_normals[normalIndex]);
+		manifold->normal = b2Mul(poly->m_shape.m_R, poly->m_normals[normalIndex]);
 		manifold->points[0].id.features.incidentEdge = (uint8)normalIndex;
 		manifold->points[0].id.features.incidentVertex = b2_nullFeature;
 		manifold->points[0].id.features.referenceFace = b2_nullFeature;
 		manifold->points[0].id.features.flip = 0;
-		manifold->points[0].position = circle->m_position - radius * manifold->normal;
+		manifold->points[0].position = circle->m_shape.m_position - radius * manifold->normal;
 		manifold->points[0].separation = separation - radius;
 		return;
 	}
@@ -116,12 +116,12 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 		}
 
 		manifold->pointCount = 1;
-		manifold->normal = b2Mul(poly->m_R, d);
+		manifold->normal = b2Mul(poly->m_shape.m_R, d);
 		manifold->points[0].id.features.incidentEdge = b2_nullFeature;
 		manifold->points[0].id.features.incidentVertex = (uint8)vertIndex1;
 		manifold->points[0].id.features.referenceFace = b2_nullFeature;
 		manifold->points[0].id.features.flip = 0;
-		manifold->points[0].position = circle->m_position - radius * manifold->normal;
+		manifold->points[0].position = circle->m_shape.m_position - radius * manifold->normal;
 		manifold->points[0].separation = dist - radius;
 		return;
 	}
@@ -159,7 +159,7 @@ void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const
 	}
 
 	manifold->pointCount = 1;
-	manifold->normal = b2Mul(poly->m_R, d);
-	manifold->points[0].position = circle->m_position - radius * manifold->normal;
+	manifold->normal = b2Mul(poly->m_shape.m_R, d);
+	manifold->points[0].position = circle->m_shape.m_position - radius * manifold->normal;
 	manifold->points[0].separation = dist - radius;
 }
