@@ -44,9 +44,8 @@ struct b2RevoluteJointDef : public b2JointDef
 	bool enableMotor;
 };
 
-class b2RevoluteJoint
+struct b2RevoluteJoint
 {
-public:
 	b2Joint m_joint;
 
 	b2Vec2 m_localAnchor1;
