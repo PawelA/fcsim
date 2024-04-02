@@ -201,7 +201,7 @@ void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData)
 	}
 }
 
-b2Shape* b2Shape::Create(const b2ShapeDef* def,
+b2Shape* b2Shape_Create(const b2ShapeDef* def,
 					 b2Body* body, const b2Vec2& center)
 {
 	switch (def->type)
@@ -226,7 +226,7 @@ b2Shape* b2Shape::Create(const b2ShapeDef* def,
 	return NULL;
 }
 
-void b2Shape::Destroy(b2Shape*& shape)
+void b2Shape_Destroy(b2Shape*& shape)
 {
 	b2BlockAllocator& allocator = shape->m_body->m_world->m_blockAllocator;
 	shape->~b2Shape();

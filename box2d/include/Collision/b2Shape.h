@@ -144,32 +144,11 @@ public:
 
 	b2Vec2 (*Support)(const b2Shape *shape, const b2Vec2& d);
 
-	b2ShapeType GetType() const;
-
-	// Get the parent body of this shape.
-	b2Body* GetBody();
-
-	// Get the world position.
-	const b2Vec2& GetPosition() const;
-
-	// Get the world rotation.
-	const b2Mat22& GetRotationMatrix() const;
-
-	// Get the next shape in the parent body's shape list.
-	b2Shape* GetNext();
-
 	//--------------- Internals Below -------------------
-
-	static b2Shape* Create(const b2ShapeDef* def,
-			       b2Body* body, const b2Vec2& newOrigin);
-
-	static void Destroy(b2Shape*& shape);
 
 	b2Shape(const b2ShapeDef* def, b2Body* body);
 
 	~b2Shape();
-
-	float64 GetMaxRadius() const;
 
 	void DestroyProxy();
 
@@ -257,40 +236,14 @@ void b2PolyShape_QuickSync(b2Shape *shape, const b2Vec2& position, const b2Mat22
 
 b2Vec2 b2PolyShape_Support(const b2Shape *shape, const b2Vec2& d);
 
-inline b2ShapeType b2Shape::GetType() const
-{
-	return m_type;
-}
-
 inline void* b2Shape_GetUserData(b2Shape *shape)
 {
 	return shape->m_userData;
 }
 
-inline b2Body* b2Shape::GetBody()
-{
-	return m_body;
-}
+b2Shape* b2Shape_Create(const b2ShapeDef* def,
+			b2Body* body, const b2Vec2& newOrigin);
 
-inline b2Shape* b2Shape::GetNext()
-{
-	return m_next;
-}
-
-inline const b2Vec2& b2Shape::GetPosition() const
-{
-	return m_position;
-}
-
-inline const b2Mat22& b2Shape::GetRotationMatrix() const
-{
-	return m_R;
-}
-
-inline float64 b2Shape::GetMaxRadius() const
-{
-	return m_maxRadius;
-}
-
+void b2Shape_Destroy(b2Shape*& shape);
 
 #endif

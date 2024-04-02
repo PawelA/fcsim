@@ -111,7 +111,7 @@ void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world)
 	for (int32 i = 0; i < body->m_shapeCount; ++i)
 	{
 		const b2ShapeDef* sd = bd->shapes[i];
-		b2Shape* shape = b2Shape::Create(sd, body, body->m_center);
+		b2Shape* shape = b2Shape_Create(sd, body, body->m_center);
 		shape->m_next = body->m_shapeList;
 		body->m_shapeList = shape;
 	}
@@ -143,7 +143,7 @@ void b2Body_dtor(b2Body *body)
 		b2Shape* s0 = s;
 		s = s->m_next;
 
-		b2Shape::Destroy(s0);
+		b2Shape_Destroy(s0);
 	}
 }
 
