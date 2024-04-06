@@ -19,9 +19,9 @@
 #ifndef CIRCLE_CONTACT_H
 #define CIRCLE_CONTACT_H
 
-#include "../../Common/b2Math.h"
-#include "../../Collision/b2Collision.h"
-#include "b2Contact.h"
+#include <Common/b2Math.h>
+#include <Collision/b2Collision.h>
+#include <Dynamics/Contacts/b2Contact.h>
 
 struct b2BlockAllocator;
 

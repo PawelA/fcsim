@@ -19,7 +19,7 @@
 #ifndef B2_NULL_CONTACT_H
 #define B2_NULL_CONTACT_H
 
-#include "b2Contact.h"
+#include <Dynamics/Contacts/b2Contact.h>
 #include <stddef.h>
 
 typedef struct b2NullContact b2NullContact;

@@ -19,8 +19,8 @@
 #ifndef B2_SHAPE_H
 #define B2_SHAPE_H
 
-#include "../Common/b2Vec.h"
-#include "b2Collision.h"
+#include <Common/b2Vec.h>
+#include <Collision/b2Collision.h>
 
 typedef struct b2Body b2Body;
 typedef struct b2BroadPhase b2BroadPhase;

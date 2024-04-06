@@ -19,8 +19,8 @@
 #ifndef B2_MATH_H
 #define B2_MATH_H
 
-#include "b2Settings.h"
-#include "b2Vec.h"
+#include <Common/b2Settings.h>
+#include <Common/b2Vec.h>
 #include <fcsim_funcs.h>
 #include <cmath>
 #include <cfloat>

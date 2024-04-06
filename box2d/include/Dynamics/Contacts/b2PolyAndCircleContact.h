@@ -19,7 +19,7 @@
 #ifndef POLY_AND_CIRCLE_CONTACT_H
 #define POLY_AND_CIRCLE_CONTACT_H
 
-#include "b2Contact.h"
+#include <Dynamics/Contacts/b2Contact.h>
 
 struct b2BlockAllocator;
 

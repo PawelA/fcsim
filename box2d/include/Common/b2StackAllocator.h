@@ -19,7 +19,7 @@
 #ifndef B2_STACK_ALLOCATOR_H
 #define B2_STACK_ALLOCATOR_H
 
-#include "b2Settings.h"
+#include <Common/b2Settings.h>
 
 #define b2_stackSize  100 * 1024	// 100k
 #define b2_maxStackEntries  32
