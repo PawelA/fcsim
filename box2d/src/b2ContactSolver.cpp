@@ -16,11 +16,11 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Dynamics/Contacts/b2ContactSolver.h>
-#include <Dynamics/Contacts/b2Contact.h>
-#include <Dynamics/b2Body.h>
-#include <Dynamics/b2World.h>
-#include <Common/b2StackAllocator.h>
+#include <box2d/b2ContactSolver.h>
+#include <box2d/b2Contact.h>
+#include <box2d/b2Body.h>
+#include <box2d/b2World.h>
+#include <box2d/b2StackAllocator.h>
 
 b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2StackAllocator* allocator)
 {

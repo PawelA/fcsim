@@ -26,10 +26,10 @@ Also, some ideas, such as using integral values for fast compares comes from
 Bullet (http:/www.bulletphysics.com).
 */
 
-#include <Common/b2Settings.h>
-#include <Common/b2Math.h>
-#include <Collision/b2Collision.h>
-#include <Collision/b2PairManager.h>
+#include <box2d/b2Settings.h>
+#include <box2d/b2Math.h>
+#include <box2d/b2Collision.h>
+#include <box2d/b2PairManager.h>
 #include <climits>
 
 const uint16 b2_invalid = USHRT_MAX;

@@ -19,7 +19,7 @@
 #ifndef B2_REVOLUTE_JOINT_H
 #define B2_REVOLUTE_JOINT_H
 
-#include <Dynamics/Joints/b2Joint.h>
+#include <box2d/b2Joint.h>
 
 typedef struct b2RevoluteJointDef b2RevoluteJointDef;
 struct b2RevoluteJointDef

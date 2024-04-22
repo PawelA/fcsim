@@ -19,8 +19,8 @@
 #ifndef B2_MATH_H
 #define B2_MATH_H
 
-#include <Common/b2Settings.h>
-#include <Common/b2Vec.h>
+#include <box2d/b2Settings.h>
+#include <box2d/b2Vec.h>
 #include <fpmath/fpmath.h>
 #include <cmath>
 #include <cfloat>

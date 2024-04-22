@@ -16,31 +16,27 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef B2_NULL_CONTACT_H
-#define B2_NULL_CONTACT_H
+#ifndef CIRCLE_CONTACT_H
+#define CIRCLE_CONTACT_H
 
-#include <Dynamics/Contacts/b2Contact.h>
-#include <stddef.h>
+#include <box2d/b2Math.h>
+#include <box2d/b2Collision.h>
+#include <box2d/b2Contact.h>
 
-typedef struct b2NullContact b2NullContact;
-struct b2NullContact
+struct b2BlockAllocator;
+
+class b2CircleContact
 {
+public:
+	static b2Contact* Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
+	static void Destroy(b2Contact* contact, b2BlockAllocator* allocator);
+
+	b2CircleContact(b2Shape* shape1, b2Shape* shape2);
+	~b2CircleContact() {}
+
 	b2Contact contact;
+
+	b2Manifold m_manifold;
 };
-
-static void b2NullContact_Evaluate(struct b2Contact *contact)
-{
-}
-
-static b2Manifold* b2NullContact_GetManifolds(struct b2Contact *contact)
-{
-	return NULL;
-}
-
-static void b2NullContact_ctor(b2NullContact *null_contact)
-{
-	null_contact->contact.Evaluate = b2NullContact_Evaluate;
-	null_contact->contact.GetManifolds = b2NullContact_GetManifolds;
-}
 
 #endif

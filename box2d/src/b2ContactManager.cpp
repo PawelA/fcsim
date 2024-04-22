@@ -16,10 +16,10 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Common/b2Math.h>
-#include <Dynamics/b2ContactManager.h>
-#include <Dynamics/b2World.h>
-#include <Dynamics/b2Body.h>
+#include <box2d/b2Math.h>
+#include <box2d/b2ContactManager.h>
+#include <box2d/b2World.h>
+#include <box2d/b2Body.h>
 
 static void b2ContactManager_DestroyContact(b2ContactManager *manager, b2Contact* c);
 

@@ -23,8 +23,8 @@
 #ifndef B2_PAIR_MANAGER_H
 #define B2_PAIR_MANAGER_H
 
-#include <Common/b2Settings.h>
-#include <Common/b2Vec.h>
+#include <box2d/b2Settings.h>
+#include <box2d/b2Vec.h>
 
 #include <limits.h>
 

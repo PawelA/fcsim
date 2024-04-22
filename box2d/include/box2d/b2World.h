@@ -19,10 +19,10 @@
 #ifndef B2_WORLD_H
 #define B2_WORLD_H
 
-#include <Common/b2Vec.h>
-#include <Common/b2BlockAllocator.h>
-#include <Common/b2StackAllocator.h>
-#include <Dynamics/b2ContactManager.h>
+#include <box2d/b2Vec.h>
+#include <box2d/b2BlockAllocator.h>
+#include <box2d/b2StackAllocator.h>
+#include <box2d/b2ContactManager.h>
 
 typedef struct b2AABB b2AABB;
 typedef struct b2BodyDef b2BodyDef;

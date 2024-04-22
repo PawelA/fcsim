@@ -16,13 +16,13 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Dynamics/b2Island.h>
-#include <Dynamics/b2Body.h>
-#include <Dynamics/b2World.h>
-#include <Dynamics/Contacts/b2Contact.h>
-#include <Dynamics/Contacts/b2ContactSolver.h>
-#include <Dynamics/Joints/b2Joint.h>
-#include <Common/b2StackAllocator.h>
+#include <box2d/b2Island.h>
+#include <box2d/b2Body.h>
+#include <box2d/b2World.h>
+#include <box2d/b2Contact.h>
+#include <box2d/b2ContactSolver.h>
+#include <box2d/b2Joint.h>
+#include <box2d/b2StackAllocator.h>
 
 /*
 Position Correction Notes

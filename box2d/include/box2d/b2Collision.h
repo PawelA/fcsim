@@ -19,7 +19,7 @@
 #ifndef B2_COLLISION_H
 #define B2_COLLISION_H
 
-#include <Common/b2Vec.h>
+#include <box2d/b2Vec.h>
 #include <limits.h>
 
 typedef struct b2Shape b2Shape;

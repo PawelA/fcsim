@@ -19,7 +19,7 @@
 #ifndef B2_BLOCK_ALLOCATOR_H
 #define B2_BLOCK_ALLOCATOR_H
 
-#include <Common/b2Settings.h>
+#include <box2d/b2Settings.h>
 
 #define b2_chunkSize 4096
 #define b2_maxBlockSize 640

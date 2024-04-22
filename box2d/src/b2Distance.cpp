@@ -16,9 +16,9 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Common/b2Math.h>
-#include <Collision/b2Collision.h>
-#include <Collision/b2Shape.h>
+#include <box2d/b2Math.h>
+#include <box2d/b2Collision.h>
+#include <box2d/b2Shape.h>
 
 int32 g_GJK_Iterations = 0;
 

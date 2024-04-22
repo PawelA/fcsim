@@ -19,7 +19,7 @@
 #ifndef B2_ISLAND_H
 #define B2_ISLAND_H
 
-#include <Common/b2Math.h>
+#include <box2d/b2Math.h>
 
 class b2StackAllocator;
 class b2Contact;

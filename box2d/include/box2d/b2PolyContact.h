@@ -19,7 +19,7 @@
 #ifndef POLYCONTACT_H
 #define POLYCONTACT_H
 
-#include <Dynamics/Contacts/b2Contact.h>
+#include <box2d/b2Contact.h>
 
 struct b2BlockAllocator;
 

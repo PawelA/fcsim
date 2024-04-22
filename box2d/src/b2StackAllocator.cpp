@@ -16,8 +16,8 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Common/b2StackAllocator.h>
-#include <Common/b2Math.h>
+#include <box2d/b2StackAllocator.h>
+#include <box2d/b2Math.h>
 
 void b2StackAllocator_ctor(struct b2StackAllocator *allocator)
 {

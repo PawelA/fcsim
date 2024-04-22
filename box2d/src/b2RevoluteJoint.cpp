@@ -16,11 +16,11 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Dynamics/Joints/b2RevoluteJoint.h>
-#include <Dynamics/b2Body.h>
-#include <Dynamics/b2World.h>
+#include <box2d/b2RevoluteJoint.h>
+#include <box2d/b2Body.h>
+#include <box2d/b2World.h>
 
-#include <Dynamics/b2Island.h>
+#include <box2d/b2Island.h>
 
 // Point-to-point constraint
 // C = p2 - p1

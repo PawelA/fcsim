@@ -16,12 +16,12 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Common/b2Math.h>
-#include <Dynamics/b2Body.h>
-#include <Dynamics/b2World.h>
-#include <Dynamics/Joints/b2Joint.h>
-#include <Dynamics/Contacts/b2Contact.h>
-#include <Collision/b2Shape.h>
+#include <box2d/b2Math.h>
+#include <box2d/b2Body.h>
+#include <box2d/b2World.h>
+#include <box2d/b2Joint.h>
+#include <box2d/b2Contact.h>
+#include <box2d/b2Shape.h>
 #include <string.h>
 
 void b2BodyDef_ctor(b2BodyDef *def) 

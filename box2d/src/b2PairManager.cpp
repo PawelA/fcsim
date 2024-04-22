@@ -16,8 +16,8 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Collision/b2PairManager.h>
-#include <Collision/b2BroadPhase.h>
+#include <box2d/b2PairManager.h>
+#include <box2d/b2BroadPhase.h>
 
 #include <algorithm>
 

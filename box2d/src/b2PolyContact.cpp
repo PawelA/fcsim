@@ -16,8 +16,8 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Dynamics/Contacts/b2PolyContact.h>
-#include <Common/b2BlockAllocator.h>
+#include <box2d/b2PolyContact.h>
+#include <box2d/b2BlockAllocator.h>
 
 #include <cstring>
 #include <memory>

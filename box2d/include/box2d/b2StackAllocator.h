@@ -16,25 +16,43 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef POLY_AND_CIRCLE_CONTACT_H
-#define POLY_AND_CIRCLE_CONTACT_H
+#ifndef B2_STACK_ALLOCATOR_H
+#define B2_STACK_ALLOCATOR_H
 
-#include <Dynamics/Contacts/b2Contact.h>
+#include <box2d/b2Settings.h>
 
-struct b2BlockAllocator;
+#define b2_stackSize  100 * 1024	// 100k
+#define b2_maxStackEntries  32
 
-class b2PolyAndCircleContact
+struct b2StackEntry
 {
-public:
-	static b2Contact* Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
-	static void Destroy(b2Contact* contact, b2BlockAllocator* allocator);
-
-	b2PolyAndCircleContact(b2Shape* shape1, b2Shape* shape2);
-	~b2PolyAndCircleContact() {}
-
-	b2Contact contact;
-
-	b2Manifold m_manifold;
+	char* data;
+	int32 size;
+	bool usedMalloc;
 };
+
+// This is a stack allocator used for fast per step allocations.
+// You must nest allocate/free pairs. The code will assert
+// if you try to interleave multiple allocate/free pairs.
+typedef struct b2StackAllocator b2StackAllocator;
+struct b2StackAllocator
+{
+	char m_data[b2_stackSize];
+	int32 m_index;
+
+	int32 m_allocation;
+	int32 m_maxAllocation;
+
+	struct b2StackEntry m_entries[b2_maxStackEntries];
+	int32 m_entryCount;
+};
+
+void b2StackAllocator_ctor(b2StackAllocator *allocator);
+
+void b2StackAllocator_dtor(b2StackAllocator *allocator);
+
+void *b2StackAllocator_Allocate(struct b2StackAllocator *allocator, int32 size);
+
+void b2StackAllocator_Free(struct b2StackAllocator *allocator, void* p);
 
 #endif

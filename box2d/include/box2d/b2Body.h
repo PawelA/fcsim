@@ -19,9 +19,9 @@
 #ifndef B2_BODY_H
 #define B2_BODY_H
 
-#include <Common/b2Vec.h>
-#include <Dynamics/Joints/b2Joint.h>
-#include <Collision/b2Shape.h>
+#include <box2d/b2Vec.h>
+#include <box2d/b2Joint.h>
+#include <box2d/b2Shape.h>
 
 struct b2Joint;
 struct b2Contact;

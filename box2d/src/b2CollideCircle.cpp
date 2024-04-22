@@ -16,9 +16,9 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Common/b2Math.h>
-#include <Collision/b2Collision.h>
-#include <Collision/b2Shape.h>
+#include <box2d/b2Math.h>
+#include <box2d/b2Collision.h>
+#include <box2d/b2Shape.h>
 
 void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape* circle2, bool conservative)
 {

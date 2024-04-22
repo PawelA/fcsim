@@ -19,7 +19,7 @@
 #ifndef B2_VEC_H
 #define B2_VEC_H
 
-#include <Common/b2Settings.h>
+#include <box2d/b2Settings.h>
 
 typedef struct b2Vec2 b2Vec2;
 struct b2Vec2

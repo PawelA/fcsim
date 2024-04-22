@@ -16,8 +16,8 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Common/b2Math.h>
-#include <Collision/b2BroadPhase.h>
+#include <box2d/b2Math.h>
+#include <box2d/b2BroadPhase.h>
 #include <algorithm>
 #include <cstring>
 

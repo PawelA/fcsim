@@ -19,7 +19,7 @@
 #ifndef JOINT_H
 #define JOINT_H
 
-#include <Common/b2Vec.h>
+#include <box2d/b2Vec.h>
 #include <stddef.h>
 
 struct b2Body;

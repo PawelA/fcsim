@@ -16,20 +16,25 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef BOX2D_H
-#define BOX2D_H
+#ifndef POLY_AND_CIRCLE_CONTACT_H
+#define POLY_AND_CIRCLE_CONTACT_H
 
-// These include files constitute the main Box2D API
+#include <box2d/b2Contact.h>
 
-#include "Common/b2Settings.h"
+struct b2BlockAllocator;
 
-#include "Collision/b2Shape.h"
-#include "Collision/b2BroadPhase.h"
-#include "Dynamics/b2World.h"
-#include "Dynamics/b2Body.h"
+class b2PolyAndCircleContact
+{
+public:
+	static b2Contact* Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
+	static void Destroy(b2Contact* contact, b2BlockAllocator* allocator);
 
-#include "Dynamics/Contacts/b2Contact.h"
+	b2PolyAndCircleContact(b2Shape* shape1, b2Shape* shape2);
+	~b2PolyAndCircleContact() {}
 
-#include "Dynamics/Joints/b2RevoluteJoint.h"
+	b2Contact contact;
+
+	b2Manifold m_manifold;
+};
 
 #endif

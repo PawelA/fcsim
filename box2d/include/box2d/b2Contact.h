@@ -19,8 +19,8 @@
 #ifndef CONTACT_H
 #define CONTACT_H
 
-#include <Collision/b2Collision.h>
-#include <Collision/b2Shape.h>
+#include <box2d/b2Collision.h>
+#include <box2d/b2Shape.h>
 
 typedef struct b2Body b2Body;
 typedef struct b2Contact b2Contact;
