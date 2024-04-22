@@ -1,8 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
-
-#include <fcsim_funcs.h>
+#include <fpmath/fpmath.h>
 
 struct bignum {
 	uint32_t words[130];
@@ -111,7 +110,33 @@ static double binexp(double x, int n)
 	return res;
 }
 
-int fcsim_strtod(const char *str, int len, double *res)
+static int strtoi(const char *str, int len, int *res)
+{
+	int val = 0;
+	int neg = 0;
+	int digit;
+	int i;
+
+	if (len == 0)
+		return -1;
+	if (*str == '+' || *str == '-') {
+		if (*str == '-')
+			neg = 1;
+		str++;
+		len--;
+	}
+	for (i = 0; i < len; i++) {
+		digit = str[i] - '0';
+		if (digit < 0 || digit > 10)
+			return -1;
+		val = val * 10 + digit;
+	}
+	*res = neg ? -val : val;
+
+	return 0;
+}
+
+int fp_strtod(const char *str, int len, double *res)
 {
 	struct bignum bignum;
 	int is_neg = 0;
@@ -141,7 +166,7 @@ int fcsim_strtod(const char *str, int len, double *res)
 			seen_decimal = 1;
 		}
 		else if (str[i] == 'e' || str[i] == 'E') {
-			fcsim_strtoi(&str[i+1], len - (i+1), &exp);
+			strtoi(&str[i+1], len - (i+1), &exp);
 			break;
 		}
 	}

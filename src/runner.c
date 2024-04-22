@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <pthread.h>
-#include <fcsim.h>
+
+#include "fcsim.h"
 #include "runner.h"
 #include "timer.h"
 

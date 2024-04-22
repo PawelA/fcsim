@@ -1,14 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fpmath/fpmath.h>
 
-#include <xml.h>
-#include <fcsim_funcs.h>
+#include "xml.h"
 
 struct slice {
 	char *ptr;
 	long len;
 };
+
+static int strtoi(const char *str, int len, int *res)
+{
+	int val = 0;
+	int neg = 0;
+	int digit;
+	int i;
+
+	if (len == 0)
+		return -1;
+	if (*str == '+' || *str == '-') {
+		if (*str == '-')
+			neg = 1;
+		str++;
+		len--;
+	}
+	for (i = 0; i < len; i++) {
+		digit = str[i] - '0';
+		if (digit < 0 || digit > 10)
+			return -1;
+		val = val * 10 + digit;
+	}
+	*res = neg ? -val : val;
+
+	return 0;
+}
 
 int is_ws(char c)
 {
@@ -332,7 +358,7 @@ int read_int(struct slice *buf, int *val)
 	if (res)
 		return res;
 
-	res = fcsim_strtoi(data.ptr, data.len, val);
+	res = strtoi(data.ptr, data.len, val);
 	if (res)
 		return res;
 
@@ -348,7 +374,7 @@ int read_number(struct slice *buf, double *val)
 	if (res)
 		return res;
 
-	res = fcsim_strtod(data.ptr, data.len, val);
+	res = fp_strtod(data.ptr, data.len, val);
 	if (res)
 		return res;
 
@@ -481,7 +507,7 @@ int read_block_attrs(struct slice *buf, struct xml_block *block)
 			return res;
 
 		if (slice_str_equal(&name, "id")) {
-			res = fcsim_strtoi(value.ptr, value.len, &block->id);
+			res = strtoi(value.ptr, value.len, &block->id);
 			if (res)
 				return res;
 		}

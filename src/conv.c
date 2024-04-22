@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <math.h>
+#include <fpmath/fpmath.h>
 
-#include <xml.h>
-#include <fcsim.h>
-#include <fcsim_funcs.h>
+#include "xml.h"
+#include "fcsim.h"
 
 struct block_map_node {
 	int id;
@@ -44,10 +44,10 @@ static void get_jrect_derived_joint_pos(struct fcsim_jrect *jrect, int index,
 	double w_half = jrect->w/2;
 	double h_half = jrect->h/2;
 
-	double x0 =  fcsim_cos(jrect->angle) * w_half;
-	double y0 =  fcsim_sin(jrect->angle) * w_half;
-	double x1 =  fcsim_sin(jrect->angle) * h_half;
-	double y1 = -fcsim_cos(jrect->angle) * h_half;
+	double x0 =  fp_cos(jrect->angle) * w_half;
+	double y0 =  fp_sin(jrect->angle) * w_half;
+	double x1 =  fp_sin(jrect->angle) * h_half;
+	double y1 = -fp_cos(jrect->angle) * h_half;
 
 	switch (index) {
 	case 0:
@@ -87,8 +87,8 @@ static void get_wheel_derived_joint_pos(struct fcsim_level *level,
 
 	fcsim_get_joint_pos(level, &wheel->center, &x, &y);
 
-	*rx = x + fcsim_cos(wheel->angle + a[index]) * wheel->radius;
-	*ry = y + fcsim_sin(wheel->angle + a[index]) * wheel->radius;
+	*rx = x + fp_cos(wheel->angle + a[index]) * wheel->radius;
+	*ry = y + fp_sin(wheel->angle + a[index]) * wheel->radius;
 }
 
 static void get_derived_joint_pos(struct fcsim_level *level,
@@ -333,8 +333,8 @@ static void get_rod_endpoints(struct xml_block *xml_block,
 			      double *x1, double *y1)
 {
 	double w_half = xml_block->width / 2;
-	double cw = fcsim_cos(xml_block->rotation) * w_half;
-	double sw = fcsim_sin(xml_block->rotation) * w_half;
+	double cw = fp_cos(xml_block->rotation) * w_half;
+	double sw = fp_sin(xml_block->rotation) * w_half;
 	double x = xml_block->position.x;
 	double y = xml_block->position.y;
 

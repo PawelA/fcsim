@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <fcsim.h>
-#include <fcsim_funcs.h>
 #include <Dynamics/b2World.h>
 #include <Dynamics/b2Body.h>
 #include <Dynamics/Joints/b2RevoluteJoint.h>
+#include <fpmath/fpmath.h>
+
+#include "fcsim.h"
 
 struct fcsim_simul {
 	b2World world;
@@ -333,7 +334,7 @@ static void get_rod_desc(struct fcsim_level *level, struct fcsim_rod *rod, int s
 	shape->rect.h = solid ? 8.0 : 4.0;
 	where->x = x0 + (x1 - x0) / 2.0;
 	where->y = y0 + (y1 - y0) / 2.0;
-	where->angle = fcsim_atan2(y1 - y0, x1 - x0);
+	where->angle = fp_atan2(y1 - y0, x1 - x0);
 }
 
 void fcsim_get_level_block_desc(struct fcsim_level *level, int id, struct fcsim_shape *shape, struct fcsim_where *where)

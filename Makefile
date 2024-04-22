@@ -33,21 +33,17 @@ ldlibs-$(linux)   += -lGL
 ldlibs-$(x11)     += -lX11
 ldlibs-$(wayland) += -lwayland-client
 
-### fcsim
+### fpmath
 
-obj-fcsim-y = \
-	fcsim/sincos.o \
-	fcsim/atan2.o \
-	fcsim/conv.o \
-	fcsim/generate.o \
-	fcsim/strtod.o \
-	fcsim/strtoi.o \
-	fcsim/xml.o
+obj-fpmath-y = \
+	fpmath/atan2.o \
+	fpmath/sincos.o \
+	fpmath/strtod.o
 
-obj-y += $(obj-fcsim-y)
-obj-n += $(obj-fcsim-n)
+obj-y += $(obj-fpmath-y)
+obj-n += $(obj-fpmath-n)
 
-$(obj-fcsim-y): cflags-y += -Iinclude -Ibox2d/include
+$(obj-fpmath-y): cflags-y += -Ifpmath/include
 
 ### box2d
 
@@ -76,7 +72,7 @@ obj-box2d-y = \
 obj-y += $(obj-box2d-y)
 obj-n += $(obj-box2d-n)
 
-$(obj-box2d-y): cflags-y += -Iinclude -Ibox2d/include
+$(obj-box2d-y): cflags-y += -Ibox2d/include -Ifpmath/include
 
 ### glfw
 
@@ -131,20 +127,23 @@ $(obj-glfw-y): cflags-$(wayland) += -D_GLFW_WAYLAND
 
 obj-demo-y = \
 	src/arena_layer.o \
+	src/conv.o \
 	src/demo.o \
 	src/file.o \
+	src/generate.o \
 	src/http.o \
 	src/load_layer.o \
 	src/loader.o \
 	src/runner.o \
 	src/text.o \
 	src/timer.o \
-	src/ui.o
+	src/ui.o \
+	src/xml.o
 
 obj-y += $(obj-demo-y)
 obj-n += $(obj-demo-n)
 
-$(obj-demo-y): cflags-y += -Iinclude -Iglfw/include
+$(obj-demo-y): cflags-y += -Iglfw/include -Ibox2d/include -Ifpmath/include
 
 ### rules
 

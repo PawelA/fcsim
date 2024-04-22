@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <float.h>
-#include <fcsim_funcs.h>
+#include <fpmath/fpmath.h>
 
 /* dla.h */
 #define  CN   134217729.0
@@ -1779,7 +1779,7 @@ typedef union { int4 i[2]; double x; double d; } mynumber;
 
 #define  TWO52     0x1.0p52
 
-double fcsim_atan2(double y, double x)
+double fp_atan2(double y, double x)
 {
   int i, de, ux, dx, uy, dy;
   double ax, ay, u, du, v, vv, dv, t1, t2, t3,

@@ -3,8 +3,8 @@
 #include <string.h>
 #include <math.h>
 #include <GLFW/glfw3.h>
-#include <fcsim.h>
 
+#include "fcsim.h"
 #include "text.h"
 #include "ui.h"
 #include "loader.h"

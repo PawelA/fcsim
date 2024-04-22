@@ -1,7 +1,7 @@
 #include <string.h>
 #include <GLFW/glfw3.h>
 
-#include <fcsim.h>
+#include "fcsim.h"
 #include "ui.h"
 #include "event.h"
 #include "text.h"

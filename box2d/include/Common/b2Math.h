@@ -21,7 +21,7 @@
 
 #include <Common/b2Settings.h>
 #include <Common/b2Vec.h>
-#include <fcsim_funcs.h>
+#include <fpmath/fpmath.h>
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
@@ -88,7 +88,7 @@ static void b2Mat22_Set(b2Mat22 *m, const b2Vec2& c1, const b2Vec2& c2)
 
 static void b2Mat22_SetAngle(b2Mat22 *m, float64 angle)
 {
-	float64 c = fcsim_cos(angle), s = fcsim_sin(angle);
+	float64 c = fp_cos(angle), s = fp_sin(angle);
 	m->col1.x = c; m->col2.x = -s;
 	m->col1.y = s; m->col2.y = c;
 }

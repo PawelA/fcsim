@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <math.h>
-#include <fcsim_funcs.h>
+#include <fpmath/fpmath.h>
 
 union tab_t {
 	uint64_t x[256];
@@ -24,7 +24,7 @@ static double c11 =  3.798187816439979e-12;
 static double c12 =  0.09817477042088285;
 static double c13 =  1.2639164054974691e-22;
 
-static double fcsim_sincos(double x, int off)
+static double fp_sincos(double x, int off)
 {
 	double x0, x1, x2, x3, x4, x5, x6, x7;
 	double x0h, x1h, x2h, x5h, x6h;
@@ -117,14 +117,14 @@ static double fcsim_sincos(double x, int off)
 	return x0;
 }
 
-double fcsim_sin(double x)
+double fp_sin(double x)
 {
-	return fcsim_sincos(x, 0);
+	return fp_sincos(x, 0);
 }
 
-double fcsim_cos(double x)
+double fp_cos(double x)
 {
-	return fcsim_sincos(x, 0x10);
+	return fp_sincos(x, 0x10);
 }
 
 static union tab_t tab = { .x = {
