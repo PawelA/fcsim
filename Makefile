@@ -130,16 +130,16 @@ $(obj-glfw-y): cflags-$(wayland) += -D_GLFW_WAYLAND
 ### demo
 
 obj-demo-y = \
-	stuff/arena_layer.o \
-	stuff/demo.o \
-	stuff/file.o \
-	stuff/http.o \
-	stuff/load_layer.o \
-	stuff/loader.o \
-	stuff/runner.o \
-	stuff/text.o \
-	stuff/timer.o \
-	stuff/ui.o
+	src/arena_layer.o \
+	src/demo.o \
+	src/file.o \
+	src/http.o \
+	src/load_layer.o \
+	src/loader.o \
+	src/runner.o \
+	src/text.o \
+	src/timer.o \
+	src/ui.o
 
 obj-y += $(obj-demo-y)
 obj-n += $(obj-demo-n)
