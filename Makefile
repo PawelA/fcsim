@@ -48,26 +48,26 @@ $(obj-fpmath-y): cflags-y += -Ifpmath/include
 ### box2d
 
 obj-box2d-y = \
-	box2d/src/Collision/b2BroadPhase.o \
-	box2d/src/Collision/b2CollideCircle.o \
-	box2d/src/Collision/b2CollidePoly.o \
-	box2d/src/Collision/b2Distance.o \
-	box2d/src/Collision/b2PairManager.o \
-	box2d/src/Collision/b2Shape.o \
-	box2d/src/Common/b2BlockAllocator.o \
-	box2d/src/Common/b2Settings.o \
-	box2d/src/Common/b2StackAllocator.o \
-	box2d/src/Dynamics/b2Body.o \
-	box2d/src/Dynamics/b2ContactManager.o \
-	box2d/src/Dynamics/b2Island.o \
-	box2d/src/Dynamics/b2World.o \
-	box2d/src/Dynamics/Contacts/b2CircleContact.o \
-	box2d/src/Dynamics/Contacts/b2Contact.o \
-	box2d/src/Dynamics/Contacts/b2ContactSolver.o \
-	box2d/src/Dynamics/Contacts/b2PolyAndCircleContact.o \
-	box2d/src/Dynamics/Contacts/b2PolyContact.o \
-	box2d/src/Dynamics/Joints/b2Joint.o \
-	box2d/src/Dynamics/Joints/b2RevoluteJoint.o
+	box2d/src/b2BlockAllocator.o \
+	box2d/src/b2Body.o \
+	box2d/src/b2BroadPhase.o \
+	box2d/src/b2CircleContact.o \
+	box2d/src/b2CollideCircle.o \
+	box2d/src/b2CollidePoly.o \
+	box2d/src/b2Contact.o \
+	box2d/src/b2ContactManager.o \
+	box2d/src/b2ContactSolver.o \
+	box2d/src/b2Distance.o \
+	box2d/src/b2Island.o \
+	box2d/src/b2Joint.o \
+	box2d/src/b2PairManager.o \
+	box2d/src/b2PolyAndCircleContact.o \
+	box2d/src/b2PolyContact.o \
+	box2d/src/b2RevoluteJoint.o \
+	box2d/src/b2Settings.o \
+	box2d/src/b2Shape.o \
+	box2d/src/b2StackAllocator.o \
+	box2d/src/b2World.o
 
 obj-y += $(obj-box2d-y)
 obj-n += $(obj-box2d-n)
