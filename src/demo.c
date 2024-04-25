@@ -88,44 +88,6 @@ void window_size_callback(GLFWwindow *window, int w, int h)
 	arena_layer_event(&the_arena_layer, &event);
 }
 
-/*
-#include <fcsim.h>
-#include "file.h"
-
-int main(int argc, char **argv)
-{
-	struct fcsim_level level;
-	struct fcsim_simul *simul;
-	struct file_buf buf;
-	int res;
-
-	if (argc != 2) {
-		printf("usage: %s FILE\n", argv[0]);
-		return 1;
-	}
-
-	res = read_file(&buf, argv[1]);
-	if (res) {
-		printf("failed to open %s\n", argv[1]);
-		return 1;
-	}
-
-	res = fcsim_parse_xml(buf.ptr, buf.len, &level);
-	if (res) {
-		printf("failed to parse xml\n");
-		return 1;
-	}
-
-	simul = fcsim_make_simul(&level);
-	if (!simul) {
-		printf("failed to make simul\n");
-		return 1;
-	}
-
-	return 0;
-}
-*/
-
 int main(void)
 {
 	GLFWwindow *window;

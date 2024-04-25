@@ -208,7 +208,6 @@ struct loader {
 	struct fcsim_level level;
 	int done;
 };
-#include "file.h"
 
 static void *thread_func(void *arg)
 {

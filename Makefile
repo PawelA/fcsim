@@ -138,7 +138,6 @@ obj-demo-y = \
 	obj/src/arena_layer.o \
 	obj/src/conv.o \
 	obj/src/demo.o \
-	obj/src/file.o \
 	obj/src/generate.o \
 	obj/src/http.o \
 	obj/src/load_layer.o \
