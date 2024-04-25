@@ -9,7 +9,6 @@
 #include "ui.h"
 #include "text.h"
 #include "globals.h"
-#include "event.h"
 #include "runner.h"
 #include "arena_layer.h"
 #include "galois.h"
@@ -216,9 +215,9 @@ void arena_layer_toggle_fast(struct arena_layer *arena_layer)
 	runner_set_frame_limit(arena_layer->runner, arena_layer->fast ? 0 : 16666);
 }
 
-void arena_layer_key_event(struct arena_layer *arena_layer, struct key_event *event)
+void arena_layer_key_event(struct arena_layer *arena_layer, int key, int action)
 {
-	if (event->key == GLFW_KEY_SPACE && event->action == GLFW_PRESS) {
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
 		if (arena_layer->running) {
 			runner_stop(arena_layer->runner);
 		} else {
@@ -228,7 +227,7 @@ void arena_layer_key_event(struct arena_layer *arena_layer, struct key_event *ev
 		arena_layer->running = !arena_layer->running;
 	}
 
-	if (event->key == GLFW_KEY_S && event->action == GLFW_PRESS)
+	if (key == GLFW_KEY_S && action == GLFW_PRESS)
 		arena_layer_toggle_fast(arena_layer);
 }
 
@@ -389,7 +388,7 @@ void resolve_draggable(struct fcsim_level *level,
 	}
 }
 
-void arena_layer_mouse_button_event(struct arena_layer *arena_layer, struct mouse_button_event *event)
+void arena_layer_mouse_button_event(struct arena_layer *arena_layer, int button, int action)
 {
 	int x = the_cursor_x;
 	int y = the_cursor_y;
@@ -400,15 +399,15 @@ void arena_layer_mouse_button_event(struct arena_layer *arena_layer, struct mous
 	pixel_to_world(&arena_layer->view, x, y, &x_world, &y_world);
 
 	if (arena_layer->running) {
-		if (event->button == GLFW_MOUSE_BUTTON_LEFT) {
-			if (event->action == GLFW_PRESS)
+		if (button == GLFW_MOUSE_BUTTON_LEFT) {
+			if (action == GLFW_PRESS)
 				arena_layer->drag.type = DRAG_PAN;
 			else
 				arena_layer->drag.type = DRAG_NONE;
 		}
 	} else {
-		if (event->button == GLFW_MOUSE_BUTTON_LEFT) {
-			if (event->action == GLFW_PRESS) {
+		if (button == GLFW_MOUSE_BUTTON_LEFT) {
+			if (action == GLFW_PRESS) {
 				struct fcsim_joint joint;
 				int res;
 
@@ -429,17 +428,17 @@ void arena_layer_mouse_button_event(struct arena_layer *arena_layer, struct mous
 			} else {
 				arena_layer->drag.type = DRAG_NONE;
 			}
-		} else if (event->button == GLFW_MOUSE_BUTTON_RIGHT) {
-			if (event->action == GLFW_PRESS) {
+		} else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+			if (action == GLFW_PRESS) {
 				//...
 			}
 		}
 	}
 }
 
-void arena_layer_scroll_event(struct arena_layer *arena_layer, struct scroll_event *event)
+void arena_layer_scroll_event(struct arena_layer *arena_layer, int delta)
 {
-	float scale = 1.0f - event->delta * 0.05f;
+	float scale = 1.0f - delta * 0.05f;
 
 	arena_layer->view_scale *= scale;
 	set_view_wh_from_scale(&arena_layer->view, arena_layer->view_scale);
@@ -448,25 +447,4 @@ void arena_layer_scroll_event(struct arena_layer *arena_layer, struct scroll_eve
 void arena_layer_size_event(struct arena_layer *arena_layer)
 {
 	set_view_wh_from_scale(&arena_layer->view, arena_layer->view_scale);
-}
-
-void arena_layer_event(struct arena_layer *arena_layer, struct event *event)
-{
-	switch (event->type) {
-	case EVENT_KEY:
-		arena_layer_key_event(arena_layer, &event->key_event);
-		break;
-	case EVENT_MOUSE_MOVE:
-		arena_layer_mouse_move_event(arena_layer);
-		break;
-	case EVENT_MOUSE_BUTTON:
-		arena_layer_mouse_button_event(arena_layer, &event->mouse_button_event);
-		break;
-	case EVENT_SCROLL:
-		arena_layer_scroll_event(arena_layer, &event->scroll_event);
-		break;
-	case EVENT_SIZE:
-		arena_layer_size_event(arena_layer);
-		break;
-	}
 }
