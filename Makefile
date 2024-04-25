@@ -139,9 +139,6 @@ obj-demo-y = \
 	obj/src/conv.o \
 	obj/src/demo.o \
 	obj/src/generate.o \
-	obj/src/http.o \
-	obj/src/load_layer.o \
-	obj/src/loader.o \
 	obj/src/runner.o \
 	obj/src/text.o \
 	obj/src/timer.o \

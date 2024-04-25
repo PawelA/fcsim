@@ -24,16 +24,6 @@ struct arena_layer {
 	struct fcsim_shape *level_shapes;
 	struct fcsim_where *player_wheres;
 	struct fcsim_where *level_wheres;
-	int loaded;
-
-	struct button load_button;
-	struct load_layer load_layer;
-
-	struct button r_button;
-	struct button s_button;
-	struct button w_button;
-	struct button c_button;
-	struct button u_button;
 
 	struct runner *runner;
 	int running;

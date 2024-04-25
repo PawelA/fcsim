@@ -11,8 +11,8 @@
 #include "globals.h"
 #include "event.h"
 #include "runner.h"
-#include "load_layer.h"
 #include "arena_layer.h"
+#include "galois.h"
 
 #define TAU 6.28318530718
 
@@ -145,23 +145,6 @@ void draw_level(struct arena_layer *arena_layer, struct runner_tick *tick)
 	}
 }
 
-void arena_layer_init(struct arena_layer *arena_layer)
-{
-	arena_layer->loaded = 0;
-	button_init(&arena_layer->load_button, "Load", 10, 10);
-	load_layer_init(&arena_layer->load_layer);
-	button_init(&arena_layer->r_button, "R", 200, 10);
-	button_init(&arena_layer->s_button, "S", 240, 10);
-	button_init(&arena_layer->w_button, "W", 280, 10);
-	button_init(&arena_layer->c_button, "C", 320, 10);
-	button_init(&arena_layer->u_button, "U", 360, 10);
-	arena_layer->runner = runner_create();
-	arena_layer->running = 0;
-	arena_layer->fast = 0;
-	arena_layer->view_scale = 1.0;
-	set_view_wh_from_scale(&arena_layer->view, 1.0);
-}
-
 void arena_layer_update_descs(struct arena_layer *arena_layer)
 {
 	int i;
@@ -179,59 +162,46 @@ void arena_layer_update_descs(struct arena_layer *arena_layer)
 	}
 }
 
+void arena_layer_init(struct arena_layer *arena_layer)
+{
+	arena_layer->runner = runner_create();
+	arena_layer->running = 0;
+	arena_layer->fast = 0;
+	arena_layer->view_scale = 1.0;
+	set_view_wh_from_scale(&arena_layer->view, 1.0);
+
+	fcsim_parse_xml(galois_xml, sizeof(galois_xml), &arena_layer->level);
+
+	arena_layer->player_shapes = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_shape));
+	arena_layer->level_shapes = malloc(arena_layer->level.level_block_cnt * sizeof(struct fcsim_shape));
+	arena_layer->player_wheres = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_where));
+	arena_layer->level_wheres = malloc(arena_layer->level.level_block_cnt * sizeof(struct fcsim_where));
+	arena_layer_update_descs(arena_layer);
+}
+
 void arena_layer_draw(struct arena_layer *arena_layer)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	if (!arena_layer->load_layer.open) {
-		if (arena_layer->load_layer.loaded) {
-			struct fcsim_where dummy;
-			int i;
+	if (arena_layer->running) {
+		struct runner_tick tick;
+		uint64_t won_tick;
 
-			arena_layer->level = arena_layer->load_layer.level;
-			arena_layer->player_shapes = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_shape));
-			arena_layer->level_shapes = malloc(arena_layer->level.level_block_cnt * sizeof(struct fcsim_shape));
-			arena_layer->player_wheres = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_where));
-			arena_layer->level_wheres = malloc(arena_layer->level.level_block_cnt * sizeof(struct fcsim_where));
-			arena_layer_update_descs(arena_layer);
-			arena_layer->loaded = 1;
-			arena_layer->load_layer.loaded = 0;
-		}
-	}
+		runner_get_tick(arena_layer->runner, &tick);
+		won_tick = runner_get_won_tick(arena_layer->runner);
 
-	if (arena_layer->loaded) {
-		if (arena_layer->running) {
-			struct runner_tick tick;
-			uint64_t won_tick;
+		view = arena_layer->view;
+		draw_level(arena_layer, &tick);
+		text_draw_uint64(tick.index, 500, 10, the_ui_scale);
+		if (won_tick)
+			text_draw_uint64(won_tick, 500, 50, the_ui_scale);
+	} else {
+		struct runner_tick tick;
 
-			runner_get_tick(arena_layer->runner, &tick);
-			won_tick = runner_get_won_tick(arena_layer->runner);
-
-			view = arena_layer->view;
-			draw_level(arena_layer, &tick);
-			text_draw_uint64(tick.index, 500, 10, the_ui_scale);
-			if (won_tick)
-				text_draw_uint64(won_tick, 500, 50, the_ui_scale);
-		} else {
-			struct runner_tick tick;
-
-			view = arena_layer->view;
-			tick.player_wheres = arena_layer->player_wheres;
-			tick.level_wheres = arena_layer->level_wheres;
-			draw_level(arena_layer, &tick);
-		}
-	}
-
-	draw_button(&arena_layer->load_button);
-	if (arena_layer->load_layer.open)
-		load_layer_draw(&arena_layer->load_layer);
-
-	if (arena_layer->loaded) {
-		draw_button(&arena_layer->r_button);
-		draw_button(&arena_layer->s_button);
-		draw_button(&arena_layer->w_button);
-		draw_button(&arena_layer->c_button);
-		draw_button(&arena_layer->u_button);
+		view = arena_layer->view;
+		tick.player_wheres = arena_layer->player_wheres;
+		tick.level_wheres = arena_layer->level_wheres;
+		draw_level(arena_layer, &tick);
 	}
 }
 
@@ -248,9 +218,6 @@ void arena_layer_toggle_fast(struct arena_layer *arena_layer)
 
 void arena_layer_key_event(struct arena_layer *arena_layer, struct key_event *event)
 {
-	if (!arena_layer->loaded)
-		return;
-
 	if (event->key == GLFW_KEY_SPACE && event->action == GLFW_PRESS) {
 		if (arena_layer->running) {
 			runner_stop(arena_layer->runner);
@@ -279,12 +246,6 @@ void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 {
 	int x = the_cursor_x;
 	int y = the_cursor_y;
-
-	if (button_hit_test(&arena_layer->load_button, x, y)) {
-		arena_layer->load_button.state = BUTTON_HOVERED;
-	} else {
-		arena_layer->load_button.state = BUTTON_NORMAL;
-	}
 
 	int dx_pixel = x - arena_layer->prev_x;
 	int dy_pixel = y - arena_layer->prev_y;
@@ -436,14 +397,6 @@ void arena_layer_mouse_button_event(struct arena_layer *arena_layer, struct mous
 	float y_world;
 	int vert_id;
 
-	if (event->button == GLFW_MOUSE_BUTTON_LEFT && event->action == GLFW_PRESS) {
-		if (button_hit_test(&arena_layer->load_button, x, y)) {
-			arena_layer->load_button.state = BUTTON_NORMAL;
-			arena_layer->load_layer.open = 1;
-			return;
-		}
-	}
-
 	pixel_to_world(&arena_layer->view, x, y, &x_world, &y_world);
 
 	if (arena_layer->running) {
@@ -499,11 +452,6 @@ void arena_layer_size_event(struct arena_layer *arena_layer)
 
 void arena_layer_event(struct arena_layer *arena_layer, struct event *event)
 {
-	if (arena_layer->load_layer.open) {
-		load_layer_event(&arena_layer->load_layer, event);
-		return;
-	}
-
 	switch (event->type) {
 	case EVENT_KEY:
 		arena_layer_key_event(arena_layer, &event->key_event);
