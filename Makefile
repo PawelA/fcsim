@@ -142,7 +142,6 @@ obj-demo-y = \
 	obj/src/runner.o \
 	obj/src/text.o \
 	obj/src/timer.o \
-	obj/src/ui.o \
 	obj/src/xml.o
 
 obj-y += $(obj-demo-y)

@@ -6,7 +6,6 @@
 
 #include "fcsim.h"
 #include "text.h"
-#include "ui.h"
 #include "arena_layer.h"
 
 int the_width = 800;

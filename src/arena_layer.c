@@ -6,7 +6,6 @@
 #include <GLFW/glfw3.h>
 
 #include "fcsim.h"
-#include "ui.h"
 #include "text.h"
 #include "globals.h"
 #include "runner.h"
