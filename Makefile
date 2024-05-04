@@ -136,9 +136,10 @@ obj/glfw/src:
 
 obj-main-y = \
 	obj/src/arena_layer.o \
+	obj/src/core.o \
 	obj/src/conv.o \
-	obj/src/main.o \
 	obj/src/generate.o \
+	obj/src/main.o \
 	obj/src/runner.o \
 	obj/src/text.o \
 	obj/src/timer.o \

@@ -214,9 +214,14 @@ void arena_layer_toggle_fast(struct arena_layer *arena_layer)
 	runner_set_frame_limit(arena_layer->runner, arena_layer->fast ? 0 : 16666);
 }
 
-void arena_layer_key_event(struct arena_layer *arena_layer, int key, int action)
+void arena_layer_key_up_event(struct arena_layer *arena_layer, int key)
 {
-	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+
+}
+
+void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
+{
+	if (key == GLFW_KEY_SPACE) {
 		if (arena_layer->running) {
 			runner_stop(arena_layer->runner);
 		} else {
@@ -226,7 +231,7 @@ void arena_layer_key_event(struct arena_layer *arena_layer, int key, int action)
 		arena_layer->running = !arena_layer->running;
 	}
 
-	if (key == GLFW_KEY_S && action == GLFW_PRESS)
+	if (key == GLFW_KEY_S)
 		arena_layer_toggle_fast(arena_layer);
 }
 
@@ -387,7 +392,13 @@ void resolve_draggable(struct fcsim_level *level,
 	}
 }
 
-void arena_layer_mouse_button_event(struct arena_layer *arena_layer, int button, int action)
+void arena_layer_mouse_button_up_event(struct arena_layer *arena_layer, int button)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT)
+		arena_layer->drag.type = DRAG_NONE;
+}
+
+void arena_layer_mouse_button_down_event(struct arena_layer *arena_layer, int button)
 {
 	int x = the_cursor_x;
 	int y = the_cursor_y;
@@ -398,38 +409,26 @@ void arena_layer_mouse_button_event(struct arena_layer *arena_layer, int button,
 	pixel_to_world(&arena_layer->view, x, y, &x_world, &y_world);
 
 	if (arena_layer->running) {
-		if (button == GLFW_MOUSE_BUTTON_LEFT) {
-			if (action == GLFW_PRESS)
-				arena_layer->drag.type = DRAG_PAN;
-			else
-				arena_layer->drag.type = DRAG_NONE;
-		}
+		if (button == GLFW_MOUSE_BUTTON_LEFT)
+			arena_layer->drag.type = DRAG_PAN;
 	} else {
 		if (button == GLFW_MOUSE_BUTTON_LEFT) {
-			if (action == GLFW_PRESS) {
-				struct fcsim_joint joint;
-				int res;
+			struct fcsim_joint joint;
+			int res;
 
-				res = joint_hit_test(&arena_layer->level, x_world, y_world, &joint);
-				if (res) {
-					struct draggable draggable;
-					resolve_draggable(&arena_layer->level, &joint, &draggable);
-					if (draggable.type == DRAGGABLE_VERTEX) {
-						arena_layer->drag.type = DRAG_MOVE_VERTEX;
-						arena_layer->drag.vertex_id = draggable.id;
-					} else {
-						arena_layer->drag.type = DRAG_MOVE_BLOCK;
-						arena_layer->drag.block_id = draggable.id;
-					}
+			res = joint_hit_test(&arena_layer->level, x_world, y_world, &joint);
+			if (res) {
+				struct draggable draggable;
+				resolve_draggable(&arena_layer->level, &joint, &draggable);
+				if (draggable.type == DRAGGABLE_VERTEX) {
+					arena_layer->drag.type = DRAG_MOVE_VERTEX;
+					arena_layer->drag.vertex_id = draggable.id;
 				} else {
-					arena_layer->drag.type = DRAG_PAN;
+					arena_layer->drag.type = DRAG_MOVE_BLOCK;
+					arena_layer->drag.block_id = draggable.id;
 				}
 			} else {
-				arena_layer->drag.type = DRAG_NONE;
-			}
-		} else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-			if (action == GLFW_PRESS) {
-				//...
+				arena_layer->drag.type = DRAG_PAN;
 			}
 		}
 	}
