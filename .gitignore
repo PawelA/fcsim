@@ -2,8 +2,8 @@
 *.a
 *.d
 *.xml
-demo
-demo.exe
+fcsim
+fcsim.exe
 tags
 
 # wayland generated files from glfw

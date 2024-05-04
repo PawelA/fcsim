@@ -24,7 +24,7 @@ exe = $(exe-win32-$(win32))
 
 ### common
 
-all: demo$(exe)
+all: fcsim$(exe)
 
 cflags-y = $(cflags)
 ldlibs-y =
@@ -132,23 +132,23 @@ $(obj-glfw-y): | obj/glfw/src
 obj/glfw/src:
 	mkdir -p obj/glfw/src
 
-### demo
+### main
 
-obj-demo-y = \
+obj-main-y = \
 	obj/src/arena_layer.o \
 	obj/src/conv.o \
-	obj/src/demo.o \
+	obj/src/main.o \
 	obj/src/generate.o \
 	obj/src/runner.o \
 	obj/src/text.o \
 	obj/src/timer.o \
 	obj/src/xml.o
 
-obj-y += $(obj-demo-y)
-obj-n += $(obj-demo-n)
+obj-y += $(obj-main-y)
+obj-n += $(obj-main-n)
 
-$(obj-demo-y): cflags-y += -Iglfw/include -Ibox2d/include -Ifpmath/include
-$(obj-demo-y): | obj/src
+$(obj-main-y): cflags-y += -Iglfw/include -Ibox2d/include -Ifpmath/include
+$(obj-main-y): | obj/src
 obj/src:
 	mkdir -p obj/src
 
@@ -160,11 +160,11 @@ obj/%.o: %.c
 obj/%.o: %.cpp
 	$(cxx) -MMD $(cflags-y) -c -o $@ $<
 
-demo$(exe): $(obj-y)
+fcsim$(exe): $(obj-y)
 	$(cxx) -o $@ $^ $(ldlibs-y)
 
 clean:
-	rm -f demo$(exe)
+	rm -f fcsim$(exe)
 	rm -rf obj
 
 -include $(obj-y:%.o=%.d)

@@ -57,7 +57,7 @@ int main(void)
 	if (!glfwInit())
 		return 1;
 	glfwWindowHint(GLFW_SAMPLES, 4);
-	window = glfwCreateWindow(800, 800, "fcsim demo", NULL, NULL);
+	window = glfwCreateWindow(800, 800, "fcsim", NULL, NULL);
 	if (!window)
 		return 1;
 	glfwMakeContextCurrent(window);
