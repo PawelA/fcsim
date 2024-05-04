@@ -12,8 +12,6 @@ int the_width = 800;
 int the_height = 800;
 int the_cursor_x = 0;
 int the_cursor_y = 0;
-int the_ui_scale = 4;
-void *the_window = NULL;
 
 struct arena_layer the_arena_layer;
 
@@ -62,7 +60,6 @@ int main(void)
 	window = glfwCreateWindow(800, 800, "fcsim demo", NULL, NULL);
 	if (!window)
 		return 1;
-	the_window = window;
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
