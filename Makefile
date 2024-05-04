@@ -141,7 +141,6 @@ obj-main-y = \
 	obj/src/generate.o \
 	obj/src/main.o \
 	obj/src/runner.o \
-	obj/src/text.o \
 	obj/src/timer.o \
 	obj/src/xml.o
 

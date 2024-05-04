@@ -1,7 +1,6 @@
 #include <stdint.h>
 
 #include "fcsim.h"
-#include "text.h"
 #include "arena_layer.h"
 
 int the_width = 800;
@@ -56,7 +55,6 @@ void resize(int w, int h)
 void init(void)
 {
 	arena_layer_init(&the_arena_layer);
-	text_setup_draw();
 	arena_layer_show(&the_arena_layer);
 }
 

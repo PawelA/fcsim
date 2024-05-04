@@ -6,7 +6,6 @@
 #include <GLFW/glfw3.h>
 
 #include "fcsim.h"
-#include "text.h"
 #include "globals.h"
 #include "runner.h"
 #include "arena_layer.h"
@@ -190,9 +189,6 @@ void arena_layer_draw(struct arena_layer *arena_layer)
 
 		view = arena_layer->view;
 		draw_level(arena_layer, &tick);
-		text_draw_uint64(tick.index, 500, 10, 4);
-		if (won_tick)
-			text_draw_uint64(won_tick, 500, 50, 4);
 	} else {
 		struct runner_tick tick;
 
