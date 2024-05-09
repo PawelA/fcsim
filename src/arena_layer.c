@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-#include <GLFW/glfw3.h>
+#include "gl.h"
 
 #include "fcsim.h"
 #include "globals.h"
@@ -12,6 +12,30 @@
 #include "galois.h"
 
 #define TAU 6.28318530718
+
+const GLchar *vertex_shader_src =
+	"attribute vec2 a_coords;"
+	"attribute vec3 a_color;"
+	"varying vec3 v_color;"
+	"void main() {"
+		"gl_Position = vec4(a_coords, 0.0, 1.0);"
+		"v_color = a_color;"
+	"}";
+
+const GLchar *fragment_shader_src =
+	"varying vec3 v_color;"
+	"void main() {"
+		"gl_FragColor = vec4(v_color, 1.0);\n"
+	"}\n";
+
+float coords[2048];
+float colors[2048];
+
+unsigned short indices[2048];
+
+int cnt_index;
+int cnt_coord;
+int cnt_color;
 
 struct color {
 	float r;
@@ -48,12 +72,11 @@ struct arena_view view;
 
 void vertex2f_world(double x, double y)
 {
-	glVertex2f((x - view.x) / view.w_half, (view.y - y) / view.h_half);
+	coords[cnt_coord++] = (x - view.x) / view.w_half;
+	coords[cnt_coord++] = (view.y - y) / view.h_half;
 }
 
-static void draw_rect(struct fcsim_shape_rect *rect,
-		      struct fcsim_where *where,
-		      struct color *color)
+static void draw_rect(struct fcsim_shape_rect *rect, struct fcsim_where *where)
 {
 	double sina_half = sin(where->angle) / 2;
 	double cosa_half = cos(where->angle) / 2;
@@ -66,13 +89,17 @@ static void draw_rect(struct fcsim_shape_rect *rect,
 	double x = where->x;
 	double y = where->y;
 
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(color->r, color->g, color->b);
+	indices[cnt_index++] = cnt_coord / 2;
+	indices[cnt_index++] = cnt_coord / 2 + 1;
+	indices[cnt_index++] = cnt_coord / 2 + 2;
+	indices[cnt_index++] = cnt_coord / 2;
+	indices[cnt_index++] = cnt_coord / 2 + 2;
+	indices[cnt_index++] = cnt_coord / 2 + 3;
+
 	vertex2f_world( wc - hs + x,  ws + hc + y);
 	vertex2f_world(-wc - hs + x, -ws + hc + y);
 	vertex2f_world(-wc + hs + x, -ws - hc + y);
 	vertex2f_world( wc + hs + x,  ws - hc + y);
-	glEnd();
 }
 
 static void draw_area(struct fcsim_area *area, struct color *color)
@@ -81,44 +108,63 @@ static void draw_area(struct fcsim_area *area, struct color *color)
 	double h_half = area->h / 2;
 	double x = area->x;
 	double y = area->y;
+	int i;
 
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(color->r, color->g, color->b);
+	for (i = 0; i < 4; i++) {
+		colors[cnt_color++] = color->r;
+		colors[cnt_color++] = color->g;
+		colors[cnt_color++] = color->b;
+	}
+
+	indices[cnt_index++] = cnt_coord / 2;
+	indices[cnt_index++] = cnt_coord / 2 + 1;
+	indices[cnt_index++] = cnt_coord / 2 + 2;
+	indices[cnt_index++] = cnt_coord / 2;
+	indices[cnt_index++] = cnt_coord / 2 + 2;
+	indices[cnt_index++] = cnt_coord / 2 + 3;
+
 	vertex2f_world(x + w_half, y + h_half);
 	vertex2f_world(x + w_half, y - h_half);
 	vertex2f_world(x - w_half, y - h_half);
 	vertex2f_world(x - w_half, y + h_half);
-	glEnd();
 }
 
-#define CIRCLE_SEGMENTS 32
+#define CIRCLE_SEGMENTS 8
 
-static void draw_circ(struct fcsim_shape_circ *circ,
-		      struct fcsim_where *where,
-		      struct color *color)
+static void draw_circ(struct fcsim_shape_circ *circ, struct fcsim_where *where)
 {
 	double x = where->x;
 	double y = where->y;
 	float r = circ->radius;
+	int i;
 
-	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(color->r, color->g, color->b);
-	vertex2f_world(x, y);
-	for (int i = 0; i <= CIRCLE_SEGMENTS; i++) {
+	for (i = 0; i < CIRCLE_SEGMENTS - 2; i++) {
+		indices[cnt_index++] = cnt_coord / 2;
+		indices[cnt_index++] = cnt_coord / 2 + i + 1;
+		indices[cnt_index++] = cnt_coord / 2 + i + 2;
+	}
+
+	for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
 		double a = where->angle + TAU * i / CIRCLE_SEGMENTS;
 		vertex2f_world(cos(a) * r + x, sin(a) * r + y);
 	}
-	glEnd();
 }
 
 static void draw_block(struct fcsim_shape *shape, struct fcsim_where *where, int type)
 {
 	struct color *color = &block_colors[type];
+	int prev_cnt_coord = cnt_coord;
 
 	if (shape->type == FCSIM_SHAPE_CIRC)
-		draw_circ(&shape->circ, where, color);
+		draw_circ(&shape->circ, where);
 	else
-		draw_rect(&shape->rect, where, color);
+		draw_rect(&shape->rect, where);
+
+	for (; prev_cnt_coord < cnt_coord; prev_cnt_coord += 2) {
+		colors[cnt_color++] = color->r;
+		colors[cnt_color++] = color->g;
+		colors[cnt_color++] = color->b;
+	}
 }
 
 void draw_level(struct arena_layer *arena_layer, struct runner_tick *tick)
@@ -159,8 +205,20 @@ void arena_layer_update_descs(struct arena_layer *arena_layer)
 	}
 }
 
+GLuint vertex_shader;
+GLuint fragment_shader;
+GLuint program;
+GLuint coord_buffer;
+GLuint color_buffer;
+GLuint index_buffer;
+
+GLchar shader_log[1024];
+
 void arena_layer_init(struct arena_layer *arena_layer)
 {
+	GLint param;
+	GLsizei log_len;
+
 	arena_layer->runner = runner_create();
 	arena_layer->running = 0;
 	arena_layer->fast = 0;
@@ -174,11 +232,57 @@ void arena_layer_init(struct arena_layer *arena_layer)
 	arena_layer->player_wheres = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_where));
 	arena_layer->level_wheres = malloc(arena_layer->level.level_block_cnt * sizeof(struct fcsim_where));
 	arena_layer_update_descs(arena_layer);
+
+	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex_shader, 1, &vertex_shader_src, NULL);
+	glCompileShader(vertex_shader);
+	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &param);
+	if (!param) {
+		glGetShaderInfoLog(vertex_shader, sizeof(shader_log), &log_len, shader_log);
+		printf("vertex shader:\n%s\n", shader_log);
+		exit(1);
+	}
+
+	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment_shader, 1, &fragment_shader_src, NULL);
+	glCompileShader(fragment_shader);
+	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &param);
+	if (!param) {
+		glGetShaderInfoLog(fragment_shader, sizeof(shader_log), &log_len, shader_log);
+		printf("fragment shader:\n%s", shader_log);
+		exit(1);
+	}
+
+	program = glCreateProgram();
+	glAttachShader(program, vertex_shader);
+	glAttachShader(program, fragment_shader);
+	glLinkProgram(program);
+	glUseProgram(program);
+
+	glGenBuffers(1, &coord_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, coord_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_STREAM_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glGenBuffers(1, &color_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STREAM_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	glGenBuffers(1, &index_buffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STREAM_DRAW);
 }
 
 void arena_layer_draw(struct arena_layer *arena_layer)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	cnt_index = 0;
+	cnt_coord = 0;
+	cnt_color = 0;
 
 	if (arena_layer->running) {
 		struct runner_tick tick;
@@ -197,6 +301,16 @@ void arena_layer_draw(struct arena_layer *arena_layer)
 		tick.level_wheres = arena_layer->level_wheres;
 		draw_level(arena_layer, &tick);
 	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, coord_buffer);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, cnt_coord * sizeof(coords[0]), coords);
+
+	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, cnt_color * sizeof(colors[0]), colors);
+
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, cnt_index * sizeof(indices[0]), indices);
+
+	glDrawElements(GL_TRIANGLES, cnt_index, GL_UNSIGNED_SHORT, 0);
 }
 
 void arena_layer_show(struct arena_layer *arena_layer)
@@ -217,7 +331,7 @@ void arena_layer_key_up_event(struct arena_layer *arena_layer, int key)
 
 void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 {
-	if (key == GLFW_KEY_SPACE) {
+	if (key == ' ') {
 		if (arena_layer->running) {
 			runner_stop(arena_layer->runner);
 		} else {
@@ -227,7 +341,7 @@ void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 		arena_layer->running = !arena_layer->running;
 	}
 
-	if (key == GLFW_KEY_S)
+	if (key == 'S')
 		arena_layer_toggle_fast(arena_layer);
 }
 
@@ -390,7 +504,7 @@ void resolve_draggable(struct fcsim_level *level,
 
 void arena_layer_mouse_button_up_event(struct arena_layer *arena_layer, int button)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT)
+	if (button == 0)
 		arena_layer->drag.type = DRAG_NONE;
 }
 
@@ -405,10 +519,10 @@ void arena_layer_mouse_button_down_event(struct arena_layer *arena_layer, int bu
 	pixel_to_world(&arena_layer->view, x, y, &x_world, &y_world);
 
 	if (arena_layer->running) {
-		if (button == GLFW_MOUSE_BUTTON_LEFT)
+		if (button == 0)
 			arena_layer->drag.type = DRAG_PAN;
 	} else {
-		if (button == GLFW_MOUSE_BUTTON_LEFT) {
+		if (button == 0) {
 			struct fcsim_joint joint;
 			int res;
 
