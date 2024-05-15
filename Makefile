@@ -23,32 +23,32 @@ obj/fpmath:
 ### box2d
 
 obj-box2d = \
-	obj/box2d/src/b2BlockAllocator.o \
-	obj/box2d/src/b2Body.o \
-	obj/box2d/src/b2BroadPhase.o \
-	obj/box2d/src/b2CircleContact.o \
-	obj/box2d/src/b2CollideCircle.o \
-	obj/box2d/src/b2CollidePoly.o \
-	obj/box2d/src/b2Contact.o \
-	obj/box2d/src/b2ContactManager.o \
-	obj/box2d/src/b2ContactSolver.o \
-	obj/box2d/src/b2Distance.o \
-	obj/box2d/src/b2Island.o \
-	obj/box2d/src/b2Joint.o \
-	obj/box2d/src/b2PairManager.o \
-	obj/box2d/src/b2PolyAndCircleContact.o \
-	obj/box2d/src/b2PolyContact.o \
-	obj/box2d/src/b2RevoluteJoint.o \
-	obj/box2d/src/b2Settings.o \
-	obj/box2d/src/b2Shape.o \
-	obj/box2d/src/b2StackAllocator.o \
-	obj/box2d/src/b2World.o
+	obj/box2d/b2BlockAllocator.o \
+	obj/box2d/b2Body.o \
+	obj/box2d/b2BroadPhase.o \
+	obj/box2d/b2CircleContact.o \
+	obj/box2d/b2CollideCircle.o \
+	obj/box2d/b2CollidePoly.o \
+	obj/box2d/b2Contact.o \
+	obj/box2d/b2ContactManager.o \
+	obj/box2d/b2ContactSolver.o \
+	obj/box2d/b2Distance.o \
+	obj/box2d/b2Island.o \
+	obj/box2d/b2Joint.o \
+	obj/box2d/b2PairManager.o \
+	obj/box2d/b2PolyAndCircleContact.o \
+	obj/box2d/b2PolyContact.o \
+	obj/box2d/b2RevoluteJoint.o \
+	obj/box2d/b2Settings.o \
+	obj/box2d/b2Shape.o \
+	obj/box2d/b2StackAllocator.o \
+	obj/box2d/b2World.o
 
 obj += $(obj-box2d)
 
-$(obj-box2d): | obj/box2d/src
-obj/box2d/src:
-	mkdir -p obj/box2d/src
+$(obj-box2d): | obj/box2d
+obj/box2d:
+	mkdir -p obj/box2d
 
 ### main
 
