@@ -80,58 +80,6 @@ $(obj-box2d-y): | obj/box2d/src
 obj/box2d/src:
 	mkdir -p obj/box2d/src
 
-### glfw
-
-obj-glfw-y += obj/glfw/src/context.o
-obj-glfw-y += obj/glfw/src/egl_context.o
-obj-glfw-y += obj/glfw/src/init.o
-obj-glfw-y += obj/glfw/src/input.o
-obj-glfw-y += obj/glfw/src/monitor.o
-obj-glfw-y += obj/glfw/src/osmesa_context.o
-obj-glfw-y += obj/glfw/src/vulkan.o
-obj-glfw-y += obj/glfw/src/window.o
-
-obj-glfw-$(win32) += obj/glfw/src/wgl_context.o
-obj-glfw-$(win32) += obj/glfw/src/win32_init.o
-obj-glfw-$(win32) += obj/glfw/src/win32_joystick.o
-obj-glfw-$(win32) += obj/glfw/src/win32_monitor.o
-obj-glfw-$(win32) += obj/glfw/src/win32_thread.o
-obj-glfw-$(win32) += obj/glfw/src/win32_time.o
-obj-glfw-$(win32) += obj/glfw/src/win32_window.o
-
-obj-glfw-$(linux) += obj/glfw/src/linux_joystick.o
-obj-glfw-$(linux) += obj/glfw/src/posix_thread.o
-obj-glfw-$(linux) += obj/glfw/src/posix_time.o
-obj-glfw-$(linux) += obj/glfw/src/xkb_unicode.o
-
-obj-glfw-$(x11) += obj/glfw/src/glx_context.o
-obj-glfw-$(x11) += obj/glfw/src/x11_init.o
-obj-glfw-$(x11) += obj/glfw/src/x11_monitor.o
-obj-glfw-$(x11) += obj/glfw/src/x11_window.o
-
-obj-glfw-$(wayland) += obj/glfw/src/wl_init.o
-obj-glfw-$(wayland) += obj/glfw/src/wl_monitor.o
-obj-glfw-$(wayland) += obj/glfw/src/wl_window.o
-
-obj-glfw-n += obj/glfw/src/cocoa_time.o
-obj-glfw-n += obj/glfw/src/null_init.o
-obj-glfw-n += obj/glfw/src/null_joystick.o
-obj-glfw-n += obj/glfw/src/null_monitor.o
-obj-glfw-n += obj/glfw/src/null_window.o
-
-include glfw-wayland.mk
-
-obj-y += $(obj-glfw-y)
-obj-n += $(obj-glfw-n)
-
-$(obj-glfw-y): cflags-y += -Iglfw/include
-$(obj-glfw-y): cflags-$(win32)   += -D_GLFW_WIN32
-$(obj-glfw-y): cflags-$(x11)     += -D_GLFW_X11
-$(obj-glfw-y): cflags-$(wayland) += -D_GLFW_WAYLAND
-$(obj-glfw-y): | obj/glfw/src
-obj/glfw/src:
-	mkdir -p obj/glfw/src
-
 ### main
 
 obj-main-y = \
@@ -147,7 +95,7 @@ obj-main-y = \
 obj-y += $(obj-main-y)
 obj-n += $(obj-main-n)
 
-$(obj-main-y): cflags-y += -Iglfw/include -Ibox2d/include -Ifpmath/include
+$(obj-main-y): cflags-y += -Ibox2d/include -Ifpmath/include
 $(obj-main-y): | obj/src
 obj/src:
 	mkdir -p obj/src

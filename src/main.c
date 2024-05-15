@@ -1,4 +1,7 @@
-#include <GLFW/glfw3.h>
+#include <stdlib.h>
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <GL/glx.h>
 
 void key_down(int key);
 void key_up(int key);
@@ -10,65 +13,92 @@ void resize(int w, int h);
 void init(void);
 void draw(void);
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void process_events(Display *dpy, Window win)
 {
-	if (action == GLFW_PRESS)
-		key_down(key);
-	else
-		key_up(key);
-}
+	XEvent xev;
 
-void cursor_pos_callback(GLFWwindow *window, double x, double y)
-{
-	move(x, y);
-}
+	while (XPending(dpy) > 0) {
+		XNextEvent(dpy, &xev);
 
-void scroll_callback(GLFWwindow *window, double x, double y)
-{
-	scroll(y);
-}
-
-void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
-{
-	if (action == GLFW_PRESS)
-		button_down(button);
-	else
-		button_up(button);
-}
-
-void window_size_callback(GLFWwindow *window, int w, int h)
-{
-	resize(w, h);
+		switch (xev.type) {
+		case Expose:
+			resize(xev.xexpose.width, xev.xexpose.height);
+			break;
+		case KeyPress:
+			key_down(xev.xkey.keycode);
+			break;
+		case KeyRelease:
+			key_up(xev.xkey.keycode);
+			break;
+		case ButtonPress:
+			if (xev.xbutton.button == 4)
+				scroll(+1);
+			else if (xev.xbutton.button == 5)
+				scroll(-1);
+			else
+				button_down(xev.xbutton.button);
+			break;
+		case ButtonRelease:
+			if (xev.xbutton.button != 4 && xev.xbutton.button != 5)
+				button_up(xev.xbutton.button);
+			break;
+		case MotionNotify:
+			move(xev.xmotion.x, xev.xmotion.y);
+			break;
+		}
+	}
 }
 
 int main(void)
 {
-	GLFWwindow *window;
-	int res;
+	Display *dpy;
+	Window root;
+	GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+	XVisualInfo *vi;
+	Colormap cmap;
+	XSetWindowAttributes swa;
+	Window win;
+	GLXContext glc;
 
-	if (!glfwInit())
+	dpy = XOpenDisplay(NULL);
+	if (!dpy)
 		return 1;
 
-	window = glfwCreateWindow(800, 800, "fcsim", NULL, NULL);
-	if (!window)
+	root = DefaultRootWindow(dpy);
+
+	vi = glXChooseVisual(dpy, 0, att);
+	if (!vi)
 		return 1;
 
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
+	cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
 
-	glfwSetKeyCallback(window, key_callback);
-	glfwSetCursorPosCallback(window, cursor_pos_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	glfwSetWindowSizeCallback(window, window_size_callback);
+	swa.colormap = cmap;
+	swa.event_mask = ExposureMask |
+			 KeyPressMask |
+			 KeyReleaseMask |
+			 ButtonPressMask |
+			 ButtonReleaseMask |
+			 PointerMotionMask;
+
+	win = XCreateWindow(dpy, root,
+			    0, 0, 600, 600,
+			    0,
+			    vi->depth,
+			    InputOutput,
+			    vi->visual,
+			    CWColormap | CWEventMask,
+			    &swa);
+
+	XMapWindow(dpy, win);
+
+	glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
+	glXMakeCurrent(dpy, win, glc);
 
 	init();
 
-	while (!glfwWindowShouldClose(window)) {
-		draw();
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+	while (1) {
+		draw(); 
+		glXSwapBuffers(dpy, win);
+		process_events(dpy, win);
 	}
-
-	return 0;
 }

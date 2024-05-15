@@ -331,7 +331,8 @@ void arena_layer_key_up_event(struct arena_layer *arena_layer, int key)
 
 void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 {
-	if (key == ' ') {
+	switch (key) {
+	case 65: /* space */
 		if (arena_layer->running) {
 			runner_stop(arena_layer->runner);
 		} else {
@@ -339,10 +340,11 @@ void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 			runner_start(arena_layer->runner);
 		}
 		arena_layer->running = !arena_layer->running;
-	}
-
-	if (key == 'S')
+		break;
+	case 39: /* s */
 		arena_layer_toggle_fast(arena_layer);
+		break;
+	}
 }
 
 void move_block(struct fcsim_level *level, int id, float dx, float dy)
@@ -504,7 +506,7 @@ void resolve_draggable(struct fcsim_level *level,
 
 void arena_layer_mouse_button_up_event(struct arena_layer *arena_layer, int button)
 {
-	if (button == 0)
+	if (button == 1) /* left */
 		arena_layer->drag.type = DRAG_NONE;
 }
 
@@ -519,10 +521,10 @@ void arena_layer_mouse_button_down_event(struct arena_layer *arena_layer, int bu
 	pixel_to_world(&arena_layer->view, x, y, &x_world, &y_world);
 
 	if (arena_layer->running) {
-		if (button == 0)
+		if (button == 1) /* left */
 			arena_layer->drag.type = DRAG_PAN;
 	} else {
-		if (button == 0) {
+		if (button == 1) { /* left */
 			struct fcsim_joint joint;
 			int res;
 
