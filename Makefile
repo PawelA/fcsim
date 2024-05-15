@@ -3,6 +3,8 @@ cxx     ?= c++
 cflags  ?= -O2
 ldlibs  ?= -lGL -lX11
 
+cflags += -Iinclude
+
 all: fcsim
 
 ### fpmath
@@ -14,7 +16,6 @@ obj-fpmath = \
 
 obj += $(obj-fpmath)
 
-$(obj-fpmath): cflags += -Ifpmath/include
 $(obj-fpmath): | obj/fpmath
 obj/fpmath:
 	mkdir -p obj/fpmath
@@ -45,7 +46,6 @@ obj-box2d = \
 
 obj += $(obj-box2d)
 
-$(obj-box2d): cflags += -Ibox2d/include -Ifpmath/include
 $(obj-box2d): | obj/box2d/src
 obj/box2d/src:
 	mkdir -p obj/box2d/src
@@ -64,7 +64,6 @@ obj-main = \
 
 obj += $(obj-main)
 
-$(obj-main): cflags += -Ibox2d/include -Ifpmath/include
 $(obj-main): | obj/src
 obj/src:
 	mkdir -p obj/src
