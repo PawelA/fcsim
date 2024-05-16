@@ -3,26 +3,17 @@ cxx     ?= c++
 cflags  ?= -O2
 ldlibs  ?= -lGL -lX11
 
-cflags += -Iinclude
+cflags += -MMD -Iinclude
 
-all: fcsim
-
-### fpmath
-
-obj-fpmath = \
-	obj/fpmath/atan2.o \
-	obj/fpmath/sincos.o \
-	obj/fpmath/strtod.o
-
-obj += $(obj-fpmath)
-
-$(obj-fpmath): | obj/fpmath
-obj/fpmath:
-	mkdir -p obj/fpmath
-
-### box2d
-
-obj-box2d = \
+obj = \
+	obj/arena_layer.o \
+	obj/core.o \
+	obj/conv.o \
+	obj/generate.o \
+	obj/main.o \
+	obj/runner.o \
+	obj/timer.o \
+	obj/xml.o \
 	obj/box2d/b2BlockAllocator.o \
 	obj/box2d/b2Body.o \
 	obj/box2d/b2BroadPhase.o \
@@ -42,42 +33,26 @@ obj-box2d = \
 	obj/box2d/b2Settings.o \
 	obj/box2d/b2Shape.o \
 	obj/box2d/b2StackAllocator.o \
-	obj/box2d/b2World.o
+	obj/box2d/b2World.o \
+	obj/fpmath/atan2.o \
+	obj/fpmath/sincos.o \
+	obj/fpmath/strtod.o
 
-obj += $(obj-box2d)
-
-$(obj-box2d): | obj/box2d
-obj/box2d:
-	mkdir -p obj/box2d
-
-### main
-
-obj-main = \
-	obj/src/arena_layer.o \
-	obj/src/core.o \
-	obj/src/conv.o \
-	obj/src/generate.o \
-	obj/src/main.o \
-	obj/src/runner.o \
-	obj/src/timer.o \
-	obj/src/xml.o
-
-obj += $(obj-main)
-
-$(obj-main): | obj/src
-obj/src:
-	mkdir -p obj/src
-
-### rules
-
-obj/%.o: %.c
-	$(cc) -MMD $(cflags) -c -o $@ $<
-
-obj/%.o: %.cpp
-	$(cxx) -MMD $(cflags) -c -o $@ $<
+objdir = \
+	obj/box2d \
+	obj/fpmath
 
 fcsim: $(obj)
 	$(cxx) -o $@ $^ $(ldlibs)
+
+obj/%.o: src/%.c | $(objdir)
+	$(cc) $(cflags) -c -o $@ $<
+
+obj/%.o: src/%.cpp | $(objdir)
+	$(cxx) $(cflags) -c -o $@ $<
+
+$(objdir):
+	mkdir -p $@
 
 clean:
 	rm -f fcsim
