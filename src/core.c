@@ -1,5 +1,6 @@
 #include <stdint.h>
 
+#include "gl.h"
 #include "fcsim.h"
 #include "arena_layer.h"
 
