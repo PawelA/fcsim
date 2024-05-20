@@ -44,6 +44,10 @@ struct b2BlockAllocator
 	b2Block* m_freeLists[b2_blockSizes];
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void b2BlockAllocator_ctor(b2BlockAllocator *allocator);
 
 void b2BlockAllocator_dtor(b2BlockAllocator *allocator);
@@ -55,5 +59,9 @@ void b2BlockAllocator_Free(b2BlockAllocator *allocator, void* p, int32 size);
 extern int32 b2BlockAllocator_s_blockSizes[b2_blockSizes];
 extern uint8 b2BlockAllocator_s_blockSizeLookup[b2_maxBlockSize + 1];
 extern bool b2BlockAllocator_s_blockSizeLookupInitialized;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
