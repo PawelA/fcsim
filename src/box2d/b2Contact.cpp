@@ -25,6 +25,7 @@
 #include <box2d/b2BlockAllocator.h>
 #include <box2d/b2World.h>
 #include <box2d/b2Body.h>
+#include <box2d/b2Math.h>
 
 static b2ContactRegister s_registers[e_shapeTypeCount][e_shapeTypeCount];
 static bool s_initialized = false;
@@ -35,7 +36,7 @@ static void AddType(b2ContactCreateFcn* createFcn,
 
 static void InitializeRegisters()
 {
-	AddType(b2CircleContact::Create, b2CircleContact::Destroy, e_circleShape, e_circleShape);
+	AddType(b2CircleContact_Create, b2CircleContact_Destroy, e_circleShape, e_circleShape);
 	AddType(b2PolyAndCircleContact::Create, b2PolyAndCircleContact::Destroy, e_polyShape, e_circleShape);
 	AddType(b2PolyContact::Create, b2PolyContact::Destroy, e_polyShape, e_polyShape);
 }

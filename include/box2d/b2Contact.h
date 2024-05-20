@@ -83,9 +83,17 @@ struct b2Contact
 	float64 m_restitution;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
 void b2Contact_Destroy(b2Contact* contact, b2BlockAllocator* allocator);
 
 void b2Contact_ctor(b2Contact *contact, b2Shape* s1, b2Shape* s2);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -19,24 +19,28 @@
 #ifndef CIRCLE_CONTACT_H
 #define CIRCLE_CONTACT_H
 
-#include <box2d/b2Math.h>
 #include <box2d/b2Collision.h>
 #include <box2d/b2Contact.h>
 
+typedef struct b2BlockAllocator b2BlockAllocator;
 struct b2BlockAllocator;
 
-class b2CircleContact
+typedef struct b2CircleContact b2CircleContact;
+struct b2CircleContact
 {
-public:
-	static b2Contact* Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
-	static void Destroy(b2Contact* contact, b2BlockAllocator* allocator);
-
-	b2CircleContact(b2Shape* shape1, b2Shape* shape2);
-	~b2CircleContact() {}
-
 	b2Contact contact;
-
 	b2Manifold m_manifold;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+b2Contact* b2CircleContact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
+void b2CircleContact_Destroy(b2Contact* contact, b2BlockAllocator* allocator);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

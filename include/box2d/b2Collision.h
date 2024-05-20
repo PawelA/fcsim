@@ -30,7 +30,7 @@ struct b2CircleShape;
 struct b2PolyShape;
 
 // We use contact ids to facilitate warm starting.
-const uint8 b2_nullFeature = UCHAR_MAX;
+static const uint8 b2_nullFeature = UCHAR_MAX;
 
 typedef union b2ContactID b2ContactID;
 union b2ContactID
@@ -78,10 +78,18 @@ struct b2OBB
 	b2Vec2 extents;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape* circle2, bool conservative);
 void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const b2CircleShape* circle, bool conservative);
 void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* poly1, const b2PolyShape* poly2, bool conservative);
 
 float64 b2Distance(b2Vec2* x1, b2Vec2* x2, const b2Shape* shape1, const b2Shape* shape2);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
