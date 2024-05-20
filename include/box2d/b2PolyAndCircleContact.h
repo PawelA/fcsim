@@ -21,20 +21,24 @@
 
 #include <box2d/b2Contact.h>
 
+typedef struct b2BlockAllocator b2BlockAllocator;
 struct b2BlockAllocator;
 
-class b2PolyAndCircleContact
-{
-public:
-	static b2Contact* Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
-	static void Destroy(b2Contact* contact, b2BlockAllocator* allocator);
-
-	b2PolyAndCircleContact(b2Shape* shape1, b2Shape* shape2);
-	~b2PolyAndCircleContact() {}
-
+typedef struct b2PolyAndCircleContact b2PolyAndCircleContact;
+struct b2PolyAndCircleContact {
 	b2Contact contact;
-
 	b2Manifold m_manifold;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+b2Contact *b2PolyAndCircleContact_Create(b2Shape *shape1, b2Shape *shape2, b2BlockAllocator *allocator);
+void b2PolyAndCircleContact_Destroy(b2Contact *contact, b2BlockAllocator *allocator);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
