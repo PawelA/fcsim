@@ -38,7 +38,7 @@ static void InitializeRegisters()
 {
 	AddType(b2CircleContact_Create, b2CircleContact_Destroy, e_circleShape, e_circleShape);
 	AddType(b2PolyAndCircleContact::Create, b2PolyAndCircleContact::Destroy, e_polyShape, e_circleShape);
-	AddType(b2PolyContact::Create, b2PolyContact::Destroy, e_polyShape, e_polyShape);
+	AddType(b2PolyContact_Create, b2PolyContact_Destroy, e_polyShape, e_polyShape);
 }
 
 static void AddType(b2ContactCreateFcn* createFcn,

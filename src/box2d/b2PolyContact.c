@@ -18,42 +18,9 @@
 
 #include <box2d/b2PolyContact.h>
 #include <box2d/b2BlockAllocator.h>
+#include <string.h>
 
-#include <cstring>
-#include <memory>
-#include <new>
-
-b2Contact* b2PolyContact::Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
-{
-	b2PolyContact *poly_contact = (b2PolyContact *)b2BlockAllocator_Allocate(allocator, sizeof(b2PolyContact));
-	new (poly_contact) b2PolyContact(shape1, shape2);
-	return &poly_contact->contact;
-}
-
-void b2PolyContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
-{
-	((b2PolyContact*)contact)->~b2PolyContact();
-	b2BlockAllocator_Free(allocator, contact, sizeof(b2PolyContact));
-}
-
-static void b2PolyContact_Evaluate(b2Contact *contact);
-static b2Manifold *b2PolyContact_GetManifolds(b2Contact *contact)
-{
-	b2PolyContact *poly_contact = (b2PolyContact *)contact;
-	return &poly_contact->m_manifold;
-}
-
-b2PolyContact::b2PolyContact(b2Shape* s1, b2Shape* s2)
-{
-	b2Contact_ctor(&contact, s1, s2);
-	contact.Evaluate = b2PolyContact_Evaluate;
-	contact.GetManifolds = b2PolyContact_GetManifolds;
-	b2Assert(m_shape1->m_type == e_polyShape);
-	b2Assert(m_shape2->m_type == e_polyShape);
-	m_manifold.pointCount = 0;
-}
-
-void b2PolyContact_Evaluate(b2Contact *contact)
+static void b2PolyContact_Evaluate(b2Contact *contact)
 {
 	b2PolyContact *poly_contact = (b2PolyContact *)contact;
 	b2Manifold m0;
@@ -99,4 +66,30 @@ void b2PolyContact_Evaluate(b2Contact *contact)
 	{
 		contact->m_manifoldCount = 0;
 	}
+}
+
+static b2Manifold *b2PolyContact_GetManifolds(b2Contact *contact)
+{
+	b2PolyContact *poly_contact = (b2PolyContact *)contact;
+	return &poly_contact->m_manifold;
+}
+
+static void b2PolyContact_ctor(b2PolyContact *poly_contact, b2Shape* s1, b2Shape* s2)
+{
+	b2Contact_ctor(&poly_contact->contact, s1, s2);
+	poly_contact->contact.Evaluate = b2PolyContact_Evaluate;
+	poly_contact->contact.GetManifolds = b2PolyContact_GetManifolds;
+	poly_contact->m_manifold.pointCount = 0;
+}
+
+b2Contact* b2PolyContact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
+{
+	b2PolyContact *poly_contact = b2BlockAllocator_Allocate(allocator, sizeof(b2PolyContact));
+	b2PolyContact_ctor(poly_contact, shape1, shape2);
+	return &poly_contact->contact;
+}
+
+void b2PolyContact_Destroy(b2Contact* contact, b2BlockAllocator* allocator)
+{
+	b2BlockAllocator_Free(allocator, contact, sizeof(b2PolyContact));
 }
