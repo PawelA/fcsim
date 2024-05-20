@@ -24,6 +24,7 @@
 #define b2_stackSize  100 * 1024	// 100k
 #define b2_maxStackEntries  32
 
+typedef struct b2StackEntry b2StackEntry;
 struct b2StackEntry
 {
 	char* data;
@@ -41,11 +42,14 @@ struct b2StackAllocator
 	int32 m_index;
 
 	int32 m_allocation;
-	int32 m_maxAllocation;
 
 	struct b2StackEntry m_entries[b2_maxStackEntries];
 	int32 m_entryCount;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void b2StackAllocator_ctor(b2StackAllocator *allocator);
 
@@ -54,5 +58,9 @@ void b2StackAllocator_dtor(b2StackAllocator *allocator);
 void *b2StackAllocator_Allocate(struct b2StackAllocator *allocator, int32 size);
 
 void b2StackAllocator_Free(struct b2StackAllocator *allocator, void* p);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

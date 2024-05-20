@@ -17,13 +17,12 @@
 */
 
 #include <box2d/b2StackAllocator.h>
-#include <box2d/b2Math.h>
+#include <stddef.h>
 
 void b2StackAllocator_ctor(struct b2StackAllocator *allocator)
 {
 	allocator->m_index = 0;
 	allocator->m_allocation = 0;
-	allocator->m_maxAllocation = 0;
 	allocator->m_entryCount = 0;
 }
 
@@ -52,7 +51,6 @@ void* b2StackAllocator_Allocate(struct b2StackAllocator *allocator, int32 size)
 	}
 
 	allocator->m_allocation += size;
-	allocator->m_maxAllocation = b2Max(allocator->m_maxAllocation, allocator->m_allocation);
 	++allocator->m_entryCount;
 
 	return entry->data;
