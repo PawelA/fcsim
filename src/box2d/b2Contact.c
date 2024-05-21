@@ -25,7 +25,7 @@
 #include <box2d/b2BlockAllocator.h>
 #include <box2d/b2World.h>
 #include <box2d/b2Body.h>
-#include <box2d/b2Math.h>
+#include <box2d/b2CMath.h>
 
 static b2ContactRegister s_registers[e_shapeTypeCount][e_shapeTypeCount];
 static bool s_initialized = false;
@@ -87,7 +87,7 @@ b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* 
 			for (int32 i = 0; i < c->m_manifoldCount; ++i)
 			{
 				b2Manifold* m = c->GetManifolds(c) + i;
-				m->normal = -m->normal;
+				m->normal = b2Vec2_neg(m->normal);
 			}
 			return c;
 		}
