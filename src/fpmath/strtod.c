@@ -93,7 +93,10 @@ static double bignum_to_double(struct bignum *bignum)
 	if (exp < 0)
 		exp = 0;
 
-	return ldexp(mantissa, exp);
+	double res = mantissa;
+	while (exp--)
+		res *= 2;
+	return res;
 }
 
 static double binexp(double x, int n)

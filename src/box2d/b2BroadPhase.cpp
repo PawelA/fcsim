@@ -18,8 +18,7 @@
 
 #include <box2d/b2Math.h>
 #include <box2d/b2BroadPhase.h>
-#include <algorithm>
-#include <cstring>
+#include <string.h>
 
 // Notes:
 // - we use bound arrays instead of linked lists for cache coherence.

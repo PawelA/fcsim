@@ -22,9 +22,9 @@
 #include <box2d/b2Settings.h>
 #include <box2d/b2Vec.h>
 #include <fpmath/fpmath.h>
-#include <cmath>
-#include <cfloat>
-#include <cstdlib>
+#include <math.h>
+#include <float.h>
+#include <stdlib.h>
 
 #define MIN_VALUE 5e-324
 
@@ -33,7 +33,8 @@ inline bool b2IsValid(float64 x)
 #ifdef _MSC_VER
 	return _finite(x) != 0;
 #else
-	return finite(x) != 0;
+	//return isfinite(x) != 0;
+	return 1;
 #endif
 }
 

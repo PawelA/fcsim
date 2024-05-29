@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -7,7 +6,6 @@
 
 #include "fcsim.h"
 #include "globals.h"
-#include "runner.h"
 #include "arena_layer.h"
 #include "galois.h"
 
@@ -23,6 +21,7 @@ const GLchar *vertex_shader_src =
 	"}";
 
 const GLchar *fragment_shader_src =
+	"precision mediump float;"
 	"varying vec3 v_color;"
 	"void main() {"
 		"gl_FragColor = vec4(v_color, 1.0);\n"
@@ -167,7 +166,7 @@ static void draw_block(struct fcsim_shape *shape, struct fcsim_where *where, int
 	}
 }
 
-void draw_level(struct arena_layer *arena_layer, struct runner_tick *tick)
+void draw_level(struct arena_layer *arena_layer)
 {
 	struct fcsim_level *level = &arena_layer->level;
 	int i;
@@ -177,13 +176,13 @@ void draw_level(struct arena_layer *arena_layer, struct runner_tick *tick)
 
 	for (i = 0; i < level->level_block_cnt; i++) {
 		draw_block(&arena_layer->level_shapes[i],
-			   &tick->level_wheres[i],
+			   &arena_layer->level_wheres[i],
 			   level->level_blocks[i].type);
 	}
 
 	for (i = 0; i < level->player_block_cnt; i++) {
 		draw_block(&arena_layer->player_shapes[i],
-			   &tick->player_wheres[i],
+			   &arena_layer->player_wheres[i],
 			   level->player_blocks[i].type);
 	}
 }
@@ -219,7 +218,6 @@ void arena_layer_init(struct arena_layer *arena_layer)
 	GLint param;
 	GLsizei log_len;
 
-	arena_layer->runner = runner_create();
 	arena_layer->running = 0;
 	arena_layer->fast = 0;
 	arena_layer->view_scale = 1.0;
@@ -236,22 +234,26 @@ void arena_layer_init(struct arena_layer *arena_layer)
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &vertex_shader_src, NULL);
 	glCompileShader(vertex_shader);
+	/*
 	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &param);
 	if (!param) {
 		glGetShaderInfoLog(vertex_shader, sizeof(shader_log), &log_len, shader_log);
 		printf("vertex shader:\n%s\n", shader_log);
 		exit(1);
 	}
+	*/
 
 	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment_shader, 1, &fragment_shader_src, NULL);
 	glCompileShader(fragment_shader);
+	/*
 	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &param);
 	if (!param) {
 		glGetShaderInfoLog(fragment_shader, sizeof(shader_log), &log_len, shader_log);
 		printf("fragment shader:\n%s", shader_log);
 		exit(1);
 	}
+	*/
 
 	program = glCreateProgram();
 	glAttachShader(program, vertex_shader);
@@ -278,29 +280,15 @@ void arena_layer_init(struct arena_layer *arena_layer)
 
 void arena_layer_draw(struct arena_layer *arena_layer)
 {
+	glClearColor(0.529f, 0.741f, 0.945f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	cnt_index = 0;
 	cnt_coord = 0;
 	cnt_color = 0;
 
-	if (arena_layer->running) {
-		struct runner_tick tick;
-		uint64_t won_tick;
-
-		runner_get_tick(arena_layer->runner, &tick);
-		won_tick = runner_get_won_tick(arena_layer->runner);
-
-		view = arena_layer->view;
-		draw_level(arena_layer, &tick);
-	} else {
-		struct runner_tick tick;
-
-		view = arena_layer->view;
-		tick.player_wheres = arena_layer->player_wheres;
-		tick.level_wheres = arena_layer->level_wheres;
-		draw_level(arena_layer, &tick);
-	}
+	view = arena_layer->view;
+	draw_level(arena_layer);
 
 	glBindBuffer(GL_ARRAY_BUFFER, coord_buffer);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, cnt_coord * sizeof(coords[0]), coords);
@@ -313,15 +301,9 @@ void arena_layer_draw(struct arena_layer *arena_layer)
 	glDrawElements(GL_TRIANGLES, cnt_index, GL_UNSIGNED_SHORT, 0);
 }
 
-void arena_layer_show(struct arena_layer *arena_layer)
-{
-	glClearColor(0.529f, 0.741f, 0.945f, 0);
-}
-
 void arena_layer_toggle_fast(struct arena_layer *arena_layer)
 {
 	arena_layer->fast = !arena_layer->fast;
-	runner_set_frame_limit(arena_layer->runner, arena_layer->fast ? 0 : 16666);
 }
 
 void arena_layer_key_up_event(struct arena_layer *arena_layer, int key)
@@ -329,15 +311,34 @@ void arena_layer_key_up_event(struct arena_layer *arena_layer, int key)
 
 }
 
+void tick_func(void *arg)
+{
+	struct arena_layer *arena_layer = arg;
+	int i;
+
+	fcsim_step(arena_layer->simul);
+
+	for (i = 0; i < arena_layer->level.player_block_cnt; i++)
+		fcsim_get_player_block_desc_simul(arena_layer->simul, i, &arena_layer->player_wheres[i]);
+
+	for (i = 0; i < arena_layer->level.level_block_cnt; i++)
+		fcsim_get_level_block_desc_simul(arena_layer->simul, i, &arena_layer->level_wheres[i]);
+
+}
+
+int set_interval(void (*func)(void *arg), int delay, void *arg);
+void clear_interval(int id);
+
 void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 {
 	switch (key) {
 	case 65: /* space */
 		if (arena_layer->running) {
-			runner_stop(arena_layer->runner);
+			clear_interval(arena_layer->ival);
+			arena_layer_update_descs(arena_layer);
 		} else {
-			runner_load(arena_layer->runner, &arena_layer->level);
-			runner_start(arena_layer->runner);
+			arena_layer->simul = fcsim_make_simul(&arena_layer->level);
+			arena_layer->ival = set_interval(tick_func, 16, arena_layer);
 		}
 		arena_layer->running = !arena_layer->running;
 		break;
@@ -381,6 +382,8 @@ void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 		move_block(&arena_layer->level, arena_layer->drag.block_id,
 			   dx_world, dy_world);
 		arena_layer_update_descs(arena_layer);
+		break;
+	case DRAG_NONE:
 		break;
 	}
 

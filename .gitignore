@@ -2,4 +2,5 @@
 *.d
 *.xml
 fcsim
+html/fcsim.wasm
 tags

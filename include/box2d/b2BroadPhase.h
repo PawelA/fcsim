@@ -30,7 +30,7 @@ Bullet (http:/www.bulletphysics.com).
 #include <box2d/b2Math.h>
 #include <box2d/b2Collision.h>
 #include <box2d/b2PairManager.h>
-#include <climits>
+#include <limits.h>
 
 const uint16 b2_invalid = USHRT_MAX;
 const uint16 b2_nullEdge = USHRT_MAX;

@@ -25,8 +25,10 @@ struct arena_layer {
 	struct fcsim_where *player_wheres;
 	struct fcsim_where *level_wheres;
 
-	struct runner *runner;
+	struct fcsim_simul *simul;
+
 	int running;
+	int ival;
 
 	struct arena_view view;
 	float view_scale;

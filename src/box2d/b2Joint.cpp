@@ -23,8 +23,6 @@
 #include <box2d/b2BlockAllocator.h>
 #include <box2d/b2BroadPhase.h>
 
-#include <new>
-
 b2Joint* b2Joint_Create(const b2JointDef* def, b2BlockAllocator* allocator)
 {
 	b2Joint* joint = NULL;

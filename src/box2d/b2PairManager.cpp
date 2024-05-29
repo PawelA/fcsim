@@ -19,8 +19,6 @@
 #include <box2d/b2PairManager.h>
 #include <box2d/b2BroadPhase.h>
 
-#include <algorithm>
-
 // Thomas Wang's hash, see: http://www.concentric.net/~Ttwang/tech/inthash.htm
 // This assumes proxyId1 and proxyId2 are 16-bit.
 inline uint32 Hash(uint32 proxyId1, uint32 proxyId2)

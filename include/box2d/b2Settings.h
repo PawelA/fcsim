@@ -21,7 +21,7 @@
 
 #include <stdbool.h>
 
-#define NOT_USED(x) x
+#define NOT_USED(x)
 #define b2Assert(A)
 
 typedef signed char	int8;

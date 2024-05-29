@@ -56,10 +56,14 @@ void resize(int w, int h)
 void init(void)
 {
 	arena_layer_init(&the_arena_layer);
-	arena_layer_show(&the_arena_layer);
 }
 
 void draw(void)
 {
 	arena_layer_draw(&the_arena_layer);
+}
+
+void call(void (*func)(void *arg), void *arg)
+{
+	func(arg);
 }
