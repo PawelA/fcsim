@@ -3,7 +3,7 @@
 #include <math.h>
 
 #include "gl.h"
-
+#include "interval.h"
 #include "fcsim.h"
 #include "globals.h"
 #include "arena_layer.h"
@@ -21,7 +21,9 @@ const GLchar *vertex_shader_src =
 	"}";
 
 const GLchar *fragment_shader_src =
-	"precision mediump float;"
+	"#ifdef GL_ES\n"
+	"precision mediump float;\n"
+	"#endif\n"
 	"varying vec3 v_color;"
 	"void main() {"
 		"gl_FragColor = vec4(v_color, 1.0);\n"
@@ -326,9 +328,6 @@ void tick_func(void *arg)
 
 }
 
-int set_interval(void (*func)(void *arg), int delay, void *arg);
-void clear_interval(int id);
-
 void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 {
 	switch (key) {
@@ -338,7 +337,7 @@ void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 			arena_layer_update_descs(arena_layer);
 		} else {
 			arena_layer->simul = fcsim_make_simul(&arena_layer->level);
-			arena_layer->ival = set_interval(tick_func, 16, arena_layer);
+			arena_layer->ival = set_interval(tick_func, 10, arena_layer);
 		}
 		arena_layer->running = !arena_layer->running;
 		break;

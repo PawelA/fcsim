@@ -183,7 +183,6 @@ function canvas_draw(timestamp)
 	if (canvas.width != width || canvas.height != height) {
 		canvas.width = width;
 		canvas.height = height;
-		console.log(width, height);
 		gl.viewport(0, 0, width, height);
 		inst.exports.resize(width, height);
 	}
