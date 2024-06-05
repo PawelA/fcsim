@@ -373,7 +373,7 @@ static bool b2AABB_IsValid(const b2AABB *aabb)
 	return valid;
 }
 
-void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
+void b2BroadPhase_MoveProxy(b2BroadPhase *broad_phase, int32 proxyId, const b2AABB& aabb)
 {
 	if (proxyId == b2_nullProxy || b2_maxProxies <= proxyId)
 	{
@@ -387,25 +387,25 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 		return;
 	}
 
-	int32 boundCount = 2 * m_proxyCount;
+	int32 boundCount = 2 * broad_phase->m_proxyCount;
 
-	b2Proxy* proxy = m_proxyPool + proxyId;
+	b2Proxy* proxy = broad_phase->m_proxyPool + proxyId;
 
 	// Get new bound values
 	b2BoundValues newValues;
-	b2BroadPhase_ComputeBounds(this, newValues.lowerValues, newValues.upperValues, aabb);
+	b2BroadPhase_ComputeBounds(broad_phase, newValues.lowerValues, newValues.upperValues, aabb);
 
 	// Get old bound values
 	b2BoundValues oldValues;
 	for (int32 axis = 0; axis < 2; ++axis)
 	{
-		oldValues.lowerValues[axis] = m_bounds[axis][proxy->lowerBounds[axis]].value;
-		oldValues.upperValues[axis] = m_bounds[axis][proxy->upperBounds[axis]].value;
+		oldValues.lowerValues[axis] = broad_phase->m_bounds[axis][proxy->lowerBounds[axis]].value;
+		oldValues.upperValues[axis] = broad_phase->m_bounds[axis][proxy->upperBounds[axis]].value;
 	}
 
 	for (int32 axis = 0; axis < 2; ++axis)
 	{
-		b2Bound* bounds = m_bounds[axis];
+		b2Bound* bounds = broad_phase->m_bounds[axis];
 
 		int32 lowerIndex = proxy->lowerBounds[axis];
 		int32 upperIndex = proxy->upperBounds[axis];
@@ -433,15 +433,15 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 				b2Bound* prevBound = bound - 1;
 
 				int32 prevProxyId = prevBound->proxyId;
-				b2Proxy* prevProxy = m_proxyPool + prevBound->proxyId;
+				b2Proxy* prevProxy = broad_phase->m_proxyPool + prevBound->proxyId;
 
 				++prevBound->stabbingCount;
 
 				if (b2Bound_IsUpper(prevBound) == true)
 				{
-					if (b2BroadPhase_TestOverlap(this, newValues, prevProxy))
+					if (b2BroadPhase_TestOverlap(broad_phase, newValues, prevProxy))
 					{
-						b2PairManager_AddBufferedPair(&m_pairManager, proxyId, prevProxyId);
+						b2PairManager_AddBufferedPair(&broad_phase->m_pairManager, proxyId, prevProxyId);
 					}
 
 					++prevProxy->upperBounds[axis];
@@ -468,15 +468,15 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 				b2Bound* bound = bounds + index;
 				b2Bound* nextBound = bound + 1;
 				int32 nextProxyId = nextBound->proxyId;
-				b2Proxy* nextProxy = m_proxyPool + nextProxyId;
+				b2Proxy* nextProxy = broad_phase->m_proxyPool + nextProxyId;
 
 				++nextBound->stabbingCount;
 
 				if (b2Bound_IsLower(nextBound) == true)
 				{
-					if (b2BroadPhase_TestOverlap(this, newValues, nextProxy))
+					if (b2BroadPhase_TestOverlap(broad_phase, newValues, nextProxy))
 					{
-						b2PairManager_AddBufferedPair(&m_pairManager, proxyId, nextProxyId);
+						b2PairManager_AddBufferedPair(&broad_phase->m_pairManager, proxyId, nextProxyId);
 					}
 
 					--nextProxy->lowerBounds[axis];
@@ -508,15 +508,15 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 				b2Bound* nextBound = bound + 1;
 
 				int32 nextProxyId = nextBound->proxyId;
-				b2Proxy* nextProxy = m_proxyPool + nextProxyId;
+				b2Proxy* nextProxy = broad_phase->m_proxyPool + nextProxyId;
 
 				--nextBound->stabbingCount;
 
 				if (b2Bound_IsUpper(nextBound))
 				{
-					if (b2BroadPhase_TestOverlap(this, oldValues, nextProxy))
+					if (b2BroadPhase_TestOverlap(broad_phase, oldValues, nextProxy))
 					{
-						b2PairManager_RemoveBufferedPair(&m_pairManager, proxyId, nextProxyId);
+						b2PairManager_RemoveBufferedPair(&broad_phase->m_pairManager, proxyId, nextProxyId);
 					}
 
 					--nextProxy->upperBounds[axis];
@@ -544,15 +544,15 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 				b2Bound* prevBound = bound - 1;
 
 				int32 prevProxyId = prevBound->proxyId;
-				b2Proxy* prevProxy = m_proxyPool + prevProxyId;
+				b2Proxy* prevProxy = broad_phase->m_proxyPool + prevProxyId;
 
 				--prevBound->stabbingCount;
 
 				if (b2Bound_IsLower(prevBound) == true)
 				{
-					if (b2BroadPhase_TestOverlap(this, oldValues, prevProxy))
+					if (b2BroadPhase_TestOverlap(broad_phase, oldValues, prevProxy))
 					{
-						b2PairManager_RemoveBufferedPair(&m_pairManager, proxyId, prevProxyId);
+						b2PairManager_RemoveBufferedPair(&broad_phase->m_pairManager, proxyId, prevProxyId);
 					}
 
 					++prevProxy->lowerBounds[axis];

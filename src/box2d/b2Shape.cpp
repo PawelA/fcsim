@@ -373,7 +373,7 @@ void b2CircleShape_Synchronize(b2Shape *shape,
 	b2BroadPhase* broadPhase = shape->m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		broadPhase->MoveProxy(shape->m_proxyId, aabb);
+		b2BroadPhase_MoveProxy(broadPhase, shape->m_proxyId, aabb);
 	}
 	else
 	{
@@ -608,7 +608,7 @@ void b2PolyShape_Synchronize(b2Shape *shape,
 	b2BroadPhase* broadPhase = shape->m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		broadPhase->MoveProxy(shape->m_proxyId, aabb);
+		b2BroadPhase_MoveProxy(broadPhase, shape->m_proxyId, aabb);
 	}
 	else
 	{

@@ -95,10 +95,6 @@ public:
 	uint16 CreateProxy(const b2AABB& aabb, void* userData);
 	void DestroyProxy(int32 proxyId);
 
-	// Call MoveProxy as many times as you like, then when you are done
-	// call Commit to finalized the proxy pairs (for your time step).
-	void MoveProxy(int32 proxyId, const b2AABB& aabb);
-
 public:
 	b2PairManager m_pairManager;
 
@@ -132,6 +128,10 @@ static inline b2Proxy* b2BroadPhase_GetProxy(b2BroadPhase *broad_phase, int32 pr
 
 	return broad_phase->m_proxyPool + proxyId;
 }
+
+// Call MoveProxy as many times as you like, then when you are done
+// call Commit to finalized the proxy pairs (for your time step).
+void b2BroadPhase_MoveProxy(b2BroadPhase *broad_phase, int32 proxyId, const b2AABB& aabb);
 
 void b2BroadPhase_Commit(b2BroadPhase *broad_phase);
 
