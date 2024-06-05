@@ -52,8 +52,8 @@ void b2World_ctor(b2World *world, const b2AABB *worldAABB, b2Vec2 gravity, bool 
 	world->m_gravity = gravity;
 
 	world->m_contactManager.m_world = world;
-	void* mem = b2Alloc(sizeof(b2BroadPhase));
-	world->m_broadPhase = new (mem) b2BroadPhase(*worldAABB, &world->m_contactManager.m_pairCallback);
+	world->m_broadPhase = (b2BroadPhase *)b2Alloc(sizeof(b2BroadPhase));
+	b2BroadPhase_ctor(world->m_broadPhase, *worldAABB, &world->m_contactManager.m_pairCallback);
 
 	b2BodyDef bd;
 	b2BodyDef_ctor(&bd);
@@ -63,7 +63,6 @@ void b2World_ctor(b2World *world, const b2AABB *worldAABB, b2Vec2 gravity, bool 
 void b2World_dtor(b2World *world)
 {
 	b2World_DestroyBody(world, world->m_groundBody);
-	world->m_broadPhase->~b2BroadPhase();
 	b2Free(world->m_broadPhase);
 
 	b2BlockAllocator_dtor(&world->m_blockAllocator);

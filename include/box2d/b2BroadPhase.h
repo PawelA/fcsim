@@ -80,13 +80,9 @@ static inline bool b2Proxy_IsValid(const b2Proxy *proxy)
 	return proxy->overlapCount != b2_invalid;
 }
 
-class b2BroadPhase
+typedef struct b2BroadPhase b2BroadPhase;
+struct b2BroadPhase
 {
-public:
-	b2BroadPhase(const b2AABB& worldAABB, b2PairCallback* callback);
-	~b2BroadPhase();
-
-public:
 	b2PairManager m_pairManager;
 
 	b2Proxy m_proxyPool[b2_maxProxies];
@@ -102,6 +98,8 @@ public:
 	int32 m_proxyCount;
 	uint16 m_timeStamp;
 };
+	
+void b2BroadPhase_ctor(b2BroadPhase *broad_phase, const b2AABB& worldAABB, b2PairCallback* callback);
 
 // Use this to see if your proxy is in range. If it is not in range,
 // it should be destroyed. Otherwise you may get O(m^2) pairs, where m

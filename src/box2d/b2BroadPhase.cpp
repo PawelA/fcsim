@@ -62,38 +62,34 @@ static int32 BinarySearch(b2Bound* bounds, int32 count, uint16 value)
 	return low;
 }
 
-b2BroadPhase::b2BroadPhase(const b2AABB& worldAABB, b2PairCallback* callback)
+void b2BroadPhase_ctor(b2BroadPhase *broad_phase, const b2AABB& worldAABB, b2PairCallback* callback)
 {
-	b2PairManager_ctor(&m_pairManager);
-	b2PairManager_Initialize(&m_pairManager, this, callback);
+	b2PairManager_ctor(&broad_phase->m_pairManager);
+	b2PairManager_Initialize(&broad_phase->m_pairManager, broad_phase, callback);
 
 	b2Assert(worldAABB.IsValid());
-	m_worldAABB = worldAABB;
-	m_proxyCount = 0;
+	broad_phase->m_worldAABB = worldAABB;
+	broad_phase->m_proxyCount = 0;
 
 	b2Vec2 d = worldAABB.maxVertex - worldAABB.minVertex;
-	m_quantizationFactor.x = USHRT_MAX / d.x;
-	m_quantizationFactor.y = USHRT_MAX / d.y;
+	broad_phase->m_quantizationFactor.x = USHRT_MAX / d.x;
+	broad_phase->m_quantizationFactor.y = USHRT_MAX / d.y;
 
 	for (uint16 i = 0; i < b2_maxProxies - 1; ++i)
 	{
-		b2Proxy_SetNext(&m_proxyPool[i], i + 1);
-		m_proxyPool[i].timeStamp = 0;
-		m_proxyPool[i].overlapCount = b2_invalid;
-		m_proxyPool[i].userData = NULL;
+		b2Proxy_SetNext(&broad_phase->m_proxyPool[i], i + 1);
+		broad_phase->m_proxyPool[i].timeStamp = 0;
+		broad_phase->m_proxyPool[i].overlapCount = b2_invalid;
+		broad_phase->m_proxyPool[i].userData = NULL;
 	}
-	b2Proxy_SetNext(&m_proxyPool[b2_maxProxies-1], b2_nullProxy);
-	m_proxyPool[b2_maxProxies-1].timeStamp = 0;
-	m_proxyPool[b2_maxProxies-1].overlapCount = b2_invalid;
-	m_proxyPool[b2_maxProxies-1].userData = NULL;
-	m_freeProxy = 0;
+	b2Proxy_SetNext(&broad_phase->m_proxyPool[b2_maxProxies-1], b2_nullProxy);
+	broad_phase->m_proxyPool[b2_maxProxies-1].timeStamp = 0;
+	broad_phase->m_proxyPool[b2_maxProxies-1].overlapCount = b2_invalid;
+	broad_phase->m_proxyPool[b2_maxProxies-1].userData = NULL;
+	broad_phase->m_freeProxy = 0;
 
-	m_timeStamp = 1;
-	m_queryResultCount = 0;
-}
-
-b2BroadPhase::~b2BroadPhase()
-{
+	broad_phase->m_timeStamp = 1;
+	broad_phase->m_queryResultCount = 0;
 }
 
 bool b2BroadPhase_TestOverlap(b2BroadPhase *broad_phase, const b2BoundValues& b, b2Proxy* p)
