@@ -115,22 +115,22 @@ bool b2BroadPhase_TestOverlap(b2BroadPhase *broad_phase, const b2BoundValues& b,
 	return true;
 }
 
-void b2BroadPhase::ComputeBounds(uint16* lowerValues, uint16* upperValues, const b2AABB& aabb)
+static void b2BroadPhase_ComputeBounds(b2BroadPhase *broad_phase, uint16* lowerValues, uint16* upperValues, const b2AABB& aabb)
 {
 	b2Assert(aabb.maxVertex.x > aabb.minVertex.x);
 	b2Assert(aabb.maxVertex.y > aabb.minVertex.y);
 
-	b2Vec2 minVertex = b2Clamp(aabb.minVertex, m_worldAABB.minVertex, m_worldAABB.maxVertex);
-	b2Vec2 maxVertex = b2Clamp(aabb.maxVertex, m_worldAABB.minVertex, m_worldAABB.maxVertex);
+	b2Vec2 minVertex = b2Clamp(aabb.minVertex, broad_phase->m_worldAABB.minVertex, broad_phase->m_worldAABB.maxVertex);
+	b2Vec2 maxVertex = b2Clamp(aabb.maxVertex, broad_phase->m_worldAABB.minVertex, broad_phase->m_worldAABB.maxVertex);
 
 	// Bump lower bounds downs and upper bounds up. This ensures correct sorting of
 	// lower/upper bounds that would have equal values.
 	// TODO_ERIN implement fast float to uint16 conversion.
-	lowerValues[0] = (uint16)(m_quantizationFactor.x * (minVertex.x - m_worldAABB.minVertex.x)) & (USHRT_MAX - 1);
-	upperValues[0] = (uint16)(m_quantizationFactor.x * (maxVertex.x - m_worldAABB.minVertex.x)) | 1;
+	lowerValues[0] = (uint16)(broad_phase->m_quantizationFactor.x * (minVertex.x - broad_phase->m_worldAABB.minVertex.x)) & (USHRT_MAX - 1);
+	upperValues[0] = (uint16)(broad_phase->m_quantizationFactor.x * (maxVertex.x - broad_phase->m_worldAABB.minVertex.x)) | 1;
 
-	lowerValues[1] = (uint16)(m_quantizationFactor.y * (minVertex.y - m_worldAABB.minVertex.y)) & (USHRT_MAX - 1);
-	upperValues[1] = (uint16)(m_quantizationFactor.y * (maxVertex.y - m_worldAABB.minVertex.y)) | 1;
+	lowerValues[1] = (uint16)(broad_phase->m_quantizationFactor.y * (minVertex.y - broad_phase->m_worldAABB.minVertex.y)) & (USHRT_MAX - 1);
+	upperValues[1] = (uint16)(broad_phase->m_quantizationFactor.y * (maxVertex.y - broad_phase->m_worldAABB.minVertex.y)) | 1;
 }
 
 static void b2BroadPhase_IncrementTimeStamp(b2BroadPhase *broad_phase)
@@ -228,7 +228,7 @@ uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
 	int32 boundCount = 2 * m_proxyCount;
 
 	uint16 lowerValues[2], upperValues[2];
-	ComputeBounds(lowerValues, upperValues, aabb);
+	b2BroadPhase_ComputeBounds(this, lowerValues, upperValues, aabb);
 
 	for (int32 axis = 0; axis < 2; ++axis)
 	{
@@ -393,7 +393,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 
 	// Get new bound values
 	b2BoundValues newValues;
-	ComputeBounds(newValues.lowerValues, newValues.upperValues, aabb);
+	b2BroadPhase_ComputeBounds(this, newValues.lowerValues, newValues.upperValues, aabb);
 
 	// Get old bound values
 	b2BoundValues oldValues;

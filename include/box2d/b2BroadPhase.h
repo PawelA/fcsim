@@ -107,9 +107,6 @@ public:
 	// the count, up to the supplied maximum count.
 	int32 Query(const b2AABB& aabb, void** userData, int32 maxCount);
 
-private:
-	void ComputeBounds(uint16* lowerValues, uint16* upperValues, const b2AABB& aabb);
-
 public:
 	b2PairManager m_pairManager;
 
