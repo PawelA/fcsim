@@ -190,9 +190,10 @@ void b2BroadPhase_IncrementOverlapCount(b2BroadPhase *broad_phase, int32 proxyId
 	}
 }
 
-void b2BroadPhase::Query(int32* lowerQueryOut, int32* upperQueryOut,
-					   uint16 lowerValue, uint16 upperValue,
-					   b2Bound* bounds, int32 boundCount, int32 axis)
+static void b2BroadPhase_Query(b2BroadPhase *broad_phase,
+			       int32* lowerQueryOut, int32* upperQueryOut,
+			       uint16 lowerValue, uint16 upperValue,
+			       b2Bound* bounds, int32 boundCount, int32 axis)
 {
 	int32 lowerQuery = BinarySearch(bounds, boundCount, lowerValue);
 	int32 upperQuery = BinarySearch(bounds, boundCount, upperValue);
@@ -203,7 +204,7 @@ void b2BroadPhase::Query(int32* lowerQueryOut, int32* upperQueryOut,
 	{
 		if (b2Bound_IsLower(&bounds[i]))
 		{
-			b2BroadPhase_IncrementOverlapCount(this, bounds[i].proxyId);
+			b2BroadPhase_IncrementOverlapCount(broad_phase, bounds[i].proxyId);
 		}
 	}
 
@@ -221,10 +222,10 @@ void b2BroadPhase::Query(int32* lowerQueryOut, int32* upperQueryOut,
 
 			if (b2Bound_IsLower(&bounds[i]))
 			{
-				b2Proxy* proxy = m_proxyPool + bounds[i].proxyId;
+				b2Proxy* proxy = broad_phase->m_proxyPool + bounds[i].proxyId;
 				if (lowerQuery <= proxy->upperBounds[axis])
 				{
-					b2BroadPhase_IncrementOverlapCount(this, bounds[i].proxyId);
+					b2BroadPhase_IncrementOverlapCount(broad_phase, bounds[i].proxyId);
 					--s;
 				}
 			}
@@ -257,7 +258,7 @@ uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
 	{
 		b2Bound* bounds = m_bounds[axis];
 		int32 lowerIndex, upperIndex;
-		Query(&lowerIndex, &upperIndex, lowerValues[axis], upperValues[axis], bounds, boundCount, axis);
+		b2BroadPhase_Query(this, &lowerIndex, &upperIndex, lowerValues[axis], upperValues[axis], bounds, boundCount, axis);
 
 		memmove(bounds + upperIndex + 2, bounds + upperIndex, (boundCount - upperIndex) * sizeof(b2Bound));
 		memmove(bounds + lowerIndex + 1, bounds + lowerIndex, (upperIndex - lowerIndex) * sizeof(b2Bound));
@@ -363,7 +364,7 @@ void b2BroadPhase::DestroyProxy(int32 proxyId)
 		}
 
 		// Query for pairs to be removed. lowerIndex and upperIndex are not needed.
-		Query(&lowerIndex, &upperIndex, lowerValue, upperValue, bounds, boundCount - 2, axis);
+		b2BroadPhase_Query(this, &lowerIndex, &upperIndex, lowerValue, upperValue, bounds, boundCount - 2, axis);
 	}
 
 	b2Assert(m_queryResultCount < b2_maxProxies);
@@ -613,35 +614,6 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 void b2BroadPhase::Commit()
 {
 	b2PairManager_Commit(&m_pairManager);
-}
-
-int32 b2BroadPhase::Query(const b2AABB& aabb, void** userData, int32 maxCount)
-{
-	uint16 lowerValues[2];
-	uint16 upperValues[2];
-	ComputeBounds(lowerValues, upperValues, aabb);
-
-	int32 lowerIndex, upperIndex;
-
-	Query(&lowerIndex, &upperIndex, lowerValues[0], upperValues[0], m_bounds[0], 2*m_proxyCount, 0);
-	Query(&lowerIndex, &upperIndex, lowerValues[1], upperValues[1], m_bounds[1], 2*m_proxyCount, 1);
-
-	b2Assert(m_queryResultCount < b2_maxProxies);
-
-	int32 count = 0;
-	for (int32 i = 0; i < m_queryResultCount && count < maxCount; ++i, ++count)
-	{
-		b2Assert(m_queryResults[i] < b2_maxProxies);
-		b2Proxy* proxy = m_proxyPool + m_queryResults[i];
-		b2Assert(proxy->IsValid());
-		userData[i] = proxy->userData;
-	}
-
-	// Prepare for next query.
-	m_queryResultCount = 0;
-	b2BroadPhase_IncrementTimeStamp(this);
-
-	return count;
 }
 
 void b2BroadPhase::Validate()

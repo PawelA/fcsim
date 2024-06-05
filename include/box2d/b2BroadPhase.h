@@ -116,9 +116,6 @@ private:
 	bool TestOverlap(b2Proxy* p1, b2Proxy* p2);
 	bool TestOverlap(const b2BoundValues& b, b2Proxy* p);
 
-	void Query(int32* lowerIndex, int32* upperIndex, uint16 lowerValue, uint16 upperValue,
-				b2Bound* bounds, int32 boundCount, int32 axis);
-
 public:
 	b2PairManager m_pairManager;
 
