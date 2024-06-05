@@ -100,9 +100,6 @@ public:
 	void MoveProxy(int32 proxyId, const b2AABB& aabb);
 	void Commit();
 
-	// Get a single proxy. Returns NULL if the id is invalid.
-	b2Proxy* GetProxy(int32 proxyId);
-
 public:
 	b2PairManager m_pairManager;
 
@@ -127,14 +124,14 @@ inline bool b2BroadPhase::InRange(const b2AABB& aabb) const
 	return b2Max(d.x, d.y) < 0.0;
 }
 
-inline b2Proxy* b2BroadPhase::GetProxy(int32 proxyId)
+static inline b2Proxy* b2BroadPhase_GetProxy(b2BroadPhase *broad_phase, int32 proxyId)
 {
-	if (proxyId == b2_nullProxy || b2Proxy_IsValid(&m_proxyPool[proxyId]) == false)
+	if (proxyId == b2_nullProxy || b2Proxy_IsValid(&broad_phase->m_proxyPool[proxyId]) == false)
 	{
 		return NULL;
 	}
 
-	return m_proxyPool + proxyId;
+	return broad_phase->m_proxyPool + proxyId;
 }
 
 #endif

@@ -414,7 +414,7 @@ void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 		return;
 	}
 
-	b2Proxy* proxy = broadPhase->GetProxy(shape->m_proxyId);
+	b2Proxy* proxy = b2BroadPhase_GetProxy(broadPhase, shape->m_proxyId);
 
 	broadPhase->DestroyProxy(shape->m_proxyId);
 	proxy = NULL;
@@ -668,7 +668,7 @@ void b2PolyShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 		return;
 	}
 
-	b2Proxy* proxy = broadPhase->GetProxy(shape->m_proxyId);
+	b2Proxy* proxy = b2BroadPhase_GetProxy(broadPhase, shape->m_proxyId);
 
 	broadPhase->DestroyProxy(shape->m_proxyId);
 	proxy = NULL;
