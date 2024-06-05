@@ -196,7 +196,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	{
 		for (m_positionIterationCount = 0; m_positionIterationCount < step->iterations; ++m_positionIterationCount)
 		{
-			bool contactsOkay = contactSolver.SolvePositionConstraints(b2_contactBaumgarte);
+			bool contactsOkay = b2ContactSolver_SolvePositionConstraints(&contactSolver, b2_contactBaumgarte);
 
 			bool jointsOkay = true;
 			for (int i = 0; i < m_jointCount; ++i)

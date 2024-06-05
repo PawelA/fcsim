@@ -60,12 +60,13 @@ public:
 
 	void PreSolve();
 	void SolveVelocityConstraints();
-	bool SolvePositionConstraints(float64 beta);
 
 	b2StackAllocator* m_allocator;
 	b2ContactConstraint* m_constraints;
 	int m_constraintCount;
 };
+
+bool b2ContactSolver_SolvePositionConstraints(b2ContactSolver *solver, float64 beta);
 
 void b2ContactSolver_PostSolve(b2ContactSolver *solver);
 
