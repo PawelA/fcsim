@@ -169,7 +169,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	// Solve velocity constraints.
 	for (int32 i = 0; i < step->iterations; ++i)
 	{
-		contactSolver.SolveVelocityConstraints();
+		b2ContactSolver_SolveVelocityConstraints(&contactSolver);
 	
 		for (int32 j = 0; j < m_jointCount; ++j)
 		{
