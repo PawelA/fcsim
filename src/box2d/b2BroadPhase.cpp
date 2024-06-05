@@ -294,17 +294,17 @@ uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
 	return proxyId;
 }
 
-void b2BroadPhase::DestroyProxy(int32 proxyId)
+void b2BroadPhase_DestroyProxy(b2BroadPhase *broad_phase, int32 proxyId)
 {
-	b2Assert(0 < m_proxyCount && m_proxyCount <= b2_maxProxies);
-	b2Proxy* proxy = m_proxyPool + proxyId;
+	b2Assert(0 < broad_phase->m_proxyCount && broad_phase->m_proxyCount <= b2_maxProxies);
+	b2Proxy* proxy = broad_phase->m_proxyPool + proxyId;
 	b2Assert(proxy->IsValid());
 
-	int32 boundCount = 2 * m_proxyCount;
+	int32 boundCount = 2 * broad_phase->m_proxyCount;
 
 	for (int32 axis = 0; axis < 2; ++axis)
 	{
-		b2Bound* bounds = m_bounds[axis];
+		b2Bound* bounds = broad_phase->m_bounds[axis];
 
 		int32 lowerIndex = proxy->lowerBounds[axis];
 		int32 upperIndex = proxy->upperBounds[axis];
@@ -317,7 +317,7 @@ void b2BroadPhase::DestroyProxy(int32 proxyId)
 		// Fix bound indices.
 		for (int32 index = lowerIndex; index < boundCount - 2; ++index)
 		{
-			b2Proxy* proxy = m_proxyPool + bounds[index].proxyId;
+			b2Proxy* proxy = broad_phase->m_proxyPool + bounds[index].proxyId;
 			if (b2Bound_IsLower(&bounds[index]))
 			{
 				proxy->lowerBounds[axis] = (uint16)index;
@@ -335,22 +335,22 @@ void b2BroadPhase::DestroyProxy(int32 proxyId)
 		}
 
 		// Query for pairs to be removed. lowerIndex and upperIndex are not needed.
-		b2BroadPhase_Query(this, &lowerIndex, &upperIndex, lowerValue, upperValue, bounds, boundCount - 2, axis);
+		b2BroadPhase_Query(broad_phase, &lowerIndex, &upperIndex, lowerValue, upperValue, bounds, boundCount - 2, axis);
 	}
 
-	b2Assert(m_queryResultCount < b2_maxProxies);
+	b2Assert(broad_phase->m_queryResultCount < b2_maxProxies);
 
-	for (int32 i = 0; i < m_queryResultCount; ++i)
+	for (int32 i = 0; i < broad_phase->m_queryResultCount; ++i)
 	{
-		b2Assert(m_proxyPool[m_queryResults[i]].IsValid());
-		b2PairManager_RemoveBufferedPair(&m_pairManager, proxyId, m_queryResults[i]);
+		b2Assert(broad_phase->m_proxyPool[broad_phase->m_queryResults[i]].IsValid());
+		b2PairManager_RemoveBufferedPair(&broad_phase->m_pairManager, proxyId, broad_phase->m_queryResults[i]);
 	}
 
-	b2PairManager_Commit(&m_pairManager);
+	b2PairManager_Commit(&broad_phase->m_pairManager);
 
 	// Prepare for next query.
-	m_queryResultCount = 0;
-	b2BroadPhase_IncrementTimeStamp(this);
+	broad_phase->m_queryResultCount = 0;
+	b2BroadPhase_IncrementTimeStamp(broad_phase);
 
 	// Return the proxy to the pool.
 	proxy->userData = NULL;
@@ -360,9 +360,9 @@ void b2BroadPhase::DestroyProxy(int32 proxyId)
 	proxy->upperBounds[0] = b2_invalid;
 	proxy->upperBounds[1] = b2_invalid;
 
-	b2Proxy_SetNext(proxy, m_freeProxy);
-	m_freeProxy = (uint16)proxyId;
-	--m_proxyCount;
+	b2Proxy_SetNext(proxy, broad_phase->m_freeProxy);
+	broad_phase->m_freeProxy = (uint16)proxyId;
+	--broad_phase->m_proxyCount;
 }
 
 static bool b2AABB_IsValid(const b2AABB *aabb)

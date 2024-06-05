@@ -93,7 +93,6 @@ public:
 
 	// Create and destroy proxies. These call Flush first.
 	uint16 CreateProxy(const b2AABB& aabb, void* userData);
-	void DestroyProxy(int32 proxyId);
 
 public:
 	b2PairManager m_pairManager;
@@ -128,6 +127,8 @@ static inline b2Proxy* b2BroadPhase_GetProxy(b2BroadPhase *broad_phase, int32 pr
 
 	return broad_phase->m_proxyPool + proxyId;
 }
+
+void b2BroadPhase_DestroyProxy(b2BroadPhase *broad_phase, int32 proxyId);
 
 // Call MoveProxy as many times as you like, then when you are done
 // call Commit to finalized the proxy pairs (for your time step).

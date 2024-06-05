@@ -294,7 +294,7 @@ static void b2Shape_dtor(b2Shape *shape)
 {
 	if (shape->m_proxyId != b2_nullProxy)
 	{
-		shape->m_body->m_world->m_broadPhase->DestroyProxy(shape->m_proxyId);
+		b2BroadPhase_DestroyProxy(shape->m_body->m_world->m_broadPhase, shape->m_proxyId);
 	}
 }
 
@@ -302,7 +302,7 @@ void b2Shape_DestroyProxy(b2Shape *shape)
 {
 	if (shape->m_proxyId != b2_nullProxy)
 	{
-		shape->m_body->m_world->m_broadPhase->DestroyProxy(shape->m_proxyId);
+		b2BroadPhase_DestroyProxy(shape->m_body->m_world->m_broadPhase, shape->m_proxyId);
 		shape->m_proxyId = b2_nullProxy;
 	}
 }
@@ -416,7 +416,7 @@ void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 
 	b2Proxy* proxy = b2BroadPhase_GetProxy(broadPhase, shape->m_proxyId);
 
-	broadPhase->DestroyProxy(shape->m_proxyId);
+	b2BroadPhase_DestroyProxy(broadPhase, shape->m_proxyId);
 	proxy = NULL;
 
 	b2AABB aabb;
@@ -670,7 +670,7 @@ void b2PolyShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 
 	b2Proxy* proxy = b2BroadPhase_GetProxy(broadPhase, shape->m_proxyId);
 
-	broadPhase->DestroyProxy(shape->m_proxyId);
+	b2BroadPhase_DestroyProxy(broadPhase, shape->m_proxyId);
 	proxy = NULL;
 
 	b2Mat22 R = b2Mul(shape->m_R, polyShape->m_localOBB.R);
