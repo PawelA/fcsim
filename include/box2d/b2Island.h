@@ -33,8 +33,6 @@ public:
 	b2Island(int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity, b2StackAllocator* allocator);
 	~b2Island();
 
-	void Clear();
-
 	b2StackAllocator* m_allocator;
 
 	b2Body** m_bodies;
@@ -52,6 +50,8 @@ public:
 	static int32 m_positionIterationCount;
 	float64 m_positionError;
 };
+
+void b2Island_Clear(b2Island *island);
 
 void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& gravity);
 

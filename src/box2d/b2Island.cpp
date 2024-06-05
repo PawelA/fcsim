@@ -129,11 +129,11 @@ b2Island::~b2Island()
 	b2StackAllocator_Free(m_allocator, m_bodies);
 }
 
-void b2Island::Clear()
+void b2Island_Clear(b2Island *island)
 {
-	m_bodyCount = 0;
-	m_contactCount = 0;
-	m_jointCount = 0;
+	island->m_bodyCount = 0;
+	island->m_contactCount = 0;
+	island->m_jointCount = 0;
 }
 
 void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& gravity)

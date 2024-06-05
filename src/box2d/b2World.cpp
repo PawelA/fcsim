@@ -336,7 +336,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 		}
 
 		// Reset island and stack.
-		island.Clear();
+		b2Island_Clear(&island);
 		int32 stackCount = 0;
 		stack[stackCount++] = seed;
 		seed->m_flags |= b2Body_e_islandFlag;
