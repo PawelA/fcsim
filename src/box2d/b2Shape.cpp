@@ -335,7 +335,7 @@ static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def
 	b2BroadPhase* broadPhase = circleShape->m_shape.m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		circleShape->m_shape.m_proxyId = broadPhase->CreateProxy(aabb, circleShape);
+		circleShape->m_shape.m_proxyId = b2BroadPhase_CreateProxy(broadPhase, aabb, circleShape);
 	}
 	else
 	{
@@ -425,7 +425,7 @@ void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 
 	if (broadPhase->InRange(aabb))
 	{
-		shape->m_proxyId = broadPhase->CreateProxy(aabb, shape);
+		shape->m_proxyId = b2BroadPhase_CreateProxy(broadPhase, aabb, shape);
 	}
 	else
 	{
@@ -552,7 +552,7 @@ static void b2PolyShape_ctor(b2PolyShape *polyShape,
 	b2BroadPhase* broadPhase = polyShape->m_shape.m_body->m_world->m_broadPhase;
 	if (broadPhase->InRange(aabb))
 	{
-		polyShape->m_shape.m_proxyId = broadPhase->CreateProxy(aabb, polyShape);
+		polyShape->m_shape.m_proxyId = b2BroadPhase_CreateProxy(broadPhase, aabb, polyShape);
 	}
 	else
 	{
@@ -683,7 +683,7 @@ void b2PolyShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 
 	if (broadPhase->InRange(aabb))
 	{
-		shape->m_proxyId = broadPhase->CreateProxy(aabb, shape);
+		shape->m_proxyId = b2BroadPhase_CreateProxy(broadPhase, aabb, shape);
 	}
 	else
 	{

@@ -91,9 +91,6 @@ public:
 	// is the number of proxies that are out of range.
 	bool InRange(const b2AABB& aabb) const;
 
-	// Create and destroy proxies. These call Flush first.
-	uint16 CreateProxy(const b2AABB& aabb, void* userData);
-
 public:
 	b2PairManager m_pairManager;
 
@@ -127,6 +124,9 @@ static inline b2Proxy* b2BroadPhase_GetProxy(b2BroadPhase *broad_phase, int32 pr
 
 	return broad_phase->m_proxyPool + proxyId;
 }
+
+// Create and destroy proxies. These call Flush first.
+uint16 b2BroadPhase_CreateProxy(b2BroadPhase *broad_phase, const b2AABB& aabb, void* userData);
 
 void b2BroadPhase_DestroyProxy(b2BroadPhase *broad_phase, int32 proxyId);
 

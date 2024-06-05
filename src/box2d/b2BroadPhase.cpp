@@ -213,28 +213,28 @@ static void b2BroadPhase_Query(b2BroadPhase *broad_phase,
 	*upperQueryOut = upperQuery;
 }
 
-uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
+uint16 b2BroadPhase_CreateProxy(b2BroadPhase *broad_phase, const b2AABB& aabb, void* userData)
 {
-	b2Assert(m_proxyCount < b2_maxProxies);
-	b2Assert(m_freeProxy != b2_nullProxy);
+	b2Assert(broad_phase->m_proxyCount < b2_maxProxies);
+	b2Assert(broad_phase->m_freeProxy != b2_nullProxy);
 
-	uint16 proxyId = m_freeProxy;
-	b2Proxy* proxy = m_proxyPool + proxyId;
-	m_freeProxy = b2Proxy_GetNext(proxy);
+	uint16 proxyId = broad_phase->m_freeProxy;
+	b2Proxy* proxy = broad_phase->m_proxyPool + proxyId;
+	broad_phase->m_freeProxy = b2Proxy_GetNext(proxy);
 
 	proxy->overlapCount = 0;
 	proxy->userData = userData;
 
-	int32 boundCount = 2 * m_proxyCount;
+	int32 boundCount = 2 * broad_phase->m_proxyCount;
 
 	uint16 lowerValues[2], upperValues[2];
-	b2BroadPhase_ComputeBounds(this, lowerValues, upperValues, aabb);
+	b2BroadPhase_ComputeBounds(broad_phase, lowerValues, upperValues, aabb);
 
 	for (int32 axis = 0; axis < 2; ++axis)
 	{
-		b2Bound* bounds = m_bounds[axis];
+		b2Bound* bounds = broad_phase->m_bounds[axis];
 		int32 lowerIndex, upperIndex;
-		b2BroadPhase_Query(this, &lowerIndex, &upperIndex, lowerValues[axis], upperValues[axis], bounds, boundCount, axis);
+		b2BroadPhase_Query(broad_phase, &lowerIndex, &upperIndex, lowerValues[axis], upperValues[axis], bounds, boundCount, axis);
 
 		memmove(bounds + upperIndex + 2, bounds + upperIndex, (boundCount - upperIndex) * sizeof(b2Bound));
 		memmove(bounds + lowerIndex + 1, bounds + lowerIndex, (upperIndex - lowerIndex) * sizeof(b2Bound));
@@ -260,7 +260,7 @@ uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
 		// Adjust the all the affected bound indices.
 		for (int32 index = lowerIndex; index < boundCount + 2; ++index)
 		{
-			b2Proxy* proxy = m_proxyPool + bounds[index].proxyId;
+			b2Proxy* proxy = broad_phase->m_proxyPool + bounds[index].proxyId;
 			if (b2Bound_IsLower(&bounds[index]))
 			{
 				proxy->lowerBounds[axis] = (uint16)index;
@@ -272,24 +272,24 @@ uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
 		}
 	}
 
-	++m_proxyCount;
+	++broad_phase->m_proxyCount;
 
-	b2Assert(m_queryResultCount < b2_maxProxies);
+	b2Assert(broad_phase->m_queryResultCount < b2_maxProxies);
 
 	// Create pairs if the AABB is in range.
-	for (int32 i = 0; i < m_queryResultCount; ++i)
+	for (int32 i = 0; i < broad_phase->m_queryResultCount; ++i)
 	{
-		b2Assert(m_queryResults[i] < b2_maxProxies);
-		b2Assert(m_proxyPool[m_queryResults[i]].IsValid());
+		b2Assert(broad_phase->m_queryResults[i] < b2_maxProxies);
+		b2Assert(broad_phase->m_proxyPool[broad_phase->m_queryResults[i]].IsValid());
 
-		b2PairManager_AddBufferedPair(&m_pairManager, proxyId, m_queryResults[i]);
+		b2PairManager_AddBufferedPair(&broad_phase->m_pairManager, proxyId, broad_phase->m_queryResults[i]);
 	}
 
-	b2PairManager_Commit(&m_pairManager);
+	b2PairManager_Commit(&broad_phase->m_pairManager);
 
 	// Prepare for next query.
-	m_queryResultCount = 0;
-	b2BroadPhase_IncrementTimeStamp(this);
+	broad_phase->m_queryResultCount = 0;
+	b2BroadPhase_IncrementTimeStamp(broad_phase);
 
 	return proxyId;
 }
