@@ -86,11 +86,6 @@ public:
 	b2BroadPhase(const b2AABB& worldAABB, b2PairCallback* callback);
 	~b2BroadPhase();
 
-	// Use this to see if your proxy is in range. If it is not in range,
-	// it should be destroyed. Otherwise you may get O(m^2) pairs, where m
-	// is the number of proxies that are out of range.
-	bool InRange(const b2AABB& aabb) const;
-
 public:
 	b2PairManager m_pairManager;
 
@@ -108,10 +103,12 @@ public:
 	uint16 m_timeStamp;
 };
 
-
-inline bool b2BroadPhase::InRange(const b2AABB& aabb) const
+// Use this to see if your proxy is in range. If it is not in range,
+// it should be destroyed. Otherwise you may get O(m^2) pairs, where m
+// is the number of proxies that are out of range.
+static inline bool b2BroadPhase_InRange(const b2BroadPhase *broad_phase, const b2AABB& aabb)
 {
-	b2Vec2 d = b2Max(aabb.minVertex - m_worldAABB.maxVertex, m_worldAABB.minVertex - aabb.maxVertex);
+	b2Vec2 d = b2Max(aabb.minVertex - broad_phase->m_worldAABB.maxVertex, broad_phase->m_worldAABB.minVertex - aabb.maxVertex);
 	return b2Max(d.x, d.y) < 0.0;
 }
 
