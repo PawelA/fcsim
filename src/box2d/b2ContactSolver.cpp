@@ -22,17 +22,17 @@
 #include <box2d/b2World.h>
 #include <box2d/b2StackAllocator.h>
 
-b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2StackAllocator* allocator)
+void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount, b2StackAllocator* allocator)
 {
-	m_allocator = allocator;
+	solver->m_allocator = allocator;
 
-	m_constraintCount = 0;
+	solver->m_constraintCount = 0;
 	for (int32 i = 0; i < contactCount; ++i)
 	{
-		m_constraintCount += contacts[i]->m_manifoldCount;
+		solver->m_constraintCount += contacts[i]->m_manifoldCount;
 	}
 
-	m_constraints = (b2ContactConstraint*)b2StackAllocator_Allocate(m_allocator, m_constraintCount * sizeof(b2ContactConstraint));
+	solver->m_constraints = (b2ContactConstraint*)b2StackAllocator_Allocate(solver->m_allocator, solver->m_constraintCount * sizeof(b2ContactConstraint));
 
 	int32 count = 0;
 	for (int32 i = 0; i < contactCount; ++i)
@@ -58,8 +58,8 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 
 			const b2Vec2 normal = manifold->normal;
 
-			b2Assert(count < m_constraintCount);
-			b2ContactConstraint* c = m_constraints + count;
+			b2Assert(count < solver->m_constraintCount);
+			b2ContactConstraint* c = solver->m_constraints + count;
 			c->body1 = b1;
 			c->body2 = b2;
 			c->manifold = manifold;
@@ -122,12 +122,12 @@ b2ContactSolver::b2ContactSolver(b2Contact** contacts, int32 contactCount, b2Sta
 		}
 	}
 
-	b2Assert(count == m_constraintCount);
+	b2Assert(count == solver->m_constraintCount);
 }
 
-b2ContactSolver::~b2ContactSolver()
+void b2ContactSolver_dtor(b2ContactSolver *solver)
 {
-	b2StackAllocator_Free(m_allocator, m_constraints);
+	b2StackAllocator_Free(solver->m_allocator, solver->m_constraints);
 }
 
 void b2ContactSolver_PreSolve(b2ContactSolver *solver)

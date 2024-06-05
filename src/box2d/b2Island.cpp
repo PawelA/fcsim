@@ -156,7 +156,8 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		b->m_rotation0 = b->m_rotation;
 	}
 
-	b2ContactSolver contactSolver(m_contacts, m_contactCount, m_allocator);
+	b2ContactSolver contactSolver;
+	b2ContactSolver_ctor(&contactSolver, m_contacts, m_contactCount, m_allocator);
 
 	// Pre-solve
 	b2ContactSolver_PreSolve(&contactSolver);
@@ -229,6 +230,8 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 		b2Vec2_Set(&b->m_force, 0.0, 0.0);
 		b->m_torque = 0.0;
 	}
+
+	b2ContactSolver_dtor(&contactSolver);
 }
 
 void b2Island::UpdateSleep(float64 dt)

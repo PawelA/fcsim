@@ -52,16 +52,15 @@ struct b2ContactConstraint
 	int32 pointCount;
 };
 
-class b2ContactSolver
+struct b2ContactSolver
 {
-public:
-	b2ContactSolver(b2Contact** contacts, int32 contactCount, b2StackAllocator* allocator);
-	~b2ContactSolver();
-
 	b2StackAllocator* m_allocator;
 	b2ContactConstraint* m_constraints;
 	int m_constraintCount;
 };
+
+void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount, b2StackAllocator* allocator);
+void b2ContactSolver_dtor(b2ContactSolver *solver);
 
 void b2ContactSolver_PreSolve(b2ContactSolver *solver);
 
