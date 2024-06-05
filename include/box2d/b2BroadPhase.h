@@ -103,10 +103,6 @@ public:
 	// Get a single proxy. Returns NULL if the id is invalid.
 	b2Proxy* GetProxy(int32 proxyId);
 
-	// Query an AABB for overlapping proxies, returns the user data and
-	// the count, up to the supplied maximum count.
-	int32 Query(const b2AABB& aabb, void** userData, int32 maxCount);
-
 public:
 	b2PairManager m_pairManager;
 
