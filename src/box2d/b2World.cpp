@@ -429,7 +429,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 
 	b2StackAllocator_Free(&world->m_stackAllocator, stack);
 
-	world->m_broadPhase->Commit();
+	b2BroadPhase_Commit(world->m_broadPhase);
 }
 
 bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2)

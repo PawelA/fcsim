@@ -572,7 +572,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 	}
 }
 
-void b2BroadPhase::Commit()
+void b2BroadPhase_Commit(b2BroadPhase *broad_phase)
 {
-	b2PairManager_Commit(&m_pairManager);
+	b2PairManager_Commit(&broad_phase->m_pairManager);
 }
