@@ -34,29 +34,51 @@ Bullet (http:/www.bulletphysics.com).
 
 const uint16 b2_invalid = USHRT_MAX;
 const uint16 b2_nullEdge = USHRT_MAX;
+
+typedef struct b2BoundValues b2BoundValues;
 struct b2BoundValues;
 
+typedef struct b2Bound b2Bound;
 struct b2Bound
 {
-	bool IsLower() const { return (value & 1) == 0; }
-	bool IsUpper() const { return (value & 1) == 1; }
-
 	uint16 value;
 	uint16 proxyId;
 	uint16 stabbingCount;
 };
 
+static inline bool b2Bound_IsLower(const b2Bound *bound)
+{
+	return (bound->value & 1) == 0;
+}
+
+static inline bool b2Bound_IsUpper(const b2Bound *bound)
+{
+	return (bound->value & 1) == 1;
+}
+
+typedef struct b2Proxy b2Proxy;
 struct b2Proxy
 {
-	uint16 GetNext() const { return lowerBounds[0]; }
-	void SetNext(uint16 next) { lowerBounds[0] = next; }
-	bool IsValid() const { return overlapCount != b2_invalid; }
-
 	uint16 lowerBounds[2], upperBounds[2];
 	uint16 overlapCount;
 	uint16 timeStamp;
 	void* userData;
 };
+
+static inline uint16 b2Proxy_GetNext(const b2Proxy *proxy)
+{
+	return proxy->lowerBounds[0];
+}
+
+static inline void b2Proxy_SetNext(b2Proxy *proxy, uint16 next)
+{
+	proxy->lowerBounds[0] = next;
+}
+
+static inline bool b2Proxy_IsValid(const b2Proxy *proxy)
+{
+	return proxy->overlapCount != b2_invalid;
+}
 
 class b2BroadPhase
 {
@@ -127,7 +149,7 @@ inline bool b2BroadPhase::InRange(const b2AABB& aabb) const
 
 inline b2Proxy* b2BroadPhase::GetProxy(int32 proxyId)
 {
-	if (proxyId == b2_nullProxy || m_proxyPool[proxyId].IsValid() == false)
+	if (proxyId == b2_nullProxy || b2Proxy_IsValid(&m_proxyPool[proxyId]) == false)
 	{
 		return NULL;
 	}
