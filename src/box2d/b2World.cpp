@@ -346,7 +346,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 		{
 			// Grab the next body off the stack and add it to the island.
 			b2Body* b = stack[--stackCount];
-			island.Add(b);
+			b2Island_AddBody(&island, b);
 
 			// Make sure the body is awake.
 			b->m_flags &= ~b2Body_e_sleepFlag;
@@ -366,7 +366,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 					continue;
 				}
 
-				island.Add(cn->contact);
+				b2Island_AddContact(&island, cn->contact);
 				cn->contact->m_flags |= b2Contact_e_islandFlag;
 
 				b2Body* other = cn->other;
@@ -388,7 +388,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 					continue;
 				}
 
-				island.Add(jn->joint);
+				b2Island_AddJoint(&island, jn->joint);
 				jn->joint->m_islandFlag = true;
 
 				b2Body* other = jn->other;

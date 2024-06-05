@@ -39,24 +39,6 @@ public:
 
 	void UpdateSleep(float64 dt);
 
-	void Add(b2Body* body)
-	{
-		b2Assert(m_bodyCount < m_bodyCapacity);
-		m_bodies[m_bodyCount++] = body;
-	}
-
-	void Add(b2Contact* contact)
-	{
-		b2Assert(m_contactCount < m_contactCapacity);
-		m_contacts[m_contactCount++] = contact;
-	}
-
-	void Add(b2Joint* joint)
-	{
-		b2Assert(m_jointCount < m_jointCapacity);
-		m_joints[m_jointCount++] = joint;
-	}
-
 	b2StackAllocator* m_allocator;
 
 	b2Body** m_bodies;
@@ -74,5 +56,23 @@ public:
 	static int32 m_positionIterationCount;
 	float64 m_positionError;
 };
+
+static inline void b2Island_AddBody(b2Island *island, b2Body* body)
+{
+	b2Assert(island->m_bodyCount < island->m_bodyCapacity);
+	island->m_bodies[island->m_bodyCount++] = body;
+}
+
+static inline void b2Island_AddContact(b2Island *island, b2Contact* contact)
+{
+	b2Assert(island->m_contactCount < island->m_contactCapacity);
+	island->m_contacts[island->m_contactCount++] = contact;
+}
+
+static inline void b2Island_AddJoint(b2Island *island, b2Joint* joint)
+{
+	b2Assert(island->m_jointCount < island->m_jointCapacity);
+	island->m_joints[island->m_jointCount++] = joint;
+}
 
 #endif
