@@ -157,19 +157,19 @@ void b2BroadPhase::ComputeBounds(uint16* lowerValues, uint16* upperValues, const
 	upperValues[1] = (uint16)(m_quantizationFactor.y * (maxVertex.y - m_worldAABB.minVertex.y)) | 1;
 }
 
-void b2BroadPhase::IncrementTimeStamp()
+static void b2BroadPhase_IncrementTimeStamp(b2BroadPhase *broad_phase)
 {
-	if (m_timeStamp == USHRT_MAX)
+	if (broad_phase->m_timeStamp == USHRT_MAX)
 	{
 		for (uint16 i = 0; i < b2_maxProxies; ++i)
 		{
-			m_proxyPool[i].timeStamp = 0;
+			broad_phase->m_proxyPool[i].timeStamp = 0;
 		}
-		m_timeStamp = 1;
+		broad_phase->m_timeStamp = 1;
 	}
 	else
 	{
-		++m_timeStamp;
+		++broad_phase->m_timeStamp;
 	}
 }
 
@@ -317,7 +317,7 @@ uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
 
 	// Prepare for next query.
 	m_queryResultCount = 0;
-	IncrementTimeStamp();
+	b2BroadPhase_IncrementTimeStamp(this);
 
 	return proxyId;
 }
@@ -378,7 +378,7 @@ void b2BroadPhase::DestroyProxy(int32 proxyId)
 
 	// Prepare for next query.
 	m_queryResultCount = 0;
-	IncrementTimeStamp();
+	b2BroadPhase_IncrementTimeStamp(this);
 
 	// Return the proxy to the pool.
 	proxy->userData = NULL;
@@ -639,7 +639,7 @@ int32 b2BroadPhase::Query(const b2AABB& aabb, void** userData, int32 maxCount)
 
 	// Prepare for next query.
 	m_queryResultCount = 0;
-	IncrementTimeStamp();
+	b2BroadPhase_IncrementTimeStamp(this);
 
 	return count;
 }
