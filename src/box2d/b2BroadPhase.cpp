@@ -173,20 +173,20 @@ static void b2BroadPhase_IncrementTimeStamp(b2BroadPhase *broad_phase)
 	}
 }
 
-void b2BroadPhase::IncrementOverlapCount(int32 proxyId)
+void b2BroadPhase_IncrementOverlapCount(b2BroadPhase *broad_phase, int32 proxyId)
 {
-	b2Proxy* proxy = m_proxyPool + proxyId;
-	if (proxy->timeStamp < m_timeStamp)
+	b2Proxy* proxy = broad_phase->m_proxyPool + proxyId;
+	if (proxy->timeStamp < broad_phase->m_timeStamp)
 	{
-		proxy->timeStamp = m_timeStamp;
+		proxy->timeStamp = broad_phase->m_timeStamp;
 		proxy->overlapCount = 1;
 	}
 	else
 	{
 		proxy->overlapCount = 2;
-		b2Assert(m_queryResultCount < b2_maxProxies);
-		m_queryResults[m_queryResultCount] = (uint16)proxyId;
-		++m_queryResultCount;
+		b2Assert(broad_phase->m_queryResultCount < b2_maxProxies);
+		broad_phase->m_queryResults[broad_phase->m_queryResultCount] = (uint16)proxyId;
+		++broad_phase->m_queryResultCount;
 	}
 }
 
@@ -203,7 +203,7 @@ void b2BroadPhase::Query(int32* lowerQueryOut, int32* upperQueryOut,
 	{
 		if (b2Bound_IsLower(&bounds[i]))
 		{
-			IncrementOverlapCount(bounds[i].proxyId);
+			b2BroadPhase_IncrementOverlapCount(this, bounds[i].proxyId);
 		}
 	}
 
@@ -224,7 +224,7 @@ void b2BroadPhase::Query(int32* lowerQueryOut, int32* upperQueryOut,
 				b2Proxy* proxy = m_proxyPool + bounds[i].proxyId;
 				if (lowerQuery <= proxy->upperBounds[axis])
 				{
-					IncrementOverlapCount(bounds[i].proxyId);
+					b2BroadPhase_IncrementOverlapCount(this, bounds[i].proxyId);
 					--s;
 				}
 			}

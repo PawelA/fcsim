@@ -118,7 +118,6 @@ private:
 
 	void Query(int32* lowerIndex, int32* upperIndex, uint16 lowerValue, uint16 upperValue,
 				b2Bound* bounds, int32 boundCount, int32 axis);
-	void IncrementOverlapCount(int32 proxyId);
 
 public:
 	b2PairManager m_pairManager;
