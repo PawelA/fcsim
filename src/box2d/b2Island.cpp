@@ -159,7 +159,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	b2ContactSolver contactSolver(m_contacts, m_contactCount, m_allocator);
 
 	// Pre-solve
-	contactSolver.PreSolve();
+	b2ContactSolver_PreSolve(&contactSolver);
 
 	for (int32 i = 0; i < m_jointCount; ++i)
 	{

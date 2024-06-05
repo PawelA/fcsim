@@ -130,12 +130,12 @@ b2ContactSolver::~b2ContactSolver()
 	b2StackAllocator_Free(m_allocator, m_constraints);
 }
 
-void b2ContactSolver::PreSolve()
+void b2ContactSolver_PreSolve(b2ContactSolver *solver)
 {
 	// Warm start.
-	for (int32 i = 0; i < m_constraintCount; ++i)
+	for (int32 i = 0; i < solver->m_constraintCount; ++i)
 	{
-		b2ContactConstraint* c = m_constraints + i;
+		b2ContactConstraint* c = solver->m_constraints + i;
 
 		b2Body* b1 = c->body1;
 		b2Body* b2 = c->body2;
