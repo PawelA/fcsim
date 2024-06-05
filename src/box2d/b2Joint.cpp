@@ -47,7 +47,6 @@ b2Joint* b2Joint_Create(const b2JointDef* def, b2BlockAllocator* allocator)
 
 void b2Joint_Destroy(b2Joint* joint, b2BlockAllocator* allocator)
 {
-	joint->~b2Joint();
 	switch (joint->m_type)
 	{
 	case e_revoluteJoint:

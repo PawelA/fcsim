@@ -66,7 +66,6 @@ void b2World_dtor(b2World *world)
 
 	b2BlockAllocator_dtor(&world->m_blockAllocator);
 	b2StackAllocator_dtor(&world->m_stackAllocator);
-	world->m_contactManager.~b2ContactManager();
 }
 
 void b2World_SetFilter(b2World *world, b2CollisionFilter filter)
