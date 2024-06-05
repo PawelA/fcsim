@@ -110,9 +110,6 @@ public:
 private:
 	void ComputeBounds(uint16* lowerValues, uint16* upperValues, const b2AABB& aabb);
 
-	bool TestOverlap(b2Proxy* p1, b2Proxy* p2);
-	bool TestOverlap(const b2BoundValues& b, b2Proxy* p);
-
 public:
 	b2PairManager m_pairManager;
 

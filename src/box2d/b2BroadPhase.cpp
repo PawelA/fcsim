@@ -96,36 +96,14 @@ b2BroadPhase::~b2BroadPhase()
 {
 }
 
-// This one is only used for validation.
-bool b2BroadPhase::TestOverlap(b2Proxy* p1, b2Proxy* p2)
+bool b2BroadPhase_TestOverlap(b2BroadPhase *broad_phase, const b2BoundValues& b, b2Proxy* p)
 {
 	for (int32 axis = 0; axis < 2; ++axis)
 	{
-		b2Bound* bounds = m_bounds[axis];
+		b2Bound* bounds = broad_phase->m_bounds[axis];
 
-		b2Assert(p1->lowerBounds[axis] < 2 * m_proxyCount);
-		b2Assert(p1->upperBounds[axis] < 2 * m_proxyCount);
-		b2Assert(p2->lowerBounds[axis] < 2 * m_proxyCount);
-		b2Assert(p2->upperBounds[axis] < 2 * m_proxyCount);
-
-		if (bounds[p1->lowerBounds[axis]].value > bounds[p2->upperBounds[axis]].value)
-			return false;
-
-		if (bounds[p1->upperBounds[axis]].value < bounds[p2->lowerBounds[axis]].value)
-			return false;
-	}
-
-	return true;
-}
-
-bool b2BroadPhase::TestOverlap(const b2BoundValues& b, b2Proxy* p)
-{
-	for (int32 axis = 0; axis < 2; ++axis)
-	{
-		b2Bound* bounds = m_bounds[axis];
-
-		b2Assert(p->lowerBounds[axis] < 2 * m_proxyCount);
-		b2Assert(p->upperBounds[axis] < 2 * m_proxyCount);
+		b2Assert(p->lowerBounds[axis] < 2 * broad_phase->m_proxyCount);
+		b2Assert(p->upperBounds[axis] < 2 * broad_phase->m_proxyCount);
 
 		if (b.lowerValues[axis] > bounds[p->upperBounds[axis]].value)
 			return false;
@@ -461,7 +439,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 
 				if (b2Bound_IsUpper(prevBound) == true)
 				{
-					if (TestOverlap(newValues, prevProxy))
+					if (b2BroadPhase_TestOverlap(this, newValues, prevProxy))
 					{
 						b2PairManager_AddBufferedPair(&m_pairManager, proxyId, prevProxyId);
 					}
@@ -496,7 +474,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 
 				if (b2Bound_IsLower(nextBound) == true)
 				{
-					if (TestOverlap(newValues, nextProxy))
+					if (b2BroadPhase_TestOverlap(this, newValues, nextProxy))
 					{
 						b2PairManager_AddBufferedPair(&m_pairManager, proxyId, nextProxyId);
 					}
@@ -536,7 +514,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 
 				if (b2Bound_IsUpper(nextBound))
 				{
-					if (TestOverlap(oldValues, nextProxy))
+					if (b2BroadPhase_TestOverlap(this, oldValues, nextProxy))
 					{
 						b2PairManager_RemoveBufferedPair(&m_pairManager, proxyId, nextProxyId);
 					}
@@ -572,7 +550,7 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 
 				if (b2Bound_IsLower(prevBound) == true)
 				{
-					if (TestOverlap(oldValues, prevProxy))
+					if (b2BroadPhase_TestOverlap(this, oldValues, prevProxy))
 					{
 						b2PairManager_RemoveBufferedPair(&m_pairManager, proxyId, prevProxyId);
 					}
