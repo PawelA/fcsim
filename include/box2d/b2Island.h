@@ -35,10 +35,6 @@ public:
 
 	void Clear();
 
-	void Solve(const b2TimeStep* step, const b2Vec2& gravity);
-
-	void UpdateSleep(float64 dt);
-
 	b2StackAllocator* m_allocator;
 
 	b2Body** m_bodies;
@@ -56,6 +52,11 @@ public:
 	static int32 m_positionIterationCount;
 	float64 m_positionError;
 };
+
+void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& gravity);
+
+
+void b2Island_UpdateSleep(b2Island *island, float64 dt);
 
 static inline void b2Island_AddBody(b2Island *island, b2Body* body)
 {

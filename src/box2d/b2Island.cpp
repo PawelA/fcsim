@@ -136,11 +136,11 @@ void b2Island::Clear()
 	m_jointCount = 0;
 }
 
-void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
+void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& gravity)
 {
-	for (int32 i = 0; i < m_bodyCount; ++i)
+	for (int32 i = 0; i < island->m_bodyCount; ++i)
 	{
-		b2Body* b = m_bodies[i];
+		b2Body* b = island->m_bodies[i];
 
 		if (b->m_invMass == 0.0)
 			continue;
@@ -157,14 +157,14 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	}
 
 	b2ContactSolver contactSolver;
-	b2ContactSolver_ctor(&contactSolver, m_contacts, m_contactCount, m_allocator);
+	b2ContactSolver_ctor(&contactSolver, island->m_contacts, island->m_contactCount, island->m_allocator);
 
 	// Pre-solve
 	b2ContactSolver_PreSolve(&contactSolver);
 
-	for (int32 i = 0; i < m_jointCount; ++i)
+	for (int32 i = 0; i < island->m_jointCount; ++i)
 	{
-		m_joints[i]->PrepareVelocitySolver(m_joints[i]);
+		island->m_joints[i]->PrepareVelocitySolver(island->m_joints[i]);
 	}
 
 	// Solve velocity constraints.
@@ -172,16 +172,16 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	{
 		b2ContactSolver_SolveVelocityConstraints(&contactSolver);
 	
-		for (int32 j = 0; j < m_jointCount; ++j)
+		for (int32 j = 0; j < island->m_jointCount; ++j)
 		{
-			m_joints[j]->SolveVelocityConstraints(m_joints[j], step);
+			island->m_joints[j]->SolveVelocityConstraints(island->m_joints[j], step);
 		}
 	}
 
 	// Integrate positions.
-	for (int32 i = 0; i < m_bodyCount; ++i)
+	for (int32 i = 0; i < island->m_bodyCount; ++i)
 	{
-		b2Body* b = m_bodies[i];
+		b2Body* b = island->m_bodies[i];
 
 		if (b->m_invMass == 0.0)
 			continue;
@@ -195,14 +195,14 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	// Solve position constraints.
 	if (b2World_s_enablePositionCorrection)
 	{
-		for (m_positionIterationCount = 0; m_positionIterationCount < step->iterations; ++m_positionIterationCount)
+		for (island->m_positionIterationCount = 0; island->m_positionIterationCount < step->iterations; ++island->m_positionIterationCount)
 		{
 			bool contactsOkay = b2ContactSolver_SolvePositionConstraints(&contactSolver, b2_contactBaumgarte);
 
 			bool jointsOkay = true;
-			for (int i = 0; i < m_jointCount; ++i)
+			for (int i = 0; i < island->m_jointCount; ++i)
 			{
-				bool jointOkay = m_joints[i]->SolvePositionConstraints(m_joints[i]);
+				bool jointOkay = island->m_joints[i]->SolvePositionConstraints(island->m_joints[i]);
 				jointsOkay = jointsOkay && jointOkay;
 			}
 
@@ -217,9 +217,9 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	b2ContactSolver_PostSolve(&contactSolver);
 
 	// Synchronize shapes and reset forces.
-	for (int32 i = 0; i < m_bodyCount; ++i)
+	for (int32 i = 0; i < island->m_bodyCount; ++i)
 	{
-		b2Body* b = m_bodies[i];
+		b2Body* b = island->m_bodies[i];
 
 		if (b->m_invMass == 0.0)
 			continue;
@@ -234,16 +234,16 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	b2ContactSolver_dtor(&contactSolver);
 }
 
-void b2Island::UpdateSleep(float64 dt)
+void b2Island_UpdateSleep(b2Island *island, float64 dt)
 {
 	float64 minSleepTime = DBL_MAX;
 
 	const float64 linTolSqr = b2_linearSleepTolerance * b2_linearSleepTolerance;
 	const float64 angTolSqr = b2_angularSleepTolerance * b2_angularSleepTolerance;
 
-	for (int32 i = 0; i < m_bodyCount; ++i)
+	for (int32 i = 0; i < island->m_bodyCount; ++i)
 	{
-		b2Body* b = m_bodies[i];
+		b2Body* b = island->m_bodies[i];
 		if (b->m_invMass == 0.0)
 		{
 			continue;
@@ -271,9 +271,9 @@ void b2Island::UpdateSleep(float64 dt)
 
 	if (minSleepTime >= b2_timeToSleep)
 	{
-		for (int32 i = 0; i < m_bodyCount; ++i)
+		for (int32 i = 0; i < island->m_bodyCount; ++i)
 		{
-			b2Body* b = m_bodies[i];
+			b2Body* b = island->m_bodies[i];
 			b->m_flags |= b2Body_e_sleepFlag;
 		}
 	}
