@@ -213,7 +213,7 @@ void b2Island::Solve(const b2TimeStep* step, const b2Vec2& gravity)
 	}
 
 	// Post-solve.
-	contactSolver.PostSolve();
+	b2ContactSolver_PostSolve(&contactSolver);
 
 	// Synchronize shapes and reset forces.
 	for (int32 i = 0; i < m_bodyCount; ++i)
