@@ -107,9 +107,6 @@ public:
 	// the count, up to the supplied maximum count.
 	int32 Query(const b2AABB& aabb, void** userData, int32 maxCount);
 
-	void Validate();
-	void ValidatePairs();
-
 private:
 	void ComputeBounds(uint16* lowerValues, uint16* upperValues, const b2AABB& aabb);
 
@@ -131,8 +128,6 @@ public:
 	b2Vec2 m_quantizationFactor;
 	int32 m_proxyCount;
 	uint16 m_timeStamp;
-
-	static bool s_validate;
 };
 
 

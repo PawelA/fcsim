@@ -32,8 +32,6 @@
 // - no broadphase is perfect and neither is this one: it is not great for huge
 //   worlds (use a multi-SAP instead), it is not great for large objects.
 
-bool b2BroadPhase::s_validate = false;
-
 struct b2BoundValues
 {
 	uint16 lowerValues[2];
@@ -311,11 +309,6 @@ uint16 b2BroadPhase::CreateProxy(const b2AABB& aabb, void* userData)
 
 	b2PairManager_Commit(&m_pairManager);
 
-	if (s_validate)
-	{
-		Validate();
-	}
-
 	// Prepare for next query.
 	m_queryResultCount = 0;
 	b2BroadPhase_IncrementTimeStamp(this);
@@ -392,11 +385,6 @@ void b2BroadPhase::DestroyProxy(int32 proxyId)
 	b2Proxy_SetNext(proxy, m_freeProxy);
 	m_freeProxy = (uint16)proxyId;
 	--m_proxyCount;
-
-	if (s_validate)
-	{
-		Validate();
-	}
 }
 
 static bool b2AABB_IsValid(const b2AABB *aabb)
@@ -604,46 +592,9 @@ void b2BroadPhase::MoveProxy(int32 proxyId, const b2AABB& aabb)
 			}
 		}
 	}
-
-	if (s_validate)
-	{
-		Validate();
-	}
 }
 
 void b2BroadPhase::Commit()
 {
 	b2PairManager_Commit(&m_pairManager);
-}
-
-void b2BroadPhase::Validate()
-{
-	for (int32 axis = 0; axis < 2; ++axis)
-	{
-		b2Bound* bounds = m_bounds[axis];
-
-		int32 boundCount = 2 * m_proxyCount;
-		uint16 stabbingCount = 0;
-
-		for (int32 i = 0; i < boundCount; ++i)
-		{
-			b2Bound* bound = bounds + i;
-			b2Assert(i == 0 || bounds[i-1].value <= bound->value);
-			b2Assert(bound->proxyId != b2_nullProxy);
-			b2Assert(m_proxyPool[bound->proxyId].IsValid());
-
-			if (b2Bound_IsLower(bound) == true)
-			{
-				b2Assert(m_proxyPool[bound->proxyId].lowerBounds[axis] == i);
-				++stabbingCount;
-			}
-			else
-			{
-				b2Assert(m_proxyPool[bound->proxyId].upperBounds[axis] == i);
-				--stabbingCount;
-			}
-
-			b2Assert(bound->stabbingCount == stabbingCount);
-		}
-	}
 }
