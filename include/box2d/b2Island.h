@@ -27,12 +27,8 @@ struct b2Body;
 struct b2Joint;
 struct b2TimeStep;
 
-class b2Island
+struct b2Island
 {
-public:
-	b2Island(int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity, b2StackAllocator* allocator);
-	~b2Island();
-
 	b2StackAllocator* m_allocator;
 
 	b2Body** m_bodies;
@@ -50,6 +46,9 @@ public:
 	static int32 m_positionIterationCount;
 	float64 m_positionError;
 };
+
+void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity, b2StackAllocator* allocator);
+void b2Island_dtor(b2Island *island);
 
 void b2Island_Clear(b2Island *island);
 

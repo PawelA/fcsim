@@ -105,28 +105,28 @@ Baumgarte method in performance critical scenarios.
 
 int32 b2Island::m_positionIterationCount = 0;
 
-b2Island::b2Island(int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity, b2StackAllocator* allocator)
+void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity, b2StackAllocator* allocator)
 {
-	m_bodyCapacity = bodyCapacity;
-	m_contactCapacity = contactCapacity;
-	m_jointCapacity	 = jointCapacity;
-	m_bodyCount = 0;
-	m_contactCount = 0;
-	m_jointCount = 0;
+	island->m_bodyCapacity = bodyCapacity;
+	island->m_contactCapacity = contactCapacity;
+	island->m_jointCapacity	 = jointCapacity;
+	island->m_bodyCount = 0;
+	island->m_contactCount = 0;
+	island->m_jointCount = 0;
 
-	m_bodies = (b2Body**)b2StackAllocator_Allocate(allocator, bodyCapacity * sizeof(b2Body*));
-	m_contacts = (b2Contact**)b2StackAllocator_Allocate(allocator, contactCapacity * sizeof(b2Contact*));
-	m_joints = (b2Joint**)b2StackAllocator_Allocate(allocator, jointCapacity * sizeof(b2Joint*));
+	island->m_bodies = (b2Body**)b2StackAllocator_Allocate(allocator, bodyCapacity * sizeof(b2Body*));
+	island->m_contacts = (b2Contact**)b2StackAllocator_Allocate(allocator, contactCapacity * sizeof(b2Contact*));
+	island->m_joints = (b2Joint**)b2StackAllocator_Allocate(allocator, jointCapacity * sizeof(b2Joint*));
 
-	m_allocator = allocator;
+	island->m_allocator = allocator;
 }
 
-b2Island::~b2Island()
+void b2Island_dtor(b2Island *island)
 {
 	// Warning: the order should reverse the constructor order.
-	b2StackAllocator_Free(m_allocator, m_joints);
-	b2StackAllocator_Free(m_allocator, m_contacts);
-	b2StackAllocator_Free(m_allocator, m_bodies);
+	b2StackAllocator_Free(island->m_allocator, island->m_joints);
+	b2StackAllocator_Free(island->m_allocator, island->m_contacts);
+	b2StackAllocator_Free(island->m_allocator, island->m_bodies);
 }
 
 void b2Island_Clear(b2Island *island)

@@ -309,7 +309,8 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	b2ContactManager_Collide(&world->m_contactManager);
 
 	// Size the island for the worst case.
-	b2Island island(world->m_bodyCount, world->m_contactCount, world->m_jointCount, &world->m_stackAllocator);
+	b2Island island;
+	b2Island_ctor(&island, world->m_bodyCount, world->m_contactCount, world->m_jointCount, &world->m_stackAllocator);
 
 	// Clear all the island flags.
 	for (b2Body* b = world->m_bodyList; b; b = b->m_next)
@@ -427,6 +428,8 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	b2StackAllocator_Free(&world->m_stackAllocator, stack);
 
 	b2BroadPhase_Commit(world->m_broadPhase);
+
+	b2Island_dtor(&island);
 }
 
 bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2)
