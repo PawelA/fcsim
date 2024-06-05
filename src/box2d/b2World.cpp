@@ -297,8 +297,6 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 		step.inv_dt = 0.0;
 	}
 
-	world->m_positionIterationCount = 0;
-
 	// Handle deferred contact destruction.
 	b2ContactManager_CleanContactList(&world->m_contactManager);
 
@@ -406,8 +404,6 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 
 		b2Island_Solve(&island, &step, world->m_gravity);
 		
-		world->m_positionIterationCount = b2Max(world->m_positionIterationCount, island.m_positionIterationCount);
-
 		if (world->m_allowSleep)
 		{
 			b2Island_UpdateSleep(&island, dt);

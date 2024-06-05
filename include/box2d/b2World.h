@@ -77,8 +77,6 @@ struct b2World
 	b2Body* m_groundBody;
 
 	b2CollisionFilter m_filter;
-
-	int32 m_positionIterationCount;
 };
 
 #ifdef __cplusplus

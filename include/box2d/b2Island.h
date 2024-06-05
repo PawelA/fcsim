@@ -43,7 +43,6 @@ struct b2Island
 	int32 m_contactCapacity;
 	int32 m_jointCapacity;
 
-	static int32 m_positionIterationCount;
 	float64 m_positionError;
 };
 

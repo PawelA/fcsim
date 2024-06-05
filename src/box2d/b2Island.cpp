@@ -103,8 +103,6 @@ probably default to the slower Full NGS and let the user select the faster
 Baumgarte method in performance critical scenarios.
 */
 
-int32 b2Island::m_positionIterationCount = 0;
-
 void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity, b2StackAllocator* allocator)
 {
 	island->m_bodyCapacity = bodyCapacity;
@@ -195,7 +193,7 @@ void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& grav
 	// Solve position constraints.
 	if (b2World_s_enablePositionCorrection)
 	{
-		for (island->m_positionIterationCount = 0; island->m_positionIterationCount < step->iterations; ++island->m_positionIterationCount)
+		for (int32 iter = 0; iter < step->iterations; ++iter)
 		{
 			bool contactsOkay = b2ContactSolver_SolvePositionConstraints(&contactSolver, b2_contactBaumgarte);
 
