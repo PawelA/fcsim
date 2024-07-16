@@ -5,14 +5,16 @@ struct attach_node {
 };
 
 struct attach_list {
-	struct attach_list *head;
-	struct attach_list *tail;
+	struct attach_node *head;
+	struct attach_node *tail;
 };
 
 struct joint {
+	struct joint *prev;
+	struct joint *next;
 	struct block *gen;
 	double x, y;
-	struct attach_list *att;
+	struct attach_list att;
 };
 
 struct rect {
@@ -73,11 +75,11 @@ struct shape {
 
 #define ENV_COLLISION_BIT	(1 << 0)
 #define SOLID_COLLISION_BIT	(1 << 1)
-#define WATER_COLLITION_BIT	(1 << 2)
+#define WATER_COLLISION_BIT	(1 << 2)
 
 #define ENV_COLLISION_MASK	(ENV_COLLISION_BIT | SOLID_COLLISION_BIT | WATER_COLLISION_BIT)
 #define SOLID_COLLISION_MASK	(ENV_COLLISION_BIT | SOLID_COLLISION_BIT)
-#define WATER_COLLITION_MASK	(ENV_COLLISION_BIT)
+#define WATER_COLLISION_MASK	(ENV_COLLISION_BIT)
 
 struct material {
 	double density;
@@ -93,8 +95,14 @@ struct block {
 	struct block *prev;
 	struct block *next;
 	struct shape shape;
-	struct material material;
+	struct material *material;
 	bool goal;
+	int id;
+};
+
+struct joint_list {
+	struct joint *head;
+	struct joint *tail;
 };
 
 struct block_list {
@@ -103,6 +111,9 @@ struct block_list {
 };
 
 struct design {
+	struct joint_list joints;
 	struct block_list level_blocks;
 	struct block_list player_blocks;
 };
+
+void convert_xml(struct xml_level *xml_level, struct design *design);

@@ -1,7 +1,9 @@
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "gl.h"
 #include "fcsim.h"
+#include "graph.h"
 #include "arena_layer.h"
 
 int the_width = 800;

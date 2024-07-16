@@ -25,6 +25,8 @@ struct arena_layer {
 	struct fcsim_where *player_wheres;
 	struct fcsim_where *level_wheres;
 
+	struct design design;
+
 	struct fcsim_simul *simul;
 
 	int running;

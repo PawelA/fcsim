@@ -1,11 +1,14 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
 #include "gl.h"
+#include "xml.h"
 #include "interval.h"
 #include "fcsim.h"
 #include "globals.h"
+#include "graph.h"
 #include "arena_layer.h"
 #include "galois.h"
 
@@ -215,6 +218,14 @@ GLuint index_buffer;
 
 GLchar shader_log[1024];
 
+void convert(struct arena_layer *arena_layer)
+{
+	struct xml_level level;
+
+	xml_parse(galois_xml, sizeof(galois_xml), &level);
+	convert_xml(&level, &arena_layer->design);
+}
+
 void arena_layer_init(struct arena_layer *arena_layer)
 {
 	GLint param;
@@ -232,6 +243,8 @@ void arena_layer_init(struct arena_layer *arena_layer)
 	arena_layer->player_wheres = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_where));
 	arena_layer->level_wheres = malloc(arena_layer->level.level_block_cnt * sizeof(struct fcsim_where));
 	arena_layer_update_descs(arena_layer);
+
+	convert(arena_layer);
 
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &vertex_shader_src, NULL);
