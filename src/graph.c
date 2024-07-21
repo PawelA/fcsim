@@ -225,7 +225,7 @@ static void get_rod_endpoints(struct xml_block *xml_block,
 	*y1 = y + sw;
 }
 
-static int get_block_joints(struct block *block, struct joint **res)
+int get_block_joints(struct block *block, struct joint **res)
 {
 	struct shape *shape = &block->shape;
 	int i;
@@ -484,7 +484,7 @@ static int add_player_block(struct design *design, struct xml_block *xml_block)
 	block->id = xml_block->id;
 	block->body = NULL;
 
-	append_block(&design->level_blocks, block);
+	append_block(&design->player_blocks, block);
 }
 
 void convert_xml(struct xml_level *xml_level, struct design *design)

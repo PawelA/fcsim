@@ -8,20 +8,41 @@
 
 #include "graph.h"
 
+static bool share_joint(struct block *block1, struct block *block2)
+{
+	struct joint *j1[5];
+	struct joint *j2[5];
+	int n1, n2;
+	int i1, i2;
+
+	n1 = get_block_joints(block1, j1);
+	n2 = get_block_joints(block2, j2);
+
+	for (i1 = 0; i1 < n1; i1++) {
+		for (i2 = 0; i2 < n2; i2++) {
+			if (j1[i1] == j2[i2])
+				return true;
+		}
+	}
+
+	return false;
+}
+
 static bool collision_filter(b2Shape *s1, b2Shape *s2)
 {
 	struct block *block1;
 	struct block *block2;
-	int i, j;
 
 	block1 = (struct block *)b2Shape_GetUserData(s1);
 	block2 = (struct block *)b2Shape_GetUserData(s2);
 
-	/* TODO: do we need this? */
-	if (!block1 || !block2)
-		return true;
+	if (!(block1->material->collision_bit & block2->material->collision_mask))
+		return false;
 
-	return block1->material->collision_bit & block2->material->collision_mask;
+	if (share_joint(block1, block2))
+		return false;
+
+	return true;
 }
 
 static double distance(double x1, double y1, double x2, double y2)
