@@ -164,6 +164,8 @@ b2World *gen_world(struct design *design)
 
 	for (block = design->player_blocks.head; block; block = block->next)
 		gen_block(world, block);
+
+	return world;
 }
 
 void step(struct b2World *world)

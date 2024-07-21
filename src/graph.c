@@ -396,7 +396,7 @@ static void add_wheel(struct design *design, struct block *block, struct xml_blo
 	shape->type = SHAPE_WHEEL;
 	shape->wheel.center = j0;
 	shape->wheel.center_att = att0;
-	shape->wheel.radius = xml_block->width;
+	shape->wheel.radius = xml_block->width / 2;
 	shape->wheel.angle = xml_block->rotation;
 
 	double a[4] = {
@@ -444,6 +444,7 @@ static void add_level_block(struct design *design, struct xml_block *xml_block)
 
 	block->goal = false;
 	block->id = xml_block->id;
+	block->body = NULL;
 
 	append_block(&design->level_blocks, block);
 }
@@ -479,6 +480,11 @@ static int add_player_block(struct design *design, struct xml_block *xml_block)
 		block->goal = false;
 		break;
 	}
+
+	block->id = xml_block->id;
+	block->body = NULL;
+
+	append_block(&design->level_blocks, block);
 }
 
 void convert_xml(struct xml_level *xml_level, struct design *design)
