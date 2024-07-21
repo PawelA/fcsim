@@ -23,10 +23,19 @@
 #include <box2d/b2Joint.h>
 #include <box2d/b2Shape.h>
 
+typedef struct b2Joint b2Joint;
 struct b2Joint;
+
+typedef struct b2Contact b2Contact;
 struct b2Contact;
+
+typedef struct b2World b2World;
 struct b2World;
+
+typedef struct b2JointNode b2JointNode;
 struct b2JointNode;
+
+typedef struct b2ContactNode b2ContactNode;
 struct b2ContactNode;
 
 typedef struct b2BodyDef b2BodyDef;

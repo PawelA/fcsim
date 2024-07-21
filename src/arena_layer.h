@@ -19,17 +19,10 @@ struct drag_action {
 };
 
 struct arena_layer {
-	struct fcsim_level level;
-	struct fcsim_shape *player_shapes;
-	struct fcsim_shape *level_shapes;
-	struct fcsim_where *player_wheres;
-	struct fcsim_where *level_wheres;
-
 	struct design design;
+	b2World *world;
 
-	struct fcsim_simul *simul;
-
-	int running;
+	bool running;
 	int ival;
 
 	struct arena_view view;

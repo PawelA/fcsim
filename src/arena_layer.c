@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <box2d/b2Body.h>
 
 #include "gl.h"
 #include "xml.h"
@@ -80,18 +81,18 @@ void vertex2f_world(double x, double y)
 	coords[cnt_coord++] = (view.y - y) / view.h_half;
 }
 
-static void draw_rect(struct fcsim_shape_rect *rect, struct fcsim_where *where)
+static void draw_rect(struct shell *shell)
 {
-	double sina_half = sin(where->angle) / 2;
-	double cosa_half = cos(where->angle) / 2;
-	double w = fmax(fabs(rect->w), 4.0);
-	double h = fmax(fabs(rect->h), 4.0);
+	double sina_half = sin(shell->angle) / 2;
+	double cosa_half = cos(shell->angle) / 2;
+	double w = fmax(fabs(shell->rect.w), 4.0);
+	double h = fmax(fabs(shell->rect.h), 4.0);
 	double wc = w * cosa_half;
 	double ws = w * sina_half;
 	double hc = h * cosa_half;
 	double hs = h * sina_half;
-	double x = where->x;
-	double y = where->y;
+	double x = shell->x;
+	double y = shell->y;
 
 	indices[cnt_index++] = cnt_coord / 2;
 	indices[cnt_index++] = cnt_coord / 2 + 1;
@@ -106,6 +107,7 @@ static void draw_rect(struct fcsim_shape_rect *rect, struct fcsim_where *where)
 	vertex2f_world( wc + hs + x,  ws - hc + y);
 }
 
+/*
 static void draw_area(struct fcsim_area *area, struct color *color)
 {
 	double w_half = area->w / 2;
@@ -132,14 +134,15 @@ static void draw_area(struct fcsim_area *area, struct color *color)
 	vertex2f_world(x - w_half, y - h_half);
 	vertex2f_world(x - w_half, y + h_half);
 }
+*/
 
 #define CIRCLE_SEGMENTS 8
 
-static void draw_circ(struct fcsim_shape_circ *circ, struct fcsim_where *where)
+static void draw_circ(struct shell *shell)
 {
-	double x = where->x;
-	double y = where->y;
-	float r = circ->radius;
+	double x = shell->x;
+	double y = shell->y;
+	float r = shell->circ.radius;
 	int i;
 
 	for (i = 0; i < CIRCLE_SEGMENTS - 2; i++) {
@@ -149,49 +152,53 @@ static void draw_circ(struct fcsim_shape_circ *circ, struct fcsim_where *where)
 	}
 
 	for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
-		double a = where->angle + TAU * i / CIRCLE_SEGMENTS;
+		double a = shell->angle + TAU * i / CIRCLE_SEGMENTS;
 		vertex2f_world(cos(a) * r + x, sin(a) * r + y);
 	}
 }
 
-static void draw_block(struct fcsim_shape *shape, struct fcsim_where *where, int type)
+static void draw_block(struct block *block)
 {
-	struct color *color = &block_colors[type];
+	struct shell shell;
 	int prev_cnt_coord = cnt_coord;
 
-	if (shape->type == FCSIM_SHAPE_CIRC)
-		draw_circ(&shape->circ, where);
+	get_shell(&shell, &block->shape);
+	if (block->body) {
+		shell.x = block->body->m_position.x;
+		shell.y = block->body->m_position.y;
+		shell.angle = block->body->m_rotation;
+	}
+
+	if (shell.type == SHELL_CIRC)
+		draw_circ(&shell);
 	else
-		draw_rect(&shape->rect, where);
+		draw_rect(&shell);
 
 	for (; prev_cnt_coord < cnt_coord; prev_cnt_coord += 2) {
-		colors[cnt_color++] = color->r;
-		colors[cnt_color++] = color->g;
-		colors[cnt_color++] = color->b;
+		colors[cnt_color++] = 0.0;
+		colors[cnt_color++] = 0.0;
+		colors[cnt_color++] = 0.0;
 	}
 }
 
 void draw_level(struct arena_layer *arena_layer)
 {
-	struct fcsim_level *level = &arena_layer->level;
-	int i;
+	struct design *design = &arena_layer->design;
+	struct block *block;
 
+	/*
 	draw_area(&level->build_area, &build_color);
 	draw_area(&level->goal_area, &goal_color);
+	*/
 
-	for (i = 0; i < level->level_block_cnt; i++) {
-		draw_block(&arena_layer->level_shapes[i],
-			   &arena_layer->level_wheres[i],
-			   level->level_blocks[i].type);
-	}
+	for (block = design->level_blocks.head; block; block = block->next)
+		draw_block(block);
 
-	for (i = 0; i < level->player_block_cnt; i++) {
-		draw_block(&arena_layer->player_shapes[i],
-			   &arena_layer->player_wheres[i],
-			   level->player_blocks[i].type);
-	}
+	for (block = design->player_blocks.head; block; block = block->next)
+		draw_block(block);
 }
 
+/*
 void arena_layer_update_descs(struct arena_layer *arena_layer)
 {
 	int i;
@@ -208,6 +215,7 @@ void arena_layer_update_descs(struct arena_layer *arena_layer)
 					    &arena_layer->level_wheres[i]);
 	}
 }
+*/
 
 GLuint vertex_shader;
 GLuint fragment_shader;
@@ -236,6 +244,7 @@ void arena_layer_init(struct arena_layer *arena_layer)
 	arena_layer->view_scale = 1.0;
 	set_view_wh_from_scale(&arena_layer->view, 1.0);
 
+	/*
 	fcsim_parse_xml(galois_xml, sizeof(galois_xml), &arena_layer->level);
 
 	arena_layer->player_shapes = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_shape));
@@ -243,6 +252,7 @@ void arena_layer_init(struct arena_layer *arena_layer)
 	arena_layer->player_wheres = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_where));
 	arena_layer->level_wheres = malloc(arena_layer->level.level_block_cnt * sizeof(struct fcsim_where));
 	arena_layer_update_descs(arena_layer);
+	*/
 
 	convert(arena_layer);
 
@@ -331,13 +341,18 @@ void tick_func(void *arg)
 	struct arena_layer *arena_layer = arg;
 	int i;
 
+	/*
 	fcsim_step(arena_layer->simul);
+	*/
+	step(arena_layer->world);
 
+	/*
 	for (i = 0; i < arena_layer->level.player_block_cnt; i++)
 		fcsim_get_player_block_desc_simul(arena_layer->simul, i, &arena_layer->player_wheres[i]);
 
 	for (i = 0; i < arena_layer->level.level_block_cnt; i++)
 		fcsim_get_level_block_desc_simul(arena_layer->simul, i, &arena_layer->level_wheres[i]);
+	*/
 
 }
 
@@ -347,9 +362,10 @@ void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 	case 65: /* space */
 		if (arena_layer->running) {
 			clear_interval(arena_layer->ival);
-			arena_layer_update_descs(arena_layer);
+			//arena_layer_update_descs(arena_layer);
 		} else {
-			arena_layer->simul = fcsim_make_simul(&arena_layer->level);
+			//arena_layer->simul = fcsim_make_simul(&arena_layer->level);
+			arena_layer->world = gen_world(&arena_layer->design);
 			arena_layer->ival = set_interval(tick_func, 10, arena_layer);
 		}
 		arena_layer->running = !arena_layer->running;
@@ -372,6 +388,7 @@ void move_block(struct fcsim_level *level, int id, float dx, float dy)
 
 void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 {
+	/*
 	int x = the_cursor_x;
 	int y = the_cursor_y;
 
@@ -401,6 +418,7 @@ void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 
 	arena_layer->prev_x = x;
 	arena_layer->prev_y = y;
+	*/
 }
 
 void pixel_to_world(struct arena_view *view, int x, int y, float *x_world, float *y_world)
@@ -461,6 +479,7 @@ int circ_hit_test(struct fcsim_shape_circ *circ,
 	return dx * dx + dy * dy < r * r;
 }
 
+/*
 int player_block_hit_test(struct arena_layer *arena_layer, float x, float y)
 {
 	struct fcsim_level *level = &arena_layer->level;
@@ -482,6 +501,7 @@ int player_block_hit_test(struct arena_layer *arena_layer, float x, float y)
 
 	return -1;
 }
+*/
 
 enum draggable_type {
 	DRAGGABLE_VERTEX,
@@ -527,6 +547,7 @@ void arena_layer_mouse_button_up_event(struct arena_layer *arena_layer, int butt
 
 void arena_layer_mouse_button_down_event(struct arena_layer *arena_layer, int button)
 {
+	/*
 	int x = the_cursor_x;
 	int y = the_cursor_y;
 	float x_world;
@@ -536,10 +557,10 @@ void arena_layer_mouse_button_down_event(struct arena_layer *arena_layer, int bu
 	pixel_to_world(&arena_layer->view, x, y, &x_world, &y_world);
 
 	if (arena_layer->running) {
-		if (button == 1) /* left */
+		if (button == 1) // left
 			arena_layer->drag.type = DRAG_PAN;
 	} else {
-		if (button == 1) { /* left */
+		if (button == 1) { // left
 			struct fcsim_joint joint;
 			int res;
 
@@ -559,6 +580,7 @@ void arena_layer_mouse_button_down_event(struct arena_layer *arena_layer, int bu
 			}
 		}
 	}
+	*/
 }
 
 void arena_layer_scroll_event(struct arena_layer *arena_layer, int delta)

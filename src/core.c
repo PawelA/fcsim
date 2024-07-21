@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <box2d/b2Body.h>
 
 #include "gl.h"
 #include "fcsim.h"

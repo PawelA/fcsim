@@ -22,9 +22,16 @@
 #include <box2d/b2Vec.h>
 #include <stddef.h>
 
+typedef struct b2Body b2Body;
 struct b2Body;
+
+typedef struct b2Joint b2Joint;
 struct b2Joint;
+
+typedef struct b2TimeStep b2TimeStep;
 struct b2TimeStep;
+
+typedef struct b2BlockAllocator b2BlockAllocator;
 struct b2BlockAllocator;
 
 enum b2JointType

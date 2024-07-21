@@ -1,3 +1,9 @@
+typedef struct b2Body b2Body;
+struct b2Body;
+
+typedef struct b2World b2World;
+struct b2World;
+
 struct attach_node {
 	struct attach_node *prev;
 	struct attach_node *next;
@@ -98,6 +104,7 @@ struct block {
 	struct material *material;
 	bool goal;
 	int id;
+	b2Body *body;
 };
 
 struct joint_list {
@@ -116,4 +123,30 @@ struct design {
 	struct block_list player_blocks;
 };
 
+enum shell_type {
+	SHELL_CIRC,
+	SHELL_RECT,
+};
+
+struct shell_circ {
+	double radius;
+};
+
+struct shell_rect {
+	double w, h;
+};
+
+struct shell {
+	enum shell_type type;
+	union {
+		struct shell_circ circ;
+		struct shell_rect rect;
+	};
+	double x, y;
+	double angle;
+};
+
 void convert_xml(struct xml_level *xml_level, struct design *design);
+b2World *gen_world(struct design *design);
+void step(struct b2World *world);
+void get_shell(struct shell *shell, struct shape *shape);
