@@ -219,7 +219,7 @@ void b2PolyShape_QuickSync(b2Shape *shape, b2Vec2 position, const b2Mat22* R);
 
 b2Vec2 b2PolyShape_Support(const b2Shape *shape, b2Vec2 d);
 
-inline void* b2Shape_GetUserData(b2Shape *shape)
+static inline void* b2Shape_GetUserData(b2Shape *shape)
 {
 	return shape->m_userData;
 }

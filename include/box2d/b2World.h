@@ -105,17 +105,17 @@ void b2World_DestroyJoint(b2World *world, b2Joint* joint);
 
 void b2World_Step(b2World *world, float64 timeStep, int32 iterations);
 
-inline b2Body* b2World_GetBodyList(b2World *world)
+static inline b2Body* b2World_GetBodyList(b2World *world)
 {
 	return world->m_bodyList;
 }
 
-inline b2Joint* b2World_GetJointList(b2World *world)
+static inline b2Joint* b2World_GetJointList(b2World *world)
 {
 	return world->m_jointList;
 }
 
-inline b2Contact* b2World_GetContactList(b2World *world)
+static inline b2Contact* b2World_GetContactList(b2World *world)
 {
 	return world->m_contactList;
 }

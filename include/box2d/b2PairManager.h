@@ -55,42 +55,42 @@ struct b2Pair
 	uint16 status;
 };
 
-inline void b2Pair_SetBuffered(b2Pair *pair)
+static inline void b2Pair_SetBuffered(b2Pair *pair)
 {
 	pair->status |= b2Pair_e_pairBuffered;
 
 }
-inline void b2Pair_ClearBuffered(b2Pair *pair)
+static inline void b2Pair_ClearBuffered(b2Pair *pair)
 {
 	pair->status &= ~b2Pair_e_pairBuffered;
 }
 
-inline bool b2Pair_IsBuffered(b2Pair *pair)
+static inline bool b2Pair_IsBuffered(b2Pair *pair)
 {
 	return (pair->status & b2Pair_e_pairBuffered) == b2Pair_e_pairBuffered;
 }
 
-inline void b2Pair_SetRemoved(b2Pair *pair)
+static inline void b2Pair_SetRemoved(b2Pair *pair)
 {
 	pair->status |= b2Pair_e_pairRemoved;
 }
 
-inline void b2Pair_ClearRemoved(b2Pair *pair)
+static inline void b2Pair_ClearRemoved(b2Pair *pair)
 {
 	pair->status &= ~b2Pair_e_pairRemoved;
 }
 
-inline bool b2Pair_IsRemoved(b2Pair *pair)
+static inline bool b2Pair_IsRemoved(b2Pair *pair)
 {
 	return (pair->status & b2Pair_e_pairRemoved) == b2Pair_e_pairRemoved;
 }
 
-inline void b2Pair_SetFinal(b2Pair *pair)
+static inline void b2Pair_SetFinal(b2Pair *pair)
 {
 	pair->status |= b2Pair_e_pairFinal;
 }
 
-inline bool b2Pair_IsFinal(b2Pair *pair)
+static inline bool b2Pair_IsFinal(b2Pair *pair)
 {
 	return (pair->status & b2Pair_e_pairFinal) == b2Pair_e_pairFinal;
 }

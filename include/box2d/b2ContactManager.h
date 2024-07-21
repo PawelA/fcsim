@@ -22,7 +22,10 @@
 #include <box2d/b2PairManager.h>
 #include <box2d/b2NullContact.h>
 
+typedef struct b2World b2World;
 struct b2World;
+
+typedef struct b2Contact b2Contact;
 struct b2Contact;
 
 typedef struct b2ContactManager b2ContactManager;
@@ -38,6 +41,10 @@ struct b2ContactManager
 
 	bool m_destroyImmediate;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Implements PairCallback
 void* b2ContactManager_PairAdded(b2PairCallback *callback,
@@ -62,5 +69,9 @@ static void b2ContactManager_ctor(b2ContactManager *manager)
 void b2ContactManager_Collide(b2ContactManager *manager);
 
 void b2ContactManager_CleanContactList(b2ContactManager *manager);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

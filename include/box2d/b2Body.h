@@ -127,7 +127,7 @@ void b2Body_QuickSyncShapes(b2Body *body);
 // This is called when the child shape has no proxy.
 void b2Body_Freeze(b2Body *body);
 
-inline void b2BodyDef_AddShape(b2BodyDef *def, b2ShapeDef* shape)
+static inline void b2BodyDef_AddShape(b2BodyDef *def, b2ShapeDef* shape)
 {
 	for (int32 i = 0; i < b2_maxShapesPerBody; ++i)
 	{
@@ -144,27 +144,27 @@ inline void b2BodyDef_AddShape(b2BodyDef *def, b2ShapeDef* shape)
 // shapes are created.
 b2Vec2 b2Body_GetOriginPosition(const b2Body *body);
 
-inline float64 b2Body_GetRotation(const b2Body *body)
+static inline float64 b2Body_GetRotation(const b2Body *body)
 {
 	return body->m_rotation;
 }
 
-inline bool b2Body_IsStatic(const b2Body *body)
+static inline bool b2Body_IsStatic(const b2Body *body)
 {
 	return (body->m_flags & b2Body_e_staticFlag) == b2Body_e_staticFlag;
 }
 
-inline bool b2Body_IsFrozen(const b2Body *body)
+static inline bool b2Body_IsFrozen(const b2Body *body)
 {
 	return (body->m_flags & b2Body_e_frozenFlag) == b2Body_e_frozenFlag;
 }
 
-inline bool b2Body_IsSleeping(const b2Body *body)
+static inline bool b2Body_IsSleeping(const b2Body *body)
 {
 	return (body->m_flags & b2Body_e_sleepFlag) == b2Body_e_sleepFlag;
 }
 
-inline void b2Body_WakeUp(b2Body *body)
+static inline void b2Body_WakeUp(b2Body *body)
 {
 	body->m_flags &= ~b2Body_e_sleepFlag;
 	body->m_sleepTime = 0.0;
@@ -172,7 +172,7 @@ inline void b2Body_WakeUp(b2Body *body)
 
 // This is used to prevent connected bodies from colliding.
 // It may lie, depending on the collideConnected flag.
-inline bool b2Body_IsConnected(const b2Body *body, const b2Body* other)
+static inline bool b2Body_IsConnected(const b2Body *body, const b2Body* other)
 {
 	for (b2JointNode* jn = body->m_jointList; jn; jn = jn->next)
 	{
