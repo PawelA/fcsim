@@ -3,7 +3,6 @@
 #include <box2d/b2Body.h>
 
 #include "gl.h"
-#include "fcsim.h"
 #include "graph.h"
 #include "arena_layer.h"
 

@@ -7,7 +7,6 @@
 #include "gl.h"
 #include "xml.h"
 #include "interval.h"
-#include "fcsim.h"
 #include "globals.h"
 #include "graph.h"
 #include "arena_layer.h"
@@ -332,16 +331,6 @@ void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 	}
 }
 
-void move_block(struct fcsim_level *level, int id, float dx, float dy)
-{
-	struct fcsim_block *block = &level->player_blocks[id];
-
-	if (block->type == FCSIM_BLOCK_GOAL_RECT) {
-		block->jrect.x += dx;
-		block->jrect.y += dy;
-	}
-}
-
 void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 {
 	int x = the_cursor_x;
@@ -377,86 +366,6 @@ static float distance(float x0, float y0, float x1, float y1)
 	float dy = y1 - y0;
 
 	return sqrt(dx * dx + dy * dy);
-}
-
-int joint_hit_test(struct fcsim_level *level, float x, float y, struct fcsim_joint *joint)
-{
-	struct fcsim_joint joints[5];
-	int joint_cnt;
-	double jx, jy;
-	int i, j;
-
-	for (i = level->player_block_cnt - 1; i >= 0; i--) {
-		joint_cnt = fcsim_get_player_block_joints(level, i, joints);
-		for (j = 0; j < joint_cnt; j++) {
-			fcsim_get_joint_pos(level, &joints[j], &jx, &jy);
-			if (distance(jx, jy, x, y) < 10.0f) {
-				*joint = joints[j];
-				return 1;
-			}
-		}
-	}
-
-	return 0;
-}
-
-int rect_hit_test(struct fcsim_shape_rect *rect,
-		  struct fcsim_where *where, float x, float y)
-{
-	float dx = where->x - x;
-	float dy = where->y - y;
-	float s = sinf(where->angle);
-	float c = cosf(where->angle);
-	float dx_t =  dx * c + dy * s;
-	float dy_t = -dx * s + dy * c;
-
-	return fabsf(dx_t) < rect->w && fabsf(dy_t) < rect->h;
-}
-
-int circ_hit_test(struct fcsim_shape_circ *circ,
-		  struct fcsim_where *where, float x, float y)
-{
-	float dx = where->x - x;
-	float dy = where->y - y;
-	float r = circ->radius;
-
-	return dx * dx + dy * dy < r * r;
-}
-
-enum draggable_type {
-	DRAGGABLE_VERTEX,
-	DRAGGABLE_BLOCK,
-};
-
-struct draggable {
-	enum draggable_type type;
-	int id;
-};
-
-void resolve_draggable(struct fcsim_level *level,
-		       struct fcsim_joint *joint, struct draggable *draggable)
-{
-	struct fcsim_block *block;
-	
-	if (joint->type == FCSIM_JOINT_FREE) {
-		draggable->type = DRAGGABLE_VERTEX;
-		draggable->id = joint->free.vertex_id;
-		return;
-	}
-
-	block = &level->player_blocks[joint->derived.block_id];
-	switch (block->type) {
-	case FCSIM_BLOCK_GOAL_RECT:
-		draggable->type = DRAGGABLE_BLOCK;
-		draggable->id = joint->derived.block_id;
-		break;
-	case FCSIM_BLOCK_GOAL_CIRC:
-	case FCSIM_BLOCK_WHEEL:
-	case FCSIM_BLOCK_CW_WHEEL:
-	case FCSIM_BLOCK_CCW_WHEEL:
-		resolve_draggable(level, &block->wheel.center, draggable);
-		break;
-	}
 }
 
 void arena_layer_mouse_button_up_event(struct arena_layer *arena_layer, int button)

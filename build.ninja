@@ -12,9 +12,7 @@ rule linux-ld
 build fcsim: linux-ld $
 obj/linux/arena_layer.o $
 obj/linux/core.o $
-obj/linux/conv.o $
 obj/linux/gen.o $
-obj/linux/generate.o $
 obj/linux/graph.o $
 obj/linux/main.o $
 obj/linux/xml.o $
