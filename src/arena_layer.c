@@ -106,8 +106,7 @@ static void draw_rect(struct shell *shell)
 	vertex2f_world( wc + hs + x,  ws - hc + y);
 }
 
-/*
-static void draw_area(struct fcsim_area *area, struct color *color)
+static void draw_area(struct area *area, struct color *color)
 {
 	double w_half = area->w / 2;
 	double h_half = area->h / 2;
@@ -133,7 +132,6 @@ static void draw_area(struct fcsim_area *area, struct color *color)
 	vertex2f_world(x - w_half, y - h_half);
 	vertex2f_world(x - w_half, y + h_half);
 }
-*/
 
 #define CIRCLE_SEGMENTS 8
 
@@ -185,10 +183,8 @@ void draw_level(struct arena_layer *arena_layer)
 	struct design *design = &arena_layer->design;
 	struct block *block;
 
-	/*
-	draw_area(&level->build_area, &build_color);
-	draw_area(&level->goal_area, &goal_color);
-	*/
+	draw_area(&design->build_area, &build_color);
+	draw_area(&design->goal_area, &goal_color);
 
 	for (block = design->level_blocks.head; block; block = block->next)
 		draw_block(block);

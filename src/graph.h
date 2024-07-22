@@ -117,10 +117,17 @@ struct block_list {
 	struct block *tail;
 };
 
+struct area {
+	double x, y;
+	double w, h;
+};
+
 struct design {
 	struct joint_list joints;
 	struct block_list level_blocks;
 	struct block_list player_blocks;
+	struct area build_area;
+	struct area goal_area;
 };
 
 enum shell_type {

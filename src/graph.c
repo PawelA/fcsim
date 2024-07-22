@@ -487,6 +487,14 @@ static int add_player_block(struct design *design, struct xml_block *xml_block)
 	append_block(&design->player_blocks, block);
 }
 
+void set_area(struct area *area, struct xml_zone *xml_zone)
+{
+	area->x = xml_zone->position.x;
+	area->y = xml_zone->position.y;
+	area->w = xml_zone->width;
+	area->h = xml_zone->height;
+}
+
 void convert_xml(struct xml_level *xml_level, struct design *design)
 {
 	struct xml_block *block;
@@ -500,4 +508,7 @@ void convert_xml(struct xml_level *xml_level, struct design *design)
 	init_block_list(&design->player_blocks);
 	for (block = xml_level->player_blocks; block; block = block->next)
 		add_player_block(design, block);
+
+	set_area(&design->build_area, &xml_level->start);
+	set_area(&design->goal_area, &xml_level->end);
 }
