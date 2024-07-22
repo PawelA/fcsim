@@ -5,6 +5,7 @@
 #include <fpmath/fpmath.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2World.h>
+#include <box2d/b2RevoluteJoint.h>
 
 #include "graph.h"
 
@@ -164,12 +165,47 @@ void gen_block(b2World *world, struct block *block)
 	block->body = b2World_CreateBody(world, &body_def);
 }
 
+static void gen_joint(b2World *world, b2Body *b1, b2Body *b2, double x, double y, int spin)
+{
+	b2RevoluteJointDef joint_def;
+
+	b2RevoluteJointDef_ctor(&joint_def);
+	joint_def.m_jointDef.body1 = b1;
+	joint_def.m_jointDef.body2 = b2;
+	joint_def.anchorPoint.x = x;
+	joint_def.anchorPoint.y = y;
+	joint_def.m_jointDef.collideConnected = true;
+	if (spin != 0) {
+		joint_def.motorTorque = 50000000;
+		joint_def.motorSpeed = spin;
+		joint_def.enableMotor = true;
+	}
+	b2World_CreateJoint(world, &joint_def.m_jointDef);
+}
+
+static void gen_joint_stack(b2World *world, struct joint *joint)
+{
+	struct attach_node *node = joint->att.head;
+	double x = joint->x;
+	double y = joint->y;
+
+	if (!node)
+		return;
+
+	if (joint->gen)
+		gen_joint(world, joint->gen->body, node->block->body, x, y, 0);
+
+	for (; node->next; node = node->next)
+		gen_joint(world, node->block->body, node->next->block->body, x, y, 0);
+}
+
 b2World *gen_world(struct design *design)
 {
 	b2World *world = malloc(sizeof(*world));
 	b2Vec2 gravity;
 	b2AABB aabb;
 	struct block *block;
+	struct joint *joint;
 
 	gravity.x = 0;
 	gravity.y = 300;
@@ -180,11 +216,14 @@ b2World *gen_world(struct design *design)
 	b2World_ctor(world, &aabb, gravity, true);
 	b2World_SetFilter(world, collision_filter);
 
+	for (block = design->player_blocks.head; block; block = block->next)
+		gen_block(world, block);
+
 	for (block = design->level_blocks.head; block; block = block->next)
 		gen_block(world, block);
 
-	for (block = design->player_blocks.head; block; block = block->next)
-		gen_block(world, block);
+	for (joint = design->joints.head; joint; joint = joint->next)
+		gen_joint_stack(world, joint);
 
 	return world;
 }
