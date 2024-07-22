@@ -198,25 +198,6 @@ void draw_level(struct arena_layer *arena_layer)
 		draw_block(block);
 }
 
-/*
-void arena_layer_update_descs(struct arena_layer *arena_layer)
-{
-	int i;
-
-	for (i = 0; i < arena_layer->level.player_block_cnt; i++) {
-		fcsim_get_player_block_desc(&arena_layer->level, i,
-					     &arena_layer->player_shapes[i],
-					     &arena_layer->player_wheres[i]);
-	}
-
-	for (i = 0; i < arena_layer->level.level_block_cnt; i++) {
-		fcsim_get_level_block_desc(&arena_layer->level, i,
-					    &arena_layer->level_shapes[i],
-					    &arena_layer->level_wheres[i]);
-	}
-}
-*/
-
 GLuint vertex_shader;
 GLuint fragment_shader;
 GLuint program;
@@ -243,16 +224,6 @@ void arena_layer_init(struct arena_layer *arena_layer)
 	arena_layer->fast = 0;
 	arena_layer->view_scale = 1.0;
 	set_view_wh_from_scale(&arena_layer->view, 1.0);
-
-	/*
-	fcsim_parse_xml(galois_xml, sizeof(galois_xml), &arena_layer->level);
-
-	arena_layer->player_shapes = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_shape));
-	arena_layer->level_shapes = malloc(arena_layer->level.level_block_cnt * sizeof(struct fcsim_shape));
-	arena_layer->player_wheres = malloc(arena_layer->level.player_block_cnt * sizeof(struct fcsim_where));
-	arena_layer->level_wheres = malloc(arena_layer->level.level_block_cnt * sizeof(struct fcsim_where));
-	arena_layer_update_descs(arena_layer);
-	*/
 
 	convert(arena_layer);
 
@@ -339,21 +310,8 @@ void arena_layer_key_up_event(struct arena_layer *arena_layer, int key)
 void tick_func(void *arg)
 {
 	struct arena_layer *arena_layer = arg;
-	int i;
 
-	/*
-	fcsim_step(arena_layer->simul);
-	*/
 	step(arena_layer->world);
-
-	/*
-	for (i = 0; i < arena_layer->level.player_block_cnt; i++)
-		fcsim_get_player_block_desc_simul(arena_layer->simul, i, &arena_layer->player_wheres[i]);
-
-	for (i = 0; i < arena_layer->level.level_block_cnt; i++)
-		fcsim_get_level_block_desc_simul(arena_layer->simul, i, &arena_layer->level_wheres[i]);
-	*/
-
 }
 
 void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
@@ -362,9 +320,7 @@ void arena_layer_key_down_event(struct arena_layer *arena_layer, int key)
 	case 65: /* space */
 		if (arena_layer->running) {
 			clear_interval(arena_layer->ival);
-			//arena_layer_update_descs(arena_layer);
 		} else {
-			//arena_layer->simul = fcsim_make_simul(&arena_layer->level);
 			arena_layer->world = gen_world(&arena_layer->design);
 			arena_layer->ival = set_interval(tick_func, 10, arena_layer);
 		}
@@ -388,7 +344,6 @@ void move_block(struct fcsim_level *level, int id, float dx, float dy)
 
 void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 {
-	/*
 	int x = the_cursor_x;
 	int y = the_cursor_y;
 
@@ -402,23 +357,12 @@ void arena_layer_mouse_move_event(struct arena_layer *arena_layer)
 		arena_layer->view.x -= dx_world;
 		arena_layer->view.y -= dy_world;
 		break;
-	case DRAG_MOVE_VERTEX:
-		arena_layer->level.vertices[arena_layer->drag.vertex_id].x += dx_world;
-		arena_layer->level.vertices[arena_layer->drag.vertex_id].y += dy_world;
-		arena_layer_update_descs(arena_layer);
-		break;
-	case DRAG_MOVE_BLOCK:
-		move_block(&arena_layer->level, arena_layer->drag.block_id,
-			   dx_world, dy_world);
-		arena_layer_update_descs(arena_layer);
-		break;
 	case DRAG_NONE:
 		break;
 	}
 
 	arena_layer->prev_x = x;
 	arena_layer->prev_y = y;
-	*/
 }
 
 void pixel_to_world(struct arena_view *view, int x, int y, float *x_world, float *y_world)
@@ -479,30 +423,6 @@ int circ_hit_test(struct fcsim_shape_circ *circ,
 	return dx * dx + dy * dy < r * r;
 }
 
-/*
-int player_block_hit_test(struct arena_layer *arena_layer, float x, float y)
-{
-	struct fcsim_level *level = &arena_layer->level;
-	struct fcsim_shape *shape;
-	struct fcsim_where *where;
-	int res;
-	int i;
-
-	for (i = level->player_block_cnt - 1; i >= 0; i--) {
-		shape = &arena_layer->player_shapes[i];
-		where = &arena_layer->player_wheres[i];
-		if (shape->type == FCSIM_SHAPE_CIRC)
-			res = circ_hit_test(&shape->circ, where, x, y);
-		else
-			res = rect_hit_test(&shape->rect, where, x, y);
-		if (res)
-			return i;
-	}
-
-	return -1;
-}
-*/
-
 enum draggable_type {
 	DRAGGABLE_VERTEX,
 	DRAGGABLE_BLOCK,
@@ -547,7 +467,6 @@ void arena_layer_mouse_button_up_event(struct arena_layer *arena_layer, int butt
 
 void arena_layer_mouse_button_down_event(struct arena_layer *arena_layer, int button)
 {
-	/*
 	int x = the_cursor_x;
 	int y = the_cursor_y;
 	float x_world;
@@ -561,26 +480,9 @@ void arena_layer_mouse_button_down_event(struct arena_layer *arena_layer, int bu
 			arena_layer->drag.type = DRAG_PAN;
 	} else {
 		if (button == 1) { // left
-			struct fcsim_joint joint;
-			int res;
-
-			res = joint_hit_test(&arena_layer->level, x_world, y_world, &joint);
-			if (res) {
-				struct draggable draggable;
-				resolve_draggable(&arena_layer->level, &joint, &draggable);
-				if (draggable.type == DRAGGABLE_VERTEX) {
-					arena_layer->drag.type = DRAG_MOVE_VERTEX;
-					arena_layer->drag.vertex_id = draggable.id;
-				} else {
-					arena_layer->drag.type = DRAG_MOVE_BLOCK;
-					arena_layer->drag.block_id = draggable.id;
-				}
-			} else {
-				arena_layer->drag.type = DRAG_PAN;
-			}
+			arena_layer->drag.type = DRAG_PAN;
 		}
 	}
-	*/
 }
 
 void arena_layer_scroll_event(struct arena_layer *arena_layer, int delta)
