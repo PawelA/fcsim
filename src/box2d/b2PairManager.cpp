@@ -79,6 +79,8 @@ void b2PairManager_ctor(b2PairManager *manager)
 	}
 	manager->m_pairs[b2_maxPairs-1].next = b2_nullPair;
 	manager->m_pairCount = 0;
+
+	manager->m_pairBufferCount = 0;
 }
 
 void b2PairManager_Initialize(b2PairManager *manager, b2BroadPhase* broadPhase, b2PairCallback* callback)
