@@ -757,3 +757,37 @@ int xml_parse(char *xml, int len, struct xml_level *level)
 
 	return 0;
 }
+
+static void free_joints(struct xml_joint *joint)
+{
+	struct xml_joint *next;
+
+	while (joint) {
+		next = joint->next;
+		free(joint);
+		joint = next;
+	}
+}
+
+static void free_block(struct xml_block *block)
+{
+	free_joints(block->joints);
+	free(block);
+}
+
+static void free_blocks(struct xml_block *block)
+{
+	struct xml_block *next;
+
+	while (block) {
+		next = block->next;
+		free_block(block);
+		block = next;
+	}
+}
+
+void xml_free(struct xml_level *level)
+{
+	free_blocks(level->level_blocks);
+	free_blocks(level->player_blocks);
+}

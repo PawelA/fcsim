@@ -512,3 +512,58 @@ void convert_xml(struct xml_level *xml_level, struct design *design)
 	set_area(&design->build_area, &xml_level->start);
 	set_area(&design->goal_area, &xml_level->end);
 }
+
+static void free_attach_list(struct attach_list *list)
+{
+	struct attach_node *node;
+	struct attach_node *next;
+
+	node = list->head;
+
+	while (node) {
+		next = node->next;
+		free(node);
+		node = next;
+	}
+}
+
+static void free_joint(struct joint *joint)
+{
+	free_attach_list(&joint->att);
+	free(joint);
+}
+
+static void free_joint_list(struct joint_list *list)
+{
+	struct joint *joint;
+	struct joint *next;
+
+	joint = list->head;
+
+	while (joint) {
+		next = joint->next;
+		free_joint(joint);
+		joint = next;
+	}
+}
+
+static void free_block_list(struct block_list *list)
+{
+	struct block *block;
+	struct block *next;
+
+	block = list->head;
+
+	while (block) {
+		next = block->next;
+		free(block);
+		block = next;
+	}
+}
+
+void free_design(struct design *design)
+{
+	free_joint_list(&design->joints);
+	free_block_list(&design->level_blocks);
+	free_block_list(&design->player_blocks);
+}

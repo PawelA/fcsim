@@ -51,5 +51,6 @@ struct xml_level {
 };
 
 int xml_parse(char *xml, int len, struct xml_level *level);
+void xml_free(struct xml_level *level);
 
 #endif
