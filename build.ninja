@@ -9,6 +9,37 @@ rule linux-cxx
 rule linux-ld
   command = c++ -o $out $in -lX11 -lGL
 
+build tweaker: linux-ld $
+obj/linux/tweaker.o $
+obj/linux/gen.o $
+obj/linux/graph.o $
+obj/linux/xml.o $
+obj/linux/box2d/b2BlockAllocator.o $
+obj/linux/box2d/b2Body.o $
+obj/linux/box2d/b2BroadPhase.o $
+obj/linux/box2d/b2CircleContact.o $
+obj/linux/box2d/b2CollideCircle.o $
+obj/linux/box2d/b2CollidePoly.o $
+obj/linux/box2d/b2Contact.o $
+obj/linux/box2d/b2ContactManager.o $
+obj/linux/box2d/b2ContactSolver.o $
+obj/linux/box2d/b2Distance.o $
+obj/linux/box2d/b2Island.o $
+obj/linux/box2d/b2Joint.o $
+obj/linux/box2d/b2PairManager.o $
+obj/linux/box2d/b2PolyAndCircleContact.o $
+obj/linux/box2d/b2PolyContact.o $
+obj/linux/box2d/b2RevoluteJoint.o $
+obj/linux/box2d/b2Settings.o $
+obj/linux/box2d/b2Shape.o $
+obj/linux/box2d/b2StackAllocator.o $
+obj/linux/box2d/b2World.o $
+obj/linux/fpmath/atan2.o $
+obj/linux/fpmath/sincos.o $
+obj/linux/fpmath/strtod.o
+
+build obj/linux/tweaker.o: linux-cc src/tweaker.c
+
 build fcsim: linux-ld $
 obj/linux/arena_layer.o $
 obj/linux/core.o $

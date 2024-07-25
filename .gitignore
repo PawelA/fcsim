@@ -2,6 +2,7 @@
 *.d
 *.xml
 fcsim
+tweaker
 html/fcsim.wasm
 tags
 .ninja_log
