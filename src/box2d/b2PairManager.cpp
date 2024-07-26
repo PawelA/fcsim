@@ -38,28 +38,6 @@ inline bool Equals(const b2Pair& pair, int32 proxyId1, int32 proxyId2)
 	return pair.proxyId1 == proxyId1 && pair.proxyId2 == proxyId2;
 }
 
-inline bool Equals(const b2BufferedPair& pair1, const b2BufferedPair& pair2)
-{
-	return pair1.proxyId1 == pair2.proxyId1 && pair1.proxyId2 == pair2.proxyId2;
-}
-
-// For sorting.
-inline bool operator < (const b2BufferedPair& pair1, const b2BufferedPair& pair2)
-{
-	if (pair1.proxyId1 < pair2.proxyId1)
-	{
-		return true;
-	}
-
-	if (pair1.proxyId1 == pair2.proxyId1)
-	{
-		return pair1.proxyId2 < pair2.proxyId2;
-	}
-
-	return false;
-}
-
-
 void b2PairManager_ctor(b2PairManager *manager)
 {
 	b2Assert(b2IsPowerOfTwo(b2_tableCapacity) == true);
