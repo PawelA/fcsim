@@ -4,23 +4,23 @@
 
 #include "gl.h"
 #include "graph.h"
-#include "arena_layer.h"
+#include "arena.h"
 
 int the_width = 800;
 int the_height = 800;
 int the_cursor_x = 0;
 int the_cursor_y = 0;
 
-struct arena_layer the_arena_layer;
+struct arena the_arena;
 
 void key_down(int key)
 {
-	arena_layer_key_down_event(&the_arena_layer, key);
+	arena_key_down_event(&the_arena, key);
 }
 
 void key_up(int key)
 {
-	arena_layer_key_up_event(&the_arena_layer, key);
+	arena_key_up_event(&the_arena, key);
 }
 
 void move(int x, int y)
@@ -28,22 +28,22 @@ void move(int x, int y)
 	the_cursor_x = x;
 	the_cursor_y = y;
 
-	arena_layer_mouse_move_event(&the_arena_layer);
+	arena_mouse_move_event(&the_arena);
 }
 
 void button_down(int button)
 {
-	arena_layer_mouse_button_down_event(&the_arena_layer, button);
+	arena_mouse_button_down_event(&the_arena, button);
 }
 
 void button_up(int button)
 {
-	arena_layer_mouse_button_up_event(&the_arena_layer, button);
+	arena_mouse_button_up_event(&the_arena, button);
 }
 
 void scroll(int delta)
 {
-	arena_layer_scroll_event(&the_arena_layer, delta);
+	arena_scroll_event(&the_arena, delta);
 }
 
 void resize(int w, int h)
@@ -52,17 +52,17 @@ void resize(int w, int h)
 	the_height = h;
 	glViewport(0, 0, w, h);
 
-	arena_layer_size_event(&the_arena_layer);
+	arena_size_event(&the_arena);
 }
 
 void init(void)
 {
-	arena_layer_init(&the_arena_layer);
+	arena_init(&the_arena);
 }
 
 void draw(void)
 {
-	arena_layer_draw(&the_arena_layer);
+	arena_draw(&the_arena);
 }
 
 void call(void (*func)(void *arg), void *arg)

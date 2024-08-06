@@ -10,7 +10,7 @@ rule linux-ld
   command = c++ -o $out $in -lX11 -lGL
 
 build fcsim: linux-ld $
-obj/linux/arena_layer.o $
+obj/linux/arena.o $
 obj/linux/core.o $
 obj/linux/gen.o $
 obj/linux/graph.o $
@@ -40,7 +40,7 @@ obj/linux/fpmath/atan2.o $
 obj/linux/fpmath/sincos.o $
 obj/linux/fpmath/strtod.o
 
-build obj/linux/arena_layer.o: linux-cc src/arena_layer.c
+build obj/linux/arena.o: linux-cc src/arena.c
 build obj/linux/core.o: linux-cc src/core.c
 build obj/linux/gen.o: linux-cc src/gen.c
 build obj/linux/graph.o: linux-cc src/graph.c
@@ -82,7 +82,7 @@ rule wasm-ld
   command = wasm-ld --no-entry --export-all --allow-undefined -o $out $in
 
 build html/fcsim.wasm: wasm-ld $
-obj/wasm/arena_layer.o $
+obj/wasm/arena.o $
 obj/wasm/core.o $
 obj/wasm/gen.o $
 obj/wasm/graph.o $
@@ -115,7 +115,7 @@ obj/wasm/fpmath/atan2.o $
 obj/wasm/fpmath/sincos.o $
 obj/wasm/fpmath/strtod.o
 
-build obj/wasm/arena_layer.o: wasm-cc src/arena_layer.c
+build obj/wasm/arena.o: wasm-cc src/arena.c
 build obj/wasm/core.o: wasm-cc src/core.c
 build obj/wasm/gen.o: wasm-cc src/gen.c
 build obj/wasm/graph.o: wasm-cc src/graph.c
