@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <box2d/b2Body.h>
-
 #include "gl.h"
 #include "graph.h"
 #include "arena.h"
@@ -23,10 +22,7 @@ void key_up(int key)
 
 void move(int x, int y)
 {
-	the_cursor_x = x;
-	the_cursor_y = y;
-
-	arena_mouse_move_event(&the_arena);
+	arena_mouse_move_event(&the_arena, x, y);
 }
 
 void button_down(int button)

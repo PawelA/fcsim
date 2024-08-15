@@ -29,8 +29,8 @@ struct arena {
 	struct view view;
 	float view_scale;
 
-	int prev_x;
-	int prev_y;
+	int cursor_x;
+	int cursor_y;
 
 	int fast;
 
@@ -43,7 +43,7 @@ void arena_draw(struct arena *arena);
 
 void arena_key_up_event(struct arena *arena, int key);
 void arena_key_down_event(struct arena *arena, int key);
-void arena_mouse_move_event(struct arena *arena);
+void arena_mouse_move_event(struct arena *arena, int x, int y);
 void arena_scroll_event(struct arena *arena, int delta);
 void arena_mouse_button_up_event(struct arena *arena, int button);
 void arena_mouse_button_down_event(struct arena *arena, int button);

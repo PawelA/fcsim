@@ -221,6 +221,8 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->height = h;
 	arena->view_scale = 1.0;
 	set_view_wh_from_scale(&arena->view, 1.0, w, h);
+	arena->cursor_x = 0;
+	arena->cursor_y = 0;
 
 	convert(arena);
 
@@ -329,13 +331,10 @@ void arena_key_down_event(struct arena *arena, int key)
 	}
 }
 
-void arena_mouse_move_event(struct arena *arena)
+void arena_mouse_move_event(struct arena *arena, int x, int y)
 {
-	int x = the_cursor_x;
-	int y = the_cursor_y;
-
-	int dx_pixel = x - arena->prev_x;
-	int dy_pixel = y - arena->prev_y;
+	int dx_pixel = x - arena->cursor_x;
+	int dy_pixel = y - arena->cursor_y;
 	float dx_world = ((float)dx_pixel / arena->width) * arena->view.w_half * 2;
 	float dy_world = ((float)dy_pixel / arena->height) * arena->view.h_half * 2;
 
@@ -348,8 +347,8 @@ void arena_mouse_move_event(struct arena *arena)
 		break;
 	}
 
-	arena->prev_x = x;
-	arena->prev_y = y;
+	arena->cursor_x = x;
+	arena->cursor_y = y;
 }
 
 void pixel_to_world(struct view *view, float w, float h, int x, int y, float *x_world, float *y_world)
@@ -374,8 +373,8 @@ void arena_mouse_button_up_event(struct arena *arena, int button)
 
 void arena_mouse_button_down_event(struct arena *arena, int button)
 {
-	int x = the_cursor_x;
-	int y = the_cursor_y;
+	int x = arena->cursor_x;
+	int y = arena->cursor_y;
 	float x_world;
 	float y_world;
 	int vert_id;
