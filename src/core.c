@@ -6,8 +6,6 @@
 #include "graph.h"
 #include "arena.h"
 
-int the_width = 800;
-int the_height = 800;
 int the_cursor_x = 0;
 int the_cursor_y = 0;
 
@@ -48,16 +46,14 @@ void scroll(int delta)
 
 void resize(int w, int h)
 {
-	the_width = w;
-	the_height = h;
 	glViewport(0, 0, w, h);
 
-	arena_size_event(&the_arena);
+	arena_size_event(&the_arena, w, h);
 }
 
 void init(void)
 {
-	arena_init(&the_arena);
+	arena_init(&the_arena, 800, 800);
 }
 
 void draw(void)

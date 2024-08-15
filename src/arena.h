@@ -25,6 +25,7 @@ struct arena {
 	bool running;
 	int ival;
 
+	float width, height;
 	struct view view;
 	float view_scale;
 
@@ -36,7 +37,7 @@ struct arena {
 	struct drag_action drag;
 };
 
-void arena_init(struct arena *arena);
+void arena_init(struct arena *arena, float w, float h);
 void arena_show(struct arena *arena);
 void arena_draw(struct arena *arena);
 
@@ -46,4 +47,4 @@ void arena_mouse_move_event(struct arena *arena);
 void arena_scroll_event(struct arena *arena, int delta);
 void arena_mouse_button_up_event(struct arena *arena, int button);
 void arena_mouse_button_down_event(struct arena *arena, int button);
-void arena_size_event(struct arena *arena);
+void arena_size_event(struct arena *arena, float w, float h);

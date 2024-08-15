@@ -66,10 +66,10 @@ static struct color goal_color  = { 0.945f, 0.569f, 0.569f };
 	
 static struct color sky_color = { 0.529f, 0.741f, 0.945f };
 
-static void set_view_wh_from_scale(struct view *view, float scale)
+static void set_view_wh_from_scale(struct view *view, float scale, float w, float h)
 {
-	view->w_half = scale * the_width;
-	view->h_half = scale * the_height;
+	view->w_half = scale * w;
+	view->h_half = scale * h;
 }
 
 struct view view;
@@ -210,15 +210,17 @@ void convert(struct arena *arena)
 	convert_xml(&level, &arena->design);
 }
 
-void arena_init(struct arena *arena)
+void arena_init(struct arena *arena, float w, float h)
 {
 	GLint param;
 	GLsizei log_len;
 
 	arena->running = 0;
 	arena->fast = 0;
+	arena->width = w;
+	arena->height = h;
 	arena->view_scale = 1.0;
-	set_view_wh_from_scale(&arena->view, 1.0);
+	set_view_wh_from_scale(&arena->view, 1.0, w, h);
 
 	convert(arena);
 
@@ -334,8 +336,8 @@ void arena_mouse_move_event(struct arena *arena)
 
 	int dx_pixel = x - arena->prev_x;
 	int dy_pixel = y - arena->prev_y;
-	float dx_world = ((float)dx_pixel / the_width) * arena->view.w_half * 2;
-	float dy_world = ((float)dy_pixel / the_height) * arena->view.h_half * 2;
+	float dx_world = ((float)dx_pixel / arena->width) * arena->view.w_half * 2;
+	float dy_world = ((float)dy_pixel / arena->height) * arena->view.h_half * 2;
 
 	switch (arena->drag.type) {
 	case DRAG_PAN:
@@ -350,10 +352,10 @@ void arena_mouse_move_event(struct arena *arena)
 	arena->prev_y = y;
 }
 
-void pixel_to_world(struct view *view, int x, int y, float *x_world, float *y_world)
+void pixel_to_world(struct view *view, float w, float h, int x, int y, float *x_world, float *y_world)
 {
-	*x_world = view->x + view->w_half * (2 * x - the_width) / the_width;
-	*y_world = view->y + view->h_half * (2 * y - the_height) / the_height;
+	*x_world = view->x + view->w_half * (2 * x - w) / w;
+	*y_world = view->y + view->h_half * (2 * y - h) / h;
 }
 
 static float distance(float x0, float y0, float x1, float y1)
@@ -378,7 +380,7 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 	float y_world;
 	int vert_id;
 
-	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
+	pixel_to_world(&arena->view, arena->width, arena->height, x, y, &x_world, &y_world);
 
 	if (arena->running) {
 		if (button == 1) // left
@@ -395,10 +397,12 @@ void arena_scroll_event(struct arena *arena, int delta)
 	float scale = 1.0f - delta * 0.05f;
 
 	arena->view_scale *= scale;
-	set_view_wh_from_scale(&arena->view, arena->view_scale);
+	set_view_wh_from_scale(&arena->view, arena->view_scale, arena->width, arena->height);
 }
 
-void arena_size_event(struct arena *arena)
+void arena_size_event(struct arena *arena, float width, float height)
 {
-	set_view_wh_from_scale(&arena->view, arena->view_scale);
+	arena->width = width;
+	arena->height = height;
+	set_view_wh_from_scale(&arena->view, arena->view_scale, width, height);
 }
