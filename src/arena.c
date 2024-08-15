@@ -7,7 +7,6 @@
 #include "gl.h"
 #include "xml.h"
 #include "interval.h"
-#include "globals.h"
 #include "graph.h"
 #include "arena.h"
 #include "galois.h"

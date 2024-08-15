@@ -5,9 +5,6 @@
 #include "graph.h"
 #include "arena.h"
 
-int the_cursor_x = 0;
-int the_cursor_y = 0;
-
 struct arena the_arena;
 
 void key_down(int key)
