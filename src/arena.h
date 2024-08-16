@@ -1,21 +1,16 @@
 struct view {
 	float x;
 	float y;
-	float w_half;
-	float h_half;
+	float scale;
+	float width;
+	float height;
 };
 
-enum drag_type {
-	DRAG_NONE,
-	DRAG_PAN,
-	DRAG_MOVE_VERTEX,
-	DRAG_MOVE_BLOCK,
-};
-
-struct drag_action {
-	enum drag_type type;
-	int vertex_id;
-	int block_id;
+enum action {
+	ACTION_NONE,
+	ACTION_PAN,
+	ACTION_MOVE_JOINT,
+	ACTION_MOVE_BLOCK,
 };
 
 struct arena {
@@ -25,16 +20,14 @@ struct arena {
 	bool running;
 	int ival;
 
-	float width, height;
 	struct view view;
-	float view_scale;
 
 	int cursor_x;
 	int cursor_y;
 
-	int fast;
-
-	struct drag_action drag;
+	enum action action;
+	struct joint *joint;
+	struct block *block;
 };
 
 void arena_init(struct arena *arena, float w, float h);

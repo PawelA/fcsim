@@ -65,21 +65,13 @@ static struct color goal_color  = { 0.945f, 0.569f, 0.569f };
 	
 static struct color sky_color = { 0.529f, 0.741f, 0.945f };
 
-static void set_view_wh_from_scale(struct view *view, float scale, float w, float h)
+void vertex2f_world(struct view *view, double x, double y)
 {
-	view->w_half = scale * w;
-	view->h_half = scale * h;
+	coords[cnt_coord++] = (x - view->x) / (view->width * view->scale);
+	coords[cnt_coord++] = (view->y - y) / (view->height * view->scale);
 }
 
-struct view view;
-
-void vertex2f_world(double x, double y)
-{
-	coords[cnt_coord++] = (x - view.x) / view.w_half;
-	coords[cnt_coord++] = (view.y - y) / view.h_half;
-}
-
-static void draw_rect(struct shell *shell)
+static void draw_rect(struct shell *shell, struct view *view)
 {
 	double sina_half = sin(shell->angle) / 2;
 	double cosa_half = cos(shell->angle) / 2;
@@ -99,13 +91,13 @@ static void draw_rect(struct shell *shell)
 	indices[cnt_index++] = cnt_coord / 2 + 2;
 	indices[cnt_index++] = cnt_coord / 2 + 3;
 
-	vertex2f_world( wc - hs + x,  ws + hc + y);
-	vertex2f_world(-wc - hs + x, -ws + hc + y);
-	vertex2f_world(-wc + hs + x, -ws - hc + y);
-	vertex2f_world( wc + hs + x,  ws - hc + y);
+	vertex2f_world(view,  wc - hs + x,  ws + hc + y);
+	vertex2f_world(view, -wc - hs + x, -ws + hc + y);
+	vertex2f_world(view, -wc + hs + x, -ws - hc + y);
+	vertex2f_world(view,  wc + hs + x,  ws - hc + y);
 }
 
-static void draw_area(struct area *area, struct color *color)
+static void draw_area(struct area *area, struct view *view, struct color *color)
 {
 	double w_half = area->w / 2;
 	double h_half = area->h / 2;
@@ -126,15 +118,15 @@ static void draw_area(struct area *area, struct color *color)
 	indices[cnt_index++] = cnt_coord / 2 + 2;
 	indices[cnt_index++] = cnt_coord / 2 + 3;
 
-	vertex2f_world(x + w_half, y + h_half);
-	vertex2f_world(x + w_half, y - h_half);
-	vertex2f_world(x - w_half, y - h_half);
-	vertex2f_world(x - w_half, y + h_half);
+	vertex2f_world(view, x + w_half, y + h_half);
+	vertex2f_world(view, x + w_half, y - h_half);
+	vertex2f_world(view, x - w_half, y - h_half);
+	vertex2f_world(view, x - w_half, y + h_half);
 }
 
 #define CIRCLE_SEGMENTS 8
 
-static void draw_circ(struct shell *shell)
+static void draw_circ(struct shell *shell, struct view *view)
 {
 	double x = shell->x;
 	double y = shell->y;
@@ -149,11 +141,11 @@ static void draw_circ(struct shell *shell)
 
 	for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
 		double a = shell->angle + TAU * i / CIRCLE_SEGMENTS;
-		vertex2f_world(cos(a) * r + x, sin(a) * r + y);
+		vertex2f_world(view, cos(a) * r + x, sin(a) * r + y);
 	}
 }
 
-static void draw_block(struct block *block)
+static void draw_block(struct block *block, struct view *view)
 {
 	struct shell shell;
 	int prev_cnt_coord = cnt_coord;
@@ -166,9 +158,9 @@ static void draw_block(struct block *block)
 	}
 
 	if (shell.type == SHELL_CIRC)
-		draw_circ(&shell);
+		draw_circ(&shell, view);
 	else
-		draw_rect(&shell);
+		draw_rect(&shell, view);
 
 	for (; prev_cnt_coord < cnt_coord; prev_cnt_coord += 2) {
 		colors[cnt_color++] = 0.0;
@@ -182,14 +174,14 @@ void draw_level(struct arena *arena)
 	struct design *design = &arena->design;
 	struct block *block;
 
-	draw_area(&design->build_area, &build_color);
-	draw_area(&design->goal_area, &goal_color);
+	draw_area(&design->build_area, &arena->view, &build_color);
+	draw_area(&design->goal_area, &arena->view, &goal_color);
 
 	for (block = design->level_blocks.head; block; block = block->next)
-		draw_block(block);
+		draw_block(block, &arena->view);
 
 	for (block = design->player_blocks.head; block; block = block->next)
-		draw_block(block);
+		draw_block(block, &arena->view);
 }
 
 GLuint vertex_shader;
@@ -214,12 +206,12 @@ void arena_init(struct arena *arena, float w, float h)
 	GLint param;
 	GLsizei log_len;
 
-	arena->running = 0;
-	arena->fast = 0;
-	arena->width = w;
-	arena->height = h;
-	arena->view_scale = 1.0;
-	set_view_wh_from_scale(&arena->view, 1.0, w, h);
+	arena->running = false;
+	arena->view.x = 0.0f;
+	arena->view.y = 0.0f;
+	arena->view.width = w;
+	arena->view.height = h;
+	arena->view.scale = 1.0f;
 	arena->cursor_x = 0;
 	arena->cursor_y = 0;
 
@@ -281,7 +273,6 @@ void arena_draw(struct arena *arena)
 	cnt_coord = 0;
 	cnt_color = 0;
 
-	view = arena->view;
 	draw_level(arena);
 
 	glBindBuffer(GL_ARRAY_BUFFER, coord_buffer);
@@ -293,11 +284,6 @@ void arena_draw(struct arena *arena)
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, cnt_index * sizeof(indices[0]), indices);
 
 	glDrawElements(GL_TRIANGLES, cnt_index, GL_UNSIGNED_SHORT, 0);
-}
-
-void arena_toggle_fast(struct arena *arena)
-{
-	arena->fast = !arena->fast;
 }
 
 void arena_key_up_event(struct arena *arena, int key)
@@ -324,9 +310,6 @@ void arena_key_down_event(struct arena *arena, int key)
 		}
 		arena->running = !arena->running;
 		break;
-	case 39: /* s */
-		arena_toggle_fast(arena);
-		break;
 	}
 }
 
@@ -334,15 +317,15 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 {
 	int dx_pixel = x - arena->cursor_x;
 	int dy_pixel = y - arena->cursor_y;
-	float dx_world = ((float)dx_pixel / arena->width) * arena->view.w_half * 2;
-	float dy_world = ((float)dy_pixel / arena->height) * arena->view.h_half * 2;
+	float dx_world = (float)dx_pixel * arena->view.scale * 2;
+	float dy_world = (float)dy_pixel * arena->view.scale * 2;
 
-	switch (arena->drag.type) {
-	case DRAG_PAN:
+	switch (arena->action) {
+	case ACTION_PAN:
 		arena->view.x -= dx_world;
 		arena->view.y -= dy_world;
 		break;
-	case DRAG_NONE:
+	case ACTION_NONE:
 		break;
 	}
 
@@ -350,10 +333,10 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 	arena->cursor_y = y;
 }
 
-void pixel_to_world(struct view *view, float w, float h, int x, int y, float *x_world, float *y_world)
+void pixel_to_world(struct view *view, int x, int y, float *x_world, float *y_world)
 {
-	*x_world = view->x + view->w_half * (2 * x - w) / w;
-	*y_world = view->y + view->h_half * (2 * y - h) / h;
+	*x_world = view->x + view->scale * (2 * x - view->width);
+	*y_world = view->y + view->scale * (2 * y - view->height);
 }
 
 static float distance(float x0, float y0, float x1, float y1)
@@ -367,7 +350,7 @@ static float distance(float x0, float y0, float x1, float y1)
 void arena_mouse_button_up_event(struct arena *arena, int button)
 {
 	if (button == 1) /* left */
-		arena->drag.type = DRAG_NONE;
+		arena->action = ACTION_NONE;
 }
 
 void arena_mouse_button_down_event(struct arena *arena, int button)
@@ -376,31 +359,26 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 	int y = arena->cursor_y;
 	float x_world;
 	float y_world;
-	int vert_id;
 
-	pixel_to_world(&arena->view, arena->width, arena->height, x, y, &x_world, &y_world);
+	if (button != 1) // left
+		return;
+
+	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
 
 	if (arena->running) {
-		if (button == 1) // left
-			arena->drag.type = DRAG_PAN;
+		arena->action = ACTION_PAN;
 	} else {
-		if (button == 1) { // left
-			arena->drag.type = DRAG_PAN;
-		}
+		arena->action = ACTION_PAN;
 	}
 }
 
 void arena_scroll_event(struct arena *arena, int delta)
 {
-	float scale = 1.0f - delta * 0.05f;
-
-	arena->view_scale *= scale;
-	set_view_wh_from_scale(&arena->view, arena->view_scale, arena->width, arena->height);
+	arena->view.scale *= (1.0f - delta * 0.05f);
 }
 
 void arena_size_event(struct arena *arena, float width, float height)
 {
-	arena->width = width;
-	arena->height = height;
-	set_view_wh_from_scale(&arena->view, arena->view_scale, width, height);
+	arena->view.width = width;
+	arena->view.height = height;
 }
