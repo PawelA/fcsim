@@ -28,6 +28,18 @@ struct arena {
 	enum action action;
 	struct joint *joint;
 	struct block *block;
+
+	unsigned short indices[2048];
+	float coords[2048];
+	float colors[2048];
+
+	int cnt_index;
+	int cnt_coord;
+	int cnt_color;
+
+	GLuint index_buffer;
+	GLuint coord_buffer;
+	GLuint color_buffer;
 };
 
 void arena_compile_shaders(void);
