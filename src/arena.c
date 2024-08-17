@@ -253,7 +253,7 @@ void arena_draw(struct arena *arena)
 {
 	glUseProgram(program);
 
-	glClearColor(0.529f, 0.741f, 0.945f, 1.0f);
+	glClearColor(sky_color.r, sky_color.g, sky_color.b, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	arena->cnt_index = 0;
