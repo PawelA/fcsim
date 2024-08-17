@@ -46,6 +46,7 @@ void resize(int w, int h)
 
 void init(void)
 {
+	arena_compile_shaders();
 	arena_init(&the_arena, 800, 800);
 }
 

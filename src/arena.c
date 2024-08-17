@@ -31,14 +31,19 @@ const GLchar *fragment_shader_src =
 		"gl_FragColor = vec4(v_color, 1.0);\n"
 	"}\n";
 
-float coords[2048];
-float colors[2048];
+GLuint program;
 
 unsigned short indices[2048];
+float coords[2048];
+float colors[2048];
 
 int cnt_index;
 int cnt_coord;
 int cnt_color;
+
+GLuint index_buffer;
+GLuint coord_buffer;
+GLuint color_buffer;
 
 struct color {
 	float r;
@@ -184,15 +189,6 @@ void draw_level(struct arena *arena)
 		draw_block(block, &arena->view);
 }
 
-GLuint vertex_shader;
-GLuint fragment_shader;
-GLuint program;
-GLuint coord_buffer;
-GLuint color_buffer;
-GLuint index_buffer;
-
-GLchar shader_log[1024];
-
 void convert(struct arena *arena)
 {
 	struct xml_level level;
@@ -201,11 +197,29 @@ void convert(struct arena *arena)
 	convert_xml(&level, &arena->design);
 }
 
+void arena_compile_shaders(void)
+{
+	GLuint vertex_shader;
+	GLuint fragment_shader;
+
+	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex_shader, 1, &vertex_shader_src, NULL);
+	glCompileShader(vertex_shader);
+
+	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment_shader, 1, &fragment_shader_src, NULL);
+	glCompileShader(fragment_shader);
+
+	program = glCreateProgram();
+	glAttachShader(program, vertex_shader);
+	glAttachShader(program, fragment_shader);
+	glLinkProgram(program);
+	glDeleteShader(vertex_shader);
+	glDeleteShader(fragment_shader);
+}
+
 void arena_init(struct arena *arena, float w, float h)
 {
-	GLint param;
-	GLsizei log_len;
-
 	arena->running = false;
 	arena->view.x = 0.0f;
 	arena->view.y = 0.0f;
@@ -216,36 +230,6 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->cursor_y = 0;
 
 	convert(arena);
-
-	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_shader_src, NULL);
-	glCompileShader(vertex_shader);
-	/*
-	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &param);
-	if (!param) {
-		glGetShaderInfoLog(vertex_shader, sizeof(shader_log), &log_len, shader_log);
-		printf("vertex shader:\n%s\n", shader_log);
-		exit(1);
-	}
-	*/
-
-	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_shader_src, NULL);
-	glCompileShader(fragment_shader);
-	/*
-	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &param);
-	if (!param) {
-		glGetShaderInfoLog(fragment_shader, sizeof(shader_log), &log_len, shader_log);
-		printf("fragment shader:\n%s", shader_log);
-		exit(1);
-	}
-	*/
-
-	program = glCreateProgram();
-	glAttachShader(program, vertex_shader);
-	glAttachShader(program, fragment_shader);
-	glLinkProgram(program);
-	glUseProgram(program);
 
 	glGenBuffers(1, &coord_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, coord_buffer);
@@ -266,6 +250,8 @@ void arena_init(struct arena *arena, float w, float h)
 
 void arena_draw(struct arena *arena)
 {
+	glUseProgram(program);
+
 	glClearColor(0.529f, 0.741f, 0.945f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 

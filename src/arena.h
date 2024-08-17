@@ -30,7 +30,9 @@ struct arena {
 	struct block *block;
 };
 
+void arena_compile_shaders(void);
 void arena_init(struct arena *arena, float w, float h);
+
 void arena_show(struct arena *arena);
 void arena_draw(struct arena *arena);
 
