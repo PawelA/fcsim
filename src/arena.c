@@ -195,14 +195,6 @@ void draw_level(struct arena *arena)
 		push_block(arena, block);
 }
 
-void convert(struct arena *arena)
-{
-	struct xml_level level;
-
-	xml_parse(galois_xml, sizeof(galois_xml), &level);
-	convert_xml(&level, &arena->design);
-}
-
 void arena_compile_shaders(void)
 {
 	GLuint vertex_shader;
@@ -226,6 +218,8 @@ void arena_compile_shaders(void)
 
 void arena_init(struct arena *arena, float w, float h)
 {
+	struct xml_level level;
+
 	arena->running = false;
 	arena->view.x = 0.0f;
 	arena->view.y = 0.0f;
@@ -235,7 +229,8 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->cursor_x = 0;
 	arena->cursor_y = 0;
 
-	convert(arena);
+	xml_parse(galois_xml, sizeof(galois_xml), &level);
+	convert_xml(&level, &arena->design);
 
 	glGenBuffers(1, &arena->coord_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, arena->coord_buffer);
