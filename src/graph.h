@@ -95,6 +95,9 @@ struct material {
 	double angular_damping;
 	uint32_t collision_bit;
 	uint32_t collision_mask;
+	float r;
+	float g;
+	float b;
 };
 
 struct block {

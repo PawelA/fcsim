@@ -14,6 +14,9 @@ static struct material static_env_material = {
 	.angular_damping = 0.0,
 	.collision_bit = ENV_COLLISION_BIT,
 	.collision_mask = ENV_COLLISION_MASK,
+	.r = 0.000f,
+	.g = 0.745f,
+	.b = 0.004f,
 };
 
 static struct material dynamic_env_material = {
@@ -24,6 +27,9 @@ static struct material dynamic_env_material = {
 	.angular_damping = 0.0,
 	.collision_bit = ENV_COLLISION_BIT,
 	.collision_mask = ENV_COLLISION_MASK,
+	.r = 0.976f,
+	.g = 0.855f,
+	.b = 0.184f,
 };
 
 static struct material solid_material = {
@@ -34,6 +40,9 @@ static struct material solid_material = {
 	.angular_damping = 0.0,
 	.collision_bit = SOLID_COLLISION_BIT,
 	.collision_mask = SOLID_COLLISION_MASK,
+	.r = 0.537f,
+	.g = 0.980f,
+	.b = 0.890f,
 };
 
 static struct material solid_rod_material = {
@@ -44,6 +53,9 @@ static struct material solid_rod_material = {
 	.angular_damping = 0.2,
 	.collision_bit = SOLID_COLLISION_BIT,
 	.collision_mask = SOLID_COLLISION_MASK,
+	.r = 0.420f,
+	.g = 0.204f,
+	.b = 0.000f,
 };
 
 static struct material water_rod_material = {
@@ -54,6 +66,9 @@ static struct material water_rod_material = {
 	.angular_damping = 0.2,
 	.collision_bit = WATER_COLLISION_BIT,
 	.collision_mask = WATER_COLLISION_MASK,
+	.r = 0.000f,
+	.g = 0.000f,
+	.b = 1.000f,
 };
 
 static void init_block_list(struct block_list *list)

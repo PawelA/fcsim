@@ -39,24 +39,9 @@ struct color {
 	float b;
 };
 
-struct color block_colors[] = {
-	{ 0.000f, 0.745f, 0.004f }, // FCSIM_STAT_RECT
-	{ 0.976f, 0.855f, 0.184f }, // FCSIM_DYN_RECT
-	{ 0.000f, 0.745f, 0.004f }, // FCSIM_STAT_CIRCLE
-	{ 0.976f, 0.537f, 0.184f }, // FCSIM_DYN_CIRCLE
-	{ 1.000f, 0.400f, 0.400f }, // FCSIM_GOAL_RECT
-	{ 1.000f, 0.400f, 0.400f }, // FCSIM_GOAL_CIRCLE
-	{ 0.537f, 0.980f, 0.890f }, // FCSIM_WHEEL
-	{ 1.000f, 0.925f, 0.000f }, // FCSIM_CW_WHEEL
-	{ 1.000f, 0.800f, 0.800f }, // FCSIM_CCW_WHEEL
-	{ 0.000f, 0.000f, 1.000f }, // FCSIM_ROD
-	{ 0.420f, 0.204f, 0.000f }, // FCSIM_SOLID_ROD
-};
-
 static struct color build_color = { 0.737f, 0.859f, 0.976f };
 static struct color goal_color  = { 0.945f, 0.569f, 0.569f };
-	
-static struct color sky_color = { 0.529f, 0.741f, 0.945f };
+static struct color sky_color   = { 0.529f, 0.741f, 0.945f };
 
 void pixel_to_world(struct view *view, int x, int y, float *x_world, float *y_world)
 {
@@ -81,7 +66,25 @@ void push_coord(struct arena *arena, float x, float y)
 	arena->coords[arena->cnt_coord++] = y_view;
 }
 
-static void push_rect(struct arena *arena, struct shell *shell)
+void push_color(struct arena *arena, float r, float g, float b)
+{
+	arena->colors[arena->cnt_color++] = r;
+	arena->colors[arena->cnt_color++] = g;
+	arena->colors[arena->cnt_color++] = b;
+}
+
+void push_indices(struct arena *arena, int n)
+{
+	int i;
+
+	for (i = 0; i < n - 2; i++) {
+		arena->indices[arena->cnt_index++] = arena->cnt_coord / 2;
+		arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + i + 1;
+		arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + i + 2;
+	}
+}
+
+static void push_rect(struct arena *arena, struct shell *shell, struct color *color)
 {
 	float sina_half = sinf(shell->angle) / 2;
 	float cosa_half = cosf(shell->angle) / 2;
@@ -93,18 +96,15 @@ static void push_rect(struct arena *arena, struct shell *shell)
 	float hs = h * sina_half;
 	float x = shell->x;
 	float y = shell->y;
+	int i;
 
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + 1;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + 2;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + 2;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + 3;
-
+	push_indices(arena, 4);
 	push_coord(arena,  wc - hs + x,  ws + hc + y);
 	push_coord(arena, -wc - hs + x, -ws + hc + y);
 	push_coord(arena, -wc + hs + x, -ws - hc + y);
 	push_coord(arena,  wc + hs + x,  ws - hc + y);
+	for (i = 0; i < 4; i++)
+		push_color(arena, color->r, color->g, color->b);
 }
 
 static void push_area(struct arena *arena, struct area *area, struct color *color)
@@ -115,28 +115,18 @@ static void push_area(struct arena *arena, struct area *area, struct color *colo
 	float y = area->y;
 	int i;
 
-	for (i = 0; i < 4; i++) {
-		arena->colors[arena->cnt_color++] = color->r;
-		arena->colors[arena->cnt_color++] = color->g;
-		arena->colors[arena->cnt_color++] = color->b;
-	}
-
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + 1;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + 2;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + 2;
-	arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + 3;
-
+	push_indices(arena, 4);
 	push_coord(arena, x + w_half, y + h_half);
 	push_coord(arena, x + w_half, y - h_half);
 	push_coord(arena, x - w_half, y - h_half);
 	push_coord(arena, x - w_half, y + h_half);
+	for (i = 0; i < 4; i++)
+		push_color(arena, color->r, color->g, color->b);
 }
 
 #define CIRCLE_SEGMENTS 8
 
-static void push_circ(struct arena *arena, struct shell *shell)
+static void push_circ(struct arena *arena, struct shell *shell, struct color *color)
 {
 	float x = shell->x;
 	float y = shell->y;
@@ -144,22 +134,21 @@ static void push_circ(struct arena *arena, struct shell *shell)
 	float a;
 	int i;
 
-	for (i = 0; i < CIRCLE_SEGMENTS - 2; i++) {
-		arena->indices[arena->cnt_index++] = arena->cnt_coord / 2;
-		arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + i + 1;
-		arena->indices[arena->cnt_index++] = arena->cnt_coord / 2 + i + 2;
-	}
+	push_indices(arena, CIRCLE_SEGMENTS);
 
 	for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
 		a = shell->angle + TAU * i / CIRCLE_SEGMENTS;
 		push_coord(arena, cosf(a) * r + x, sinf(a) * r + y);
 	}
+
+	for (int i = 0; i < CIRCLE_SEGMENTS; i++)
+		push_color(arena, color->r, color->g, color->b);
 }
 
 static void push_block(struct arena *arena, struct block *block)
 {
 	struct shell shell;
-	int prev_cnt_coord = arena->cnt_coord;
+	struct color color;
 
 	get_shell(&shell, &block->shape);
 	if (block->body) {
@@ -168,16 +157,14 @@ static void push_block(struct arena *arena, struct block *block)
 		shell.angle = block->body->m_rotation;
 	}
 
-	if (shell.type == SHELL_CIRC)
-		push_circ(arena, &shell);
-	else
-		push_rect(arena, &shell);
+	color.r = block->material->r;
+	color.g = block->material->g;
+	color.b = block->material->b;
 
-	for (; prev_cnt_coord < arena->cnt_coord; prev_cnt_coord += 2) {
-		arena->colors[arena->cnt_color++] = 0.0;
-		arena->colors[arena->cnt_color++] = 0.0;
-		arena->colors[arena->cnt_color++] = 0.0;
-	}
+	if (shell.type == SHELL_CIRC)
+		push_circ(arena, &shell, &color);
+	else
+		push_rect(arena, &shell, &color);
 }
 
 void draw_level(struct arena *arena)
