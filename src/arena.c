@@ -395,6 +395,7 @@ void arena_key_down_event(struct arena *arena, int key)
 		} else {
 			arena->world = gen_world(&arena->design);
 			arena->ival = set_interval(tick_func, 10, arena);
+			arena->hover_joint = NULL;
 		}
 		arena->running = !arena->running;
 		break;
@@ -438,6 +439,9 @@ void action_none(struct arena *arena, int x, int y)
 	float x_world;
 	float y_world;
 	struct joint *joint;
+
+	if (arena->running)
+		return;
 
 	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
 
