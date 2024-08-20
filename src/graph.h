@@ -162,6 +162,8 @@ void convert_xml(struct xml_level *xml_level, struct design *design);
 void free_design(struct design *design);
 
 b2World *gen_world(struct design *design);
+void free_world(b2World *world, struct design *design);
+
 void step(struct b2World *world);
 void get_shell(struct shell *shell, struct shape *shape);
 int get_block_joints(struct block *block, struct joint **res);

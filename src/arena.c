@@ -389,6 +389,8 @@ void arena_key_down_event(struct arena *arena, int key)
 	switch (key) {
 	case 65: /* space */
 		if (arena->running) {
+			free_world(arena->world, &arena->design);
+			arena->world = NULL;
 			clear_interval(arena->ival);
 		} else {
 			arena->world = gen_world(&arena->design);

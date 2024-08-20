@@ -228,6 +228,20 @@ b2World *gen_world(struct design *design)
 	return world;
 }
 
+void free_world(b2World *world, struct design *design)
+{
+	struct block *block;
+
+	b2World_dtor(world);
+	free(world);
+
+	for (block = design->player_blocks.head; block; block = block->next)
+		block->body = NULL;
+
+	for (block = design->level_blocks.head; block; block = block->next)
+		block->body = NULL;
+}
+
 void step(struct b2World *world)
 {
 	b2World_Step(world, 1.0 / 30.0, 10);
