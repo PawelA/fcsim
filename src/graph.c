@@ -424,8 +424,8 @@ static void add_wheel(struct design *design, struct block *block, struct xml_blo
 	int i;
 
 	for (i = 0; i < 4; i++) {
-		spoke_x = x0 + fp_cos(xml_block->rotation + a[i]) * xml_block->width;
-		spoke_y = y0 + fp_sin(xml_block->rotation + a[i]) * xml_block->width;
+		spoke_x = x0 + fp_cos(xml_block->rotation + a[i]) * xml_block->width / 2;
+		spoke_y = y0 + fp_sin(xml_block->rotation + a[i]) * xml_block->width / 2;
 		shape->wheel.spokes[i] = new_joint(block, spoke_x, spoke_y);
 		append_joint(&design->joints, shape->wheel.spokes[i]);
 	}
