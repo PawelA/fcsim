@@ -10,7 +10,6 @@ enum action {
 	ACTION_NONE,
 	ACTION_PAN,
 	ACTION_MOVE_JOINT,
-	ACTION_MOVE_BLOCK,
 };
 
 struct arena {
@@ -26,8 +25,7 @@ struct arena {
 	int cursor_y;
 
 	enum action action;
-	struct joint *joint;
-	struct block *block;
+	struct joint *hover_joint;
 
 	unsigned short indices[2048];
 	float coords[2048];
@@ -40,9 +38,12 @@ struct arena {
 	GLuint index_buffer;
 	GLuint coord_buffer;
 	GLuint color_buffer;
+
+	float joint_coords[48];
+	GLuint joint_coord_buffer;
 };
 
-void arena_compile_shaders(void);
+bool arena_compile_shaders(void);
 void arena_init(struct arena *arena, float w, float h);
 
 void arena_show(struct arena *arena);

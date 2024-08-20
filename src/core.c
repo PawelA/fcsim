@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <box2d/b2Body.h>
 #include "gl.h"
 #include "graph.h"
@@ -46,7 +47,12 @@ void resize(int w, int h)
 
 void init(void)
 {
-	arena_compile_shaders();
+	bool res;
+
+	res = arena_compile_shaders();
+	if (!res)
+		exit(1);
+
 	arena_init(&the_arena, 800, 800);
 }
 

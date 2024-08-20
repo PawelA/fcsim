@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
 #include <box2d/b2Body.h>
 
 #include "gl.h"
@@ -13,7 +14,7 @@
 
 #define TAU 6.28318530718
 
-const GLchar *vertex_shader_src =
+const char *block_vertex_shader_src =
 	"attribute vec2 a_coords;"
 	"attribute vec3 a_color;"
 	"varying vec3 v_color;"
@@ -22,7 +23,7 @@ const GLchar *vertex_shader_src =
 		"v_color = a_color;"
 	"}";
 
-const GLchar *fragment_shader_src =
+const char *block_fragment_shader_src =
 	"#ifdef GL_ES\n"
 	"precision mediump float;\n"
 	"#endif\n"
@@ -31,7 +32,26 @@ const GLchar *fragment_shader_src =
 		"gl_FragColor = vec4(v_color, 1.0);\n"
 	"}\n";
 
-GLuint program;
+GLuint block_program;
+GLuint block_program_coord_attrib;
+GLuint block_program_color_attrib;
+
+const char *joint_vertex_shader_src =
+	"attribute vec2 a_coords;"
+	"void main() {"
+		"gl_Position = vec4(a_coords, 0.0, 1.0);"
+	"}";
+
+const char *joint_fragment_shader_src =
+	"#ifdef GL_ES\n"
+	"precision mediump float;\n"
+	"#endif\n"
+	"void main() {"
+		"gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);\n"
+	"}\n";
+
+GLuint joint_program;
+GLuint joint_program_coord_attrib;
 
 struct color {
 	float r;
@@ -182,25 +202,68 @@ void draw_level(struct arena *arena)
 		push_block(arena, block);
 }
 
-void arena_compile_shaders(void)
+bool arena_compile_shaders(void)
 {
 	GLuint vertex_shader;
 	GLuint fragment_shader;
+	GLint value;
 
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_shader_src, NULL);
+	glShaderSource(vertex_shader, 1, &block_vertex_shader_src, NULL);
 	glCompileShader(vertex_shader);
+	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &value);
+	if (!value)
+		return false;
 
 	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_shader_src, NULL);
+	glShaderSource(fragment_shader, 1, &block_fragment_shader_src, NULL);
 	glCompileShader(fragment_shader);
+	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &value);
+	if (!value)
+		return false;
 
-	program = glCreateProgram();
-	glAttachShader(program, vertex_shader);
-	glAttachShader(program, fragment_shader);
-	glLinkProgram(program);
+	block_program = glCreateProgram();
+	glAttachShader(block_program, vertex_shader);
+	glAttachShader(block_program, fragment_shader);
+	glLinkProgram(block_program);
+	glGetProgramiv(block_program, GL_LINK_STATUS, &value);
+	if (!value)
+		return false;
+
 	glDeleteShader(vertex_shader);
 	glDeleteShader(fragment_shader);
+
+	block_program_coord_attrib = glGetAttribLocation(block_program, "a_coords");
+	block_program_color_attrib = glGetAttribLocation(block_program, "a_color");
+
+	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex_shader, 1, &joint_vertex_shader_src, NULL);
+	glCompileShader(vertex_shader);
+	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &value);
+	if (!value)
+		return false;
+
+	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment_shader, 1, &joint_fragment_shader_src, NULL);
+	glCompileShader(fragment_shader);
+	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &value);
+	if (!value)
+		return false;
+
+	joint_program = glCreateProgram();
+	glAttachShader(joint_program, vertex_shader);
+	glAttachShader(joint_program, fragment_shader);
+	glLinkProgram(joint_program);
+	glGetProgramiv(block_program, GL_LINK_STATUS, &value);
+	if (!value)
+		return false;
+
+	glDeleteShader(vertex_shader);
+	glDeleteShader(fragment_shader);
+
+	joint_program_coord_attrib = glGetAttribLocation(joint_program, "a_coords");
+
+	return true;
 }
 
 void arena_init(struct arena *arena, float w, float h)
@@ -216,30 +279,58 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->cursor_x = 0;
 	arena->cursor_y = 0;
 
+	arena->action = ACTION_NONE;
+	arena->hover_joint = NULL;
+
 	xml_parse(galois_xml, sizeof(galois_xml), &level);
 	convert_xml(&level, &arena->design);
 
 	glGenBuffers(1, &arena->coord_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, arena->coord_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(arena->coords), arena->coords, GL_STREAM_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
 
 	glGenBuffers(1, &arena->color_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, arena->color_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(arena->colors), arena->colors, GL_STREAM_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
 
 	glGenBuffers(1, &arena->index_buffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, arena->index_buffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(arena->indices), arena->indices, GL_STREAM_DRAW);
+
+	glGenBuffers(1, &arena->joint_coord_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, arena->joint_coord_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(arena->joint_coords), arena->joint_coords, GL_STREAM_DRAW);
+}
+
+void fill_joint_coords(struct arena *arena, struct joint *joint)
+{
+	float x, y;
+	float a0, x0, y0;
+	float a1, x1, y1;
+	float r = 0.02f / arena->view.scale;
+	int c = 0;
+	int i;
+
+	world_to_view(&arena->view, joint->x, joint->y, &x, &y);
+
+	for (i = 0; i < 8; i++) {
+		a0 = i * (TAU / 8);
+		x0 = x + cosf(a0) * r;
+		y0 = y + sinf(a0) * r;
+		a1 = (i + 1) * (TAU / 8);
+		x1 = x + cosf(a1) * r;
+		y1 = y + sinf(a1) * r;
+		arena->joint_coords[c++] = x0;
+		arena->joint_coords[c++] = y0;
+		arena->joint_coords[c++] = x;
+		arena->joint_coords[c++] = y;
+		arena->joint_coords[c++] = x1;
+		arena->joint_coords[c++] = y1;
+	}
 }
 
 void arena_draw(struct arena *arena)
 {
-	glUseProgram(program);
-
 	glClearColor(sky_color.r, sky_color.g, sky_color.b, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -249,15 +340,36 @@ void arena_draw(struct arena *arena)
 
 	draw_level(arena);
 
+	glUseProgram(block_program);
+
+	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, arena->coord_buffer);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, arena->cnt_coord * sizeof(arena->coords[0]), arena->coords);
 
+	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, arena->color_buffer);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, arena->cnt_color * sizeof(arena->colors[0]), arena->colors);
 
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, arena->cnt_index * sizeof(arena->indices[0]), arena->indices);
 
 	glDrawElements(GL_TRIANGLES, arena->cnt_index, GL_UNSIGNED_SHORT, 0);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+
+	if (arena->hover_joint) {
+		fill_joint_coords(arena, arena->hover_joint);
+
+		glUseProgram(joint_program);
+
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, arena->joint_coord_buffer);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, 48 * sizeof(float), arena->joint_coords);
+		glDrawArrays(GL_TRIANGLES, 0, 24);
+		glDisableVertexAttribArray(0);
+	}
 }
 
 void arena_key_up_event(struct arena *arena, int key)
@@ -287,32 +399,63 @@ void arena_key_down_event(struct arena *arena, int key)
 	}
 }
 
-void arena_mouse_move_event(struct arena *arena, int x, int y)
-{
-	int dx_pixel = x - arena->cursor_x;
-	int dy_pixel = y - arena->cursor_y;
-	float dx_world = (float)dx_pixel * arena->view.scale * 2;
-	float dy_world = (float)dy_pixel * arena->view.scale * 2;
-
-	switch (arena->action) {
-	case ACTION_PAN:
-		arena->view.x -= dx_world;
-		arena->view.y -= dy_world;
-		break;
-	case ACTION_NONE:
-		break;
-	}
-
-	arena->cursor_x = x;
-	arena->cursor_y = y;
-}
-
 static float distance(float x0, float y0, float x1, float y1)
 {
 	float dx = x1 - x0;
 	float dy = y1 - y0;
 
 	return sqrtf(dx * dx + dy * dy);
+}
+
+struct joint *joint_hit_test(struct arena *arena, float x, float y)
+{
+	struct design *design = &arena->design;
+	struct joint *joint;
+
+	for (joint = design->joints.head; joint; joint = joint->next) {
+		if (distance(x, y, joint->x, joint->y) < 10.0f)
+			return joint;
+	}
+
+	return NULL;
+}
+
+void action_pan(struct arena *arena, int x, int y)
+{
+	int dx_pixel = x - arena->cursor_x;
+	int dy_pixel = y - arena->cursor_y;
+	float dx_world = (float)dx_pixel * arena->view.scale * 2;
+	float dy_world = (float)dy_pixel * arena->view.scale * 2;
+
+	arena->view.x -= dx_world;
+	arena->view.y -= dy_world;
+}
+
+void action_none(struct arena *arena, int x, int y)
+{
+	float x_world;
+	float y_world;
+	struct joint *joint;
+
+	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
+
+	joint = joint_hit_test(arena, x_world, y_world);
+	arena->hover_joint = joint;
+}
+
+void arena_mouse_move_event(struct arena *arena, int x, int y)
+{
+	switch (arena->action) {
+	case ACTION_PAN:
+		action_pan(arena, x, y);
+		break;
+	case ACTION_NONE:
+		action_none(arena, x, y);
+		break;
+	}
+
+	arena->cursor_x = x;
+	arena->cursor_y = y;
 }
 
 void arena_mouse_button_up_event(struct arena *arena, int button)
