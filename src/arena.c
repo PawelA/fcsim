@@ -396,6 +396,8 @@ void arena_key_down_event(struct arena *arena, int key)
 			arena->world = gen_world(&arena->design);
 			arena->ival = set_interval(tick_func, 10, arena);
 			arena->hover_joint = NULL;
+			if (arena->action == ACTION_MOVE_JOINT)
+				arena->action = ACTION_NONE;
 		}
 		arena->running = !arena->running;
 		break;
@@ -449,6 +451,21 @@ void action_none(struct arena *arena, int x, int y)
 	arena->hover_joint = joint;
 }
 
+void action_move_joint(struct arena *arena, int x, int y)
+{
+	float x_world;
+	float y_world;
+	struct joint *joint = arena->hover_joint;
+
+	if (joint->gen)
+		return;
+
+	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
+
+	joint->x = x_world;
+	joint->y = y_world;
+}
+
 void arena_mouse_move_event(struct arena *arena, int x, int y)
 {
 	switch (arena->action) {
@@ -457,6 +474,9 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 		break;
 	case ACTION_NONE:
 		action_none(arena, x, y);
+		break;
+	case ACTION_MOVE_JOINT:
+		action_move_joint(arena, x, y);
 		break;
 	}
 
@@ -485,7 +505,10 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 	if (arena->running) {
 		arena->action = ACTION_PAN;
 	} else {
-		arena->action = ACTION_PAN;
+		if (arena->hover_joint)
+			arena->action = ACTION_MOVE_JOINT;
+		else
+			arena->action = ACTION_PAN;
 	}
 }
 
