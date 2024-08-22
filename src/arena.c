@@ -509,6 +509,25 @@ void remove_block(struct block_list *list, struct block *block)
 	block->prev = NULL;
 }
 
+void remove_joint(struct joint_list *list, struct joint *joint)
+{
+	struct joint *next = joint->next;
+	struct joint *prev = joint->prev;
+
+	if (next)
+		next->prev = prev;
+	else
+		list->tail = prev;
+
+	if (prev)
+		prev->next = next;
+	else
+		list->head = next;
+
+	joint->next = NULL;
+	joint->prev = NULL;
+}
+
 void delete_block(struct design *design, struct block *block)
 {
 	struct shape *shape = &block->shape;
@@ -516,9 +535,18 @@ void delete_block(struct design *design, struct block *block)
 	switch (shape->type) {
 	case SHAPE_ROD:
 		remove_attach_node(&shape->rod.from->att, shape->rod.from_att);
-		remove_attach_node(&shape->rod.to->att, shape->rod.to_att);
 		free(shape->rod.from_att);
+		if (!shape->rod.from->att.head && !shape->rod.from->gen) {
+			remove_joint(&design->joints, shape->rod.from);
+			free(shape->rod.from);
+		}
+
+		remove_attach_node(&shape->rod.to->att, shape->rod.to_att);
 		free(shape->rod.to_att);
+		if (!shape->rod.to->att.head && !shape->rod.to->gen) {
+			remove_joint(&design->joints, shape->rod.to);
+			free(shape->rod.to);
+		}
 		break;
 	}
 
