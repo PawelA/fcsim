@@ -10,10 +10,14 @@ struct attach_node {
 	struct block *block;
 };
 
+struct attach_node *new_attach_node(struct block *block);
+
 struct attach_list {
 	struct attach_node *head;
 	struct attach_node *tail;
 };
+
+void append_attach_node(struct attach_list *list, struct attach_node *node);
 
 struct joint {
 	struct joint *prev;
@@ -22,6 +26,15 @@ struct joint {
 	double x, y;
 	struct attach_list att;
 };
+
+struct joint *new_joint(struct block *gen, double x, double y);
+
+struct joint_list {
+	struct joint *head;
+	struct joint *tail;
+};
+
+void append_joint(struct joint_list *list, struct joint *joint);
 
 struct rect {
 	double x, y;
@@ -100,6 +113,12 @@ struct material {
 	float b;
 };
 
+extern struct material static_env_material;
+extern struct material dynamic_env_material;
+extern struct material solid_material;
+extern struct material solid_rod_material;
+extern struct material water_rod_material;
+
 struct block {
 	struct block *prev;
 	struct block *next;
@@ -110,15 +129,12 @@ struct block {
 	b2Body *body;
 };
 
-struct joint_list {
-	struct joint *head;
-	struct joint *tail;
-};
-
 struct block_list {
 	struct block *head;
 	struct block *tail;
 };
+
+void append_block(struct block_list *list, struct block *block);
 
 struct area {
 	double x, y;

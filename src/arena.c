@@ -279,6 +279,7 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->cursor_x = 0;
 	arena->cursor_y = 0;
 
+	arena->tool = TOOL_PAN;
 	arena->action = ACTION_NONE;
 	arena->hover_joint = NULL;
 
@@ -381,22 +382,32 @@ void tick_func(void *arg)
 	step(arena->world);
 }
 
+void start_stop(struct arena *arena)
+{
+	if (arena->running) {
+		free_world(arena->world, &arena->design);
+		arena->world = NULL;
+		clear_interval(arena->ival);
+	} else {
+		arena->world = gen_world(&arena->design);
+		arena->ival = set_interval(tick_func, 10, arena);
+		arena->hover_joint = NULL;
+		arena->action = ACTION_NONE;
+	}
+	arena->running = !arena->running;
+}
+
 void arena_key_down_event(struct arena *arena, int key)
 {
 	switch (key) {
 	case 65: /* space */
-		if (arena->running) {
-			free_world(arena->world, &arena->design);
-			arena->world = NULL;
-			clear_interval(arena->ival);
-		} else {
-			arena->world = gen_world(&arena->design);
-			arena->ival = set_interval(tick_func, 10, arena);
-			arena->hover_joint = NULL;
-			if (arena->action == ACTION_MOVE_JOINT)
-				arena->action = ACTION_NONE;
-		}
-		arena->running = !arena->running;
+		start_stop(arena);
+		break;
+	case 27: /* R */
+		arena->tool = TOOL_ROD;
+		break;
+	case 33: /* P */
+		arena->tool = TOOL_PAN;
 		break;
 	}
 }
@@ -471,6 +482,28 @@ void action_move_joint(struct arena *arena, int x, int y)
 	joint->y += dy_world;
 }
 
+void action_new_rod(struct arena *arena, int x, int y)
+{
+	float x_world;
+	float y_world;
+	struct joint *joint;
+
+	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
+
+	joint = joint_hit_test(arena, x_world, y_world);
+	arena->hover_joint = joint;
+
+	if (joint && joint != arena->new_rod.j0) {
+		arena->new_rod.j1 = joint;
+		arena->new_rod.x1 = joint->x;
+		arena->new_rod.y1 = joint->y;
+	} else {
+		arena->new_rod.j1 = NULL;
+		arena->new_rod.x1 = x_world;
+		arena->new_rod.y1 = y_world;
+	}
+}
+
 void arena_mouse_move_event(struct arena *arena, int x, int y)
 {
 	switch (arena->action) {
@@ -483,16 +516,71 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 	case ACTION_MOVE_JOINT:
 		action_move_joint(arena, x, y);
 		break;
+	case ACTION_NEW_ROD:
+		action_new_rod(arena, x, y);
+		break;
 	}
 
 	arena->cursor_x = x;
 	arena->cursor_y = y;
 }
 
+void new_rod(struct arena *arena)
+{
+	struct new_rod *new_rod = &arena->new_rod;
+	struct design *design = &arena->design;
+	struct block *block;
+	struct joint *j0, *j1;
+	struct attach_node *att0, *att1;
+
+	block = malloc(sizeof(*block));
+	block->prev = NULL;
+	block->next = NULL;
+
+	j0 = new_rod->j0;
+	if (!j0) {
+		j0 = new_joint(NULL, new_rod->x0, new_rod->y0);
+		append_joint(&design->joints, j0);
+	}
+	att0 = new_attach_node(block);
+	append_attach_node(&j0->att, att0);
+
+	j1 = new_rod->j1;
+	if (!j1) {
+		j1 = new_joint(NULL, new_rod->x1, new_rod->y1);
+		append_joint(&design->joints, j1);
+	}
+	att1 = new_attach_node(block);
+	append_attach_node(&j1->att, att1);
+
+	block->shape.type = SHAPE_ROD;
+	block->shape.rod.from = j0;
+	block->shape.rod.from_att = att0;
+	block->shape.rod.to = j1;
+	block->shape.rod.to_att = att1;
+	block->shape.rod.width = 4.0;
+
+	block->material = &water_rod_material;
+	block->goal = false;
+	block->body = NULL;
+
+	append_block(&design->player_blocks, block);
+
+	arena->hover_joint = j1; /* HACK! */
+}
+
 void arena_mouse_button_up_event(struct arena *arena, int button)
 {
-	if (button == 1) /* left */
-		arena->action = ACTION_NONE;
+	if (button != 1) /* left */
+		return;
+
+	switch (arena->action) {
+	case ACTION_NEW_ROD:
+		new_rod(arena);
+		break;
+	}
+
+	arena->action = ACTION_NONE;
 }
 
 void arena_mouse_button_down_event(struct arena *arena, int button)
@@ -510,10 +598,29 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 	if (arena->running) {
 		arena->action = ACTION_PAN;
 	} else {
-		if (arena->hover_joint)
-			arena->action = ACTION_MOVE_JOINT;
-		else
-			arena->action = ACTION_PAN;
+		switch (arena->tool) {
+		case TOOL_PAN:
+			if (arena->hover_joint)
+				arena->action = ACTION_MOVE_JOINT;
+			else
+				arena->action = ACTION_PAN;
+			break;
+		case TOOL_ROD:
+			arena->action = ACTION_NEW_ROD;
+			if (arena->hover_joint) {
+				arena->new_rod.j0 = arena->hover_joint;
+				arena->new_rod.x0 = arena->hover_joint->x;
+				arena->new_rod.y0 = arena->hover_joint->y;
+			} else {
+				arena->new_rod.j0 = NULL;
+				arena->new_rod.x0 = x_world;
+				arena->new_rod.y0 = y_world;
+			}
+			arena->new_rod.j1 = NULL;
+			arena->new_rod.x1 = x_world;
+			arena->new_rod.y1 = y_world;
+			break;
+		}
 	}
 }
 

@@ -6,7 +6,7 @@
 #include "xml.h"
 #include "graph.h"
 
-static struct material static_env_material = {
+struct material static_env_material = {
 	.density = 0.0,
 	.friction = 0.7,
 	.restitution = 0.0,
@@ -19,7 +19,7 @@ static struct material static_env_material = {
 	.b = 0.004f,
 };
 
-static struct material dynamic_env_material = {
+struct material dynamic_env_material = {
 	.density = 1.0,
 	.friction = 0.7,
 	.restitution = 0.2,
@@ -32,7 +32,7 @@ static struct material dynamic_env_material = {
 	.b = 0.184f,
 };
 
-static struct material solid_material = {
+struct material solid_material = {
 	.density = 1.0,
 	.friction = 0.7,
 	.restitution = 0.2,
@@ -45,7 +45,7 @@ static struct material solid_material = {
 	.b = 0.890f,
 };
 
-static struct material solid_rod_material = {
+struct material solid_rod_material = {
 	.density = 1.0,
 	.friction = 0.7,
 	.restitution = 0.2,
@@ -58,7 +58,7 @@ static struct material solid_rod_material = {
 	.b = 0.000f,
 };
 
-static struct material water_rod_material = {
+struct material water_rod_material = {
 	.density = 1.0,
 	.friction = 0.7,
 	.restitution = 0.2,
@@ -89,7 +89,7 @@ static void init_attach_list(struct attach_list *list)
 	list->tail = NULL;
 }
 
-static void append_block(struct block_list *list, struct block *block)
+void append_block(struct block_list *list, struct block *block)
 {
 	if (list->tail) {
 		list->tail->next = block;
@@ -101,7 +101,7 @@ static void append_block(struct block_list *list, struct block *block)
 	}
 }
 
-static void append_joint(struct joint_list *list, struct joint *joint)
+void append_joint(struct joint_list *list, struct joint *joint)
 {
 	if (list->tail) {
 		list->tail->next = joint;
@@ -113,7 +113,7 @@ static void append_joint(struct joint_list *list, struct joint *joint)
 	}
 }
 
-static void append_attach_node(struct attach_list *list, struct attach_node *node)
+void append_attach_node(struct attach_list *list, struct attach_node *node)
 {
 	if (list->tail) {
 		list->tail->next = node;
@@ -144,7 +144,7 @@ static void remove_attach_node(struct attach_list *list, struct attach_node *nod
 	node->prev = NULL;
 }
 
-static struct attach_node *new_attach_node(struct block *block)
+struct attach_node *new_attach_node(struct block *block)
 {
 	struct attach_node *node = malloc(sizeof(*node));
 
@@ -155,7 +155,7 @@ static struct attach_node *new_attach_node(struct block *block)
 	return node;
 }
 
-static struct joint *new_joint(struct block *gen, double x, double y)
+struct joint *new_joint(struct block *gen, double x, double y)
 {
 	struct joint *joint = malloc(sizeof(*joint));
 

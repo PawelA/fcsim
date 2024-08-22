@@ -10,6 +10,19 @@ enum action {
 	ACTION_NONE,
 	ACTION_PAN,
 	ACTION_MOVE_JOINT,
+	ACTION_NEW_ROD,
+};
+
+enum tool {
+	TOOL_PAN,
+	TOOL_ROD,
+};
+
+struct new_rod {
+	struct joint *j0;
+	double x0, y0;
+	struct joint *j1;
+	double x1, y1;
 };
 
 struct arena {
@@ -24,8 +37,11 @@ struct arena {
 	int cursor_x;
 	int cursor_y;
 
+	enum tool tool;
 	enum action action;
 	struct joint *hover_joint;
+
+	struct new_rod new_rod;
 
 	unsigned short indices[2048];
 	float coords[2048];
