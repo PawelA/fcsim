@@ -445,6 +445,87 @@ struct joint *joint_hit_test(struct arena *arena, float x, float y)
 	return best_joint;
 }
 
+bool rect_is_hit(struct shell *shell, float x, float y)
+{
+	float dx = shell->x - x;
+	float dy = shell->y - y;
+	float s = sinf(shell->angle);
+	float c = cosf(shell->angle);
+	float dx_t =  dx * c + dy * s;
+	float dy_t = -dx * s + dy * c;
+
+	return fabsf(dx_t) < shell->rect.w / 2 && fabsf(dy_t) < shell->rect.h / 2;
+}
+
+bool circ_is_hit(struct shell *shell, float x, float y)
+{
+	float dx = shell->x - x;
+	float dy = shell->y - y;
+	float r = shell->circ.radius;
+
+	return dx * dx + dy * dy < r * r;
+}
+
+bool block_is_hit(struct block *block, float x, float y)
+{
+	struct shell shell;
+
+	get_shell(&shell, &block->shape);
+	if (shell.type == SHELL_CIRC)
+		return circ_is_hit(&shell, x, y);
+	else
+		return rect_is_hit(&shell, x, y);
+}
+
+struct block *block_hit_test(struct arena *arena, float x, float y)
+{
+	struct design *design = &arena->design;
+	struct block *block;
+
+	for (block = design->player_blocks.head; block; block = block->next) {
+		if (block_is_hit(block, x, y))
+			return block;
+	}
+
+	return NULL;
+}
+
+void remove_block(struct block_list *list, struct block *block)
+{
+	struct block *next = block->next;
+	struct block *prev = block->prev;
+
+	if (next)
+		next->prev = prev;
+	else
+		list->tail = prev;
+
+	if (prev)
+		prev->next = next;
+	else
+		list->head = next;
+
+	block->next = NULL;
+	block->prev = NULL;
+}
+
+void delete_block(struct design *design, struct block *block)
+{
+	struct shape *shape = &block->shape;
+
+	switch (shape->type) {
+	case SHAPE_ROD:
+		remove_attach_node(&shape->rod.from->att, shape->rod.from_att);
+		remove_attach_node(&shape->rod.to->att, shape->rod.to_att);
+		free(shape->rod.from_att);
+		free(shape->rod.to_att);
+		break;
+	}
+
+	remove_block(&design->player_blocks, block);
+	free(block);
+}
+
 void action_pan(struct arena *arena, int x, int y)
 {
 	float dx_world;
@@ -508,6 +589,19 @@ void action_new_rod(struct arena *arena, int x, int y)
 		arena->new_rod.x1 = x_world;
 		arena->new_rod.y1 = y_world;
 	}
+}
+
+void action_delete(struct arena *arena, int x, int y)
+{
+	float x_world;
+	float y_world;
+	struct block *block;
+
+	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
+
+	block = block_hit_test(arena, x_world, y_world);
+	if (block)
+		delete_block(&arena->design, block);
 }
 
 void arena_mouse_move_event(struct arena *arena, int x, int y)
@@ -628,6 +722,8 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 			arena->new_rod.y1 = y_world;
 			arena->new_rod.solid = (arena->tool == TOOL_SOLID_ROD);
 			break;
+		case TOOL_DELETE:
+			action_delete(arena, x, y);
 		}
 	}
 }

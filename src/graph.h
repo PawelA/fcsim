@@ -18,6 +18,7 @@ struct attach_list {
 };
 
 void append_attach_node(struct attach_list *list, struct attach_node *node);
+void remove_attach_node(struct attach_list *list, struct attach_node *node);
 
 struct joint {
 	struct joint *prev;

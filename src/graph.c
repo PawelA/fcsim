@@ -125,7 +125,7 @@ void append_attach_node(struct attach_list *list, struct attach_node *node)
 	}
 }
 
-static void remove_attach_node(struct attach_list *list, struct attach_node *node)
+void remove_attach_node(struct attach_list *list, struct attach_node *node)
 {
 	struct attach_node *next = node->next;
 	struct attach_node *prev = node->prev;
