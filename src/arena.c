@@ -279,7 +279,7 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->cursor_x = 0;
 	arena->cursor_y = 0;
 
-	arena->tool = TOOL_PAN;
+	arena->tool = TOOL_MOVE;
 	arena->action = ACTION_NONE;
 	arena->hover_joint = NULL;
 
@@ -406,8 +406,14 @@ void arena_key_down_event(struct arena *arena, int key)
 	case 27: /* R */
 		arena->tool = TOOL_ROD;
 		break;
-	case 33: /* P */
-		arena->tool = TOOL_PAN;
+	case 58: /* M */
+		arena->tool = TOOL_MOVE;
+		break;
+	case 39: /* S */
+		arena->tool = TOOL_SOLID_ROD;
+		break;
+	case 40: /* D */
+		arena->tool = TOOL_DELETE;
 		break;
 	}
 }
@@ -558,9 +564,9 @@ void new_rod(struct arena *arena)
 	block->shape.rod.from_att = att0;
 	block->shape.rod.to = j1;
 	block->shape.rod.to_att = att1;
-	block->shape.rod.width = 4.0;
+	block->shape.rod.width = new_rod->solid ? 8.0 : 4.0;
 
-	block->material = &water_rod_material;
+	block->material = new_rod->solid ? &solid_rod_material : &water_rod_material;
 	block->goal = false;
 	block->body = NULL;
 
@@ -599,13 +605,14 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 		arena->action = ACTION_PAN;
 	} else {
 		switch (arena->tool) {
-		case TOOL_PAN:
+		case TOOL_MOVE:
 			if (arena->hover_joint)
 				arena->action = ACTION_MOVE_JOINT;
 			else
 				arena->action = ACTION_PAN;
 			break;
 		case TOOL_ROD:
+		case TOOL_SOLID_ROD:
 			arena->action = ACTION_NEW_ROD;
 			if (arena->hover_joint) {
 				arena->new_rod.j0 = arena->hover_joint;
@@ -619,6 +626,7 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 			arena->new_rod.j1 = NULL;
 			arena->new_rod.x1 = x_world;
 			arena->new_rod.y1 = y_world;
+			arena->new_rod.solid = (arena->tool == TOOL_SOLID_ROD);
 			break;
 		}
 	}

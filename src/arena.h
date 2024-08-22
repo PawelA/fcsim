@@ -14,8 +14,10 @@ enum action {
 };
 
 enum tool {
-	TOOL_PAN,
+	TOOL_MOVE,
 	TOOL_ROD,
+	TOOL_SOLID_ROD,
+	TOOL_DELETE,
 };
 
 struct new_rod {
@@ -23,6 +25,7 @@ struct new_rod {
 	double x0, y0;
 	struct joint *j1;
 	double x1, y1;
+	bool solid;
 };
 
 struct arena {
