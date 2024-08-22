@@ -412,14 +412,20 @@ static float distance(float x0, float y0, float x1, float y1)
 struct joint *joint_hit_test(struct arena *arena, float x, float y)
 {
 	struct design *design = &arena->design;
+	struct joint *best_joint = NULL;
 	struct joint *joint;
+	double best_dist = 8.0f;
+	double dist;
 
 	for (joint = design->joints.head; joint; joint = joint->next) {
-		if (distance(x, y, joint->x, joint->y) < 10.0f)
-			return joint;
+		dist = distance(x, y, joint->x, joint->y);
+		if (dist < best_dist) {
+			best_dist = dist;
+			best_joint = joint;
+		}
 	}
 
-	return NULL;
+	return best_joint;
 }
 
 void action_pan(struct arena *arena, int x, int y)
