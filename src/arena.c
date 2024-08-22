@@ -424,10 +424,11 @@ struct joint *joint_hit_test(struct arena *arena, float x, float y)
 
 void action_pan(struct arena *arena, int x, int y)
 {
-	int dx_pixel = x - arena->cursor_x;
-	int dy_pixel = y - arena->cursor_y;
-	float dx_world = (float)dx_pixel * arena->view.scale * 2;
-	float dy_world = (float)dy_pixel * arena->view.scale * 2;
+	float dx_world;
+	float dy_world;
+
+	dx_world = (x - arena->cursor_x) * arena->view.scale * 2;
+	dy_world = (y - arena->cursor_y) * arena->view.scale * 2;
 
 	arena->view.x -= dx_world;
 	arena->view.y -= dy_world;
@@ -450,17 +451,18 @@ void action_none(struct arena *arena, int x, int y)
 
 void action_move_joint(struct arena *arena, int x, int y)
 {
-	float x_world;
-	float y_world;
+	float dx_world;
+	float dy_world;
 	struct joint *joint = arena->hover_joint;
 
 	if (joint->gen)
 		return;
 
-	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
+	dx_world = (x - arena->cursor_x) * arena->view.scale * 2;
+	dy_world = (y - arena->cursor_y) * arena->view.scale * 2;
 
-	joint->x = x_world;
-	joint->y = y_world;
+	joint->x += dx_world;
+	joint->y += dy_world;
 }
 
 void arena_mouse_move_event(struct arena *arena, int x, int y)
