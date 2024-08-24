@@ -144,6 +144,44 @@ void remove_attach_node(struct attach_list *list, struct attach_node *node)
 	node->prev = NULL;
 }
 
+void remove_block(struct block_list *list, struct block *block)
+{
+	struct block *next = block->next;
+	struct block *prev = block->prev;
+
+	if (next)
+		next->prev = prev;
+	else
+		list->tail = prev;
+
+	if (prev)
+		prev->next = next;
+	else
+		list->head = next;
+
+	block->next = NULL;
+	block->prev = NULL;
+}
+
+void remove_joint(struct joint_list *list, struct joint *joint)
+{
+	struct joint *next = joint->next;
+	struct joint *prev = joint->prev;
+
+	if (next)
+		next->prev = prev;
+	else
+		list->tail = prev;
+
+	if (prev)
+		prev->next = next;
+	else
+		list->head = next;
+
+	joint->next = NULL;
+	joint->prev = NULL;
+}
+
 struct attach_node *new_attach_node(struct block *block)
 {
 	struct attach_node *node = malloc(sizeof(*node));

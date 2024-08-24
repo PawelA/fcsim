@@ -490,44 +490,6 @@ struct block *block_hit_test(struct arena *arena, float x, float y)
 	return NULL;
 }
 
-void remove_block(struct block_list *list, struct block *block)
-{
-	struct block *next = block->next;
-	struct block *prev = block->prev;
-
-	if (next)
-		next->prev = prev;
-	else
-		list->tail = prev;
-
-	if (prev)
-		prev->next = next;
-	else
-		list->head = next;
-
-	block->next = NULL;
-	block->prev = NULL;
-}
-
-void remove_joint(struct joint_list *list, struct joint *joint)
-{
-	struct joint *next = joint->next;
-	struct joint *prev = joint->prev;
-
-	if (next)
-		next->prev = prev;
-	else
-		list->tail = prev;
-
-	if (prev)
-		prev->next = next;
-	else
-		list->head = next;
-
-	joint->next = NULL;
-	joint->prev = NULL;
-}
-
 void delete_block(struct design *design, struct block *block)
 {
 	struct shape *shape = &block->shape;

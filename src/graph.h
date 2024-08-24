@@ -36,6 +36,7 @@ struct joint_list {
 };
 
 void append_joint(struct joint_list *list, struct joint *joint);
+void remove_joint(struct joint_list *list, struct joint *joint);
 
 struct rect {
 	double x, y;
@@ -136,6 +137,7 @@ struct block_list {
 };
 
 void append_block(struct block_list *list, struct block *block);
+void remove_block(struct block_list *list, struct block *block);
 
 struct area {
 	double x, y;
