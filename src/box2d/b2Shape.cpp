@@ -224,9 +224,11 @@ void b2BoxDef_ctor(b2BoxDef *boxDef)
 
 static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def, b2Body* body, const b2Vec2& localCenter);
 
-static void b2PolyShape_ctor(b2PolyShape *polyShape,
+extern "C" {
+void b2PolyShape_ctor(b2PolyShape *polyShape,
 			     const b2ShapeDef* def, b2Body* body,
-			     const b2Vec2& newOrigin);
+			     const b2Vec2 newOrigin);
+};
 
 b2Shape* b2Shape_Create(const b2ShapeDef* def,
 			b2Body* body, b2Vec2 center)
@@ -441,9 +443,9 @@ void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 
 
 
-static void b2PolyShape_ctor(b2PolyShape *polyShape,
+void b2PolyShape_ctor(b2PolyShape *polyShape,
 			     const b2ShapeDef* def, b2Body* body,
-			     const b2Vec2& newOrigin)
+			     const b2Vec2 newOrigin)
 {
 	b2Shape_ctor(&polyShape->m_shape, def, body);
 	polyShape->m_shape.TestPoint = b2PolyShape_TestPoint;
@@ -548,6 +550,9 @@ static void b2PolyShape_ctor(b2PolyShape *polyShape,
 	b2AABB aabb;
 	aabb.minVertex = position - h;
 	aabb.maxVertex = position + h;
+
+	if (!polyShape->m_shape.m_body->m_world)
+		return;
 
 	b2BroadPhase* broadPhase = polyShape->m_shape.m_body->m_world->m_broadPhase;
 	if (b2BroadPhase_InRange(broadPhase, aabb))

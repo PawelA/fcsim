@@ -127,6 +127,7 @@ struct block {
 	struct shape shape;
 	struct material *material;
 	bool goal;
+	bool overlap;
 	int id;
 	b2Body *body;
 };

@@ -1,10 +1,10 @@
 rule linux-cc
   depfile = $out.d
-  command = cc -O2 -MMD -MF $out.d -Iinclude -c -o $out $in
+  command = cc -O0 -g -MMD -MF $out.d -Iinclude -c -o $out $in
 
 rule linux-cxx
   depfile = $out.d
-  command = c++ -O2 -MMD -MF $out.d -Iinclude -c -o $out $in
+  command = c++ -O0 -g -MMD -MF $out.d -Iinclude -c -o $out $in
 
 rule linux-ld
   command = c++ -o $out $in -lX11 -lGL

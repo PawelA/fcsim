@@ -498,6 +498,7 @@ static void add_level_block(struct design *design, struct xml_block *xml_block)
 	block->goal = false;
 	block->id = xml_block->id;
 	block->body = NULL;
+	block->overlap = false;
 
 	append_block(&design->level_blocks, block);
 }
@@ -536,6 +537,7 @@ static int add_player_block(struct design *design, struct xml_block *xml_block)
 
 	block->id = xml_block->id;
 	block->body = NULL;
+	block->overlap = false;
 
 	append_block(&design->player_blocks, block);
 }

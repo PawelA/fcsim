@@ -29,7 +29,7 @@ static bool share_joint(struct block *block1, struct block *block2)
 	return false;
 }
 
-static bool collision_filter(b2Shape *s1, b2Shape *s2)
+bool collision_filter(b2Shape *s1, b2Shape *s2)
 {
 	struct block *block1;
 	struct block *block2;
