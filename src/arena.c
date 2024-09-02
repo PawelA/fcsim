@@ -568,33 +568,25 @@ void update_body(struct arena *arena, struct block *block)
 	gen_block(arena->world, block);
 }
 
-void clear_overlaps(struct arena *arena)
+void mark_overlaps(struct arena *arena)
 {
+	b2Contact *contact;
 	struct block *block;
 
 	for (block = arena->design.player_blocks.head; block; block = block->next)
 		block->overlap = false;
 
-	for (block = arena->design.level_blocks.head; block; block = block->next)
-		block->overlap = false;
-}
-
-void mark_overlaps(struct arena *arena)
-{
-	b2Contact *contact;
-	struct block *block1;
-	struct block *block2;
-
-	clear_overlaps(arena);
-
 	for (contact = arena->world->m_contactList; contact; contact = contact->m_next) {
 		if (contact->m_manifoldCount > 0) {
-			block1 = (struct block *)contact->m_shape1->m_userData;
-			block2 = (struct block *)contact->m_shape2->m_userData;
-			block1->overlap = true;
-			block2->overlap = true;
+			block = (struct block *)contact->m_shape1->m_userData;
+			block->overlap = true;
+			block = (struct block *)contact->m_shape2->m_userData;
+			block->overlap = true;
 		}
 	}
+
+	for (block = arena->design.level_blocks.head; block; block = block->next)
+		block->overlap = false;
 }
 
 void action_move_joint(struct arena *arena, int x, int y)

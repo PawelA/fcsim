@@ -252,7 +252,7 @@ function canvas_mousemove(event)
 
 function canvas_wheel(event)
 {
-	inst.exports.scroll(-0.05 * event.deltaY);
+	inst.exports.scroll(-0.02 * event.deltaY);
 }
 
 function module_instantiated(module)
