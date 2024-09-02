@@ -124,7 +124,8 @@ void b2World_DestroyBody(b2World *world, b2Body* b)
 	world->m_bodyDestroyList = b;
 }
 
-static void b2World_CleanBodyList(b2World *world)
+extern "C"
+void b2World_CleanBodyList(b2World *world)
 {
 	world->m_contactManager.m_destroyImmediate = true;
 

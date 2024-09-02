@@ -278,8 +278,6 @@ bool arena_compile_shaders(void)
 	return true;
 }
 
-void update_overlaps(struct design *design);
-
 void arena_init(struct arena *arena, float w, float h)
 {
 	struct xml_level level;
@@ -300,6 +298,8 @@ void arena_init(struct arena *arena, float w, float h)
 	xml_parse(galois_xml, sizeof(galois_xml), &level);
 	convert_xml(&level, &arena->design);
 
+	arena->world = gen_world(&arena->design);
+
 	glGenBuffers(1, &arena->coord_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, arena->coord_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(arena->coords), arena->coords, GL_STREAM_DRAW);
@@ -315,8 +315,6 @@ void arena_init(struct arena *arena, float w, float h)
 	glGenBuffers(1, &arena->joint_coord_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, arena->joint_coord_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(arena->joint_coords), arena->joint_coords, GL_STREAM_DRAW);
-
-	update_overlaps(&arena->design);
 }
 
 void fill_joint_coords(struct arena *arena, struct joint *joint)
@@ -402,9 +400,10 @@ void start_stop(struct arena *arena)
 {
 	if (arena->running) {
 		free_world(arena->world, &arena->design);
-		arena->world = NULL;
+		arena->world = gen_world(&arena->design);
 		clear_interval(arena->ival);
 	} else {
+		free_world(arena->world, &arena->design);
 		arena->world = gen_world(&arena->design);
 		arena->ival = set_interval(tick_func, 10, arena);
 		arena->hover_joint = NULL;
@@ -506,8 +505,9 @@ struct block *block_hit_test(struct arena *arena, float x, float y)
 	return NULL;
 }
 
-void delete_block(struct design *design, struct block *block)
+void delete_block(struct arena *arena, struct block *block)
 {
+	struct design *design = &arena->design;
 	struct shape *shape = &block->shape;
 
 	switch (shape->type) {
@@ -528,6 +528,7 @@ void delete_block(struct design *design, struct block *block)
 		break;
 	}
 
+	b2World_DestroyBody(arena->world, block->body);
 	remove_block(&design->player_blocks, block);
 	free(block);
 }
@@ -542,97 +543,6 @@ void action_pan(struct arena *arena, int x, int y)
 
 	arena->view.x -= dx_world;
 	arena->view.y -= dy_world;
-}
-
-bool make_body_and_shape(b2Body *body, b2PolyShape *shape, struct block *block)
-{
-	struct material *mat = block->material;
-	struct shell shell;
-	b2BoxDef box_def;
-	b2CircleDef circle_def;
-	b2ShapeDef *shape_def;
-	b2BodyDef body_def;
-
-	b2BoxDef_ctor(&box_def);
-	b2CircleDef_ctor(&circle_def);
-	b2BodyDef_ctor(&body_def);
-
-	get_shell(&shell, &block->shape);
-
-	if (shell.type == SHELL_CIRC) {
-		//circle_def.radius = shell.circ.radius;
-		//shape_def = &circle_def.m_shapeDef;
-		return false;
-	} else {
-		box_def.extents.x = shell.rect.w / 2;
-		box_def.extents.y = shell.rect.h / 2;
-		shape_def = &box_def.m_shapeDef;
-	}
-	shape_def->density = mat->density;
-	shape_def->friction = mat->friction;
-	shape_def->restitution = mat->restitution;
-	shape_def->userData = block;
-	body_def.position.x = shell.x;
-	body_def.position.y = shell.y;
-	body_def.rotation = shell.angle;
-	body_def.linearDamping = mat->linear_damping;
-	body_def.angularDamping = mat->angular_damping;
-	b2BodyDef_AddShape(&body_def, shape_def);
-
-	//b2Body_ctor(body, &body_def, NULL);
-	body->m_position = body_def.position;
-	body->m_rotation = body_def.rotation;
-	b2Mat22_SetAngle(&body->m_R, body->m_rotation);
-	//body->m_center = body->m_position;
-	body->m_center.x = 0.0;
-	body->m_center.y = 0.0;
-	body->m_world = NULL;
-
-	b2PolyShape_ctor(shape, shape_def, body, body->m_center);
-
-	return true;
-}
-
-bool overlap(struct block *b1, struct block *b2)
-{
-	b2Body body1;
-	b2Body body2;
-	b2PolyShape shape1;
-	b2PolyShape shape2;
-	b2Manifold manifold;
-
-
-	if (!make_body_and_shape(&body1, &shape1, b1))
-		return false;
-	if (!make_body_and_shape(&body2, &shape2, b2))
-		return false;
-
-	if (!collision_filter(&shape1, &shape2))
-		return false;
-
-	b2CollidePoly(&manifold, &shape1, &shape2, false);
-
-	return manifold.pointCount > 0;
-}
-
-bool overlaps_any(struct block *block, struct design *design)
-{
-	struct block *b;
-
-	for (b = design->player_blocks.head; b; b = b->next) {
-		if (b != block && overlap(block, b))
-			return true;
-	}
-
-	return false;
-}
-
-void update_overlaps(struct design *design)
-{
-	struct block *b;
-
-	for (b = design->player_blocks.head; b; b = b->next)
-		b->overlap = overlaps_any(b, design);
 }
 
 void action_none(struct arena *arena, int x, int y)
@@ -650,11 +560,50 @@ void action_none(struct arena *arena, int x, int y)
 	arena->hover_joint = joint;
 }
 
+void gen_block(b2World *world, struct block *block);
+void b2World_CleanBodyList(b2World *world);
+
+void update_body(struct arena *arena, struct block *block)
+{
+	b2World_DestroyBody(arena->world, block->body);
+	gen_block(arena->world, block);
+}
+
+void clear_overlaps(struct arena *arena)
+{
+	struct block *block;
+
+	for (block = arena->design.player_blocks.head; block; block = block->next)
+		block->overlap = false;
+
+	for (block = arena->design.level_blocks.head; block; block = block->next)
+		block->overlap = false;
+}
+
+void mark_overlaps(struct arena *arena)
+{
+	b2Contact *contact;
+	struct block *block1;
+	struct block *block2;
+
+	clear_overlaps(arena);
+
+	for (contact = arena->world->m_contactList; contact; contact = contact->m_next) {
+		if (contact->m_manifoldCount > 0) {
+			block1 = (struct block *)contact->m_shape1->m_userData;
+			block2 = (struct block *)contact->m_shape2->m_userData;
+			block1->overlap = true;
+			block2->overlap = true;
+		}
+	}
+}
+
 void action_move_joint(struct arena *arena, int x, int y)
 {
 	float dx_world;
 	float dy_world;
 	struct joint *joint = arena->hover_joint;
+	struct attach_node *node;
 
 	if (joint->gen)
 		return;
@@ -665,7 +614,14 @@ void action_move_joint(struct arena *arena, int x, int y)
 	joint->x += dx_world;
 	joint->y += dy_world;
 
-	update_overlaps(&arena->design);
+	for (node = joint->att.head; node; node = node->next)
+		update_body(arena, node->block);
+
+	b2ContactManager_CleanContactList(&arena->world->m_contactManager);
+	b2World_CleanBodyList(arena->world);
+	b2ContactManager_Collide(&arena->world->m_contactManager);
+
+	mark_overlaps(arena);
 }
 
 void action_new_rod(struct arena *arena, int x, int y)
@@ -700,7 +656,7 @@ void action_delete(struct arena *arena, int x, int y)
 
 	block = block_hit_test(arena, x_world, y_world);
 	if (block)
-		delete_block(&arena->design, block);
+		delete_block(arena, block);
 }
 
 void arena_mouse_move_event(struct arena *arena, int x, int y)
@@ -761,8 +717,9 @@ void new_rod(struct arena *arena)
 
 	block->material = new_rod->solid ? &solid_rod_material : &water_rod_material;
 	block->goal = false;
-	block->body = NULL;
 	block->overlap = false;
+
+	gen_block(arena->world, block);
 
 	append_block(&design->player_blocks, block);
 
