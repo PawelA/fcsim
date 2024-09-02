@@ -216,14 +216,23 @@ function canvas_draw(timestamp)
 	window.requestAnimationFrame(canvas_draw);
 }
 
+function to_key(code)
+{
+	if (code == "Space") return 65;
+	if (code == "KeyR") return 27;
+	if (code == "KeyM") return 58;
+	if (code == "KeyS") return 39;
+	if (code == "KeyD") return 40;
+}
+
 function canvas_keydown(event)
 {
-	inst.exports.key_down(65);
+	inst.exports.key_down(to_key(event.code));
 }
 
 function canvas_keyup(event)
 {
-	inst.exports.key_up(65);
+	inst.exports.key_up(to_key(event.code));
 }
 
 function canvas_mousedown(event)
