@@ -50,8 +50,10 @@ void init(void)
 	bool res;
 
 	res = arena_compile_shaders();
+	/*
 	if (!res)
 		exit(1);
+	*/
 
 	arena_init(&the_arena, 800, 800);
 }

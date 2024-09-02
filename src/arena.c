@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <stdio.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2World.h>
 #include <box2d/b2CMath.h>

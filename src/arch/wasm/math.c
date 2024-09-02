@@ -40,6 +40,16 @@ float cosf(float x)
 
 float fabsf(float x);
 
+float fmaxf(float x, float y)
+{
+	return x > y ? x : y;
+}
+
+float fminf(float x, float y)
+{
+	return x < y ? x : y;
+}
+
 double copysign(double x, double y);
 
 double rint(double x);

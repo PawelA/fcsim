@@ -30,6 +30,12 @@ function make_string(data, size)
 	return decoder.decode(make_view(data, size));
 }
 
+function make_cstring(data)
+{
+	let size = inst.exports.strlen(data);
+	return make_string(data, size);
+}
+
 let gl_env = {
 	glAttachShader(program, shader) {
 		gl.attachShader(get_object(program), get_object(shader));
@@ -71,6 +77,14 @@ let gl_env = {
 		return add_object(gl.createShader(type));
 	},
 
+	glDeleteShader(shader) {
+		gl.deleteShader(get_object(shader));
+	},
+
+	glDisableVertexAttribArray(index) {
+		gl.disableVertexAttribArray(index);
+	},
+
 	glDrawArrays(mode, first, count) {
 		gl.drawArrays(mode, first, count);
 	},
@@ -81,6 +95,18 @@ let gl_env = {
 
 	glEnableVertexAttribArray(index) {
 		gl.enableVertexAttribArray(index);
+	},
+
+	glGetAttribLocation(program, name) {
+		return gl.getAttribLocation(get_object(program), make_cstring(name));
+	},
+
+	glGetProgramParameter(program, pname) {
+		return gl.getProgramParameter(get_object(program), pname);
+	},
+
+	glGetShaderParameter(shader, pname) {
+		return gl.getShaderParameter(get_object(shader), pname);
 	},
 
 	glLinkProgram(program) {

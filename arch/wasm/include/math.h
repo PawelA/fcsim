@@ -14,7 +14,12 @@ double fmin(double x, double y);
 
 float sinf(float x);
 float cosf(float x);
+
+float sqrtf(float x);
 float fabsf(float x);
+
+float fmaxf(float x, float y);
+float fminf(float x, float y);
 
 double copysign(double x, double y);
 
