@@ -503,7 +503,7 @@ static void add_level_block(struct design *design, struct xml_block *xml_block)
 	append_block(&design->level_blocks, block);
 }
 
-static int add_player_block(struct design *design, struct xml_block *xml_block)
+static void add_player_block(struct design *design, struct xml_block *xml_block)
 {
 	struct block *block = malloc(sizeof(*block));
 
@@ -531,7 +531,7 @@ static int add_player_block(struct design *design, struct xml_block *xml_block)
 	case XML_COUNTER_CLOCKWISE_WHEEL:
 		add_wheel(design, block, xml_block);
 		block->material = &solid_material;
-		block->goal = false;
+		block->goal = xml_block->goal_block;
 		break;
 	}
 

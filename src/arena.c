@@ -186,6 +186,10 @@ static void push_block(struct arena *arena, struct block *block)
 		color.r = 1.0f;
 		color.g = 0.0f;
 		color.b = 0.0f;
+	} else if (block->goal) {
+		color.r = 1.0f;
+		color.g = 0.4f;
+		color.b = 0.4f;
 	} else {
 		color.r = block->material->r;
 		color.g = block->material->g;
@@ -504,6 +508,34 @@ struct block *block_hit_test(struct arena *arena, float x, float y)
 	return NULL;
 }
 
+void gen_block(b2World *world, struct block *block);
+void b2World_CleanBodyList(b2World *world);
+
+void mark_overlaps(struct arena *arena)
+{
+	b2Contact *contact;
+	struct block *block;
+
+	b2ContactManager_CleanContactList(&arena->world->m_contactManager);
+	b2World_CleanBodyList(arena->world);
+	b2ContactManager_Collide(&arena->world->m_contactManager);
+
+	for (block = arena->design.player_blocks.head; block; block = block->next)
+		block->overlap = false;
+
+	for (contact = arena->world->m_contactList; contact; contact = contact->m_next) {
+		if (contact->m_manifoldCount > 0) {
+			block = (struct block *)contact->m_shape1->m_userData;
+			block->overlap = true;
+			block = (struct block *)contact->m_shape2->m_userData;
+			block->overlap = true;
+		}
+	}
+
+	for (block = arena->design.level_blocks.head; block; block = block->next)
+		block->overlap = false;
+}
+
 void delete_block(struct arena *arena, struct block *block)
 {
 	struct design *design = &arena->design;
@@ -530,6 +562,8 @@ void delete_block(struct arena *arena, struct block *block)
 	b2World_DestroyBody(arena->world, block->body);
 	remove_block(&design->player_blocks, block);
 	free(block);
+
+	mark_overlaps(arena);
 }
 
 void action_pan(struct arena *arena, int x, int y)
@@ -559,34 +593,10 @@ void action_none(struct arena *arena, int x, int y)
 	arena->hover_joint = joint;
 }
 
-void gen_block(b2World *world, struct block *block);
-void b2World_CleanBodyList(b2World *world);
-
 void update_body(struct arena *arena, struct block *block)
 {
 	b2World_DestroyBody(arena->world, block->body);
 	gen_block(arena->world, block);
-}
-
-void mark_overlaps(struct arena *arena)
-{
-	b2Contact *contact;
-	struct block *block;
-
-	for (block = arena->design.player_blocks.head; block; block = block->next)
-		block->overlap = false;
-
-	for (contact = arena->world->m_contactList; contact; contact = contact->m_next) {
-		if (contact->m_manifoldCount > 0) {
-			block = (struct block *)contact->m_shape1->m_userData;
-			block->overlap = true;
-			block = (struct block *)contact->m_shape2->m_userData;
-			block->overlap = true;
-		}
-	}
-
-	for (block = arena->design.level_blocks.head; block; block = block->next)
-		block->overlap = false;
 }
 
 void action_move_joint(struct arena *arena, int x, int y)
@@ -607,10 +617,6 @@ void action_move_joint(struct arena *arena, int x, int y)
 
 	for (node = joint->att.head; node; node = node->next)
 		update_body(arena, node->block);
-
-	b2ContactManager_CleanContactList(&arena->world->m_contactManager);
-	b2World_CleanBodyList(arena->world);
-	b2ContactManager_Collide(&arena->world->m_contactManager);
 
 	mark_overlaps(arena);
 }
@@ -715,6 +721,8 @@ void new_rod(struct arena *arena)
 	append_block(&design->player_blocks, block);
 
 	arena->hover_joint = j1; /* HACK! */
+
+	mark_overlaps(arena);
 }
 
 void arena_mouse_button_up_event(struct arena *arena, int button)
