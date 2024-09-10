@@ -20,14 +20,6 @@ enum tool {
 	TOOL_DELETE,
 };
 
-struct new_rod {
-	struct joint *j0;
-	double x0, y0;
-	struct joint *j1;
-	double x1, y1;
-	bool solid;
-};
-
 struct arena {
 	struct design design;
 	b2World *world;
@@ -44,7 +36,7 @@ struct arena {
 	enum action action;
 	struct joint *hover_joint;
 
-	struct new_rod new_rod;
+	struct block *new_block;
 
 	unsigned short indices[2048];
 	float coords[2048];

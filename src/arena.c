@@ -632,15 +632,10 @@ void action_new_rod(struct arena *arena, int x, int y)
 	joint = joint_hit_test(arena, x_world, y_world);
 	arena->hover_joint = joint;
 
-	if (joint && joint != arena->new_rod.j0) {
-		arena->new_rod.j1 = joint;
-		arena->new_rod.x1 = joint->x;
-		arena->new_rod.y1 = joint->y;
-	} else {
-		arena->new_rod.j1 = NULL;
-		arena->new_rod.x1 = x_world;
-		arena->new_rod.y1 = y_world;
-	}
+	arena->new_block->shape.rod.to->x = x_world;
+	arena->new_block->shape.rod.to->y = y_world;
+	update_body(arena, arena->new_block);
+	mark_overlaps(arena);
 }
 
 void action_delete(struct arena *arena, int x, int y)
@@ -677,6 +672,7 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 	arena->cursor_y = y;
 }
 
+/*
 void new_rod(struct arena *arena)
 {
 	struct new_rod *new_rod = &arena->new_rod;
@@ -720,10 +716,11 @@ void new_rod(struct arena *arena)
 
 	append_block(&design->player_blocks, block);
 
-	arena->hover_joint = j1; /* HACK! */
+	arena->hover_joint = j1;
 
 	mark_overlaps(arena);
 }
+*/
 
 void arena_mouse_button_up_event(struct arena *arena, int button)
 {
@@ -732,11 +729,58 @@ void arena_mouse_button_up_event(struct arena *arena, int button)
 
 	switch (arena->action) {
 	case ACTION_NEW_ROD:
-		new_rod(arena);
+		//new_rod(arena);
 		break;
 	}
 
 	arena->action = ACTION_NONE;
+}
+
+void mouse_down_rod(struct arena *arena, float x, float y)
+{
+	struct design *design = &arena->design;
+	struct block *block;
+	struct joint *j0, *j1;
+	struct attach_node *att0, *att1;
+	bool solid = arena->tool == TOOL_SOLID_ROD;
+
+	block = malloc(sizeof(*block));
+	block->prev = NULL;
+	block->next = NULL;
+
+	j0 = arena->hover_joint;
+	if (!j0) {
+		j0 = new_joint(NULL, x, y);
+		append_joint(&design->joints, j0);
+	}
+	att0 = new_attach_node(block);
+	append_attach_node(&j0->att, att0);
+
+	j1 = new_joint(NULL, x, y);
+	append_joint(&design->joints, j1);
+	att1 = new_attach_node(block);
+	append_attach_node(&j1->att, att1);
+
+	block->shape.type = SHAPE_ROD;
+	block->shape.rod.from = j0;
+	block->shape.rod.from_att = att0;
+	block->shape.rod.to = j1;
+	block->shape.rod.to_att = att1;
+	block->shape.rod.width = solid ? 8.0 : 4.0;
+
+	block->material = solid ? &solid_rod_material : &water_rod_material;
+	block->goal = false;
+	block->overlap = false;
+
+	arena->new_block = block;
+
+	gen_block(arena->world, block);
+
+	append_block(&design->player_blocks, block);
+
+	arena->hover_joint = j1; /* HACK! */
+
+	arena->action = ACTION_NEW_ROD;
 }
 
 void arena_mouse_button_down_event(struct arena *arena, int button)
@@ -763,20 +807,7 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 			break;
 		case TOOL_ROD:
 		case TOOL_SOLID_ROD:
-			arena->action = ACTION_NEW_ROD;
-			if (arena->hover_joint) {
-				arena->new_rod.j0 = arena->hover_joint;
-				arena->new_rod.x0 = arena->hover_joint->x;
-				arena->new_rod.y0 = arena->hover_joint->y;
-			} else {
-				arena->new_rod.j0 = NULL;
-				arena->new_rod.x0 = x_world;
-				arena->new_rod.y0 = y_world;
-			}
-			arena->new_rod.j1 = NULL;
-			arena->new_rod.x1 = x_world;
-			arena->new_rod.y1 = y_world;
-			arena->new_rod.solid = (arena->tool == TOOL_SOLID_ROD);
+			mouse_down_rod(arena, x_world, y_world);
 			break;
 		case TOOL_DELETE:
 			action_delete(arena, x, y);
