@@ -774,8 +774,10 @@ void action_delete(struct arena *arena, int x, int y)
 	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
 
 	block = block_hit_test(arena, x_world, y_world);
-	if (block)
+	if (block) {
 		delete_block(arena, block);
+		arena->hover_joint = joint_hit_test(arena, x_world, y_world);
+	}
 }
 
 void arena_mouse_move_event(struct arena *arena, int x, int y)
