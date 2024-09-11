@@ -463,6 +463,59 @@ struct joint *joint_hit_test(struct arena *arena, float x, float y)
 	return best_joint;
 }
 
+bool block_has_joint(struct block *block, struct joint *joint)
+{
+	struct joint *j[5];
+	int n;
+	int i;
+
+	n = get_block_joints(block, j);
+
+	for (i = 0; i < n; i++) {
+		if (j[i] == joint)
+			return true;
+	}
+
+	return false;
+}
+
+bool share_block(struct design *design, struct joint *j1, struct joint *j2)
+{
+	struct block *block;
+
+	for (block = design->player_blocks.head; block; block = block->next) {
+		if (block_has_joint(block, j1) && block_has_joint(block, j2))
+			return true;
+	}
+
+	return false;
+}
+
+struct joint *joint_hit_test_exclude(struct arena *arena, float x, float y, struct rod *rod)
+{
+	struct design *design = &arena->design;
+	struct joint *best_joint = NULL;
+	struct joint *joint;
+	double best_dist = 8.0f;
+	double dist;
+
+	for (joint = design->joints.head; joint; joint = joint->next) {
+		if (joint == rod->from)
+			continue;
+		if (joint == rod->to)
+			continue;
+		if (share_block(design, rod->from, joint))
+			continue;
+		dist = distance(x, y, joint->x, joint->y);
+		if (dist < best_dist) {
+			best_dist = dist;
+			best_joint = joint;
+		}
+	}
+
+	return best_joint;
+}
+
 bool rect_is_hit(struct shell *shell, float x, float y)
 {
 	float dx = shell->x - x;
@@ -621,19 +674,75 @@ void action_move_joint(struct arena *arena, int x, int y)
 	mark_overlaps(arena);
 }
 
+bool new_rod_attached(struct rod *rod)
+{
+	return rod->to->gen || rod->to_att->prev;
+}
+
+void attach_new_rod(struct design *design, struct block *block, struct joint *joint)
+{
+	struct rod *rod = &block->shape.rod;
+
+	remove_joint(&design->joints, rod->to);
+	free(rod->to);
+	free(rod->to_att);
+
+	rod->to = joint;
+	rod->to_att = new_attach_node(block);
+	append_attach_node(&joint->att, rod->to_att);
+}
+
+void detach_new_rod(struct design *design, struct block *block, double x, double y)
+{
+	struct rod *rod = &block->shape.rod;
+
+	remove_attach_node(&rod->to->att, rod->to_att);
+	free(rod->to_att);
+
+	rod->to = new_joint(NULL, x, y);
+	append_joint(&design->joints, rod->to);
+	rod->to_att = new_attach_node(block);
+	append_attach_node(&rod->to->att, rod->to_att);
+}
+
 void action_new_rod(struct arena *arena, int x, int y)
 {
+	struct rod *rod = &arena->new_block->shape.rod;
 	float x_world;
 	float y_world;
 	struct joint *joint;
+	bool attached;
 
 	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
 
-	joint = joint_hit_test(arena, x_world, y_world);
-	arena->hover_joint = joint;
+	attached = new_rod_attached(rod);
 
-	arena->new_block->shape.rod.to->x = x_world;
-	arena->new_block->shape.rod.to->y = y_world;
+	if (attached)
+		joint = joint_hit_test(arena, x_world, y_world);
+	else
+		joint = joint_hit_test_exclude(arena, x_world, y_world, rod);
+
+	if (joint)
+		arena->hover_joint = joint;
+	else
+		arena->hover_joint = rod->to;
+
+	if (!attached) {
+		if (joint) {
+			attach_new_rod(&arena->design, arena->new_block, joint);
+		} else {
+			rod->to->x = x_world;
+			rod->to->y = y_world;
+		}
+	} else {
+		if (!joint) {
+			detach_new_rod(&arena->design, arena->new_block, x_world, y_world);
+		} else if (joint != rod->to) {
+			detach_new_rod(&arena->design, arena->new_block, x_world, y_world);
+			attach_new_rod(&arena->design, arena->new_block, joint);
+		}
+	}
+
 	update_body(arena, arena->new_block);
 	mark_overlaps(arena);
 }
