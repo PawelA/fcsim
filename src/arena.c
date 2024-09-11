@@ -705,6 +705,26 @@ void detach_new_rod(struct design *design, struct block *block, double x, double
 	append_attach_node(&rod->to->att, rod->to_att);
 }
 
+void adjust_new_rod(struct rod *rod)
+{
+	double dx = rod->to->x - rod->from->x;
+	double dy = rod->to->y - rod->from->y;
+	double len = sqrt(dx * dx + dy * dy);
+
+	if (len >= 10.0)
+		return;
+
+	if (len == 0.0) {
+		dx = 10.0;
+		dy = 0.0;
+	} else {
+		dx *= 10.0 / len;
+		dy *= 10.0 / len;
+	}
+	rod->to->x = rod->from->x + dx;
+	rod->to->y = rod->from->y + dy;
+}
+
 void action_new_rod(struct arena *arena, int x, int y)
 {
 	struct rod *rod = &arena->new_block->shape.rod;
@@ -722,17 +742,13 @@ void action_new_rod(struct arena *arena, int x, int y)
 	else
 		joint = joint_hit_test_exclude(arena, x_world, y_world, rod);
 
-	if (joint)
-		arena->hover_joint = joint;
-	else
-		arena->hover_joint = rod->to;
-
 	if (!attached) {
 		if (joint) {
 			attach_new_rod(&arena->design, arena->new_block, joint);
 		} else {
 			rod->to->x = x_world;
 			rod->to->y = y_world;
+			adjust_new_rod(rod);
 		}
 	} else {
 		if (!joint) {
@@ -745,6 +761,8 @@ void action_new_rod(struct arena *arena, int x, int y)
 
 	update_body(arena, arena->new_block);
 	mark_overlaps(arena);
+
+	arena->hover_joint = joint_hit_test(arena, x_world, y_world);
 }
 
 void action_delete(struct arena *arena, int x, int y)
@@ -876,6 +894,7 @@ void mouse_down_rod(struct arena *arena, float x, float y)
 	block->shape.rod.to = j1;
 	block->shape.rod.to_att = att1;
 	block->shape.rod.width = solid ? 8.0 : 4.0;
+	adjust_new_rod(&block->shape.rod);
 
 	block->material = solid ? &solid_rod_material : &water_rod_material;
 	block->goal = false;
@@ -887,7 +906,7 @@ void mouse_down_rod(struct arena *arena, float x, float y)
 
 	append_block(&design->player_blocks, block);
 
-	arena->hover_joint = j1; /* HACK! */
+	arena->hover_joint = j0;
 
 	arena->action = ACTION_NEW_ROD;
 }
