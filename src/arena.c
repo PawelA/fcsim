@@ -589,6 +589,44 @@ void mark_overlaps(struct arena *arena)
 		block->overlap = false;
 }
 
+void delete_rod_joints(struct design *design, struct rod *rod)
+{
+	remove_attach_node(&rod->from->att, rod->from_att);
+	free(rod->from_att);
+	if (!rod->from->att.head && !rod->from->gen) {
+		remove_joint(&design->joints, rod->from);
+		free(rod->from);
+	}
+
+	remove_attach_node(&rod->to->att, rod->to_att);
+	free(rod->to_att);
+	if (!rod->to->att.head && !rod->to->gen) {
+		remove_joint(&design->joints, rod->to);
+		free(rod->to);
+	}
+}
+
+void delete_wheel_joints(struct design *design, struct wheel *wheel)
+{
+	int i;
+
+	remove_attach_node(&wheel->center->att, wheel->center_att);
+	free(wheel->center_att);
+	if (!wheel->center->att.head && !wheel->center->gen) {
+		remove_joint(&design->joints, wheel->center);
+		free(wheel->center);
+	}
+
+	for (i = 0; i < 4; i++) {
+		if (wheel->spokes[i]->att.head) {
+			wheel->spokes[i]->gen = NULL;
+		} else {
+			remove_joint(&design->joints, wheel->spokes[i]);
+			free(wheel->spokes[i]);
+		}
+	}
+}
+
 void delete_block(struct arena *arena, struct block *block)
 {
 	struct design *design = &arena->design;
@@ -596,20 +634,10 @@ void delete_block(struct arena *arena, struct block *block)
 
 	switch (shape->type) {
 	case SHAPE_ROD:
-		remove_attach_node(&shape->rod.from->att, shape->rod.from_att);
-		free(shape->rod.from_att);
-		if (!shape->rod.from->att.head && !shape->rod.from->gen) {
-			remove_joint(&design->joints, shape->rod.from);
-			free(shape->rod.from);
-		}
-
-		remove_attach_node(&shape->rod.to->att, shape->rod.to_att);
-		free(shape->rod.to_att);
-		if (!shape->rod.to->att.head && !shape->rod.to->gen) {
-			remove_joint(&design->joints, shape->rod.to);
-			free(shape->rod.to);
-		}
+		delete_rod_joints(design, &shape->rod);
 		break;
+	case SHAPE_WHEEL:
+		delete_wheel_joints(design, &shape->wheel);
 	}
 
 	b2World_DestroyBody(arena->world, block->body);
