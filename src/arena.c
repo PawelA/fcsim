@@ -646,10 +646,58 @@ void action_none(struct arena *arena, int x, int y)
 	arena->hover_joint = joint;
 }
 
+void move_joint(struct arena *arena, struct joint *joint, double x, double y);
+
+void update_wheel_joints(struct arena *arena, struct wheel *wheel)
+{
+	double a[4] = {
+		0.0,
+		3.141592653589793 / 2,
+		3.141592653589793,
+		4.71238898038469,
+	};
+	double spoke_x, spoke_y;
+	double x, y;
+	int i;
+
+	x = wheel->center->x;
+	y = wheel->center->y;
+
+	for (i = 0; i < 4; i++) {
+		spoke_x = x + fp_cos(wheel->angle + a[i]) * wheel->radius;
+		spoke_y = y + fp_sin(wheel->angle + a[i]) * wheel->radius;
+		move_joint(arena, wheel->spokes[i], spoke_x, spoke_y);
+	}
+}
+
+void update_joints(struct arena *arena, struct block *block)
+{
+	struct shape *shape = &block->shape;
+
+	switch (shape->type) {
+	case SHAPE_WHEEL:
+		update_wheel_joints(arena, &shape->wheel);
+		break;
+	}
+}
+
 void update_body(struct arena *arena, struct block *block)
 {
 	b2World_DestroyBody(arena->world, block->body);
 	gen_block(arena->world, block);
+}
+
+void move_joint(struct arena *arena, struct joint *joint, double x, double y)
+{
+	struct attach_node *node;
+
+	joint->x = x;
+	joint->y = y;
+
+	for (node = joint->att.head; node; node = node->next) {
+		update_joints(arena, node->block);
+		update_body(arena, node->block);
+	}
 }
 
 void action_move_joint(struct arena *arena, int x, int y)
@@ -657,7 +705,6 @@ void action_move_joint(struct arena *arena, int x, int y)
 	float dx_world;
 	float dy_world;
 	struct joint *joint = arena->hover_joint;
-	struct attach_node *node;
 
 	if (joint->gen)
 		return;
@@ -665,11 +712,7 @@ void action_move_joint(struct arena *arena, int x, int y)
 	dx_world = (x - arena->cursor_x) * arena->view.scale * 2;
 	dy_world = (y - arena->cursor_y) * arena->view.scale * 2;
 
-	joint->x += dx_world;
-	joint->y += dy_world;
-
-	for (node = joint->att.head; node; node = node->next)
-		update_body(arena, node->block);
+	move_joint(arena, joint, joint->x + dx_world, joint->y + dy_world);
 
 	mark_overlaps(arena);
 }
