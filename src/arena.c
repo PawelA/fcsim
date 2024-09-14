@@ -433,6 +433,9 @@ void arena_key_down_event(struct arena *arena, int key)
 	case 40: /* D */
 		arena->tool = TOOL_DELETE;
 		break;
+	case 30: /* U */
+		arena->tool = TOOL_WHEEL;
+		break;
 	}
 }
 
@@ -505,6 +508,27 @@ struct joint *joint_hit_test_exclude(struct arena *arena, float x, float y, stru
 		if (joint == rod->to)
 			continue;
 		if (share_block(design, rod->from, joint))
+			continue;
+		dist = distance(x, y, joint->x, joint->y);
+		if (dist < best_dist) {
+			best_dist = dist;
+			best_joint = joint;
+		}
+	}
+
+	return best_joint;
+}
+
+struct joint *joint_hit_test_exclude2(struct arena *arena, float x, float y, struct wheel *wheel)
+{
+	struct design *design = &arena->design;
+	struct joint *best_joint = NULL;
+	struct joint *joint;
+	double best_dist = 8.0f;
+	double dist;
+
+	for (joint = design->joints.head; joint; joint = joint->next) {
+		if (joint == wheel->center)
 			continue;
 		dist = distance(x, y, joint->x, joint->y);
 		if (dist < best_dist) {
@@ -763,6 +787,22 @@ void attach_new_rod(struct design *design, struct block *block, struct joint *jo
 	append_attach_node(&joint->att, rod->to_att);
 }
 
+void attach_new_wheel(struct arena *arena, struct block *block, struct joint *joint)
+{
+	struct design *design = &arena->design;
+	struct wheel *wheel = &block->shape.wheel;
+
+	remove_joint(&design->joints, wheel->center);
+	free(wheel->center);
+	free(wheel->center_att);
+
+	wheel->center = joint;
+	wheel->center_att = new_attach_node(block);
+	append_attach_node(&joint->att, wheel->center_att);
+
+	update_joints(arena, block);
+}
+
 void detach_new_rod(struct design *design, struct block *block, double x, double y)
 {
 	struct rod *rod = &block->shape.rod;
@@ -774,6 +814,22 @@ void detach_new_rod(struct design *design, struct block *block, double x, double
 	append_joint(&design->joints, rod->to);
 	rod->to_att = new_attach_node(block);
 	append_attach_node(&rod->to->att, rod->to_att);
+}
+
+void detach_new_wheel(struct arena *arena, struct block *block, double x, double y)
+{
+	struct design *design = &arena->design;
+	struct wheel *wheel = &block->shape.wheel;
+
+	remove_attach_node(&wheel->center->att, wheel->center_att);
+	free(wheel->center_att);
+
+	wheel->center = new_joint(NULL, x, y);
+	append_joint(&design->joints, wheel->center);
+	wheel->center_att = new_attach_node(block);
+	append_attach_node(&wheel->center->att, wheel->center_att);
+
+	update_joints(arena, block);
 }
 
 void adjust_new_rod(struct rod *rod)
@@ -836,6 +892,44 @@ void action_new_rod(struct arena *arena, int x, int y)
 	arena->hover_joint = joint_hit_test(arena, x_world, y_world);
 }
 
+void action_new_wheel(struct arena *arena, int x, int y)
+{
+	struct wheel *wheel = &arena->new_block->shape.wheel;
+	float x_world;
+	float y_world;
+	struct joint *joint;
+	bool attached;
+
+	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
+
+	attached = wheel->center->gen || wheel->center_att->prev;
+
+	if (attached)
+		joint = joint_hit_test(arena, x_world, y_world);
+	else
+		joint = joint_hit_test_exclude2(arena, x_world, y_world, wheel);
+
+	if (!attached) {
+		if (joint) {
+			attach_new_wheel(arena, arena->new_block, joint);
+		} else {
+			move_joint(arena, wheel->center, x_world, y_world);
+		}
+	} else {
+		if (!joint) {
+			detach_new_wheel(arena, arena->new_block, x_world, y_world);
+		} else if (joint != wheel->center) {
+			detach_new_wheel(arena, arena->new_block, x_world, y_world);
+			attach_new_wheel(arena, arena->new_block, joint);
+		}
+	}
+
+	update_body(arena, arena->new_block);
+	mark_overlaps(arena);
+
+	arena->hover_joint = joint_hit_test(arena, x_world, y_world);
+}
+
 void action_delete(struct arena *arena, int x, int y)
 {
 	float x_world;
@@ -865,6 +959,9 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 		break;
 	case ACTION_NEW_ROD:
 		action_new_rod(arena, x, y);
+		break;
+	case ACTION_NEW_WHEEL:
+		action_new_wheel(arena, x, y);
 		break;
 	}
 
@@ -984,6 +1081,62 @@ void mouse_down_rod(struct arena *arena, float x, float y)
 	arena->action = ACTION_NEW_ROD;
 }
 
+void mouse_down_wheel(struct arena *arena, float x, float y)
+{
+	struct design *design = &arena->design;
+	struct block *block;
+	struct joint *j0;
+	struct attach_node *att0;
+
+	block = malloc(sizeof(*block));
+	block->prev = NULL;
+	block->next = NULL;
+
+	j0 = arena->hover_joint;
+	if (!j0) {
+		j0 = new_joint(NULL, x, y);
+		append_joint(&design->joints, j0);
+	}
+	att0 = new_attach_node(block);
+	append_attach_node(&j0->att, att0);
+
+	block->shape.type = SHAPE_WHEEL;
+	block->shape.wheel.center = j0;
+	block->shape.wheel.center_att = att0;
+	block->shape.wheel.radius = 20.0;
+	block->shape.wheel.angle = 0.0;
+
+	double a[4] = {
+		0.0,
+		3.141592653589793 / 2,
+		3.141592653589793,
+		4.71238898038469,
+	};
+	double spoke_x, spoke_y;
+	int i;
+
+	for (i = 0; i < 4; i++) {
+		spoke_x = j0->x + fp_cos(a[i]) * 20.0;
+		spoke_y = j0->y + fp_sin(a[i]) * 20.0;
+		block->shape.wheel.spokes[i] = new_joint(block, spoke_x, spoke_y);
+		append_joint(&design->joints, block->shape.wheel.spokes[i]);
+	}
+
+	block->material = &solid_material;
+	block->goal = false;
+	block->overlap = false;
+
+	arena->new_block = block;
+
+	gen_block(arena->world, block);
+
+	append_block(&design->player_blocks, block);
+
+	arena->hover_joint = j0;
+
+	arena->action = ACTION_NEW_WHEEL;
+}
+
 void arena_mouse_button_down_event(struct arena *arena, int button)
 {
 	int x = arena->cursor_x;
@@ -1009,6 +1162,9 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 		case TOOL_ROD:
 		case TOOL_SOLID_ROD:
 			mouse_down_rod(arena, x_world, y_world);
+			break;
+		case TOOL_WHEEL:
+			mouse_down_wheel(arena, x_world, y_world);
 			break;
 		case TOOL_DELETE:
 			action_delete(arena, x, y);
