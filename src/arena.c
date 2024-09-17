@@ -187,9 +187,9 @@ static void push_block(struct arena *arena, struct block *block)
 		color.g = 0.0f;
 		color.b = 0.0f;
 	} else if (block->visited) {
-		color.r = 1.0f;
-		color.g = 1.0f;
-		color.b = 1.0f;
+		color.r = block->r + (1.0f - block->r) * 0.25f;
+		color.g = block->g + (1.0f - block->g) * 0.25f;
+		color.b = block->b + (1.0f - block->b) * 0.25f;
 	} else if (block->goal) {
 		color.r = 1.0f;
 		color.g = 0.4f;
@@ -730,6 +730,38 @@ void action_none(struct arena *arena, int x, int y)
 
 void move_joint(struct arena *arena, struct joint *joint, double x, double y);
 
+void update_wheel_joints2(struct wheel *wheel)
+{
+	double a[4] = {
+		0.0,
+		3.141592653589793 / 2,
+		3.141592653589793,
+		4.71238898038469,
+	};
+	double spoke_x, spoke_y;
+	double x, y;
+	int i;
+
+	x = wheel->center->x;
+	y = wheel->center->y;
+
+	for (i = 0; i < 4; i++) {
+		wheel->spokes[i]->x = x + fp_cos(wheel->angle + a[i]) * wheel->radius;
+		wheel->spokes[i]->y = y + fp_sin(wheel->angle + a[i]) * wheel->radius;
+	}
+}
+
+void update_joints2(struct block *block)
+{
+	struct shape *shape = &block->shape;
+
+	switch (shape->type) {
+	case SHAPE_WHEEL:
+		update_wheel_joints2(&shape->wheel);
+		break;
+	}
+}
+
 void update_wheel_joints(struct arena *arena, struct wheel *wheel)
 {
 	double a[4] = {
@@ -795,6 +827,37 @@ void action_move_joint(struct arena *arena, int x, int y)
 	dy_world = (y - arena->cursor_y) * arena->view.scale * 2;
 
 	move_joint(arena, joint, joint->x + dx_world, joint->y + dy_world);
+
+	mark_overlaps(arena);
+}
+
+void action_move(struct arena *arena, int x, int y)
+{
+	float dx_world;
+	float dy_world;
+	struct joint_head *joint_head;
+	struct block_head *block_head;
+
+	dx_world = (x - arena->cursor_x) * arena->view.scale * 2;
+	dy_world = (y - arena->cursor_y) * arena->view.scale * 2;
+
+	//move_joint(arena, joint, joint->x + dx_world, joint->y + dy_world);
+
+	for (joint_head = arena->root_joints_moving; joint_head;
+	     joint_head = joint_head->next) {
+		joint_head->joint->x += dx_world;
+		joint_head->joint->y += dy_world;
+	}
+
+	for (block_head = arena->blocks_moving; block_head;
+	     block_head = block_head->next) {
+		update_joints2(block_head->block);
+	}
+
+	for (block_head = arena->blocks_moving; block_head;
+	     block_head = block_head->next) {
+		update_body(arena, block_head->block);
+	}
 
 	mark_overlaps(arena);
 }
@@ -987,6 +1050,9 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 	case ACTION_MOVE_JOINT:
 		action_move_joint(arena, x, y);
 		break;
+	case ACTION_MOVE:
+		action_move(arena, x, y);
+		break;
 	case ACTION_NEW_ROD:
 		action_new_rod(arena, x, y);
 		break;
@@ -1055,6 +1121,9 @@ void block_dfs(struct arena *arena, struct block *block, bool value);
 void mouse_up_move(struct arena *arena)
 {
 	block_dfs(arena, arena->hover_block, false);
+	arena->root_joints_moving = NULL;
+	arena->root_blocks_moving = NULL;
+	arena->blocks_moving = NULL;
 }
 
 void arena_mouse_button_up_event(struct arena *arena, int button)
@@ -1073,6 +1142,28 @@ void arena_mouse_button_up_event(struct arena *arena, int button)
 	arena->action = ACTION_NONE;
 }
 
+struct joint_head *append_joint_head(struct joint_head *head, struct joint *joint)
+{
+	struct joint_head *new_head;
+
+	new_head = malloc(sizeof(*new_head));
+	new_head->next = head;
+	new_head->joint = joint;
+
+	return new_head;
+}
+
+struct block_head *append_block_head(struct block_head *head, struct block *block)
+{
+	struct block_head *new_head;
+
+	new_head = malloc(sizeof(*new_head));
+	new_head->next = head;
+	new_head->block = block;
+
+	return new_head;
+}
+
 void block_dfs(struct arena *arena, struct block *block, bool value)
 {
 	struct joint *j[5];
@@ -1083,6 +1174,8 @@ void block_dfs(struct arena *arena, struct block *block, bool value)
 		return;
 
 	block->visited = value;
+
+	arena->blocks_moving = append_block_head(arena->blocks_moving, block);
 
 	n = get_block_joints(block, j);
 
@@ -1098,6 +1191,11 @@ void joint_dfs(struct arena *arena, struct joint *joint, bool value)
 		return;
 
 	joint->visited = value;
+
+	if (!joint->gen) {
+		arena->root_joints_moving =
+			append_joint_head(arena->root_joints_moving, joint);
+	}
 
 	if (joint->gen)
 		block_dfs(arena, joint->gen, value);
