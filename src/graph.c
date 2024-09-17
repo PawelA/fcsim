@@ -6,6 +6,10 @@
 #include "xml.h"
 #include "graph.h"
 
+const float static_r = 0.000f;
+const float static_g = 0.745f;
+const float static_b = 0.004f;
+
 struct material static_env_material = {
 	.density = 0.0,
 	.friction = 0.7,
@@ -14,10 +18,11 @@ struct material static_env_material = {
 	.angular_damping = 0.0,
 	.collision_bit = ENV_COLLISION_BIT,
 	.collision_mask = ENV_COLLISION_MASK,
-	.r = 0.000f,
-	.g = 0.745f,
-	.b = 0.004f,
 };
+
+const float dynamic_r = 0.976f;
+const float dynamic_g = 0.855f;
+const float dynamic_b = 0.184f;
 
 struct material dynamic_env_material = {
 	.density = 1.0,
@@ -27,10 +32,11 @@ struct material dynamic_env_material = {
 	.angular_damping = 0.0,
 	.collision_bit = ENV_COLLISION_BIT,
 	.collision_mask = ENV_COLLISION_MASK,
-	.r = 0.976f,
-	.g = 0.855f,
-	.b = 0.184f,
 };
+
+const float wheel_r = 0.537f;
+const float wheel_g = 0.980f;
+const float wheel_b = 0.890f;
 
 struct material solid_material = {
 	.density = 1.0,
@@ -40,10 +46,11 @@ struct material solid_material = {
 	.angular_damping = 0.0,
 	.collision_bit = SOLID_COLLISION_BIT,
 	.collision_mask = SOLID_COLLISION_MASK,
-	.r = 0.537f,
-	.g = 0.980f,
-	.b = 0.890f,
 };
+
+const float solid_rod_r = 0.420f;
+const float solid_rod_g = 0.204f;
+const float solid_rod_b = 0.000f;
 
 struct material solid_rod_material = {
 	.density = 1.0,
@@ -53,10 +60,11 @@ struct material solid_rod_material = {
 	.angular_damping = 0.2,
 	.collision_bit = SOLID_COLLISION_BIT,
 	.collision_mask = SOLID_COLLISION_MASK,
-	.r = 0.420f,
-	.g = 0.204f,
-	.b = 0.000f,
 };
+
+const float water_rod_r = 0.000f;
+const float water_rod_g = 0.000f;
+const float water_rod_b = 1.000f;
 
 struct material water_rod_material = {
 	.density = 1.0,
@@ -66,10 +74,11 @@ struct material water_rod_material = {
 	.angular_damping = 0.2,
 	.collision_bit = WATER_COLLISION_BIT,
 	.collision_mask = WATER_COLLISION_MASK,
-	.r = 0.000f,
-	.g = 0.000f,
-	.b = 1.000f,
 };
+
+static float goal_r = 0.945f;
+static float goal_g = 0.569f;
+static float goal_b = 0.569f;
 
 static void init_block_list(struct block_list *list)
 {
@@ -481,18 +490,30 @@ static void add_level_block(struct design *design, struct xml_block *xml_block)
 	case XML_STATIC_RECTANGLE:
 		init_rect(&block->shape, xml_block);
 		block->material = &static_env_material;
+		block->r = static_r;
+		block->g = static_g;
+		block->b = static_b;
 		break;
 	case XML_DYNAMIC_RECTANGLE:
 		init_rect(&block->shape, xml_block);
 		block->material = &dynamic_env_material;
+		block->r = dynamic_r;
+		block->g = dynamic_g;
+		block->b = dynamic_b;
 		break;
 	case XML_STATIC_CIRCLE:
 		init_circ(&block->shape, xml_block);
 		block->material = &static_env_material;
+		block->r = static_r;
+		block->g = static_g;
+		block->b = static_b;
 		break;
 	case XML_DYNAMIC_CIRCLE:
 		init_circ(&block->shape, xml_block);
 		block->material = &dynamic_env_material;
+		block->r = dynamic_r;
+		block->g = dynamic_g;
+		block->b = dynamic_b;
 		break;
 	}
 
@@ -516,16 +537,25 @@ static void add_player_block(struct design *design, struct xml_block *xml_block)
 		add_box(design, block, xml_block);
 		block->material = &solid_material;
 		block->goal = true;
+		block->r = goal_r;
+		block->g = goal_g;
+		block->b = goal_b;
 		break;
 	case XML_SOLID_ROD:
 		add_rod(design, block, xml_block);
 		block->material = &solid_rod_material;
 		block->goal = false;
+		block->r = solid_rod_r;
+		block->g = solid_rod_g;
+		block->b = solid_rod_b;
 		break;
 	case XML_HOLLOW_ROD:
 		add_rod(design, block, xml_block);
 		block->material = &water_rod_material;
 		block->goal = false;
+		block->r = water_rod_r;
+		block->g = water_rod_g;
+		block->b = water_rod_b;
 		break;
 	case XML_NO_SPIN_WHEEL:
 	case XML_CLOCKWISE_WHEEL:
@@ -533,6 +563,9 @@ static void add_player_block(struct design *design, struct xml_block *xml_block)
 		add_wheel(design, block, xml_block);
 		block->material = &solid_material;
 		block->goal = xml_block->goal_block;
+		block->r = wheel_r;
+		block->g = wheel_g;
+		block->b = wheel_b;
 		break;
 	}
 

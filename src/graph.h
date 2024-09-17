@@ -111,9 +111,6 @@ struct material {
 	double angular_damping;
 	uint32_t collision_bit;
 	uint32_t collision_mask;
-	float r;
-	float g;
-	float b;
 };
 
 extern struct material static_env_material;
@@ -121,6 +118,18 @@ extern struct material dynamic_env_material;
 extern struct material solid_material;
 extern struct material solid_rod_material;
 extern struct material water_rod_material;
+
+extern const float wheel_r;
+extern const float wheel_g;
+extern const float wheel_b;
+
+extern const float solid_rod_r;
+extern const float solid_rod_g;
+extern const float solid_rod_b;
+
+extern const float water_rod_r;
+extern const float water_rod_g;
+extern const float water_rod_b;
 
 struct block {
 	struct block *prev;
@@ -130,6 +139,9 @@ struct block {
 	bool goal;
 	bool overlap;
 	int id;
+	float r;
+	float g;
+	float b;
 	b2Body *body;
 };
 

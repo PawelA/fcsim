@@ -191,9 +191,9 @@ static void push_block(struct arena *arena, struct block *block)
 		color.g = 0.4f;
 		color.b = 0.4f;
 	} else {
-		color.r = block->material->r;
-		color.g = block->material->g;
-		color.b = block->material->b;
+		color.r = block->r;
+		color.g = block->g;
+		color.b = block->b;
 	}
 
 	if (shell.type == SHELL_CIRC)
@@ -1070,6 +1070,16 @@ void mouse_down_rod(struct arena *arena, float x, float y)
 	block->goal = false;
 	block->overlap = false;
 
+	if (solid) {
+		block->r = solid_rod_r;
+		block->g = solid_rod_g;
+		block->b = solid_rod_b;
+	} else {
+		block->r = water_rod_r;
+		block->g = water_rod_g;
+		block->b = water_rod_b;
+	}
+
 	arena->new_block = block;
 
 	gen_block(arena->world, block);
@@ -1126,6 +1136,10 @@ void mouse_down_wheel(struct arena *arena, float x, float y)
 	block->material = &solid_material;
 	block->goal = false;
 	block->overlap = false;
+
+	block->r = wheel_r;
+	block->g = wheel_g;
+	block->b = wheel_b;
 
 	arena->new_block = block;
 
