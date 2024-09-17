@@ -591,6 +591,9 @@ bool rect_is_hit(struct shell *shell, float x, float y)
 	float dx_t =  dx * c + dy * s;
 	float dy_t = -dx * s + dy * c;
 
+	shell->rect.w += 8.0 * 2;
+	shell->rect.h += 8.0 * 2;
+
 	return fabsf(dx_t) < shell->rect.w / 2 && fabsf(dy_t) < shell->rect.h / 2;
 }
 
@@ -598,7 +601,7 @@ bool circ_is_hit(struct shell *shell, float x, float y)
 {
 	float dx = shell->x - x;
 	float dy = shell->y - y;
-	float r = shell->circ.radius;
+	float r = shell->circ.radius + 8.0;
 
 	return dx * dx + dy * dy < r * r;
 }
