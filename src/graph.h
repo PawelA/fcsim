@@ -26,6 +26,7 @@ struct joint {
 	struct block *gen;
 	double x, y;
 	struct attach_list att;
+	bool visited;
 };
 
 struct joint *new_joint(struct block *gen, double x, double y);
@@ -146,6 +147,7 @@ struct block {
 	struct material *material;
 	bool goal;
 	bool overlap;
+	bool visited;
 	int id;
 	float r;
 	float g;

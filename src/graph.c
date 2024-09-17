@@ -219,6 +219,7 @@ struct joint *new_joint(struct block *gen, double x, double y)
 	joint->gen = gen;
 	joint->x = x;
 	joint->y = y;
+	joint->visited = false;
 	init_attach_list(&joint->att);
 
 	return joint;
@@ -529,6 +530,7 @@ static void add_level_block(struct design *design, struct xml_block *xml_block)
 	block->id = xml_block->id;
 	block->body = NULL;
 	block->overlap = false;
+	block->visited = false;
 
 	append_block(&design->level_blocks, block);
 }
@@ -580,6 +582,7 @@ static void add_player_block(struct design *design, struct xml_block *xml_block)
 	block->id = xml_block->id;
 	block->body = NULL;
 	block->overlap = false;
+	block->visited = false;
 
 	append_block(&design->player_blocks, block);
 }

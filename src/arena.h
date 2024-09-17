@@ -12,6 +12,7 @@ enum action {
 	ACTION_MOVE_JOINT,
 	ACTION_NEW_ROD,
 	ACTION_NEW_WHEEL,
+	ACTION_MOVE,
 };
 
 enum tool {
@@ -22,6 +23,16 @@ enum tool {
 	TOOL_CW_WHEEL,
 	TOOL_CCW_WHEEL,
 	TOOL_DELETE,
+};
+
+struct block_head {
+	struct block_head *next;
+	struct block *block;
+};
+
+struct joint_head {
+	struct joint_head *next;
+	struct joint *joint;
 };
 
 struct arena {
@@ -39,6 +50,11 @@ struct arena {
 	enum tool tool;
 	enum action action;
 	struct joint *hover_joint;
+	struct block *hover_block;
+
+	struct joint_head *root_joints_moving;
+	struct block_head *root_blocks_moving;
+	struct block_head *blocks_moving;
 
 	struct block *new_block;
 

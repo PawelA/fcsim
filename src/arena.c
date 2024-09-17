@@ -186,6 +186,10 @@ static void push_block(struct arena *arena, struct block *block)
 		color.r = 1.0f;
 		color.g = 0.0f;
 		color.b = 0.0f;
+	} else if (block->visited) {
+		color.r = 1.0f;
+		color.g = 1.0f;
+		color.b = 1.0f;
 	} else if (block->goal) {
 		color.r = 1.0f;
 		color.g = 0.4f;
@@ -297,6 +301,11 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->tool = TOOL_MOVE;
 	arena->action = ACTION_NONE;
 	arena->hover_joint = NULL;
+	arena->hover_block = NULL;
+
+	arena->root_joints_moving = NULL;
+	arena->root_blocks_moving = NULL;
+	arena->blocks_moving = NULL;
 
 	xml_parse(galois_xml, sizeof(galois_xml), &level);
 	convert_xml(&level, &arena->design);
@@ -694,6 +703,7 @@ void action_none(struct arena *arena, int x, int y)
 	float x_world;
 	float y_world;
 	struct joint *joint;
+	struct block *block;
 
 	if (arena->running)
 		return;
@@ -701,7 +711,21 @@ void action_none(struct arena *arena, int x, int y)
 	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
 
 	joint = joint_hit_test(arena, x_world, y_world);
-	arena->hover_joint = joint;
+	if (joint) {
+		arena->hover_joint = joint;
+		arena->hover_block = NULL;
+		return;
+	}
+
+	block = block_hit_test(arena, x_world, y_world);
+	if (block) {
+		arena->hover_joint = NULL;
+		arena->hover_block = block;
+		return;
+	}
+
+	arena->hover_joint = NULL;
+	arena->hover_block = NULL;
 }
 
 void move_joint(struct arena *arena, struct joint *joint, double x, double y);
@@ -1025,6 +1049,14 @@ void new_rod(struct arena *arena)
 }
 */
 
+void joint_dfs(struct arena *arena, struct joint *joint, bool value);
+void block_dfs(struct arena *arena, struct block *block, bool value);
+
+void mouse_up_move(struct arena *arena)
+{
+	block_dfs(arena, arena->hover_block, false);
+}
+
 void arena_mouse_button_up_event(struct arena *arena, int button)
 {
 	if (button != 1) /* left */
@@ -1034,9 +1066,56 @@ void arena_mouse_button_up_event(struct arena *arena, int button)
 	case ACTION_NEW_ROD:
 		//new_rod(arena);
 		break;
+	case ACTION_MOVE:
+		mouse_up_move(arena);
 	}
 
 	arena->action = ACTION_NONE;
+}
+
+void block_dfs(struct arena *arena, struct block *block, bool value)
+{
+	struct joint *j[5];
+	int n;
+	int i;
+
+	if (block->visited == value)
+		return;
+
+	block->visited = value;
+
+	n = get_block_joints(block, j);
+
+	for (i = 0; i < n; i++)
+		joint_dfs(arena, j[i], value);
+}
+
+void joint_dfs(struct arena *arena, struct joint *joint, bool value)
+{
+	struct attach_node *node;
+
+	if (joint->visited == value)
+		return;
+
+	joint->visited = value;
+
+	if (joint->gen)
+		block_dfs(arena, joint->gen, value);
+
+	for (node = joint->att.head; node; node = node->next)
+		block_dfs(arena, node->block, value);
+}
+
+void mouse_down_move(struct arena *arena, float x, float y)
+{
+	if (arena->hover_joint) {
+		arena->action = ACTION_MOVE_JOINT;
+	} else if (arena->hover_block) {
+		arena->action = ACTION_MOVE;
+		block_dfs(arena, arena->hover_block, true);
+	} else {
+		arena->action = ACTION_PAN;
+	}
 }
 
 void mouse_down_rod(struct arena *arena, float x, float y)
@@ -1075,6 +1154,7 @@ void mouse_down_rod(struct arena *arena, float x, float y)
 	block->material = solid ? &solid_rod_material : &water_rod_material;
 	block->goal = false;
 	block->overlap = false;
+	block->visited = false;
 
 	if (solid) {
 		block->r = solid_rod_r;
@@ -1153,6 +1233,7 @@ void mouse_down_wheel(struct arena *arena, float x, float y)
 	block->material = &solid_material;
 	block->goal = false;
 	block->overlap = false;
+	block->visited = false;
 
 	switch (arena->tool) {
 	case TOOL_WHEEL:
@@ -1200,10 +1281,7 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 	} else {
 		switch (arena->tool) {
 		case TOOL_MOVE:
-			if (arena->hover_joint)
-				arena->action = ACTION_MOVE_JOINT;
-			else
-				arena->action = ACTION_PAN;
+			mouse_down_move(arena, x_world, y_world);
 			break;
 		case TOOL_ROD:
 		case TOOL_SOLID_ROD:
