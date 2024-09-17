@@ -294,7 +294,11 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->cursor_x = 0;
 	arena->cursor_y = 0;
 
+	arena->shift = false;
+	arena->ctrl = false;
+
 	arena->tool = TOOL_MOVE;
+	arena->tool_hidden = TOOL_MOVE;
 	arena->action = ACTION_NONE;
 	arena->hover_joint = NULL;
 	arena->hover_block = NULL;
@@ -392,9 +396,28 @@ void arena_draw(struct arena *arena)
 	}
 }
 
+void update_tool(struct arena *arena)
+{
+	if (arena->shift)
+		arena->tool = TOOL_MOVE;
+	else if (arena->ctrl)
+		arena->tool = TOOL_DELETE;
+	else
+		arena->tool = arena->tool_hidden;
+}
+
 void arena_key_up_event(struct arena *arena, int key)
 {
+	switch (key) {
+	case 50: /* shift */
+		arena->shift = false;
+		break;
+	case 37: /* ctrl */
+		arena->ctrl = false;
+		break;
+	}
 
+	update_tool(arena);
 }
 
 void tick_func(void *arg)
@@ -427,27 +450,35 @@ void arena_key_down_event(struct arena *arena, int key)
 		start_stop(arena);
 		break;
 	case 27: /* R */
-		arena->tool = TOOL_ROD;
+		arena->tool_hidden = TOOL_ROD;
 		break;
 	case 58: /* M */
-		arena->tool = TOOL_MOVE;
+		arena->tool_hidden = TOOL_MOVE;
 		break;
 	case 39: /* S */
-		arena->tool = TOOL_SOLID_ROD;
+		arena->tool_hidden = TOOL_SOLID_ROD;
 		break;
 	case 40: /* D */
-		arena->tool = TOOL_DELETE;
+		arena->tool_hidden = TOOL_DELETE;
 		break;
 	case 30: /* U */
-		arena->tool = TOOL_WHEEL;
+		arena->tool_hidden = TOOL_WHEEL;
 		break;
 	case 25: /* W */
-		arena->tool = TOOL_CW_WHEEL;
+		arena->tool_hidden = TOOL_CW_WHEEL;
 		break;
 	case 54: /* C */
-		arena->tool = TOOL_CCW_WHEEL;
+		arena->tool_hidden = TOOL_CCW_WHEEL;
+		break;
+	case 50: /* shift */
+		arena->shift = true;
+		break;
+	case 37: /* ctrl */
+		arena->ctrl = true;
 		break;
 	}
+
+	update_tool(arena);
 }
 
 static float distance(float x0, float y0, float x1, float y1)

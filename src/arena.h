@@ -46,8 +46,11 @@ struct arena {
 
 	int cursor_x;
 	int cursor_y;
+	bool shift;
+	bool ctrl;
 
 	enum tool tool;
+	enum tool tool_hidden;
 	enum action action;
 	struct joint *hover_joint;
 	struct block *hover_block;
