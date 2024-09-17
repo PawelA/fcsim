@@ -1105,6 +1105,7 @@ void mouse_down_wheel(struct arena *arena, float x, float y)
 	block->shape.wheel.center_att = att0;
 	block->shape.wheel.radius = 20.0;
 	block->shape.wheel.angle = 0.0;
+	block->shape.wheel.spin = 0;
 
 	double a[4] = {
 		0.0,

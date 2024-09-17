@@ -71,6 +71,7 @@ struct wheel {
 	struct attach_node *center_att;
 	double radius;
 	double angle;
+	int spin;
 
 	struct joint *spokes[4];
 };

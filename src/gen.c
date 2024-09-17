@@ -183,6 +183,14 @@ static void gen_joint(b2World *world, b2Body *b1, b2Body *b2, double x, double y
 	b2World_CreateJoint(world, &joint_def.m_jointDef);
 }
 
+static int block_spin(struct block *block)
+{
+	if (block->shape.type != SHAPE_WHEEL)
+		return 0;
+
+	return block->shape.wheel.spin;
+}
+
 static void gen_joint_stack(b2World *world, struct joint *joint)
 {
 	struct attach_node *node = joint->att.head;
@@ -192,11 +200,19 @@ static void gen_joint_stack(b2World *world, struct joint *joint)
 	if (!node)
 		return;
 
-	if (joint->gen)
-		gen_joint(world, joint->gen->body, node->block->body, x, y, 0);
+	if (joint->gen) {
+		gen_joint(world, joint->gen->body, node->block->body,
+			  x, y, block_spin(node->block));
+	} else if (node->next) {
+		gen_joint(world, node->block->body, node->next->block->body,
+			  x, y, block_spin(node->next->block) - block_spin(node->block));
+		node = node->next;
+	}
 
-	for (; node->next; node = node->next)
-		gen_joint(world, node->block->body, node->next->block->body, x, y, 0);
+	for (; node->next; node = node->next) {
+		gen_joint(world, node->block->body, node->next->block->body,
+			  x, y, block_spin(node->next->block));
+	}
 }
 
 b2World *gen_world(struct design *design)

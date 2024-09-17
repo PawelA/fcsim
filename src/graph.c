@@ -451,6 +451,7 @@ static void add_wheel(struct design *design, struct block *block, struct xml_blo
 	shape->wheel.center_att = att0;
 	shape->wheel.radius = xml_block->width / 2;
 	shape->wheel.angle = xml_block->rotation;
+	shape->wheel.spin = 0; /* TODO */
 
 	double a[4] = {
 		0.0,
