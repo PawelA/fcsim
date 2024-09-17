@@ -84,9 +84,9 @@ struct material water_rod_material = {
 	.collision_mask = WATER_COLLISION_MASK,
 };
 
-static float goal_r = 0.945f;
-static float goal_g = 0.569f;
-static float goal_b = 0.569f;
+static float goal_r = 1.000f;
+static float goal_g = 0.400f;
+static float goal_b = 0.400f;
 
 static void init_block_list(struct block_list *list)
 {
@@ -573,9 +573,23 @@ static void add_player_block(struct design *design, struct xml_block *xml_block)
 		add_wheel(design, block, xml_block);
 		block->material = &solid_material;
 		block->goal = xml_block->goal_block;
-		block->r = wheel_r;
-		block->g = wheel_g;
-		block->b = wheel_b;
+		if (block->goal) {
+			block->r = goal_r;
+			block->g = goal_g;
+			block->b = goal_b;
+		} else if (xml_block->type == XML_NO_SPIN_WHEEL) {
+			block->r = wheel_r;
+			block->g = wheel_g;
+			block->b = wheel_b;
+		} else if (xml_block->type == XML_CLOCKWISE_WHEEL) {
+			block->r = cw_wheel_r;
+			block->g = cw_wheel_g;
+			block->b = cw_wheel_b;
+		} else {
+			block->r = ccw_wheel_r;
+			block->g = ccw_wheel_g;
+			block->b = ccw_wheel_b;
+		}
 		break;
 	}
 

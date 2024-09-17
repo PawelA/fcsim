@@ -190,10 +190,6 @@ static void push_block(struct arena *arena, struct block *block)
 		color.r = block->r + (1.0f - block->r) * 0.25f;
 		color.g = block->g + (1.0f - block->g) * 0.25f;
 		color.b = block->b + (1.0f - block->b) * 0.25f;
-	} else if (block->goal) {
-		color.r = 1.0f;
-		color.g = 0.4f;
-		color.b = 0.4f;
 	} else {
 		color.r = block->r;
 		color.g = block->g;
