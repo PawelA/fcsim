@@ -38,6 +38,14 @@ const float wheel_r = 0.537f;
 const float wheel_g = 0.980f;
 const float wheel_b = 0.890f;
 
+const float cw_wheel_r = 1.000f;
+const float cw_wheel_g = 0.925f;
+const float cw_wheel_b = 0.000f;
+
+const float ccw_wheel_r = 1.000f;
+const float ccw_wheel_g = 0.800f;
+const float ccw_wheel_b = 0.800f;
+
 struct material solid_material = {
 	.density = 1.0,
 	.friction = 0.7,

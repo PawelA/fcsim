@@ -436,6 +436,12 @@ void arena_key_down_event(struct arena *arena, int key)
 	case 30: /* U */
 		arena->tool = TOOL_WHEEL;
 		break;
+	case 25: /* W */
+		arena->tool = TOOL_CW_WHEEL;
+		break;
+	case 54: /* C */
+		arena->tool = TOOL_CCW_WHEEL;
+		break;
 	}
 }
 
@@ -1115,7 +1121,18 @@ void mouse_down_wheel(struct arena *arena, float x, float y)
 	block->shape.wheel.center_att = att0;
 	block->shape.wheel.radius = 20.0;
 	block->shape.wheel.angle = 0.0;
-	block->shape.wheel.spin = 0;
+
+	switch (arena->tool) {
+	case TOOL_WHEEL:
+		block->shape.wheel.spin = 0;
+		break;
+	case TOOL_CW_WHEEL:
+		block->shape.wheel.spin = 5;
+		break;
+	case TOOL_CCW_WHEEL:
+		block->shape.wheel.spin = -5;
+		break;
+	}
 
 	double a[4] = {
 		0.0,
@@ -1137,9 +1154,23 @@ void mouse_down_wheel(struct arena *arena, float x, float y)
 	block->goal = false;
 	block->overlap = false;
 
-	block->r = wheel_r;
-	block->g = wheel_g;
-	block->b = wheel_b;
+	switch (arena->tool) {
+	case TOOL_WHEEL:
+		block->r = wheel_r;
+		block->g = wheel_g;
+		block->b = wheel_b;
+		break;
+	case TOOL_CW_WHEEL:
+		block->r = cw_wheel_r;
+		block->g = cw_wheel_g;
+		block->b = cw_wheel_b;
+		break;
+	case TOOL_CCW_WHEEL:
+		block->r = ccw_wheel_r;
+		block->g = ccw_wheel_g;
+		block->b = ccw_wheel_b;
+		break;
+	}
 
 	arena->new_block = block;
 
@@ -1179,6 +1210,8 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 			mouse_down_rod(arena, x_world, y_world);
 			break;
 		case TOOL_WHEEL:
+		case TOOL_CW_WHEEL:
+		case TOOL_CCW_WHEEL:
 			mouse_down_wheel(arena, x_world, y_world);
 			break;
 		case TOOL_DELETE:

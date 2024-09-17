@@ -123,6 +123,14 @@ extern const float wheel_r;
 extern const float wheel_g;
 extern const float wheel_b;
 
+extern const float cw_wheel_r;
+extern const float cw_wheel_g;
+extern const float cw_wheel_b;
+
+extern const float ccw_wheel_r;
+extern const float ccw_wheel_g;
+extern const float ccw_wheel_b;
+
 extern const float solid_rod_r;
 extern const float solid_rod_g;
 extern const float solid_rod_b;
