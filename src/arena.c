@@ -23,8 +23,10 @@ const char *block_vertex_shader_src =
 	"attribute vec2 a_coords;"
 	"attribute vec3 a_color;"
 	"varying vec3 v_color;"
+	"uniform vec2 u_scale;"
+	"uniform vec2 u_shift;"
 	"void main() {"
-		"gl_Position = vec4(a_coords, 0.0, 1.0);"
+		"gl_Position = vec4(a_coords * u_scale + u_shift, 0.0, 1.0);"
 		"v_color = a_color;"
 	"}";
 
@@ -40,6 +42,8 @@ const char *block_fragment_shader_src =
 GLuint block_program;
 GLuint block_program_coord_attrib;
 GLuint block_program_color_attrib;
+GLuint block_program_scale_uniform;
+GLuint block_program_shift_uniform;
 
 const char *joint_vertex_shader_src =
 	"attribute vec2 a_coords;"
@@ -82,13 +86,8 @@ void world_to_view(struct view *view, float x, float y, float *x_view, float *y_
 
 void push_coord(struct arena *arena, float x, float y)
 {
-	float x_view;
-	float y_view;
-
-	world_to_view(&arena->view, x, y, &x_view, &y_view);
-
-	arena->coords[arena->cnt_coord++] = x_view;
-	arena->coords[arena->cnt_coord++] = y_view;
+	arena->coords[arena->cnt_coord++] = x;
+	arena->coords[arena->cnt_coord++] = y;
 }
 
 void push_color(struct arena *arena, float r, float g, float b)
@@ -250,6 +249,8 @@ bool arena_compile_shaders(void)
 
 	block_program_coord_attrib = glGetAttribLocation(block_program, "a_coords");
 	block_program_color_attrib = glGetAttribLocation(block_program, "a_color");
+	block_program_scale_uniform = glGetUniformLocation(block_program, "u_scale");
+	block_program_shift_uniform = glGetUniformLocation(block_program, "u_shift");
 
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &joint_vertex_shader_src, NULL);
@@ -365,6 +366,13 @@ void arena_draw(struct arena *arena)
 	draw_level(arena);
 
 	glUseProgram(block_program);
+
+	glUniform2f(block_program_scale_uniform,
+		     1.0f / (arena->view.width * arena->view.scale),
+		    -1.0f / (arena->view.height * arena->view.scale));
+	glUniform2f(block_program_shift_uniform,
+		    -arena->view.x / (arena->view.width * arena->view.scale),
+		     arena->view.y / (arena->view.height * arena->view.scale));
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, arena->coord_buffer);
