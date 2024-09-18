@@ -61,17 +61,16 @@ struct arena {
 
 	struct block *new_block;
 
-	unsigned short indices[2048];
-	float coords[2048];
-	float colors[2048];
-
-	int cnt_index;
-	int cnt_coord;
-	int cnt_color;
+	unsigned short *indices;
+	float *coords;
+	float *colors;
 
 	GLuint index_buffer;
 	GLuint coord_buffer;
 	GLuint color_buffer;
+
+	int vertex_cnt;
+	int triangle_cnt;
 
 	float joint_coords[48];
 	GLuint joint_coord_buffer;
