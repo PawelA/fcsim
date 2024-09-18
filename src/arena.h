@@ -35,6 +35,19 @@ struct joint_head {
 	struct joint *joint;
 };
 
+struct block_graphics {
+	unsigned short *indices;
+	float *coords;
+	float *colors;
+
+	GLuint index_buffer;
+	GLuint coord_buffer;
+	GLuint color_buffer;
+
+	int triangle_cnt;
+	int vertex_cnt;
+};
+
 struct arena {
 	struct design design;
 	b2World *world;
@@ -61,16 +74,7 @@ struct arena {
 
 	struct block *new_block;
 
-	unsigned short *indices;
-	float *coords;
-	float *colors;
-
-	GLuint index_buffer;
-	GLuint coord_buffer;
-	GLuint color_buffer;
-
-	int vertex_cnt;
-	int triangle_cnt;
+	struct block_graphics block_graphics;
 
 	float joint_coords[48];
 	GLuint joint_coord_buffer;
