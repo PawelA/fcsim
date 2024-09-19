@@ -737,6 +737,53 @@ struct block *block_hit_test(struct arena *arena, float x, float y)
 	return NULL;
 }
 
+static void get_rect_bb(struct shell *shell, struct area *area)
+{
+	float sina = fp_sin(shell->angle);
+	float cosa = fp_cos(shell->angle);
+	float wc = shell->rect.w * cosa;
+	float ws = shell->rect.w * sina;
+	float hc = shell->rect.h * cosa;
+	float hs = shell->rect.h * sina;
+
+	area->x = shell->x;
+	area->y = shell->y;
+	area->w = fabs(wc) + fabs(hs);
+	area->h = fabs(ws) + fabs(hc);
+}
+
+static void get_circ_bb(struct shell *shell, struct area *area)
+{
+	area->x = shell->x;
+	area->y = shell->y;
+	area->w = shell->circ.radius;
+	area->h = shell->circ.radius;
+}
+
+static void get_block_bb(struct block *block, struct area *area)
+{
+	struct shell shell;
+
+	get_shell(&shell, &block->shape);
+
+	if (shell.type == SHELL_CIRC)
+		get_circ_bb(&shell, area);
+	else
+		get_rect_bb(&shell, area);
+}
+
+static int block_inside_area(struct block *block, struct area *area)
+{
+	struct area bb;
+
+	get_block_bb(block, &bb);
+
+	return bb.x - bb.w / 2 >= area->x - area->w / 2
+	    && bb.x + bb.w / 2 <= area->x + area->w / 2
+	    && bb.y - bb.h / 2 >= area->y - area->h / 2
+	    && bb.y + bb.h / 2 <= area->y + area->h / 2;
+}
+
 void gen_block(b2World *world, struct block *block);
 void b2World_CleanBodyList(b2World *world);
 
@@ -750,7 +797,7 @@ void mark_overlaps(struct arena *arena)
 	b2ContactManager_Collide(&arena->world->m_contactManager);
 
 	for (block = arena->design.player_blocks.head; block; block = block->next)
-		block->overlap = false;
+		block->overlap = !block_inside_area(block, &arena->design.build_area);
 
 	for (contact = arena->world->m_contactList; contact; contact = contact->m_next) {
 		if (contact->m_manifoldCount > 0) {
