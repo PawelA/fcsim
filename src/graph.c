@@ -605,8 +605,8 @@ void set_area(struct area *area, struct xml_zone *xml_zone)
 {
 	area->x = xml_zone->position.x;
 	area->y = xml_zone->position.y;
-	area->w = xml_zone->width;
-	area->h = xml_zone->height;
+	area->w = xml_zone->width + 4.0;
+	area->h = xml_zone->height + 4.0;
 }
 
 void convert_xml(struct xml_level *xml_level, struct design *design)
