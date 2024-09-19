@@ -33,6 +33,8 @@ struct block_head {
 struct joint_head {
 	struct joint_head *next;
 	struct joint *joint;
+	double orig_x;
+	double orig_y;
 };
 
 struct block_graphics {
@@ -71,6 +73,8 @@ struct arena {
 	struct joint_head *root_joints_moving;
 	struct block_head *root_blocks_moving;
 	struct block_head *blocks_moving;
+	float move_orig_x;
+	float move_orig_y;
 
 	struct block *new_block;
 

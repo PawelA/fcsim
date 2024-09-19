@@ -1015,22 +1015,15 @@ void action_move_joint(struct arena *arena, int x, int y)
 	mark_overlaps(arena);
 }
 
-void action_move(struct arena *arena, int x, int y)
+void update_move(struct arena *arena, double dx, double dy)
 {
-	float dx_world;
-	float dy_world;
 	struct joint_head *joint_head;
 	struct block_head *block_head;
 
-	dx_world = (x - arena->cursor_x) * arena->view.scale * 2;
-	dy_world = (y - arena->cursor_y) * arena->view.scale * 2;
-
-	//move_joint(arena, joint, joint->x + dx_world, joint->y + dy_world);
-
 	for (joint_head = arena->root_joints_moving; joint_head;
 	     joint_head = joint_head->next) {
-		joint_head->joint->x += dx_world;
-		joint_head->joint->y += dy_world;
+		joint_head->joint->x = joint_head->orig_x + dx;
+		joint_head->joint->y = joint_head->orig_y + dy;
 	}
 
 	for (block_head = arena->blocks_moving; block_head;
@@ -1044,6 +1037,21 @@ void action_move(struct arena *arena, int x, int y)
 	}
 
 	mark_overlaps(arena);
+}
+
+void action_move(struct arena *arena, int x, int y)
+{
+	float x_world;
+	float y_world;
+	float dx;
+	float dy;
+
+	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
+
+	dx = x_world - arena->move_orig_x;
+	dy = y_world - arena->move_orig_y;
+
+	update_move(arena, dx, dy);
 }
 
 bool new_rod_attached(struct rod *rod)
@@ -1298,7 +1306,22 @@ void block_dfs(struct arena *arena, struct block *block, bool value);
 
 void mouse_up_move(struct arena *arena)
 {
+	struct block_head *block_head;
+	bool overlap = false;
+
 	block_dfs(arena, arena->hover_block, false);
+
+	for (block_head = arena->blocks_moving; block_head;
+	     block_head = block_head->next) {
+		if (block_head->block->overlap) {
+			overlap = true;
+			break;
+		}
+	}
+
+	if (overlap)
+		update_move(arena, 0.0, 0.0);
+
 	arena->root_joints_moving = NULL;
 	arena->root_blocks_moving = NULL;
 	arena->blocks_moving = NULL;
@@ -1327,6 +1350,8 @@ struct joint_head *append_joint_head(struct joint_head *head, struct joint *join
 	new_head = malloc(sizeof(*new_head));
 	new_head->next = head;
 	new_head->joint = joint;
+	new_head->orig_x = joint->x;
+	new_head->orig_y = joint->y;
 
 	return new_head;
 }
@@ -1388,6 +1413,8 @@ void mouse_down_move(struct arena *arena, float x, float y)
 		arena->action = ACTION_MOVE_JOINT;
 	} else if (arena->hover_block) {
 		arena->action = ACTION_MOVE;
+		arena->move_orig_x = x;
+		arena->move_orig_y = y;
 		block_dfs(arena, arena->hover_block, true);
 	} else {
 		arena->action = ACTION_PAN;
