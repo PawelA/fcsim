@@ -1251,56 +1251,6 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 	arena->cursor_y = y;
 }
 
-/*
-void new_rod(struct arena *arena)
-{
-	struct new_rod *new_rod = &arena->new_rod;
-	struct design *design = &arena->design;
-	struct block *block;
-	struct joint *j0, *j1;
-	struct attach_node *att0, *att1;
-
-	block = malloc(sizeof(*block));
-	block->prev = NULL;
-	block->next = NULL;
-
-	j0 = new_rod->j0;
-	if (!j0) {
-		j0 = new_joint(NULL, new_rod->x0, new_rod->y0);
-		append_joint(&design->joints, j0);
-	}
-	att0 = new_attach_node(block);
-	append_attach_node(&j0->att, att0);
-
-	j1 = new_rod->j1;
-	if (!j1) {
-		j1 = new_joint(NULL, new_rod->x1, new_rod->y1);
-		append_joint(&design->joints, j1);
-	}
-	att1 = new_attach_node(block);
-	append_attach_node(&j1->att, att1);
-
-	block->shape.type = SHAPE_ROD;
-	block->shape.rod.from = j0;
-	block->shape.rod.from_att = att0;
-	block->shape.rod.to = j1;
-	block->shape.rod.to_att = att1;
-	block->shape.rod.width = new_rod->solid ? 8.0 : 4.0;
-
-	block->material = new_rod->solid ? &solid_rod_material : &water_rod_material;
-	block->goal = false;
-	block->overlap = false;
-
-	gen_block(arena->world, block);
-
-	append_block(&design->player_blocks, block);
-
-	arena->hover_joint = j1;
-
-	mark_overlaps(arena);
-}
-*/
-
 void joint_dfs(struct arena *arena, struct joint *joint, bool value);
 void block_dfs(struct arena *arena, struct block *block, bool value);
 
@@ -1333,9 +1283,6 @@ void arena_mouse_button_up_event(struct arena *arena, int button)
 		return;
 
 	switch (arena->action) {
-	case ACTION_NEW_ROD:
-		//new_rod(arena);
-		break;
 	case ACTION_MOVE:
 		mouse_up_move(arena);
 	}
