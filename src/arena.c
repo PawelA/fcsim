@@ -1540,6 +1540,17 @@ void mouse_down_wheel(struct arena *arena, float x, float y)
 	arena->action = ACTION_NEW_WHEEL;
 }
 
+bool inside_area(struct area *area, double x, double y)
+{
+	double w_half = area->w / 2;
+	double h_half = area->h / 2;
+
+	return x > area->x - w_half
+	    && x < area->x + w_half
+	    && y > area->y - h_half
+	    && y < area->y + h_half;
+}
+
 void arena_mouse_button_down_event(struct arena *arena, int button)
 {
 	int x = arena->cursor_x;
@@ -1553,6 +1564,8 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
 
 	if (arena->running) {
+		arena->action = ACTION_PAN;
+	} else if (!inside_area(&arena->design.build_area, x_world, y_world)) {
 		arena->action = ACTION_PAN;
 	} else {
 		switch (arena->tool) {
