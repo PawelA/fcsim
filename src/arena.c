@@ -635,7 +635,7 @@ bool share_block(struct design *design, struct joint *j1, struct joint *j2)
 	return false;
 }
 
-struct joint *joint_hit_test_exclude(struct arena *arena, float x, float y, struct rod *rod)
+struct joint *joint_hit_test_exclude_rod(struct arena *arena, float x, float y, struct rod *rod, bool attached)
 {
 	struct design *design = &arena->design;
 	struct joint *best_joint = NULL;
@@ -646,9 +646,9 @@ struct joint *joint_hit_test_exclude(struct arena *arena, float x, float y, stru
 	for (joint = design->joints.head; joint; joint = joint->next) {
 		if (joint == rod->from)
 			continue;
-		if (joint == rod->to)
+		if (!attached && joint == rod->to)
 			continue;
-		if (share_block(design, rod->from, joint))
+		if (!attached && share_block(design, rod->from, joint))
 			continue;
 		dist = distance(x, y, joint->x, joint->y);
 		if (dist < best_dist) {
@@ -660,7 +660,7 @@ struct joint *joint_hit_test_exclude(struct arena *arena, float x, float y, stru
 	return best_joint;
 }
 
-struct joint *joint_hit_test_exclude2(struct arena *arena, float x, float y, struct wheel *wheel)
+struct joint *joint_hit_test_exclude_wheel(struct arena *arena, float x, float y, struct wheel *wheel, bool attached)
 {
 	struct design *design = &arena->design;
 	struct joint *best_joint = NULL;
@@ -669,7 +669,15 @@ struct joint *joint_hit_test_exclude2(struct arena *arena, float x, float y, str
 	double dist;
 
 	for (joint = design->joints.head; joint; joint = joint->next) {
-		if (joint == wheel->center)
+		if (!attached && joint == wheel->center)
+			continue;
+		if (joint == wheel->spokes[0])
+			continue;
+		if (joint == wheel->spokes[1])
+			continue;
+		if (joint == wheel->spokes[2])
+			continue;
+		if (joint == wheel->spokes[3])
 			continue;
 		dist = distance(x, y, joint->x, joint->y);
 		if (dist < best_dist) {
@@ -1086,10 +1094,7 @@ void action_new_rod(struct arena *arena, int x, int y)
 
 	attached = new_rod_attached(rod);
 
-	if (attached)
-		joint = joint_hit_test(arena, x_world, y_world);
-	else
-		joint = joint_hit_test_exclude(arena, x_world, y_world, rod);
+	joint = joint_hit_test_exclude_rod(arena, x_world, y_world, rod, attached);
 
 	if (!attached) {
 		if (joint) {
@@ -1126,10 +1131,7 @@ void action_new_wheel(struct arena *arena, int x, int y)
 
 	attached = wheel->center->gen || wheel->center_att->prev;
 
-	if (attached)
-		joint = joint_hit_test(arena, x_world, y_world);
-	else
-		joint = joint_hit_test_exclude2(arena, x_world, y_world, wheel);
+	joint = joint_hit_test_exclude_wheel(arena, x_world, y_world, wheel, attached);
 
 	if (!attached) {
 		if (joint) {
