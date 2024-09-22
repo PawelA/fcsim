@@ -1259,10 +1259,10 @@ void mouse_up_move(struct arena *arena)
 	struct block_head *block_head;
 	bool overlap = false;
 
-	if (arena->hover_block)
-		block_dfs(arena, arena->hover_block, false, true);
+	if (arena->move_orig_joint)
+		joint_dfs(arena, arena->move_orig_joint, false, true);
 	else
-		joint_dfs(arena, arena->hover_joint, false, false);
+		block_dfs(arena, arena->move_orig_block, false, true);
 
 	for (block_head = arena->blocks_moving; block_head;
 	     block_head = block_head->next) {
@@ -1382,21 +1382,39 @@ void joint_dfs(struct arena *arena, struct joint *joint, bool value, bool all)
 		block_dfs(arena, node->block, value, all);
 }
 
+void resolve_joint(struct arena *arena, struct joint *joint)
+{
+	struct block *block;
+
+	while (joint->gen) {
+		block = joint->gen;
+		if (block->shape.type == SHAPE_BOX) {
+			arena->move_orig_block = block;
+			return;
+		} else if (block->shape.type == SHAPE_WHEEL) {
+			joint = block->shape.wheel.center;
+		}
+	}
+
+	arena->move_orig_joint = joint;
+}
+
 void mouse_down_move(struct arena *arena, float x, float y)
 {
 	if (arena->hover_joint) {
-		if (arena->hover_joint->gen)
-			arena->action = ACTION_NONE;
-		else {
-			arena->action = ACTION_MOVE;
-			arena->move_orig_x = x;
-			arena->move_orig_y = y;
-			joint_dfs(arena, arena->hover_joint, true, false);
-		}
+		resolve_joint(arena, arena->hover_joint);
+		arena->action = ACTION_MOVE;
+		arena->move_orig_x = x;
+		arena->move_orig_y = y;
+		if (arena->move_orig_joint)
+			joint_dfs(arena, arena->move_orig_joint, true, false);
+		else
+			block_dfs(arena, arena->move_orig_block, true, false);
 	} else if (arena->hover_block) {
 		arena->action = ACTION_MOVE;
 		arena->move_orig_x = x;
 		arena->move_orig_y = y;
+		arena->move_orig_block = arena->hover_block;
 		block_dfs(arena, arena->hover_block, true, true);
 	} else {
 		arena->action = ACTION_PAN;

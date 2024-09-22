@@ -75,6 +75,8 @@ struct arena {
 	struct block_head *blocks_moving;
 	float move_orig_x;
 	float move_orig_y;
+	struct joint *move_orig_joint;
+	struct block *move_orig_block;
 
 	struct block *new_block;
 
