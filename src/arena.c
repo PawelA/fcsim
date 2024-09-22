@@ -1251,15 +1251,18 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 	arena->cursor_y = y;
 }
 
-void joint_dfs(struct arena *arena, struct joint *joint, bool value);
-void block_dfs(struct arena *arena, struct block *block, bool value);
+void joint_dfs(struct arena *arena, struct joint *joint, bool value, bool all);
+void block_dfs(struct arena *arena, struct block *block, bool value, bool all);
 
 void mouse_up_move(struct arena *arena)
 {
 	struct block_head *block_head;
 	bool overlap = false;
 
-	block_dfs(arena, arena->hover_block, false);
+	if (arena->hover_block)
+		block_dfs(arena, arena->hover_block, false, true);
+	else
+		joint_dfs(arena, arena->hover_joint, false, false);
 
 	for (block_head = arena->blocks_moving; block_head;
 	     block_head = block_head->next) {
@@ -1314,32 +1317,44 @@ struct block_head *append_block_head(struct block_head *head, struct block *bloc
 	return new_head;
 }
 
-void block_dfs(struct arena *arena, struct block *block, bool value)
+void block_dfs(struct arena *arena, struct block *block, bool value, bool all)
 {
-	struct joint *j[5];
-	int n;
+	struct shape *shape = &block->shape;
 	int i;
 
 	if (block->visited == value)
 		return;
-
 	block->visited = value;
 
 	arena->blocks_moving = append_block_head(arena->blocks_moving, block);
 
-	n = get_block_joints(block, j);
-
-	for (i = 0; i < n; i++)
-		joint_dfs(arena, j[i], value);
+	switch (shape->type) {
+	case SHAPE_BOX:
+		joint_dfs(arena, shape->box.center, value, all);
+		for (i = 0; i < 4; i++)
+			joint_dfs(arena, shape->box.corners[i], value, all);
+		break;
+	case SHAPE_ROD:
+		if (all) {
+			joint_dfs(arena, shape->rod.from, value, all);
+			joint_dfs(arena, shape->rod.to, value, all);
+		}
+		break;
+	case SHAPE_WHEEL:
+		if (all)
+			joint_dfs(arena, shape->wheel.center, value, all);
+		for (i = 0; i < 4; i++)
+			joint_dfs(arena, shape->wheel.spokes[i], value, all);
+		break;
+	}
 }
 
-void joint_dfs(struct arena *arena, struct joint *joint, bool value)
+void joint_dfs(struct arena *arena, struct joint *joint, bool value, bool all)
 {
 	struct attach_node *node;
 
 	if (joint->visited == value)
 		return;
-
 	joint->visited = value;
 
 	if (!joint->gen) {
@@ -1347,22 +1362,29 @@ void joint_dfs(struct arena *arena, struct joint *joint, bool value)
 			append_joint_head(arena->root_joints_moving, joint);
 	}
 
-	if (joint->gen)
-		block_dfs(arena, joint->gen, value);
+	if (all && joint->gen)
+		block_dfs(arena, joint->gen, value, all);
 
 	for (node = joint->att.head; node; node = node->next)
-		block_dfs(arena, node->block, value);
+		block_dfs(arena, node->block, value, all);
 }
 
 void mouse_down_move(struct arena *arena, float x, float y)
 {
 	if (arena->hover_joint) {
-		arena->action = ACTION_MOVE_JOINT;
+		if (arena->hover_joint->gen)
+			arena->action = ACTION_NONE;
+		else {
+			arena->action = ACTION_MOVE;
+			arena->move_orig_x = x;
+			arena->move_orig_y = y;
+			joint_dfs(arena, arena->hover_joint, true, false);
+		}
 	} else if (arena->hover_block) {
 		arena->action = ACTION_MOVE;
 		arena->move_orig_x = x;
 		arena->move_orig_y = y;
-		block_dfs(arena, arena->hover_block, true);
+		block_dfs(arena, arena->hover_block, true, true);
 	} else {
 		arena->action = ACTION_PAN;
 	}
