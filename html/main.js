@@ -109,6 +109,10 @@ let gl_env = {
 		return gl.getShaderParameter(get_object(shader), pname);
 	},
 
+	glGetUniformLocation(program, name) {
+		return add_object(gl.getUniformLocation(get_object(program), make_cstring(name)));
+	},
+
 	glLinkProgram(program) {
 		gl.linkProgram(get_object(program));
 	},
@@ -135,6 +139,10 @@ let gl_env = {
 
 		let source = strings.join("");
 		gl.shaderSource(get_object(shader), source);
+	},
+
+	glUniform2f(location, v0, v1) {
+		gl.uniform2f(get_object(location), v0, v1);
 	},
 
 	glUseProgram(program) {
@@ -223,6 +231,12 @@ function to_key(code)
 	if (code == "KeyM") return 58;
 	if (code == "KeyS") return 39;
 	if (code == "KeyD") return 40;
+	if (code == "KeyU") return 30;
+	if (code == "KeyW") return 25;
+	if (code == "KeyC") return 54;
+	if (code == "ShiftLeft") return 50;
+	if (code == "ControlLeft") return 37;
+	return 0;
 }
 
 function canvas_keydown(event)
