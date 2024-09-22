@@ -814,8 +814,11 @@ void mark_overlaps(struct arena *arena)
 	b2World_CleanBodyList(arena->world);
 	b2ContactManager_Collide(&arena->world->m_contactManager);
 
-	for (block = arena->design.player_blocks.head; block; block = block->next)
-		block->overlap = !block_inside_area(block, &arena->design.build_area);
+	for (block = arena->design.player_blocks.head; block; block = block->next) {
+		block->overlap = false;
+		if (!block->goal && !block_inside_area(block, &arena->design.build_area))
+			block->overlap = true;
+	}
 
 	for (contact = arena->world->m_contactList; contact; contact = contact->m_next) {
 		if (contact->m_manifoldCount > 0) {
