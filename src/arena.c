@@ -1280,6 +1280,14 @@ void mouse_up_move(struct arena *arena)
 	arena->blocks_moving = NULL;
 }
 
+void mouse_up_new_block(struct arena *arena)
+{
+	if (arena->new_block->overlap) {
+		delete_block(arena, arena->new_block);
+		arena->hover_joint = NULL;
+	}
+}
+
 void arena_mouse_button_up_event(struct arena *arena, int button)
 {
 	if (button != 1) /* left */
@@ -1288,6 +1296,11 @@ void arena_mouse_button_up_event(struct arena *arena, int button)
 	switch (arena->action) {
 	case ACTION_MOVE:
 		mouse_up_move(arena);
+		break;
+	case ACTION_NEW_ROD:
+	case ACTION_NEW_WHEEL:
+		mouse_up_new_block(arena);
+		break;
 	}
 
 	arena->action = ACTION_NONE;
