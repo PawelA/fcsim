@@ -239,6 +239,12 @@ function to_key(code)
 	return 0;
 }
 
+function to_button(code)
+{
+	if (code == 0) return 1;
+	return 0;
+}
+
 function canvas_keydown(event)
 {
 	inst.exports.key_down(to_key(event.code));
@@ -251,12 +257,12 @@ function canvas_keyup(event)
 
 function canvas_mousedown(event)
 {
-	inst.exports.button_down(1);
+	inst.exports.button_down(to_button(event.button));
 }
 
 function canvas_mouseup(event)
 {
-	inst.exports.button_up(1);
+	inst.exports.button_up(to_button(event.button));
 }
 
 function canvas_mousemove(event)
