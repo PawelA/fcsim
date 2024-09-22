@@ -1502,6 +1502,8 @@ void mouse_down_rod(struct arena *arena, float x, float y)
 	arena->hover_joint = j0;
 
 	arena->action = ACTION_NEW_ROD;
+
+	mark_overlaps(arena);
 }
 
 void mouse_down_wheel(struct arena *arena, float x, float y)
@@ -1589,6 +1591,8 @@ void mouse_down_wheel(struct arena *arena, float x, float y)
 	arena->hover_joint = j0;
 
 	arena->action = ACTION_NEW_WHEEL;
+
+	mark_overlaps(arena);
 }
 
 bool inside_area(struct area *area, double x, double y)
