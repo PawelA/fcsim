@@ -11,7 +11,7 @@
 #include "interval.h"
 #include "graph.h"
 #include "arena.h"
-#include "galois.h"
+#include "poocs.h"
 
 #define TAU 6.28318530718
 
@@ -408,7 +408,7 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->root_blocks_moving = NULL;
 	arena->blocks_moving = NULL;
 
-	xml_parse(galois_xml, sizeof(galois_xml), &level);
+	xml_parse(poocs_xml, sizeof(poocs_xml), &level);
 	convert_xml(&level, &arena->design);
 
 	arena->world = gen_world(&arena->design);
@@ -660,6 +660,22 @@ struct joint *joint_hit_test_exclude_rod(struct arena *arena, float x, float y, 
 	return best_joint;
 }
 
+bool has_wheel(struct joint *joint, struct wheel *not_this_one)
+{
+	struct attach_node *node;
+
+	if (joint->gen && joint->gen->shape.type == SHAPE_WHEEL)
+		return true;
+
+	for (node = joint->att.head; node; node = node->next) {
+		if (node->block->shape.type == SHAPE_WHEEL &&
+		    &node->block->shape.wheel != not_this_one)
+			return true;
+	}
+
+	return false;
+}
+
 struct joint *joint_hit_test_exclude_wheel(struct arena *arena, float x, float y, struct wheel *wheel, bool attached)
 {
 	struct design *design = &arena->design;
@@ -678,6 +694,8 @@ struct joint *joint_hit_test_exclude_wheel(struct arena *arena, float x, float y
 		if (joint == wheel->spokes[2])
 			continue;
 		if (joint == wheel->spokes[3])
+			continue;
+		if (has_wheel(joint, wheel))
 			continue;
 		dist = distance(x, y, joint->x, joint->y);
 		if (dist < best_dist) {
@@ -1264,6 +1282,9 @@ void mouse_up_move(struct arena *arena)
 	else
 		block_dfs(arena, arena->move_orig_block, false, true);
 
+	arena->move_orig_joint = NULL;
+	arena->move_orig_block = NULL;
+
 	for (block_head = arena->blocks_moving; block_head;
 	     block_head = block_head->next) {
 		if (block_head->block->overlap) {
@@ -1401,6 +1422,9 @@ void resolve_joint(struct arena *arena, struct joint *joint)
 
 void mouse_down_move(struct arena *arena, float x, float y)
 {
+	arena->move_orig_joint = NULL;
+	arena->move_orig_block = NULL;
+
 	if (arena->hover_joint) {
 		resolve_joint(arena, arena->hover_joint);
 		arena->action = ACTION_MOVE;
