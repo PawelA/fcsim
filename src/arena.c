@@ -756,8 +756,8 @@ static void get_circ_bb(struct shell *shell, struct area *area)
 {
 	area->x = shell->x;
 	area->y = shell->y;
-	area->w = shell->circ.radius;
-	area->h = shell->circ.radius;
+	area->w = shell->circ.radius * 2;
+	area->h = shell->circ.radius * 2;
 }
 
 static void get_block_bb(struct block *block, struct area *area)
