@@ -1019,23 +1019,6 @@ void move_joint(struct arena *arena, struct joint *joint, double x, double y)
 	}
 }
 
-void action_move_joint(struct arena *arena, int x, int y)
-{
-	float dx_world;
-	float dy_world;
-	struct joint *joint = arena->hover_joint;
-
-	if (joint->gen)
-		return;
-
-	dx_world = (x - arena->cursor_x) * arena->view.scale * 2;
-	dy_world = (y - arena->cursor_y) * arena->view.scale * 2;
-
-	move_joint(arena, joint, joint->x + dx_world, joint->y + dy_world);
-
-	mark_overlaps(arena);
-}
-
 void update_move(struct arena *arena, double dx, double dy)
 {
 	struct joint_head *joint_head;
@@ -1253,9 +1236,6 @@ void arena_mouse_move_event(struct arena *arena, int x, int y)
 		break;
 	case ACTION_NONE:
 		action_none(arena, x, y);
-		break;
-	case ACTION_MOVE_JOINT:
-		action_move_joint(arena, x, y);
 		break;
 	case ACTION_MOVE:
 		action_move(arena, x, y);

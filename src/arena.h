@@ -9,7 +9,6 @@ struct view {
 enum action {
 	ACTION_NONE,
 	ACTION_PAN,
-	ACTION_MOVE_JOINT,
 	ACTION_NEW_ROD,
 	ACTION_NEW_WHEEL,
 	ACTION_MOVE,
