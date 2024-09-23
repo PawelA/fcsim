@@ -400,7 +400,7 @@ void arena_init(struct arena *arena, float w, float h)
 
 	arena->tool = TOOL_MOVE;
 	arena->tool_hidden = TOOL_MOVE;
-	arena->action = ACTION_NONE;
+	arena->state = STATE_NORMAL;
 	arena->hover_joint = NULL;
 	arena->hover_block = NULL;
 
@@ -537,7 +537,7 @@ void start_stop(struct arena *arena)
 		arena->world = gen_world(&arena->design);
 		arena->ival = set_interval(tick_func, 10, arena);
 		arena->hover_joint = NULL;
-		arena->action = ACTION_NONE;
+		arena->state = STATE_NORMAL;
 	}
 	arena->running = !arena->running;
 }
@@ -1230,20 +1230,20 @@ void action_delete(struct arena *arena, int x, int y)
 
 void arena_mouse_move_event(struct arena *arena, int x, int y)
 {
-	switch (arena->action) {
-	case ACTION_PAN:
+	switch (arena->state) {
+	case STATE_PAN:
 		action_pan(arena, x, y);
 		break;
-	case ACTION_NONE:
+	case STATE_NORMAL:
 		action_none(arena, x, y);
 		break;
-	case ACTION_MOVE:
+	case STATE_MOVE:
 		action_move(arena, x, y);
 		break;
-	case ACTION_NEW_ROD:
+	case STATE_NEW_ROD:
 		action_new_rod(arena, x, y);
 		break;
-	case ACTION_NEW_WHEEL:
+	case STATE_NEW_WHEEL:
 		action_new_wheel(arena, x, y);
 		break;
 	}
@@ -1297,17 +1297,17 @@ void arena_mouse_button_up_event(struct arena *arena, int button)
 	if (button != 1) /* left */
 		return;
 
-	switch (arena->action) {
-	case ACTION_MOVE:
+	switch (arena->state) {
+	case STATE_MOVE:
 		mouse_up_move(arena);
 		break;
-	case ACTION_NEW_ROD:
-	case ACTION_NEW_WHEEL:
+	case STATE_NEW_ROD:
+	case STATE_NEW_WHEEL:
 		mouse_up_new_block(arena);
 		break;
 	}
 
-	arena->action = ACTION_NONE;
+	arena->state = STATE_NORMAL;
 }
 
 struct joint_head *append_joint_head(struct joint_head *head, struct joint *joint)
@@ -1410,7 +1410,7 @@ void mouse_down_move(struct arena *arena, float x, float y)
 
 	if (arena->hover_joint) {
 		resolve_joint(arena, arena->hover_joint);
-		arena->action = ACTION_MOVE;
+		arena->state = STATE_MOVE;
 		arena->move_orig_x = x;
 		arena->move_orig_y = y;
 		if (arena->move_orig_joint)
@@ -1418,13 +1418,13 @@ void mouse_down_move(struct arena *arena, float x, float y)
 		else
 			block_dfs(arena, arena->move_orig_block, true, false);
 	} else if (arena->hover_block) {
-		arena->action = ACTION_MOVE;
+		arena->state = STATE_MOVE;
 		arena->move_orig_x = x;
 		arena->move_orig_y = y;
 		arena->move_orig_block = arena->hover_block;
 		block_dfs(arena, arena->hover_block, true, true);
 	} else {
-		arena->action = ACTION_PAN;
+		arena->state = STATE_PAN;
 	}
 }
 
@@ -1484,7 +1484,7 @@ void mouse_down_rod(struct arena *arena, float x, float y)
 
 	arena->hover_joint = j0;
 
-	arena->action = ACTION_NEW_ROD;
+	arena->state = STATE_NEW_ROD;
 
 	mark_overlaps(arena);
 }
@@ -1573,7 +1573,7 @@ void mouse_down_wheel(struct arena *arena, float x, float y)
 
 	arena->hover_joint = j0;
 
-	arena->action = ACTION_NEW_WHEEL;
+	arena->state = STATE_NEW_WHEEL;
 
 	mark_overlaps(arena);
 }
@@ -1602,9 +1602,9 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
 
 	if (arena->running) {
-		arena->action = ACTION_PAN;
+		arena->state = STATE_PAN;
 	} else if (!inside_area(&arena->design.build_area, x_world, y_world)) {
-		arena->action = ACTION_PAN;
+		arena->state = STATE_PAN;
 	} else {
 		switch (arena->tool) {
 		case TOOL_MOVE:

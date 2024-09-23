@@ -6,12 +6,13 @@ struct view {
 	float height;
 };
 
-enum action {
-	ACTION_NONE,
-	ACTION_PAN,
-	ACTION_NEW_ROD,
-	ACTION_NEW_WHEEL,
-	ACTION_MOVE,
+enum state {
+	STATE_NORMAL,
+	STATE_PAN,
+	STATE_NEW_ROD,
+	STATE_NEW_WHEEL,
+	STATE_MOVE,
+	STATE_RUNNING,
 };
 
 enum tool {
@@ -65,7 +66,7 @@ struct arena {
 
 	enum tool tool;
 	enum tool tool_hidden;
-	enum action action;
+	enum state state;
 	struct joint *hover_joint;
 	struct block *hover_block;
 
