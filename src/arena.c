@@ -1214,18 +1214,14 @@ void action_new_wheel(struct arena *arena, int x, int y)
 	arena->hover_joint = joint_hit_test(arena, x_world, y_world);
 }
 
-void action_delete(struct arena *arena, int x, int y)
+void mouse_down_delete(struct arena *arena, float x, float y)
 {
-	float x_world;
-	float y_world;
 	struct block *block;
 
-	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
-
-	block = block_hit_test(arena, x_world, y_world);
+	block = block_hit_test(arena, x, y);
 	if (block) {
 		delete_block(arena, block);
-		arena->hover_joint = joint_hit_test(arena, x_world, y_world);
+		arena->hover_joint = joint_hit_test(arena, x, y);
 	}
 }
 
@@ -1599,6 +1595,27 @@ bool inside_area(struct area *area, double x, double y)
 	    && y < area->y + h_half;
 }
 
+void mouse_down_tool(struct arena *arena, float x, float y)
+{
+	switch (arena->tool) {
+	case TOOL_MOVE:
+		mouse_down_move(arena, x, y);
+		break;
+	case TOOL_ROD:
+	case TOOL_SOLID_ROD:
+		mouse_down_rod(arena, x, y);
+		break;
+	case TOOL_WHEEL:
+	case TOOL_CW_WHEEL:
+	case TOOL_CCW_WHEEL:
+		mouse_down_wheel(arena, x, y);
+		break;
+	case TOOL_DELETE:
+		mouse_down_delete(arena, x, y);
+		break;
+	}
+}
+
 void arena_mouse_button_down_event(struct arena *arena, int button)
 {
 	int x = arena->cursor_x;
@@ -1611,27 +1628,16 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 
 	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
 
-	if (arena->state == STATE_RUNNING || arena->state == STATE_RUNNING_PAN) {
+	switch (arena->state) {
+	case STATE_NORMAL:
+		if (inside_area(&arena->design.build_area, x_world, y_world))
+			mouse_down_tool(arena, x_world, y_world);
+		else
+			arena->state = STATE_NORMAL_PAN;
+		break;
+	case STATE_RUNNING:
 		arena->state = STATE_RUNNING_PAN;
-	} else if (!inside_area(&arena->design.build_area, x_world, y_world)) {
-		arena->state = STATE_NORMAL_PAN;
-	} else {
-		switch (arena->tool) {
-		case TOOL_MOVE:
-			mouse_down_move(arena, x_world, y_world);
-			break;
-		case TOOL_ROD:
-		case TOOL_SOLID_ROD:
-			mouse_down_rod(arena, x_world, y_world);
-			break;
-		case TOOL_WHEEL:
-		case TOOL_CW_WHEEL:
-		case TOOL_CCW_WHEEL:
-			mouse_down_wheel(arena, x_world, y_world);
-			break;
-		case TOOL_DELETE:
-			action_delete(arena, x, y);
-		}
+		break;
 	}
 }
 
