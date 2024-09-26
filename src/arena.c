@@ -525,21 +525,54 @@ void tick_func(void *arg)
 	step(arena->world);
 }
 
+void start(struct arena *arena)
+{
+	free_world(arena->world, &arena->design);
+	arena->world = gen_world(&arena->design);
+	arena->ival = set_interval(tick_func, 10, arena);
+	arena->hover_joint = NULL;
+}
+
+void stop(struct arena *arena)
+{
+	free_world(arena->world, &arena->design);
+	arena->world = gen_world(&arena->design);
+	clear_interval(arena->ival);
+}
+
+void mouse_up_new_block(struct arena *arena);
+void mouse_up_move(struct arena *arena);
+
 void start_stop(struct arena *arena)
 {
-	if (arena->state == STATE_RUNNING || arena->state == STATE_RUNNING_PAN) {
-		free_world(arena->world, &arena->design);
-		arena->world = gen_world(&arena->design);
-		clear_interval(arena->ival);
-		arena->state = arena->state == STATE_RUNNING ?
-			       STATE_NORMAL :
-			       STATE_NORMAL_PAN;
-	} else {
-		free_world(arena->world, &arena->design);
-		arena->world = gen_world(&arena->design);
-		arena->ival = set_interval(tick_func, 10, arena);
-		arena->hover_joint = NULL;
+	switch (arena->state) {
+	case STATE_NORMAL:
+		start(arena);
 		arena->state = STATE_RUNNING;
+		break;
+	case STATE_NORMAL_PAN:
+		start(arena);
+		arena->state = STATE_RUNNING_PAN;
+		break;
+	case STATE_NEW_ROD:
+	case STATE_NEW_WHEEL:
+		mouse_up_new_block(arena);
+		start(arena);
+		arena->state = STATE_RUNNING_PAN;
+		break;
+	case STATE_MOVE:
+		mouse_up_move(arena);
+		start(arena);
+		arena->state = STATE_RUNNING_PAN;
+		break;
+	case STATE_RUNNING:
+		stop(arena);
+		arena->state = STATE_NORMAL;
+		break;
+	case STATE_RUNNING_PAN:
+		stop(arena);
+		arena->state = STATE_NORMAL_PAN;
+		break;
 	}
 }
 
