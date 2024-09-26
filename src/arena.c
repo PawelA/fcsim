@@ -386,7 +386,6 @@ void arena_init(struct arena *arena, float w, float h)
 {
 	struct xml_level level;
 
-	arena->running = false;
 	arena->view.x = 0.0f;
 	arena->view.y = 0.0f;
 	arena->view.width = w;
@@ -528,18 +527,20 @@ void tick_func(void *arg)
 
 void start_stop(struct arena *arena)
 {
-	if (arena->running) {
+	if (arena->state == STATE_RUNNING || arena->state == STATE_RUNNING_PAN) {
 		free_world(arena->world, &arena->design);
 		arena->world = gen_world(&arena->design);
 		clear_interval(arena->ival);
+		arena->state = arena->state == STATE_RUNNING ?
+			       STATE_NORMAL :
+			       STATE_NORMAL_PAN;
 	} else {
 		free_world(arena->world, &arena->design);
 		arena->world = gen_world(&arena->design);
 		arena->ival = set_interval(tick_func, 10, arena);
 		arena->hover_joint = NULL;
-		arena->state = STATE_NORMAL;
+		arena->state = STATE_RUNNING;
 	}
-	arena->running = !arena->running;
 }
 
 void arena_key_down_event(struct arena *arena, int key)
@@ -910,7 +911,7 @@ void action_none(struct arena *arena, int x, int y)
 	struct joint *joint;
 	struct block *block;
 
-	if (arena->running)
+	if (arena->state == STATE_RUNNING || arena->state == STATE_RUNNING_PAN)
 		return;
 
 	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
@@ -1231,10 +1232,12 @@ void action_delete(struct arena *arena, int x, int y)
 void arena_mouse_move_event(struct arena *arena, int x, int y)
 {
 	switch (arena->state) {
-	case STATE_PAN:
+	case STATE_NORMAL_PAN:
+	case STATE_RUNNING_PAN:
 		action_pan(arena, x, y);
 		break;
 	case STATE_NORMAL:
+	case STATE_RUNNING:
 		action_none(arena, x, y);
 		break;
 	case STATE_MOVE:
@@ -1298,16 +1301,23 @@ void arena_mouse_button_up_event(struct arena *arena, int button)
 		return;
 
 	switch (arena->state) {
+	case STATE_NORMAL_PAN:
+		arena->state = STATE_NORMAL;
+		break;
 	case STATE_MOVE:
 		mouse_up_move(arena);
+		arena->state = STATE_NORMAL;
 		break;
 	case STATE_NEW_ROD:
 	case STATE_NEW_WHEEL:
 		mouse_up_new_block(arena);
+		arena->state = STATE_NORMAL;
+		break;
+	case STATE_RUNNING_PAN:
+		arena->state = STATE_RUNNING;
 		break;
 	}
 
-	arena->state = STATE_NORMAL;
 }
 
 struct joint_head *append_joint_head(struct joint_head *head, struct joint *joint)
@@ -1424,7 +1434,7 @@ void mouse_down_move(struct arena *arena, float x, float y)
 		arena->move_orig_block = arena->hover_block;
 		block_dfs(arena, arena->hover_block, true, true);
 	} else {
-		arena->state = STATE_PAN;
+		arena->state = STATE_NORMAL_PAN;
 	}
 }
 
@@ -1601,10 +1611,10 @@ void arena_mouse_button_down_event(struct arena *arena, int button)
 
 	pixel_to_world(&arena->view, x, y, &x_world, &y_world);
 
-	if (arena->running) {
-		arena->state = STATE_PAN;
+	if (arena->state == STATE_RUNNING || arena->state == STATE_RUNNING_PAN) {
+		arena->state = STATE_RUNNING_PAN;
 	} else if (!inside_area(&arena->design.build_area, x_world, y_world)) {
-		arena->state = STATE_PAN;
+		arena->state = STATE_NORMAL_PAN;
 	} else {
 		switch (arena->tool) {
 		case TOOL_MOVE:

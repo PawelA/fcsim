@@ -8,11 +8,12 @@ struct view {
 
 enum state {
 	STATE_NORMAL,
-	STATE_PAN,
+	STATE_NORMAL_PAN,
 	STATE_NEW_ROD,
 	STATE_NEW_WHEEL,
 	STATE_MOVE,
 	STATE_RUNNING,
+	STATE_RUNNING_PAN,
 };
 
 enum tool {
@@ -54,7 +55,6 @@ struct arena {
 	struct design design;
 	b2World *world;
 
-	bool running;
 	int ival;
 
 	struct view view;
