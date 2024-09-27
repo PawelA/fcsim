@@ -51,7 +51,6 @@ struct b2BodyDef
 	float64 angularDamping;
 	bool allowSleep;
 	bool isSleeping;
-	bool preventRotation;
 };
 
 enum

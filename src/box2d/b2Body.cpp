@@ -36,7 +36,6 @@ void b2BodyDef_ctor(b2BodyDef *def)
 	def->angularDamping = 0.0;
 	def->allowSleep = true;
 	def->isSleeping = false;
-	def->preventRotation = false;
 }
 
 void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world)
@@ -104,7 +103,7 @@ void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world)
 		body->m_invMass = 0.0;
 	}
 
-	if (body->m_I > 0.0 && bd->preventRotation == false)
+	if (body->m_I > 0.0)
 	{
 		body->m_invI = 1.0 / body->m_I;
 	}
