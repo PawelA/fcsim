@@ -111,8 +111,6 @@ struct b2Shape
 			    b2Vec2 position1, const b2Mat22* R1,
 			    b2Vec2 position2, const b2Mat22* R2);
 
-	void (*QuickSync)(b2Shape *shape, b2Vec2 position, const b2Mat22* R);
-
 	b2Vec2 (*Support)(const b2Shape *shape, b2Vec2 d);
 
 	b2Shape* m_next;
@@ -203,8 +201,6 @@ void b2CircleShape_Synchronize(b2Shape *shape,
 			       b2Vec2 position1, const b2Mat22* R1,
 			       b2Vec2 position2, const b2Mat22* R2);
 
-void b2CircleShape_QuickSync(b2Shape *shape, b2Vec2 position, const b2Mat22* R);
-
 b2Vec2 b2CircleShape_Support(const b2Shape *shape, b2Vec2 d);
 
 bool b2PolyShape_TestPoint(b2Shape *shape, b2Vec2 p);
@@ -214,8 +210,6 @@ void b2PolyShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase);
 void b2PolyShape_Synchronize(b2Shape *shape,
 			     b2Vec2 position1, const b2Mat22* R1,
 			     b2Vec2 position2, const b2Mat22* R2);
-
-void b2PolyShape_QuickSync(b2Shape *shape, b2Vec2 position, const b2Mat22* R);
 
 b2Vec2 b2PolyShape_Support(const b2Shape *shape, b2Vec2 d);
 

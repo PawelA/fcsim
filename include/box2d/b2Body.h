@@ -122,8 +122,6 @@ void b2Body_dtor(b2Body *body);
 
 void b2Body_SynchronizeShapes(b2Body *body);
 
-void b2Body_QuickSyncShapes(b2Body *body);
-
 // This is called when the child shape has no proxy.
 void b2Body_Freeze(b2Body *body);
 

@@ -315,7 +315,6 @@ static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def
 	circleShape->m_shape.TestPoint = b2CircleShape_TestPoint;
 	circleShape->m_shape.ResetProxy = b2CircleShape_ResetProxy;
 	circleShape->m_shape.Synchronize = b2CircleShape_Synchronize;
-	circleShape->m_shape.QuickSync = b2CircleShape_QuickSync;
 	circleShape->m_shape.Support = b2CircleShape_Support;
 
 	b2Assert(def->type == e_circleShape);
@@ -383,13 +382,6 @@ void b2CircleShape_Synchronize(b2Shape *shape,
 	}
 }
 
-void b2CircleShape_QuickSync(b2Shape *shape, b2Vec2 position, const b2Mat22 *R)
-{
-	b2CircleShape *circleShape = (b2CircleShape *)shape;
-	shape->m_R = *R;
-	shape->m_position = position + b2Mul(*R, circleShape->m_localPosition);
-}
-
 b2Vec2 b2CircleShape_Support(const b2Shape *shape, b2Vec2 d)
 {
 	b2CircleShape *circleShape = (b2CircleShape *)shape;
@@ -451,7 +443,6 @@ void b2PolyShape_ctor(b2PolyShape *polyShape,
 	polyShape->m_shape.TestPoint = b2PolyShape_TestPoint;
 	polyShape->m_shape.ResetProxy = b2PolyShape_ResetProxy;
 	polyShape->m_shape.Synchronize = b2PolyShape_Synchronize;
-	polyShape->m_shape.QuickSync = b2PolyShape_QuickSync;
 	polyShape->m_shape.Support = b2PolyShape_Support;
 
 	b2Assert(def->type == e_boxShape || def->type == e_polyShape);
@@ -619,13 +610,6 @@ void b2PolyShape_Synchronize(b2Shape *shape,
 	{
 		b2Body_Freeze(shape->m_body);
 	}
-}
-
-void b2PolyShape_QuickSync(b2Shape *shape, b2Vec2 position, const b2Mat22 *R)
-{
-	b2PolyShape *polyShape = (b2PolyShape *)shape;
-	shape->m_R = *R;
-	shape->m_position = position + b2Mul(*R, polyShape->m_localCentroid);
 }
 
 b2Vec2 b2PolyShape_Support(const b2Shape *shape, b2Vec2 d)

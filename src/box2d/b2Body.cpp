@@ -179,14 +179,6 @@ void b2Body_SynchronizeShapes(b2Body *body)
 	}
 }
 
-void b2Body_QuickSyncShapes(b2Body *body)
-{
-	for (b2Shape* s = body->m_shapeList; s; s = s->m_next)
-	{
-		s->QuickSync(s, body->m_position, &body->m_R);
-	}
-}
-
 void b2Body_Freeze(b2Body *body)
 {
 	body->m_flags |= b2Body_e_frozenFlag;
