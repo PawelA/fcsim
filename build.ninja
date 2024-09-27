@@ -25,7 +25,6 @@ obj/linux/box2d/b2CollidePoly.o $
 obj/linux/box2d/b2Contact.o $
 obj/linux/box2d/b2ContactManager.o $
 obj/linux/box2d/b2ContactSolver.o $
-obj/linux/box2d/b2Distance.o $
 obj/linux/box2d/b2Island.o $
 obj/linux/box2d/b2Joint.o $
 obj/linux/box2d/b2PairManager.o $
@@ -55,7 +54,6 @@ build obj/linux/box2d/b2CollidePoly.o: linux-cxx src/box2d/b2CollidePoly.cpp
 build obj/linux/box2d/b2Contact.o: linux-cc src/box2d/b2Contact.c
 build obj/linux/box2d/b2ContactManager.o: linux-cxx src/box2d/b2ContactManager.cpp
 build obj/linux/box2d/b2ContactSolver.o: linux-cxx src/box2d/b2ContactSolver.cpp
-build obj/linux/box2d/b2Distance.o: linux-cxx src/box2d/b2Distance.cpp
 build obj/linux/box2d/b2Island.o: linux-cxx src/box2d/b2Island.cpp
 build obj/linux/box2d/b2Joint.o: linux-cxx src/box2d/b2Joint.cpp
 build obj/linux/box2d/b2PairManager.o: linux-cxx src/box2d/b2PairManager.cpp
@@ -100,7 +98,6 @@ obj/wasm/box2d/b2CollidePoly.o $
 obj/wasm/box2d/b2Contact.o $
 obj/wasm/box2d/b2ContactManager.o $
 obj/wasm/box2d/b2ContactSolver.o $
-obj/wasm/box2d/b2Distance.o $
 obj/wasm/box2d/b2Island.o $
 obj/wasm/box2d/b2Joint.o $
 obj/wasm/box2d/b2PairManager.o $
@@ -133,7 +130,6 @@ build obj/wasm/box2d/b2CollidePoly.o: wasm-cxx src/box2d/b2CollidePoly.cpp
 build obj/wasm/box2d/b2Contact.o: wasm-cc src/box2d/b2Contact.c
 build obj/wasm/box2d/b2ContactManager.o: wasm-cxx src/box2d/b2ContactManager.cpp
 build obj/wasm/box2d/b2ContactSolver.o: wasm-cxx src/box2d/b2ContactSolver.cpp
-build obj/wasm/box2d/b2Distance.o: wasm-cxx src/box2d/b2Distance.cpp
 build obj/wasm/box2d/b2Island.o: wasm-cxx src/box2d/b2Island.cpp
 build obj/wasm/box2d/b2Joint.o: wasm-cxx src/box2d/b2Joint.cpp
 build obj/wasm/box2d/b2PairManager.o: wasm-cxx src/box2d/b2PairManager.cpp

@@ -86,8 +86,6 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const b2CircleShape* circle, bool conservative);
 void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* poly1, const b2PolyShape* poly2, bool conservative);
 
-float64 b2Distance(b2Vec2* x1, b2Vec2* x2, const b2Shape* shape1, const b2Shape* shape2);
-
 #ifdef __cplusplus
 }
 #endif
