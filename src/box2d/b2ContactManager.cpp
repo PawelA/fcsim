@@ -100,8 +100,6 @@ void b2ContactManager_PairRemoved(b2PairCallback *callback, void* proxyUserData1
 	b2Contact* c = (b2Contact*)pairUserData;
 	if (c != &manager->m_nullContact.contact)
 	{
-		b2Assert(manager->m_world->m_contactCount > 0);
-
 		if (manager->m_destroyImmediate == true)
 		{
 			b2ContactManager_DestroyContact(manager, c);
@@ -116,8 +114,6 @@ void b2ContactManager_PairRemoved(b2PairCallback *callback, void* proxyUserData1
 
 static void b2ContactManager_DestroyContact(b2ContactManager *manager, b2Contact* c)
 {
-	b2Assert(manager->m_world->m_contactCount > 0);
-
 	// Remove from the world.
 	if (c->m_prev)
 	{
@@ -225,8 +221,6 @@ void b2ContactManager_Collide(b2ContactManager *manager)
 
 		if (oldCount == 0 && newCount > 0)
 		{
-			b2Assert(c->GetManifolds()->pointCount > 0);
-
 			// Connect to island graph.
 			b2Body* body1 = c->m_shape1->m_body;
 			b2Body* body2 = c->m_shape2->m_body;

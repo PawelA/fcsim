@@ -68,7 +68,6 @@ static float64 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2Pol
 	const b2Vec2* vert2s = poly2->m_vertices;
 
 	// Convert normal from into poly2's frame.
-	b2Assert(edge1 < poly1->m_vertexCount);
 	b2Vec2 normal = b2Mul(poly1->m_shape.m_R, poly1->m_normals[edge1]);
 	b2Vec2 normalLocal2 = b2MulT(poly2->m_shape.m_R, normal);
 

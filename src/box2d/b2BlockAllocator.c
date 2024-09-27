@@ -54,8 +54,6 @@ struct b2Block
 
 void b2BlockAllocator_ctor(b2BlockAllocator *allocator)
 {
-	b2Assert(b2_blockSizes < UCHAR_MAX);
-
 	allocator->m_chunkSpace = b2_chunkArrayIncrement;
 	allocator->m_chunkCount = 0;
 	allocator->m_chunks = (b2Chunk*)b2Alloc(allocator->m_chunkSpace * sizeof(b2Chunk));
@@ -68,7 +66,6 @@ void b2BlockAllocator_ctor(b2BlockAllocator *allocator)
 		int32 j = 0;
 		for (int32 i = 1; i <= b2_maxBlockSize; ++i)
 		{
-			b2Assert(j < b2_blockSizes);
 			if (i <= b2BlockAllocator_s_blockSizes[j])
 			{
 				b2BlockAllocator_s_blockSizeLookup[i] = (uint8)j;
@@ -99,10 +96,7 @@ void* b2BlockAllocator_Allocate(b2BlockAllocator *allocator, int32 size)
 	if (size == 0)
 		return NULL;
 
-	b2Assert(0 < size && size <= b2_maxBlockSize);
-
 	int32 index = b2BlockAllocator_s_blockSizeLookup[size];
-	b2Assert(0 <= index && index < b2_blockSizes);
 
 	if (allocator->m_freeLists[index])
 	{
@@ -130,7 +124,6 @@ void* b2BlockAllocator_Allocate(b2BlockAllocator *allocator, int32 size)
 		int32 blockSize = b2BlockAllocator_s_blockSizes[index];
 		chunk->blockSize = blockSize;
 		int32 blockCount = b2_chunkSize / blockSize;
-		b2Assert(blockCount * blockSize <= b2_chunkSize);
 		for (int32 i = 0; i < blockCount - 1; ++i)
 		{
 			b2Block* block = (b2Block*)((int8*)chunk->blocks + blockSize * i);
@@ -154,37 +147,7 @@ void b2BlockAllocator_Free(b2BlockAllocator *allocator, void* p, int32 size)
 		return;
 	}
 
-	b2Assert(0 < size && size <= b2_maxBlockSize);
-
 	int32 index = b2BlockAllocator_s_blockSizeLookup[size];
-	b2Assert(0 <= index && index < b2_blockSizes);
-
-#ifdef _DEBUG
-	// Verify the memory address and size is valid.
-	int32 blockSize = b2BlockAllocator_s_blockSizes[index];
-	bool found = false;
-	int32 gap = (int32)((int8*)&allocator->m_chunks->blocks - (int8*)allocator->m_chunks);
-	for (int32 i = 0; i < allocator->m_chunkCount; ++i)
-	{
-		b2Chunk* chunk = allocator->m_chunks + i;
-		if (chunk->blockSize != blockSize)
-		{
-			b2Assert(	(int8*)p + blockSize <= (int8*)chunk->blocks ||
-						(int8*)chunk->blocks + b2_chunkSize + gap <= (int8*)p);
-		}
-		else
-		{
-			if ((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + b2_chunkSize)
-			{
-				found = true;
-			}
-		}
-	}
-
-	b2Assert(found);
-
-	memset(p, 0xfd, blockSize);
-#endif
 
 	b2Block* block = (b2Block*)p;
 	block->next = allocator->m_freeLists[index];

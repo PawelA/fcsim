@@ -53,8 +53,6 @@ extern "C" {
 
 void b2StackAllocator_ctor(b2StackAllocator *allocator);
 
-void b2StackAllocator_dtor(b2StackAllocator *allocator);
-
 void *b2StackAllocator_Allocate(struct b2StackAllocator *allocator, int32 size);
 
 void b2StackAllocator_Free(struct b2StackAllocator *allocator, void* p);

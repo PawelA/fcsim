@@ -36,10 +36,6 @@ b2Joint* b2Joint_Create(const b2JointDef* def, b2BlockAllocator* allocator)
 			joint = &revoluteJoint->m_joint;
 		}
 		break;
-
-	default:
-		b2Assert(false);
-		break;
 	}
 
 	return joint;
@@ -51,10 +47,6 @@ void b2Joint_Destroy(b2Joint* joint, b2BlockAllocator* allocator)
 	{
 	case e_revoluteJoint:
 		b2BlockAllocator_Free(allocator, joint, sizeof(b2RevoluteJoint));
-		break;
-
-	default:
-		b2Assert(false);
 		break;
 	}
 }

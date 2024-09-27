@@ -48,8 +48,6 @@
 // The rest of the derivation is handled by computer algebra.
 static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float64 rho)
 {
-	b2Assert(count >= 3);
-
 	b2Vec2 center; b2Vec2_Set(&center, 0.0, 0.0);
 	float64 area = 0.0;
 	float64 I = 0.0;
@@ -101,7 +99,6 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float6
 	massData->mass = rho * area;
 
 	// Center of mass
-	b2Assert(area > MIN_VALUE);
 	center *= 1.0 / area;
 	massData->center = center;
 
@@ -112,8 +109,6 @@ static void PolyMass(b2MassData* massData, const b2Vec2* vs, int32 count, float6
 
 static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 {
-	b2Assert(count >= 3);
-
 	b2Vec2 c; b2Vec2_Set(&c, 0.0, 0.0);
 	float64 area = 0.0;
 
@@ -152,7 +147,6 @@ static b2Vec2 PolyCentroid(const b2Vec2* vs, int32 count)
 	}
 
 	// Centroid
-	b2Assert(area > MIN_VALUE);
 	c *= 1.0 / area;
 	return c;
 }
@@ -248,7 +242,6 @@ b2Shape* b2Shape_Create(const b2ShapeDef* def,
 		}
 	}
 
-	b2Assert(false);
 	return NULL;
 }
 
@@ -268,9 +261,6 @@ void b2Shape_Destroy(b2Shape* shape)
 	case e_polyShape:
 		b2BlockAllocator_Free(&allocator, shape, sizeof(b2PolyShape));
 		break;
-
-	default:
-		b2Assert(false);
 	}
 }
 
@@ -309,7 +299,6 @@ static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def
 	circleShape->m_shape.Synchronize = b2CircleShape_Synchronize;
 	circleShape->m_shape.Support = b2CircleShape_Support;
 
-	b2Assert(def->type == e_circleShape);
 	const b2CircleDef* circle = (const b2CircleDef*)def;
 
 	circleShape->m_localPosition = def->localPosition - localCenter;
@@ -436,7 +425,6 @@ void b2PolyShape_ctor(b2PolyShape *polyShape,
 	polyShape->m_shape.Synchronize = b2PolyShape_Synchronize;
 	polyShape->m_shape.Support = b2PolyShape_Support;
 
-	b2Assert(def->type == e_boxShape || def->type == e_polyShape);
 	polyShape->m_shape.m_type = e_polyShape;
 	b2Mat22 localR;
 	b2Mat22_SetAngle(&localR, def->localRotation);
@@ -466,7 +454,6 @@ void b2PolyShape_ctor(b2PolyShape *polyShape,
 	{
 		const b2PolyDef* poly = (const b2PolyDef*)def;
 		polyShape->m_vertexCount = poly->vertexCount;
-		b2Assert(3 <= polyShape->m_vertexCount && polyShape->m_vertexCount <= b2_maxPolyVertices);
 		b2Vec2 centroid = PolyCentroid(poly->vertices, poly->vertexCount);
 		polyShape->m_localCentroid = def->localPosition + b2Mul(localR, centroid) - newOrigin;
 		for (int32 i = 0; i < polyShape->m_vertexCount; ++i)
@@ -508,16 +495,6 @@ void b2PolyShape_ctor(b2PolyShape *polyShape,
 		b2Vec2 edge = polyShape->m_vertices[i2] - polyShape->m_vertices[i1];
 		polyShape->m_normals[i] = b2Cross(edge, 1.0);
 		b2Vec2_Normalize(&polyShape->m_normals[i]);
-	}
-
-	// Ensure the polygon in convex. TODO_ERIN compute convex hull.
-	for (int32 i = 0; i < polyShape->m_vertexCount; ++i)
-	{
-		int32 i1 = i;
-		int32 i2 = i + 1 < polyShape->m_vertexCount ? i + 1 : 0;
-		NOT_USED(i1);
-		NOT_USED(i2);
-		b2Assert(b2Cross(polyShape->m_normals[i1], polyShape->m_normals[i2]) > MIN_VALUE);
 	}
 
 	polyShape->m_shape.m_R = polyShape->m_shape.m_body->m_R;

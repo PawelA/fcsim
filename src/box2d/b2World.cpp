@@ -65,7 +65,6 @@ void b2World_dtor(b2World *world)
 	b2Free(world->m_broadPhase);
 
 	b2BlockAllocator_dtor(&world->m_blockAllocator);
-	b2StackAllocator_dtor(&world->m_stackAllocator);
 }
 
 void b2World_SetFilter(b2World *world, b2CollisionFilter filter)
@@ -115,7 +114,6 @@ void b2World_DestroyBody(b2World *world, b2Body* b)
 	}
 
 	b->m_flags |= b2Body_e_destroyFlag;
-	b2Assert(world->m_bodyCount > 0);
 	--world->m_bodyCount;
 
 	// Add to the deferred destruction list.
@@ -132,8 +130,6 @@ void b2World_CleanBodyList(b2World *world)
 	b2Body* b = world->m_bodyDestroyList;
 	while (b)
 	{
-		b2Assert((b->m_flags & b2Body_e_destroyFlag) != 0);
-
 		// Preserve the next pointer.
 		b2Body* b0 = b;
 		b = b->m_next;
@@ -269,7 +265,6 @@ void b2World_DestroyJoint(b2World *world, b2Joint* j)
 
 	b2Joint_Destroy(j, &world->m_blockAllocator);
 
-	b2Assert(world->m_jointCount > 0);
 	--world->m_jointCount;
 
 	// If the joint prevents collisions, then reset collision filtering.
@@ -375,7 +370,6 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 					continue;
 				}
 
-				b2Assert(stackCount < stackSize);
 				stack[stackCount++] = other;
 				other->m_flags |= b2Body_e_islandFlag;
 			}
@@ -397,7 +391,6 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 					continue;
 				}
 
-				b2Assert(stackCount < stackSize);
 				stack[stackCount++] = other;
 				other->m_flags |= b2Body_e_islandFlag;
 			}

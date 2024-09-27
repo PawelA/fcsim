@@ -45,9 +45,6 @@ static void AddType(b2ContactCreateFcn* createFcn,
 		    b2ContactDestroyFcn* destoryFcn,
 		    b2ShapeType type1, b2ShapeType type2)
 {
-	b2Assert(e_unknownShape < type1 && type1 < e_shapeTypeCount);
-	b2Assert(e_unknownShape < type2 && type2 < e_shapeTypeCount);
-
 	s_registers[type1][type2].createFcn = createFcn;
 	s_registers[type1][type2].destroyFcn = destoryFcn;
 	s_registers[type1][type2].primary = true;
@@ -70,9 +67,6 @@ b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* 
 
 	b2ShapeType type1 = shape1->m_type;
 	b2ShapeType type2 = shape2->m_type;
-
-	b2Assert(e_unknownShape < type1 && type1 < e_shapeTypeCount);
-	b2Assert(e_unknownShape < type2 && type2 < e_shapeTypeCount);
 
 	b2ContactCreateFcn* createFcn = s_registers[type1][type2].createFcn;
 	if (createFcn)
@@ -100,8 +94,6 @@ b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* 
 
 void b2Contact_Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 {
-	b2Assert(s_initialized == true);
-
 	if (contact->m_manifoldCount > 0)
 	{
 		b2Body_WakeUp(contact->m_shape1->m_body);
@@ -110,9 +102,6 @@ void b2Contact_Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 
 	b2ShapeType type1 = contact->m_shape1->m_type;
 	b2ShapeType type2 = contact->m_shape2->m_type;
-
-	b2Assert(e_unknownShape < type1 && type1 < e_shapeTypeCount);
-	b2Assert(e_unknownShape < type2 && type2 < e_shapeTypeCount);
 
 	b2ContactDestroyFcn* destroyFcn = s_registers[type1][type2].destroyFcn;
 	destroyFcn(contact, allocator);

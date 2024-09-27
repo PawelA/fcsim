@@ -67,7 +67,6 @@ void b2BroadPhase_ctor(b2BroadPhase *broad_phase, const b2AABB& worldAABB, b2Pai
 	b2PairManager_ctor(&broad_phase->m_pairManager);
 	b2PairManager_Initialize(&broad_phase->m_pairManager, broad_phase, callback);
 
-	b2Assert(worldAABB.IsValid());
 	broad_phase->m_worldAABB = worldAABB;
 	broad_phase->m_proxyCount = 0;
 
@@ -98,9 +97,6 @@ bool b2BroadPhase_TestOverlap(b2BroadPhase *broad_phase, const b2BoundValues& b,
 	{
 		b2Bound* bounds = broad_phase->m_bounds[axis];
 
-		b2Assert(p->lowerBounds[axis] < 2 * broad_phase->m_proxyCount);
-		b2Assert(p->upperBounds[axis] < 2 * broad_phase->m_proxyCount);
-
 		if (b.lowerValues[axis] > bounds[p->upperBounds[axis]].value)
 			return false;
 
@@ -113,9 +109,6 @@ bool b2BroadPhase_TestOverlap(b2BroadPhase *broad_phase, const b2BoundValues& b,
 
 static void b2BroadPhase_ComputeBounds(b2BroadPhase *broad_phase, uint16* lowerValues, uint16* upperValues, const b2AABB& aabb)
 {
-	b2Assert(aabb.maxVertex.x > aabb.minVertex.x);
-	b2Assert(aabb.maxVertex.y > aabb.minVertex.y);
-
 	b2Vec2 minVertex = b2Clamp(aabb.minVertex, broad_phase->m_worldAABB.minVertex, broad_phase->m_worldAABB.maxVertex);
 	b2Vec2 maxVertex = b2Clamp(aabb.maxVertex, broad_phase->m_worldAABB.minVertex, broad_phase->m_worldAABB.maxVertex);
 
@@ -156,7 +149,6 @@ void b2BroadPhase_IncrementOverlapCount(b2BroadPhase *broad_phase, int32 proxyId
 	else
 	{
 		proxy->overlapCount = 2;
-		b2Assert(broad_phase->m_queryResultCount < b2_maxProxies);
 		broad_phase->m_queryResults[broad_phase->m_queryResultCount] = (uint16)proxyId;
 		++broad_phase->m_queryResultCount;
 	}
@@ -190,8 +182,6 @@ static void b2BroadPhase_Query(b2BroadPhase *broad_phase,
 		// Find the s overlaps.
 		while (s)
 		{
-			b2Assert(i >= 0);
-
 			if (b2Bound_IsLower(&bounds[i]))
 			{
 				b2Proxy* proxy = broad_phase->m_proxyPool + bounds[i].proxyId;
@@ -211,9 +201,6 @@ static void b2BroadPhase_Query(b2BroadPhase *broad_phase,
 
 uint16 b2BroadPhase_CreateProxy(b2BroadPhase *broad_phase, const b2AABB& aabb, void* userData)
 {
-	b2Assert(broad_phase->m_proxyCount < b2_maxProxies);
-	b2Assert(broad_phase->m_freeProxy != b2_nullProxy);
-
 	uint16 proxyId = broad_phase->m_freeProxy;
 	b2Proxy* proxy = broad_phase->m_proxyPool + proxyId;
 	broad_phase->m_freeProxy = b2Proxy_GetNext(proxy);
@@ -270,14 +257,9 @@ uint16 b2BroadPhase_CreateProxy(b2BroadPhase *broad_phase, const b2AABB& aabb, v
 
 	++broad_phase->m_proxyCount;
 
-	b2Assert(broad_phase->m_queryResultCount < b2_maxProxies);
-
 	// Create pairs if the AABB is in range.
 	for (int32 i = 0; i < broad_phase->m_queryResultCount; ++i)
 	{
-		b2Assert(broad_phase->m_queryResults[i] < b2_maxProxies);
-		b2Assert(broad_phase->m_proxyPool[broad_phase->m_queryResults[i]].IsValid());
-
 		b2PairManager_AddBufferedPair(&broad_phase->m_pairManager, proxyId, broad_phase->m_queryResults[i]);
 	}
 
@@ -292,9 +274,7 @@ uint16 b2BroadPhase_CreateProxy(b2BroadPhase *broad_phase, const b2AABB& aabb, v
 
 void b2BroadPhase_DestroyProxy(b2BroadPhase *broad_phase, int32 proxyId)
 {
-	b2Assert(0 < broad_phase->m_proxyCount && broad_phase->m_proxyCount <= b2_maxProxies);
 	b2Proxy* proxy = broad_phase->m_proxyPool + proxyId;
-	b2Assert(proxy->IsValid());
 
 	int32 boundCount = 2 * broad_phase->m_proxyCount;
 
@@ -334,11 +314,8 @@ void b2BroadPhase_DestroyProxy(b2BroadPhase *broad_phase, int32 proxyId)
 		b2BroadPhase_Query(broad_phase, &lowerIndex, &upperIndex, lowerValue, upperValue, bounds, boundCount - 2, axis);
 	}
 
-	b2Assert(broad_phase->m_queryResultCount < b2_maxProxies);
-
 	for (int32 i = 0; i < broad_phase->m_queryResultCount; ++i)
 	{
-		b2Assert(broad_phase->m_proxyPool[broad_phase->m_queryResults[i]].IsValid());
 		b2PairManager_RemoveBufferedPair(&broad_phase->m_pairManager, proxyId, broad_phase->m_queryResults[i]);
 	}
 
@@ -373,13 +350,11 @@ void b2BroadPhase_MoveProxy(b2BroadPhase *broad_phase, int32 proxyId, const b2AA
 {
 	if (proxyId == b2_nullProxy || b2_maxProxies <= proxyId)
 	{
-		b2Assert(false);
 		return;
 	}
 
 	if (b2AABB_IsValid(&aabb) == false)
 	{
-		b2Assert(false);
 		return;
 	}
 

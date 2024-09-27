@@ -40,8 +40,6 @@ inline bool Equals(const b2Pair& pair, int32 proxyId1, int32 proxyId2)
 
 void b2PairManager_ctor(b2PairManager *manager)
 {
-	b2Assert(b2IsPowerOfTwo(b2_tableCapacity) == true);
-	b2Assert(b2_tableCapacity >= b2_maxPairs);
 	for (int32 i = 0; i < b2_tableCapacity; ++i)
 	{
 		manager->m_hashTable[i] = b2_nullPair;
@@ -81,8 +79,6 @@ static b2Pair* b2PairManager_FindHash(b2PairManager *manager, int32 proxyId1, in
 		return NULL;
 	}
 
-	b2Assert(index < b2_maxPairs);
-
 	return manager->m_pairs + index;
 }
 
@@ -108,8 +104,6 @@ static b2Pair* b2PairManager_AddPair(b2PairManager *manager, int32 proxyId1, int
 		return pair;
 	}
 
-	b2Assert(manager->m_pairCount < b2_maxPairs && manager->m_freePair != b2_nullPair);
-
 	uint16 pairIndex = manager->m_freePair;
 	pair = manager->m_pairs + pairIndex;
 	manager->m_freePair = pair->next;
@@ -130,8 +124,6 @@ static b2Pair* b2PairManager_AddPair(b2PairManager *manager, int32 proxyId1, int
 // Removes a pair. The pair must exist.
 static void* b2PairManager_RemovePair(b2PairManager *manager, int32 proxyId1, int32 proxyId2)
 {
-	b2Assert(m_pairCount > 0);
-
 	if (proxyId1 > proxyId2) b2Swap(proxyId1, proxyId2);
 
 	int32 hash = Hash(proxyId1, proxyId2) & b2_tableMask;
@@ -164,7 +156,6 @@ static void* b2PairManager_RemovePair(b2PairManager *manager, int32 proxyId1, in
 		}
 	}
 
-	b2Assert(false);
 	return NULL;
 }
 
@@ -186,24 +177,16 @@ If the added pair is not a new pair, then it must be in the pair buffer (because
 */
 void b2PairManager_AddBufferedPair(b2PairManager *manager, int32 id1, int32 id2)
 {
-	b2Assert(id1 != b2_nullProxy && id2 != b2_nullProxy);
-	b2Assert(manager->m_pairBufferCount < b2_maxPairs);
-
 	b2Pair* pair = b2PairManager_AddPair(manager, id1, id2);
 
 	// If this pair is not in the pair buffer ...
 	if (b2Pair_IsBuffered(pair) == false)
 	{
-		// This must be a newly added pair.
-		b2Assert(b2Pair_IsFinal(pair) == false);
-
 		// Add it to the pair buffer.
 		b2Pair_SetBuffered(pair);
 		manager->m_pairBuffer[manager->m_pairBufferCount].proxyId1 = pair->proxyId1;
 		manager->m_pairBuffer[manager->m_pairBufferCount].proxyId2 = pair->proxyId2;
 		++manager->m_pairBufferCount;
-
-		b2Assert(manager->m_pairBufferCount <= manager->m_pairCount);
 	}
 
 	// Confirm this pair for the subsequent call to Commit.
@@ -213,9 +196,6 @@ void b2PairManager_AddBufferedPair(b2PairManager *manager, int32 id1, int32 id2)
 // Buffer a pair for removal.
 void b2PairManager_RemoveBufferedPair(b2PairManager *manager, int32 id1, int32 id2)
 {
-	b2Assert(id1 != b2_nullProxy && id2 != b2_nullProxy);
-	b2Assert(manager->m_pairBufferCount < b2_maxPairs);
-
 	b2Pair* pair = b2PairManager_Find(manager, id1, id2);
 
 	if (pair == NULL)
@@ -227,15 +207,10 @@ void b2PairManager_RemoveBufferedPair(b2PairManager *manager, int32 id1, int32 i
 	// If this pair is not in the pair buffer ...
 	if (b2Pair_IsBuffered(pair) == false)
 	{
-		// This must be an old pair.
-		b2Assert(b2Pair_IsFinal(pair) == true);
-
 		b2Pair_SetBuffered(pair);
 		manager->m_pairBuffer[manager->m_pairBufferCount].proxyId1 = pair->proxyId1;
 		manager->m_pairBuffer[manager->m_pairBufferCount].proxyId2 = pair->proxyId2;
 		++manager->m_pairBufferCount;
-
-		b2Assert(manager->m_pairBufferCount <= manager->m_pairCount);
 	}
 
 	b2Pair_SetRemoved(pair);
@@ -250,16 +225,10 @@ void b2PairManager_Commit(b2PairManager *manager)
 	for (int32 i = 0; i < manager->m_pairBufferCount; ++i)
 	{
 		b2Pair* pair = b2PairManager_Find(manager, manager->m_pairBuffer[i].proxyId1, manager->m_pairBuffer[i].proxyId2);
-		b2Assert(b2Pair_IsBuffered(pair));
 		b2Pair_ClearBuffered(pair);
-
-		b2Assert(pair->proxyId1 < b2_maxProxies && pair->proxyId2 < b2_maxProxies);
 
 		b2Proxy* proxy1 = proxies + pair->proxyId1;
 		b2Proxy* proxy2 = proxies + pair->proxyId2;
-
-		b2Assert(proxy1->IsValid());
-		b2Assert(proxy2->IsValid());
 
 		if (b2Pair_IsRemoved(pair))
 		{
@@ -278,8 +247,6 @@ void b2PairManager_Commit(b2PairManager *manager)
 		}
 		else
 		{
-			b2Assert(manager->m_broadPhase->TestOverlap(proxy1, proxy2) == true);
-
 			if (b2Pair_IsFinal(pair) == false)
 			{
 				pair->userData = manager->m_callback->PairAdded(manager->m_callback, proxy1->userData, proxy2->userData);

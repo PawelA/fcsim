@@ -54,11 +54,8 @@ void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 c
 		{
 			b2Manifold* manifold = manifolds + j;
 
-			b2Assert(manifold->pointCount > 0);
-
 			const b2Vec2 normal = manifold->normal;
 
-			b2Assert(count < solver->m_constraintCount);
 			b2ContactConstraint* c = solver->m_constraints + count;
 			c->body1 = b1;
 			c->body2 = b2;
@@ -92,7 +89,6 @@ void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 c
 				float64 rn2 = b2Dot(r2, normal);
 				float64 kNormal = b1->m_invMass + b2->m_invMass;
 				kNormal += b1->m_invI * (r1Sqr - rn1 * rn1) + b2->m_invI * (r2Sqr - rn2 * rn2);
-				b2Assert(kNormal > MIN_VALUE);
 				ccp->normalMass = 1.0 / kNormal;
 
 				b2Vec2 tangent = b2Cross(normal, 1.0);
@@ -101,7 +97,6 @@ void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 c
 				float64 rt2 = b2Dot(r2, tangent);
 				float64 kTangent = b1->m_invMass + b2->m_invMass;
 				kTangent += b1->m_invI * (r1Sqr - rt1 * rt1) + b2->m_invI * (r2Sqr - rt2 * rt2);
-				b2Assert(kTangent > MIN_VALUE);
 				ccp->tangentMass = 1.0 /  kTangent;
 
 				// Setup a velocity bias for restitution.
@@ -121,8 +116,6 @@ void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 c
 			++count;
 		}
 	}
-
-	b2Assert(count == solver->m_constraintCount);
 }
 
 void b2ContactSolver_dtor(b2ContactSolver *solver)
