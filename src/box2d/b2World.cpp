@@ -34,7 +34,7 @@ void b2World_ctor(b2World *world, const b2AABB *worldAABB, b2Vec2 gravity, bool 
 	b2StackAllocator_ctor(&world->m_stackAllocator);
 	b2ContactManager_ctor(&world->m_contactManager);
 
-	world->m_filter = b2_defaultFilter;
+	world->m_filter = NULL;
 
 	world->m_bodyList = NULL;
 	world->m_contactList = NULL;
@@ -427,15 +427,4 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	b2BroadPhase_Commit(world->m_broadPhase);
 
 	b2Island_dtor(&island);
-}
-
-bool b2_defaultFilter(b2Shape* shape1, b2Shape* shape2)
-{
-	if (shape1->m_groupIndex == shape2->m_groupIndex && shape1->m_groupIndex != 0)
-	{
-		return shape1->m_groupIndex > 0;
-	}
-
-	bool collide = (shape1->m_maskBits & shape2->m_categoryBits) != 0 && (shape1->m_categoryBits & shape2->m_maskBits) != 0;
-	return collide;
 }

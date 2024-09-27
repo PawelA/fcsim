@@ -56,18 +56,6 @@ struct b2ShapeDef
 	float64 friction;
 	float64 restitution;
 	float64 density;
-
-	// The collision category bits. Normally you would just set one bit.
-	uint16 categoryBits;
-
-	// The collision mask bits. This states the categories that this
-	// shape would accept for collision.
-	uint16 maskBits;
-
-	// Collision groups allow a certain group of objects to never collide (negative)
-	// or always collide (positive). Zero means no collision group. Non-zero group
-	// filtering always wins against the mask bits.
-	int16 groupIndex;
 };
 
 typedef struct b2CircleDef b2CircleDef;
@@ -128,9 +116,6 @@ struct b2Shape
 	float64 m_restitution;
 
 	uint16 m_proxyId;
-	uint16 m_categoryBits;
-	uint16 m_maskBits;
-	int16 m_groupIndex;
 };
 
 typedef struct b2CircleShape b2CircleShape;

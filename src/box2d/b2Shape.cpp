@@ -166,9 +166,6 @@ void b2ShapeDef_ctor(b2ShapeDef *def)
 	def->friction = 0.2;
 	def->restitution = 0.0;
 	def->density = 0.0;
-	def->categoryBits = 0x0001;
-	def->maskBits = 0xFFFF;
-	def->groupIndex = 0;
 }
 
 void b2ShapeDef_ComputeMass(const b2ShapeDef *shapeDef, b2MassData* massData)
@@ -285,10 +282,6 @@ static void b2Shape_ctor(b2Shape *shape, const b2ShapeDef* def, b2Body* body)
 	shape->m_body = body;
 
 	shape->m_proxyId = b2_nullProxy;
-
-	shape->m_categoryBits = def->categoryBits;
-	shape->m_maskBits = def->maskBits;
-	shape->m_groupIndex = def->groupIndex;
 }
 
 static void b2Shape_dtor(b2Shape *shape)
