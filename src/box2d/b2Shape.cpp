@@ -285,7 +285,6 @@ static void b2Shape_ctor(b2Shape *shape, const b2ShapeDef* def, b2Body* body)
 	shape->m_body = body;
 
 	shape->m_proxyId = b2_nullProxy;
-	shape->m_maxRadius = 0.0;
 
 	shape->m_categoryBits = def->categoryBits;
 	shape->m_maskBits = def->maskBits;
@@ -327,7 +326,6 @@ static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def
 	circleShape->m_shape.m_R = circleShape->m_shape.m_body->m_R;
 	b2Vec2 r = b2Mul(circleShape->m_shape.m_body->m_R, circleShape->m_localPosition);
 	circleShape->m_shape.m_position = circleShape->m_shape.m_body->m_position + r;
-	circleShape->m_shape.m_maxRadius = b2Vec2_Length(&r) + circleShape->m_radius;
 
 	b2AABB aabb;
 	b2Vec2_Set(&aabb.minVertex, circleShape->m_shape.m_position.x - circleShape->m_radius, circleShape->m_shape.m_position.y - circleShape->m_radius);
@@ -498,13 +496,11 @@ void b2PolyShape_ctor(b2PolyShape *polyShape,
 	b2Vec2_Set(&minVertex, DBL_MAX, DBL_MAX);
 	b2Vec2 maxVertex;
 	b2Vec2_Set(&maxVertex, -DBL_MAX, -DBL_MAX);
-	polyShape->m_shape.m_maxRadius = 0.0;
 	for (int32 i = 0; i < polyShape->m_vertexCount; ++i)
 	{
 		b2Vec2 v = polyShape->m_vertices[i];
 		minVertex = b2Min(minVertex, v);
 		maxVertex = b2Max(maxVertex, v);
-		polyShape->m_shape.m_maxRadius = b2Max(polyShape->m_shape.m_maxRadius, b2Vec2_Length(&v));
 	}
 
 	b2Mat22_SetIdentity(&polyShape->m_localOBB.R);

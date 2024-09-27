@@ -127,8 +127,6 @@ struct b2Shape
 	float64 m_friction;
 	float64 m_restitution;
 
-	float64 m_maxRadius;
-
 	uint16 m_proxyId;
 	uint16 m_categoryBits;
 	uint16 m_maskBits;
