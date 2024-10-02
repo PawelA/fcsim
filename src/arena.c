@@ -11,7 +11,6 @@
 #include "interval.h"
 #include "graph.h"
 #include "arena.h"
-#include "poocs.h"
 
 #define TAU 6.28318530718
 
@@ -382,7 +381,7 @@ void block_graphics_init(struct block_graphics *graphics)
 	graphics->vertex_cnt = 0;
 }
 
-void arena_init(struct arena *arena, float w, float h)
+void arena_init(struct arena *arena, float w, float h, char *xml, int len)
 {
 	struct xml_level level;
 
@@ -407,7 +406,7 @@ void arena_init(struct arena *arena, float w, float h)
 	arena->root_blocks_moving = NULL;
 	arena->blocks_moving = NULL;
 
-	xml_parse(poocs_xml, sizeof(poocs_xml), &level);
+	xml_parse(xml, len, &level);
 	convert_xml(&level, &arena->design);
 
 	arena->world = gen_world(&arena->design);

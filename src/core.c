@@ -45,7 +45,7 @@ void resize(int w, int h)
 	arena_size_event(&the_arena, w, h);
 }
 
-void init(void)
+void init(char *xml, int len)
 {
 	bool res;
 
@@ -55,7 +55,7 @@ void init(void)
 		exit(1);
 	*/
 
-	arena_init(&the_arena, 800, 800);
+	arena_init(&the_arena, 800, 800, xml, len);
 }
 
 void draw(void)

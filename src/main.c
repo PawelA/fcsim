@@ -3,6 +3,7 @@
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #include <pthread.h>
+#include "poocs.h"
 
 void key_down(int key);
 void key_up(int key);
@@ -11,7 +12,7 @@ void button_down(int button);
 void button_up(int button);
 void scroll(int delta);
 void resize(int w, int h);
-void init(void);
+void init(char *xml, int len);
 void draw(void);
 
 void process_events(Display *dpy, Window win)
@@ -184,7 +185,7 @@ int main(void)
 	glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
 	glXMakeCurrent(dpy, win, glc);
 
-	init();
+	init(poocs_xml, sizeof(poocs_xml));
 
 	while (1) {
 		pthread_mutex_lock(&mutex);

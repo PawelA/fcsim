@@ -275,10 +275,20 @@ function canvas_wheel(event)
 	inst.exports.scroll(-0.02 * event.deltaY);
 }
 
-function module_instantiated(module)
+function init_module(results)
 {
+	let module = results[0];
+	let buffer = results[1];
+
 	inst = module.instance;
-	inst.exports.init();
+
+	let buffer_uint8 = new Uint8Array(buffer);
+	let len = buffer_uint8.length;
+	let mem = inst.exports.malloc(len);
+	let mem_uint8 = new Uint8Array(inst.exports.memory.buffer, mem, len);
+	mem_uint8.set(buffer_uint8);
+
+	inst.exports.init(mem, buffer_uint8.length);
 	inst.exports.resize(canvas.width, canvas.height);
 	window.requestAnimationFrame(canvas_draw);
 	addEventListener("keydown", canvas_keydown);
@@ -293,4 +303,22 @@ let module_promise = WebAssembly.instantiateStreaming(
 	fetch("fcsim.wasm"), import_object
 );
 
-module_promise.then(module_instantiated);
+function make_buffer_promise(resolve, reject)
+{
+	function get_buffer(response)
+	{
+		let buffer_promise = response.arrayBuffer();
+
+		buffer_promise.then(resolve);
+	}
+
+	let response_promise = fetch("/pringle.xml");
+
+	response_promise.then(get_buffer);
+}
+
+let buffer_promise = new Promise(make_buffer_promise)
+
+let module_buffer_promise = Promise.all([module_promise, buffer_promise]);
+
+module_buffer_promise.then(init_module);
