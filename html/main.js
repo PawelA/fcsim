@@ -7,6 +7,9 @@ let heap_counter = 0;
 let heap = {};
 let inst;
 
+let param_string = window.location.search;
+let params = new URLSearchParams(param_string);
+
 function add_object(obj)
 {
 	let id = heap_counter++;
@@ -312,7 +315,8 @@ function make_buffer_promise(resolve, reject)
 		buffer_promise.then(resolve);
 	}
 
-	let response_promise = fetch("/pringle.xml");
+	let design_id = params.get('designId');
+	let response_promise = fetch("/" + design_id);
 
 	response_promise.then(get_buffer);
 }
