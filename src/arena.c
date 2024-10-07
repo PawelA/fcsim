@@ -161,7 +161,7 @@ static void block_graphics_add_rect(struct block_graphics *graphics,
 	graphics->vertex_cnt += 4;
 }
 
-#define CIRCLE_SEGMENTS 8
+#define CIRCLE_SEGMENTS 24
 
 static void block_graphics_add_circ(struct block_graphics *graphics,
 				    struct shell *shell, struct color *color)
