@@ -306,22 +306,20 @@ let module_promise = WebAssembly.instantiateStreaming(
 	fetch("fcsim.wasm"), import_object
 );
 
-function make_buffer_promise(resolve, reject)
-{
-	function get_buffer(response)
-	{
-		let buffer_promise = response.arrayBuffer();
+let design_id = params.get('designId');
 
-		buffer_promise.then(resolve);
-	}
+let response_promise = fetch("/fc/retrieveLevel.php", {
+	method: "POST",
+	headers: {
+		'Content-Type': 'application/x-www-form-urlencoded'
+	},
+	body: new URLSearchParams({
+		"id": design_id,
+		"loadDesign": "1",
+	})
+});
 
-	let design_id = params.get('designId');
-	let response_promise = fetch("/" + design_id);
-
-	response_promise.then(get_buffer);
-}
-
-let buffer_promise = new Promise(make_buffer_promise)
+let buffer_promise = response_promise.then((resp) => resp.arrayBuffer());
 
 let module_buffer_promise = Promise.all([module_promise, buffer_promise]);
 
