@@ -5,6 +5,7 @@
 #include "gl.h"
 #include "graph.h"
 #include "arena.h"
+#include "xml.h"
 
 struct arena the_arena;
 
@@ -56,6 +57,13 @@ void init(char *xml, int len)
 	*/
 
 	arena_init(&the_arena, 800, 800, xml, len);
+}
+
+char *export_design(struct design *design, char *user, char *name, char *desc);
+
+char *export(char *user, char *name, char *desc)
+{
+	return export_design(&the_arena.design, user, name, desc);
 }
 
 void draw(void)

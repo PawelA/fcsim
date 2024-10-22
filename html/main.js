@@ -1,5 +1,35 @@
 "use strict";
 
+let save_button  = document.getElementById("save");
+let save_menu    = document.getElementById("save_menu");
+let save_form    = document.getElementById("save_form");
+let close_button = document.getElementById("close");
+let design_link  = document.getElementById("link");
+
+let user_id = localStorage.getItem("userId");
+if (!user_id)
+	save_button.disabled = true;
+
+let opened = false;
+
+function save(event)
+{
+	save_menu.style.display = "block";
+	save_button.style.display = "none";
+	opened = true;
+}
+
+function close(event)
+{
+	save_menu.style.display = "none";
+	save_button.style.display = "block";
+	design_link.style.display = "none";
+	opened = false;
+}
+
+save_button.addEventListener("click", save);
+close_button.addEventListener("click", close);
+
 let canvas = document.getElementById("canvas");
 let gl = canvas.getContext("webgl");
 
@@ -250,11 +280,15 @@ function to_button(code)
 
 function canvas_keydown(event)
 {
+	if (opened)
+		return;
 	inst.exports.key_down(to_key(event.code));
 }
 
 function canvas_keyup(event)
 {
+	if (opened)
+		return;
 	inst.exports.key_up(to_key(event.code));
 }
 
@@ -276,6 +310,60 @@ function canvas_mousemove(event)
 function canvas_wheel(event)
 {
 	inst.exports.scroll(-0.02 * event.deltaY);
+}
+
+function alloc_str(str)
+{
+	let encoder = new TextEncoder();
+
+	let str_uint8 = encoder.encode(str);
+	let len = str_uint8.length;
+	let mem = inst.exports.malloc(len + 1);
+	let mem_uint8 = new Uint8Array(inst.exports.memory.buffer, mem, len + 1);
+	mem_uint8.set(str_uint8);
+	mem_uint8[len] = 0;
+
+	return mem;
+}
+
+function on_text(text)
+{
+	console.log(text);
+	design_link.innerHTML = "fcsim.com/?designId=" + text;
+	design_link.style.display = "block";
+}
+
+function on_result(response)
+{
+	let text_promise = response.text();
+
+	text_promise.then(on_text);
+}
+
+function save_design(event)
+{
+	event.preventDefault();
+
+	let data = new FormData(save_form);
+
+	let user = alloc_str(user_id);
+	let name = alloc_str(data.get("name"));
+	let desc = alloc_str(data.get("description"));
+
+	let xml = inst.exports.export(user, name, desc);
+	let len = inst.exports.strlen(xml);
+
+	let xml_str = make_cstring(xml);
+
+	let request_promise = fetch("/fc/saveDesign.php", {
+		method: "POST",
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		body: new URLSearchParams({ "xml": xml_str })
+	});
+
+	request_promise.then(on_result);
 }
 
 function init_module(results)
@@ -300,6 +388,7 @@ function init_module(results)
 	canvas.addEventListener("mouseup", canvas_mouseup);
 	canvas.addEventListener("mousemove", canvas_mousemove);
 	canvas.addEventListener("wheel", canvas_wheel);
+	save_form.addEventListener("submit", save_design);
 }
 
 let module_promise = WebAssembly.instantiateStreaming(
@@ -307,6 +396,7 @@ let module_promise = WebAssembly.instantiateStreaming(
 );
 
 let design_id = params.get('designId');
+let level_id = params.get('levelId');
 
 let response_promise = fetch("/fc/retrieveLevel.php", {
 	method: "POST",
@@ -314,8 +404,8 @@ let response_promise = fetch("/fc/retrieveLevel.php", {
 		'Content-Type': 'application/x-www-form-urlencoded'
 	},
 	body: new URLSearchParams({
-		"id": design_id,
-		"loadDesign": "1",
+		"id":         design_id ? design_id : level_id,
+		"loadDesign": design_id ? "1" : "0",
 	})
 });
 

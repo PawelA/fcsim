@@ -174,6 +174,7 @@ struct design {
 	struct block_list player_blocks;
 	struct area build_area;
 	struct area goal_area;
+	int level_id;
 };
 
 enum shell_type {

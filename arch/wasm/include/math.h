@@ -25,6 +25,8 @@ double copysign(double x, double y);
 
 double rint(double x);
 
+double modf(double x, double *iptr);
+
 #ifdef __cplusplus
 }
 #endif

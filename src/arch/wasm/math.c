@@ -53,3 +53,12 @@ float fminf(float x, float y)
 double copysign(double x, double y);
 
 double rint(double x);
+
+static double floor(double x);
+
+double modf(double x, double *iptr)
+{
+	*iptr = floor(x);
+
+	return x - *iptr;
+}

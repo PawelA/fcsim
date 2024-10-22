@@ -3,6 +3,7 @@
 #include <fpmath/fpmath.h>
 
 #include "xml.h"
+#include "str.h"
 
 struct slice {
 	char *ptr;
@@ -718,6 +719,8 @@ int read_retrieve_level(struct slice *buf, struct xml_level *level)
 	while (peek_elem_name(buf, &name)) {
 		if (slice_str_equal(&name, "level"))
 			res = read_level(buf, level);
+		else if (slice_str_equal(&name, "levelId"))
+			res = read_int(buf, &level->level_id);
 		else
 			res = skip_data_elem(buf);
 

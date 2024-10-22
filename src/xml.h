@@ -48,6 +48,7 @@ struct xml_level {
 	struct xml_block *player_blocks;
 	struct xml_zone start;
 	struct xml_zone end;
+	int level_id;
 };
 
 int xml_parse(char *xml, int len, struct xml_level *level);

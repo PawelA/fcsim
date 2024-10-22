@@ -12,10 +12,46 @@ canvas {
 	width: 100vw;
 	height: 100vh;
 }
+.save {
+	position: absolute;
+	margin: 10px;
+}
+.save_menu {
+	position: absolute;
+	display: none;
+	background: white;
+	padding: 10px;
+	margin: 10px;
+}
+.save_form {
+	display: inline;
+}
+.link {
+	display: none;
+}
 </style>
 </head>
 <body>
+
+<button class="save" id="save"> Save </button>
+<div class="save_menu" id="save_menu">
+	<form class="save_form" id="save_form">
+		<label for="name"> Name: </label>
+		<br>
+		<input name="name" maxlength="15">
+		<br>
+		<label for="description"> Description: </label>
+		<br>
+		<textarea name="description" maxlength="50"></textarea>
+		<br>
+		<br>
+		<input type="submit" value="Save">
+	</form>
+	<button class="close" id="close"> Close </button>
+	<p class="link" id="link"></p>
+</div>
 <canvas id="canvas"></canvas>
 <script src="main.js"></script>
+
 </body>
 </html>

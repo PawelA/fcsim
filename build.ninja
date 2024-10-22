@@ -11,10 +11,12 @@ rule linux-ld
 
 build fcsim: linux-ld $
 obj/linux/arena.o $
+obj/linux/export.o $
 obj/linux/core.o $
 obj/linux/gen.o $
 obj/linux/graph.o $
 obj/linux/main.o $
+obj/linux/str.o $
 obj/linux/xml.o $
 obj/linux/box2d/b2BlockAllocator.o $
 obj/linux/box2d/b2Body.o $
@@ -40,10 +42,12 @@ obj/linux/fpmath/sincos.o $
 obj/linux/fpmath/strtod.o
 
 build obj/linux/arena.o: linux-cc src/arena.c
+build obj/linux/export.o: linux-cc src/export.c
 build obj/linux/core.o: linux-cc src/core.c
 build obj/linux/gen.o: linux-cc src/gen.c
 build obj/linux/graph.o: linux-cc src/graph.c
 build obj/linux/main.o: linux-cc src/main.c
+build obj/linux/str.o: linux-cc src/str.c
 build obj/linux/xml.o: linux-cc src/xml.c
 build obj/linux/box2d/b2BlockAllocator.o: linux-cc src/box2d/b2BlockAllocator.c
 build obj/linux/box2d/b2Body.o: linux-cxx src/box2d/b2Body.cpp
@@ -81,9 +85,11 @@ rule wasm-ld
 
 build html/fcsim.wasm: wasm-ld $
 obj/wasm/arena.o $
+obj/wasm/export.o $
 obj/wasm/core.o $
 obj/wasm/gen.o $
 obj/wasm/graph.o $
+obj/wasm/str.o $
 obj/wasm/xml.o $
 obj/wasm/arch/wasm/math.o $
 obj/wasm/arch/wasm/malloc.o $
@@ -113,9 +119,11 @@ obj/wasm/fpmath/sincos.o $
 obj/wasm/fpmath/strtod.o
 
 build obj/wasm/arena.o: wasm-cc src/arena.c
+build obj/wasm/export.o: wasm-cc src/export.c
 build obj/wasm/core.o: wasm-cc src/core.c
 build obj/wasm/gen.o: wasm-cc src/gen.c
 build obj/wasm/graph.o: wasm-cc src/graph.c
+build obj/wasm/str.o: wasm-cc src/str.c
 build obj/wasm/xml.o: wasm-cc src/xml.c
 build obj/wasm/arch/wasm/math.o: wasm-cc src/arch/wasm/math.c
 build obj/wasm/arch/wasm/malloc.o: wasm-cc src/arch/wasm/malloc.c

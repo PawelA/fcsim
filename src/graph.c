@@ -631,6 +631,8 @@ void convert_xml(struct xml_level *xml_level, struct design *design)
 
 	set_area(&design->build_area, &xml_level->start);
 	set_area(&design->goal_area, &xml_level->end);
+
+	design->level_id = xml_level->level_id;
 }
 
 static void free_attach_list(struct attach_list *list)
