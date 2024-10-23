@@ -1251,7 +1251,7 @@ void mouse_down_delete(struct arena *arena, float x, float y)
 	struct block *block;
 
 	block = block_hit_test(arena, x, y);
-	if (block) {
+	if (block && !block->goal) {
 		delete_block(arena, block);
 		arena->hover_joint = joint_hit_test(arena, x, y);
 	}
