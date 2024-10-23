@@ -989,11 +989,42 @@ void update_wheel_joints2(struct wheel *wheel)
 	}
 }
 
+void update_box_joints2(struct box *box)
+{
+	double x = box->x;
+	double y = box->y;
+	double w_half = box->w / 2;
+	double h_half = box->h / 2;
+
+	double x0 =  fp_cos(box->angle) * w_half;
+	double y0 =  fp_sin(box->angle) * w_half;
+	double x1 =  fp_sin(box->angle) * h_half;
+	double y1 = -fp_cos(box->angle) * h_half;
+
+	box->center->x = x;
+	box->center->y = y;
+
+	box->corners[0]->x = x + x0 + x1;
+	box->corners[0]->y = y + y0 + y1;
+
+	box->corners[1]->x = x - x0 + x1;
+	box->corners[1]->y = y - y0 + y1;
+
+	box->corners[2]->x = x + x0 - x1;
+	box->corners[2]->y = y + y0 - y1;
+
+	box->corners[3]->x = x - x0 - x1;
+	box->corners[3]->y = y - y0 - y1;
+}
+
 void update_joints2(struct block *block)
 {
 	struct shape *shape = &block->shape;
 
 	switch (shape->type) {
+	case SHAPE_BOX:
+		update_box_joints2(&shape->box);
+		break;
 	case SHAPE_WHEEL:
 		update_wheel_joints2(&shape->wheel);
 		break;
@@ -1052,6 +1083,14 @@ void move_joint(struct arena *arena, struct joint *joint, double x, double y)
 	}
 }
 
+void move_root_block(struct block *block, double x, double y)
+{
+	if (block->shape.type == SHAPE_BOX) {
+		block->shape.box.x = x;
+		block->shape.box.y = y;
+	}
+}
+
 void update_move(struct arena *arena, double dx, double dy)
 {
 	struct joint_head *joint_head;
@@ -1061,6 +1100,13 @@ void update_move(struct arena *arena, double dx, double dy)
 	     joint_head = joint_head->next) {
 		joint_head->joint->x = joint_head->orig_x + dx;
 		joint_head->joint->y = joint_head->orig_y + dy;
+	}
+
+	for (block_head = arena->root_blocks_moving; block_head;
+	     block_head = block_head->next) {
+		move_root_block(block_head->block,
+				block_head->orig_x + dx,
+				block_head->orig_y + dy);
 	}
 
 	for (block_head = arena->blocks_moving; block_head;
@@ -1368,6 +1414,10 @@ struct block_head *append_block_head(struct block_head *head, struct block *bloc
 	new_head = malloc(sizeof(*new_head));
 	new_head->next = head;
 	new_head->block = block;
+	if (block->shape.type == SHAPE_BOX) {
+		new_head->orig_x = block->shape.box.x;
+		new_head->orig_y = block->shape.box.y;
+	}
 
 	return new_head;
 }
@@ -1385,6 +1435,8 @@ void block_dfs(struct arena *arena, struct block *block, bool value, bool all)
 
 	switch (shape->type) {
 	case SHAPE_BOX:
+		arena->root_blocks_moving =
+			append_block_head(arena->root_blocks_moving, block);
 		joint_dfs(arena, shape->box.center, value, all);
 		for (i = 0; i < 4; i++)
 			joint_dfs(arena, shape->box.corners[i], value, all);

@@ -29,6 +29,8 @@ enum tool {
 struct block_head {
 	struct block_head *next;
 	struct block *block;
+	double orig_x;
+	double orig_y;
 };
 
 struct joint_head {
