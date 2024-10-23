@@ -780,7 +780,7 @@ struct block *block_hit_test(struct arena *arena, float x, float y)
 	struct design *design = &arena->design;
 	struct block *block;
 
-	for (block = design->player_blocks.head; block; block = block->next) {
+	for (block = design->player_blocks.tail; block; block = block->prev) {
 		if (block_is_hit(block, x, y))
 			return block;
 	}
