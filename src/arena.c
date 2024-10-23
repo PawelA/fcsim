@@ -1539,7 +1539,7 @@ void mouse_down_wheel(struct arena *arena, float x, float y)
 	block->next = NULL;
 
 	j0 = arena->hover_joint;
-	if (!j0) {
+	if (!j0 || has_wheel(j0, NULL)) {
 		j0 = new_joint(NULL, x, y);
 		append_joint(&design->joints, j0);
 	}
