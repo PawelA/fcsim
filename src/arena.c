@@ -849,7 +849,7 @@ void mark_overlaps(struct arena *arena)
 
 	for (block = arena->design.player_blocks.head; block; block = block->next) {
 		block->overlap = false;
-		if (!block->goal && !block_inside_area(block, &arena->design.build_area))
+		if (!block_inside_area(block, &arena->design.build_area))
 			block->overlap = true;
 	}
 
@@ -860,6 +860,11 @@ void mark_overlaps(struct arena *arena)
 			block = (struct block *)contact->m_shape2->m_userData;
 			block->overlap = true;
 		}
+	}
+
+	for (block = arena->design.player_blocks.head; block; block = block->next) {
+		if (!block->visited && block != arena->new_block)
+			block->overlap = false;
 	}
 
 	for (block = arena->design.level_blocks.head; block; block = block->next)
