@@ -1679,24 +1679,42 @@ bool inside_area(struct area *area, double x, double y)
 	    && y < area->y + h_half;
 }
 
+int block_list_len(struct block_list *list)
+{
+	struct block *block;
+	int res = 0;
+
+	for (block = list->head; block; block = block->next)
+		res++;
+
+	return res;
+}
+
 void mouse_down_tool(struct arena *arena, float x, float y)
 {
-	switch (arena->tool) {
-	case TOOL_MOVE:
+	if (arena->tool == TOOL_MOVE) {
 		mouse_down_move(arena, x, y);
-		break;
-	case TOOL_ROD:
-	case TOOL_SOLID_ROD:
-		mouse_down_rod(arena, x, y);
-		break;
-	case TOOL_WHEEL:
-	case TOOL_CW_WHEEL:
-	case TOOL_CCW_WHEEL:
-		mouse_down_wheel(arena, x, y);
-		break;
-	case TOOL_DELETE:
+		return;
+	}
+
+	if (arena->tool == TOOL_DELETE) {
 		mouse_down_delete(arena, x, y);
-		break;
+		return;
+	}
+
+	if (block_list_len(&arena->design.player_blocks) >= 120)
+		return;
+
+	if (arena->tool == TOOL_ROD || arena->tool == TOOL_SOLID_ROD) {
+		mouse_down_rod(arena, x, y);
+		return;
+	}
+
+	if (arena->tool == TOOL_WHEEL ||
+	    arena->tool == TOOL_CW_WHEEL ||
+	    arena->tool == TOOL_CCW_WHEEL) {
+		mouse_down_wheel(arena, x, y);
+		return;
 	}
 }
 
