@@ -3,13 +3,18 @@
 let play_button  = document.getElementById("play");
 let save_button  = document.getElementById("save");
 let save_menu    = document.getElementById("save_menu");
+let login_link   = document.getElementById("login");
 let save_form    = document.getElementById("save_form");
 let close_button = document.getElementById("close");
 let design_link  = document.getElementById("link");
 
 let user_id = localStorage.getItem("userId");
-if (!user_id)
+if (user_id) {
+	login_link.innerHTML = "Log out";
+	login_link.href = "/logout.html"
+} else {
 	save_button.disabled = true;
+}
 
 let opened = false;
 
