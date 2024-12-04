@@ -1,5 +1,6 @@
 "use strict";
 
+let play_button  = document.getElementById("play");
 let save_button  = document.getElementById("save");
 let save_menu    = document.getElementById("save_menu");
 let save_form    = document.getElementById("save_form");
@@ -11,6 +12,12 @@ if (!user_id)
 	save_button.disabled = true;
 
 let opened = false;
+
+function play(event)
+{
+	inst.exports.key_down(65);
+	play_button.blur();
+}
 
 function save(event)
 {
@@ -25,6 +32,7 @@ function close(event)
 	opened = false;
 }
 
+play_button.addEventListener("click", play);
 save_button.addEventListener("click", save);
 close_button.addEventListener("click", close);
 
