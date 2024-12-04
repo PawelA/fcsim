@@ -15,14 +15,12 @@ let opened = false;
 function save(event)
 {
 	save_menu.style.display = "block";
-	save_button.style.display = "none";
 	opened = true;
 }
 
 function close(event)
 {
 	save_menu.style.display = "none";
-	save_button.style.display = "block";
 	design_link.style.display = "none";
 	opened = false;
 }
