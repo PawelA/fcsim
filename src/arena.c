@@ -10,6 +10,7 @@
 #include "xml.h"
 #include "interval.h"
 #include "graph.h"
+#include "text.h"
 #include "arena.h"
 
 #define TAU 6.28318530718
@@ -417,6 +418,9 @@ void arena_init(struct arena *arena, float w, float h, char *xml, int len)
 	glBindBuffer(GL_ARRAY_BUFFER, arena->joint_coord_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(arena->joint_coords),
 		     arena->joint_coords, GL_STREAM_DRAW);
+
+	arena->tick = 0;
+	text_stream_create(&arena->tick_counter, 20);
 }
 
 void fill_joint_coords(struct arena *arena, struct joint *joint)
@@ -471,6 +475,35 @@ void block_graphics_draw(struct block_graphics *graphics, struct view *view)
 	glDisableVertexAttribArray(1);
 }
 
+/* TODO: dedupe */
+static void u64tostr(char *buf, uint64_t val)
+{
+	char tmp[20];
+	int l = 0;
+	int i;
+
+	do {
+		tmp[l++] = '0' + (val % 10);
+		val /= 10;
+	} while (val > 0);
+
+	for (i = 0; i < l; i++)
+		buf[i] = tmp[l - 1 - i];
+
+	buf[l] = 0;
+}
+
+static void draw_tick_counter(struct arena *arena)
+{
+	char buf[20];
+
+	u64tostr(buf, arena->tick);
+
+	text_stream_update(&arena->tick_counter, buf);
+	text_stream_render(&arena->tick_counter,
+			arena->view.width, arena->view.height, 10, 10);
+}
+
 void arena_draw(struct arena *arena)
 {
 	glClearColor(sky_color.r, sky_color.g, sky_color.b, 1.0f);
@@ -491,6 +524,8 @@ void arena_draw(struct arena *arena)
 		glDrawArrays(GL_TRIANGLES, 0, 24);
 		glDisableVertexAttribArray(0);
 	}
+
+	draw_tick_counter(arena);
 }
 
 void update_tool(struct arena *arena)
@@ -522,6 +557,7 @@ void tick_func(void *arg)
 	struct arena *arena = arg;
 
 	step(arena->world);
+	arena->tick++;
 }
 
 void start(struct arena *arena)
@@ -530,6 +566,7 @@ void start(struct arena *arena)
 	arena->world = gen_world(&arena->design);
 	arena->ival = set_interval(tick_func, 10, arena);
 	arena->hover_joint = NULL;
+	arena->tick = 0;
 }
 
 void stop(struct arena *arena)

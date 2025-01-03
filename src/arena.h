@@ -86,6 +86,9 @@ struct arena {
 
 	float joint_coords[48];
 	GLuint joint_coord_buffer;
+
+	uint64_t tick;
+	struct text_stream tick_counter;
 };
 
 bool arena_compile_shaders(void);
