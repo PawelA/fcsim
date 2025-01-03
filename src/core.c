@@ -4,6 +4,7 @@
 #include <box2d/b2Body.h>
 #include "gl.h"
 #include "graph.h"
+#include "text.h"
 #include "arena.h"
 #include "xml.h"
 
@@ -51,6 +52,7 @@ void init(char *xml, int len)
 	bool res;
 
 	res = arena_compile_shaders();
+	res = text_compile_shaders();
 	/*
 	if (!res)
 		exit(1);

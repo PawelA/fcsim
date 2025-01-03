@@ -17,6 +17,7 @@ obj/linux/gen.o $
 obj/linux/graph.o $
 obj/linux/main.o $
 obj/linux/str.o $
+obj/linux/text.o $
 obj/linux/xml.o $
 obj/linux/box2d/b2BlockAllocator.o $
 obj/linux/box2d/b2Body.o $
@@ -48,6 +49,7 @@ build obj/linux/gen.o: linux-cc src/gen.c
 build obj/linux/graph.o: linux-cc src/graph.c
 build obj/linux/main.o: linux-cc src/main.c
 build obj/linux/str.o: linux-cc src/str.c
+build obj/linux/text.o: linux-cc src/text.c
 build obj/linux/xml.o: linux-cc src/xml.c
 build obj/linux/box2d/b2BlockAllocator.o: linux-cc src/box2d/b2BlockAllocator.c
 build obj/linux/box2d/b2Body.o: linux-cxx src/box2d/b2Body.cpp
@@ -90,6 +92,7 @@ obj/wasm/core.o $
 obj/wasm/gen.o $
 obj/wasm/graph.o $
 obj/wasm/str.o $
+obj/wasm/text.o $
 obj/wasm/xml.o $
 obj/wasm/arch/wasm/math.o $
 obj/wasm/arch/wasm/malloc.o $
@@ -124,6 +127,7 @@ build obj/wasm/core.o: wasm-cc src/core.c
 build obj/wasm/gen.o: wasm-cc src/gen.c
 build obj/wasm/graph.o: wasm-cc src/graph.c
 build obj/wasm/str.o: wasm-cc src/str.c
+build obj/wasm/text.o: wasm-cc src/text.c
 build obj/wasm/xml.o: wasm-cc src/xml.c
 build obj/wasm/arch/wasm/math.o: wasm-cc src/arch/wasm/math.c
 build obj/wasm/arch/wasm/malloc.o: wasm-cc src/arch/wasm/malloc.c
