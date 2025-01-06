@@ -89,6 +89,7 @@ struct arena {
 
 	uint64_t tick;
 	struct text_stream tick_counter;
+	bool has_won;
 };
 
 bool arena_compile_shaders(void);

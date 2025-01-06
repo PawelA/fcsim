@@ -421,6 +421,7 @@ void arena_init(struct arena *arena, float w, float h, char *xml, int len)
 
 	arena->tick = 0;
 	text_stream_create(&arena->tick_counter, 20);
+	arena->has_won = false;
 }
 
 void fill_joint_coords(struct arena *arena, struct joint *joint)
@@ -552,12 +553,34 @@ void arena_key_up_event(struct arena *arena, int key)
 	update_tool(arena);
 }
 
+static int block_inside_area(struct block *block, struct area *area);
+
+static bool goal_blocks_inside_goal_area(struct design *design)
+{
+	struct block *block;
+	bool any = false;
+
+	for (block = design->player_blocks.head; block; block = block->next) {
+		if (block->goal) {
+			any = true;
+			if (!block_inside_area(block, &design->goal_area))
+				return false;
+		}
+	}
+
+	return any;
+}
+
 void tick_func(void *arg)
 {
 	struct arena *arena = arg;
 
 	step(arena->world);
-	arena->tick++;
+	if (!arena->has_won) {
+		arena->tick++;
+		if (goal_blocks_inside_goal_area(&arena->design))
+			arena->has_won = true;
+	}
 }
 
 void start(struct arena *arena)
@@ -567,6 +590,7 @@ void start(struct arena *arena)
 	arena->ival = set_interval(tick_func, 10, arena);
 	arena->hover_joint = NULL;
 	arena->tick = 0;
+	arena->has_won = false;
 }
 
 void stop(struct arena *arena)
@@ -853,6 +877,11 @@ static void get_block_bb(struct block *block, struct area *area)
 	struct shell shell;
 
 	get_shell(&shell, &block->shape);
+	if (block->body) {
+		shell.x = block->body->m_position.x;
+		shell.y = block->body->m_position.y;
+		shell.angle = block->body->m_rotation;
+	}
 
 	if (shell.type == SHELL_CIRC)
 		get_circ_bb(&shell, area);
