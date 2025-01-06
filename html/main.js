@@ -81,12 +81,20 @@ function make_cstring(data)
 }
 
 let gl_env = {
+	glActiveTexture(texture) {
+		gl.activeTexture(texture);
+	},
+
 	glAttachShader(program, shader) {
 		gl.attachShader(get_object(program), get_object(shader));
 	},
 
 	glBindBuffer(target, buffer) {
 		return gl.bindBuffer(target, get_object(buffer));
+	},
+
+	glBindTexture(target, texture) {
+		return gl.bindTexture(target, get_object(texture));
 	},
 
 	glBufferData(target, size, data, usage) {
@@ -119,6 +127,10 @@ let gl_env = {
 
 	glCreateShader(type) {
 		return add_object(gl.createShader(type));
+	},
+
+	glCreateTexture() {
+		return add_object(gl.createTexture());
 	},
 
 	glDeleteShader(shader) {
@@ -185,8 +197,26 @@ let gl_env = {
 		gl.shaderSource(get_object(shader), source);
 	},
 
+	glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels) {
+		/* TODO: how many bytes per pixel? */
+		let pixel_data = new Uint8Array(inst.exports.memory.buffer, pixels, width * height);
+		gl.texImage2D(target, level, internalformat, width, height, border, format, type, pixel_data);
+	},
+
+	glTexParameteri(target, pname, param) {
+		gl.texParameteri(target, pname, param);
+	},
+
+	glUniform1i(location, v0) {
+		gl.uniform1i(get_object(location), v0);
+	},
+
 	glUniform2f(location, v0, v1) {
 		gl.uniform2f(get_object(location), v0, v1);
+	},
+
+	glUniform3f(location, v0, v1, v2) {
+		gl.uniform3f(get_object(location), v0, v1, v2);
 	},
 
 	glUseProgram(program) {

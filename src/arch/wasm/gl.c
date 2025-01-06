@@ -13,6 +13,16 @@ void glGenBuffers(GLsizei n, GLuint *buffers)
 		buffers[i] = glCreateBuffer();
 }
 
+GLuint glCreateTexture(void);
+
+void glGenTextures(GLsizei n, GLuint *textures)
+{
+	GLsizei i;
+
+	for (i = 0; i < n; i++)
+		textures[i] = glCreateTexture();
+}
+
 GLint glGetProgramParameter(GLuint program, GLenum pname);
 
 void glGetProgramiv(GLuint program, GLenum pname, GLint *params)
