@@ -11,6 +11,7 @@ rule linux-ld
 
 build fcsim: linux-ld $
 obj/linux/arena.o $
+obj/linux/button.o $
 obj/linux/export.o $
 obj/linux/core.o $
 obj/linux/gen.o $
@@ -43,6 +44,7 @@ obj/linux/fpmath/sincos.o $
 obj/linux/fpmath/strtod.o
 
 build obj/linux/arena.o: linux-cc src/arena.c
+build obj/linux/button.o: linux-cc src/button.c
 build obj/linux/export.o: linux-cc src/export.c
 build obj/linux/core.o: linux-cc src/core.c
 build obj/linux/gen.o: linux-cc src/gen.c
@@ -87,6 +89,7 @@ rule wasm-ld
 
 build html/fcsim.wasm: wasm-ld $
 obj/wasm/arena.o $
+obj/wasm/button.o $
 obj/wasm/export.o $
 obj/wasm/core.o $
 obj/wasm/gen.o $
@@ -122,6 +125,7 @@ obj/wasm/fpmath/sincos.o $
 obj/wasm/fpmath/strtod.o
 
 build obj/wasm/arena.o: wasm-cc src/arena.c
+build obj/wasm/button.o: wasm-cc src/button.c
 build obj/wasm/export.o: wasm-cc src/export.c
 build obj/wasm/core.o: wasm-cc src/core.c
 build obj/wasm/gen.o: wasm-cc src/gen.c
