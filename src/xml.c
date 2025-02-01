@@ -700,6 +700,29 @@ int read_level(struct slice *buf, struct xml_level *level)
 	return 0;
 }
 
+int read_level_id(struct slice *buf, int *val)
+{
+	struct slice data;
+	int res;
+
+	res = read_data_elem(buf, &data);
+	if (res)
+		return res;
+
+	/* some designs have an empty levelId */
+	if (data.len == 0) {
+		*val = -1;
+		return 0;
+	}
+
+	res = strtoi(data.ptr, data.len, val);
+	if (res)
+		return res;
+
+	return 0;
+}
+
+
 int read_retrieve_level(struct slice *buf, struct xml_level *level)
 {
 	struct slice this_name;
@@ -720,7 +743,7 @@ int read_retrieve_level(struct slice *buf, struct xml_level *level)
 		if (slice_str_equal(&name, "level"))
 			res = read_level(buf, level);
 		else if (slice_str_equal(&name, "levelId"))
-			res = read_int(buf, &level->level_id);
+			res = read_level_id(buf, &level->level_id);
 		else
 			res = skip_data_elem(buf);
 

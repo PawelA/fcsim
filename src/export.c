@@ -315,7 +315,8 @@ char *export_design(struct design *design, char *user, char *name, char *desc)
 	append_str(&str, user);
 	append_str(&str, "</userId>");
 	append_str(&str, "<levelId>");
-	append_int(&str, design->level_id);
+	if (design->level_id >= 0)
+		append_int(&str, design->level_id);
 	append_str(&str, "</levelId>");
 	append_str(&str, "<level>");
 	append_block_list(&str, &design->level_blocks, "levelBlocks");
