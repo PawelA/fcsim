@@ -308,6 +308,10 @@ function to_key(code)
 	if (code == "KeyU") return 30;
 	if (code == "KeyW") return 25;
 	if (code == "KeyC") return 54;
+	if (code == "Digit1") return 10;
+	if (code == "Digit2") return 11;
+	if (code == "Digit3") return 12;
+	if (code == "Digit4") return 13;
 	if (code == "ShiftLeft") return 50;
 	if (code == "ControlLeft") return 37;
 	return 0;

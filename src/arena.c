@@ -419,6 +419,7 @@ void arena_init(struct arena *arena, float w, float h, char *xml, int len)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(arena->joint_coords),
 		     arena->joint_coords, GL_STREAM_DRAW);
 
+	arena->tick_ms = 17;
 	arena->tick = 0;
 	text_stream_create(&arena->tick_counter, 20);
 	arena->has_won = false;
@@ -587,7 +588,7 @@ void start(struct arena *arena)
 {
 	free_world(arena->world, &arena->design);
 	arena->world = gen_world(&arena->design);
-	arena->ival = set_interval(tick_func, 10, arena);
+	arena->ival = set_interval(tick_func, arena->tick_ms, arena);
 	arena->hover_joint = NULL;
 	arena->tick = 0;
 	arena->has_won = false;
@@ -598,6 +599,16 @@ void stop(struct arena *arena)
 	free_world(arena->world, &arena->design);
 	arena->world = gen_world(&arena->design);
 	clear_interval(arena->ival);
+}
+
+void change_speed(struct arena *arena, int ms)
+{
+	arena->tick_ms = ms;
+	if (arena->state == STATE_RUNNING ||
+	    arena->state == STATE_RUNNING_PAN) {
+		clear_interval(arena->ival);
+		arena->ival = set_interval(tick_func, ms, arena);
+	}
 }
 
 void mouse_up_new_block(struct arena *arena);
@@ -662,6 +673,18 @@ void arena_key_down_event(struct arena *arena, int key)
 		break;
 	case 54: /* C */
 		arena->tool_hidden = TOOL_CCW_WHEEL;
+		break;
+	case 10: /* 1 */
+		change_speed(arena, 33);
+		break;
+	case 11: /* 2 */
+		change_speed(arena, 17);
+		break;
+	case 12: /* 3 */
+		change_speed(arena, 8);
+		break;
+	case 13: /* 4 */
+		change_speed(arena, 4);
 		break;
 	case 50: /* shift */
 		arena->shift = true;

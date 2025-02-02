@@ -58,6 +58,7 @@ struct arena {
 	b2World *world;
 
 	int ival;
+	int tick_ms;
 
 	struct view view;
 
