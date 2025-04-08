@@ -21,7 +21,6 @@
 #include <box2d/b2Body.h>
 #include <box2d/b2World.h>
 #include <box2d/b2BlockAllocator.h>
-#include <box2d/b2BroadPhase.h>
 
 b2Joint* b2Joint_Create(const b2JointDef* def, b2BlockAllocator* allocator)
 {
