@@ -170,17 +170,17 @@ static void gen_joint(b2World *world, b2Body *b1, b2Body *b2, double x, double y
 	b2RevoluteJointDef joint_def;
 
 	b2RevoluteJointDef_ctor(&joint_def);
-	joint_def.m_jointDef.body1 = b1;
-	joint_def.m_jointDef.body2 = b2;
+	joint_def.body1 = b1;
+	joint_def.body2 = b2;
 	joint_def.anchorPoint.x = x;
 	joint_def.anchorPoint.y = y;
-	joint_def.m_jointDef.collideConnected = true;
+	joint_def.collideConnected = true;
 	if (spin != 0) {
 		joint_def.motorTorque = 50000000;
 		joint_def.motorSpeed = spin;
 		joint_def.enableMotor = true;
 	}
-	b2World_CreateJoint(world, &joint_def.m_jointDef);
+	b2World_CreateJoint(world, &joint_def);
 }
 
 static int block_spin(struct block *block)
@@ -262,11 +262,11 @@ void step(struct b2World *world)
 {
 	b2World_Step(world, 1.0 / 30.0, 10);
 
-	b2Joint *joint = b2World_GetJointList(world);
+	b2RevoluteJoint *joint = b2World_GetJointList(world);
 	while (joint) {
-		b2Joint *next = joint->m_next;
-		b2Vec2 a1 = joint->GetAnchor1(joint);
-		b2Vec2 a2 = joint->GetAnchor2(joint);
+		b2RevoluteJoint *next = joint->m_next;
+		b2Vec2 a1 = b2RevoluteJoint_GetAnchor1(joint);
+		b2Vec2 a2 = b2RevoluteJoint_GetAnchor2(joint);
 		if (fabs(a1.x - a2.x) + fabs(a1.y - a2.y) > 50.0)
 			b2World_DestroyJoint(world, joint);
 		joint = next;

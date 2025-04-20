@@ -37,8 +37,10 @@
 
 void b2RevoluteJointDef_ctor(b2RevoluteJointDef *rev_joint_def)
 {
-	b2JointDef_ctor(&rev_joint_def->m_jointDef);
-	rev_joint_def->m_jointDef.type = e_revoluteJoint;
+	rev_joint_def->userData = NULL;
+	rev_joint_def->body1 = NULL;
+	rev_joint_def->body2 = NULL;
+	rev_joint_def->collideConnected = false;
 	b2Vec2_Set(&rev_joint_def->anchorPoint, 0.0, 0.0);
 	rev_joint_def->lowerAngle = 0.0;
 	rev_joint_def->upperAngle = 0.0;
@@ -50,20 +52,18 @@ void b2RevoluteJointDef_ctor(b2RevoluteJointDef *rev_joint_def)
 
 void b2RevoluteJoint_ctor(b2RevoluteJoint *rev_joint, const b2RevoluteJointDef* def)
 {
-	b2Joint_ctor(&rev_joint->m_joint, &def->m_jointDef);
+	rev_joint->m_prev = NULL;
+	rev_joint->m_next = NULL;
+	rev_joint->m_body1 = def->body1;
+	rev_joint->m_body2 = def->body2;
+	rev_joint->m_collideConnected = def->collideConnected;
+	rev_joint->m_islandFlag = false;
+	rev_joint->m_userData = def->userData;
 
-	rev_joint->m_joint.GetAnchor1 = b2RevoluteJoint_GetAnchor1;
-	rev_joint->m_joint.GetAnchor2 = b2RevoluteJoint_GetAnchor2;
-	rev_joint->m_joint.GetReactionForce = b2RevoluteJoint_GetReactionForce;
-	rev_joint->m_joint.GetReactionTorque = b2RevoluteJoint_GetReactionTorque;
-	rev_joint->m_joint.PrepareVelocitySolver = b2RevoluteJoint_PrepareVelocitySolver;
-	rev_joint->m_joint.SolveVelocityConstraints = b2RevoluteJoint_SolveVelocityConstraints;
-	rev_joint->m_joint.SolvePositionConstraints = b2RevoluteJoint_SolvePositionConstraints;
+	rev_joint->m_localAnchor1 = b2MulT(rev_joint->m_body1->m_R, def->anchorPoint - rev_joint->m_body1->m_position);
+	rev_joint->m_localAnchor2 = b2MulT(rev_joint->m_body2->m_R, def->anchorPoint - rev_joint->m_body2->m_position);
 
-	rev_joint->m_localAnchor1 = b2MulT(rev_joint->m_joint.m_body1->m_R, def->anchorPoint - rev_joint->m_joint.m_body1->m_position);
-	rev_joint->m_localAnchor2 = b2MulT(rev_joint->m_joint.m_body2->m_R, def->anchorPoint - rev_joint->m_joint.m_body2->m_position);
-
-	rev_joint->m_intialAngle = rev_joint->m_joint.m_body2->m_rotation - rev_joint->m_joint.m_body1->m_rotation;
+	rev_joint->m_intialAngle = rev_joint->m_body2->m_rotation - rev_joint->m_body1->m_rotation;
 
 	b2Vec2_Set(&rev_joint->m_ptpImpulse, 0.0, 0.0);
 	rev_joint->m_motorImpulse = 0.0;
@@ -78,7 +78,7 @@ void b2RevoluteJoint_ctor(b2RevoluteJoint *rev_joint, const b2RevoluteJointDef* 
 	rev_joint->m_enableMotor = def->enableMotor;
 }
 
-void b2RevoluteJoint_PrepareVelocitySolver(b2Joint *joint)
+void b2RevoluteJoint_PrepareVelocitySolver(b2RevoluteJoint *joint)
 {
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 	b2Body* b1 = joint->m_body1;
@@ -168,7 +168,7 @@ void b2RevoluteJoint_PrepareVelocitySolver(b2Joint *joint)
 	revoluteJoint->m_limitPositionImpulse = 0.0;
 }
 
-void b2RevoluteJoint_SolveVelocityConstraints(b2Joint *joint, const b2TimeStep* step)
+void b2RevoluteJoint_SolveVelocityConstraints(b2RevoluteJoint *joint, const b2TimeStep* step)
 {
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 
@@ -227,7 +227,7 @@ void b2RevoluteJoint_SolveVelocityConstraints(b2Joint *joint, const b2TimeStep* 
 	}
 }
 
-bool b2RevoluteJoint_SolvePositionConstraints(b2Joint *joint)
+bool b2RevoluteJoint_SolvePositionConstraints(b2RevoluteJoint *joint)
 {
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 
@@ -325,27 +325,27 @@ bool b2RevoluteJoint_SolvePositionConstraints(b2Joint *joint)
 	return positionError <= b2_linearSlop && angularError <= b2_angularSlop;
 }
 
-b2Vec2 b2RevoluteJoint_GetAnchor1(b2Joint *joint)
+b2Vec2 b2RevoluteJoint_GetAnchor1(b2RevoluteJoint *joint)
 {
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 	b2Body* b1 = joint->m_body1;
 	return b1->m_position + b2Mul(b1->m_R, revoluteJoint->m_localAnchor1);
 }
 
-b2Vec2 b2RevoluteJoint_GetAnchor2(b2Joint *joint)
+b2Vec2 b2RevoluteJoint_GetAnchor2(b2RevoluteJoint *joint)
 {
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 	b2Body* b2 = joint->m_body2;
 	return b2->m_position + b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
 }
 
-b2Vec2 b2RevoluteJoint_GetReactionForce(b2Joint *joint, float64 invTimeStep)
+b2Vec2 b2RevoluteJoint_GetReactionForce(b2RevoluteJoint *joint, float64 invTimeStep)
 {
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 	return invTimeStep * revoluteJoint->m_ptpImpulse;
 }
 
-float64 b2RevoluteJoint_GetReactionTorque(b2Joint *joint, float64 invTimeStep)
+float64 b2RevoluteJoint_GetReactionTorque(b2RevoluteJoint *joint, float64 invTimeStep)
 {
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 	return invTimeStep * revoluteJoint->m_limitImpulse;

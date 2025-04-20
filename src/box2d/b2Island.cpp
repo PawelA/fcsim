@@ -21,7 +21,7 @@
 #include <box2d/b2World.h>
 #include <box2d/b2Contact.h>
 #include <box2d/b2ContactSolver.h>
-#include <box2d/b2Joint.h>
+#include <box2d/b2RevoluteJoint.h>
 #include <box2d/b2StackAllocator.h>
 
 /*
@@ -114,7 +114,7 @@ void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, 
 
 	island->m_bodies = (b2Body**)b2StackAllocator_Allocate(allocator, bodyCapacity * sizeof(b2Body*));
 	island->m_contacts = (b2Contact**)b2StackAllocator_Allocate(allocator, contactCapacity * sizeof(b2Contact*));
-	island->m_joints = (b2Joint**)b2StackAllocator_Allocate(allocator, jointCapacity * sizeof(b2Joint*));
+	island->m_joints = (b2RevoluteJoint**)b2StackAllocator_Allocate(allocator, jointCapacity * sizeof(b2RevoluteJoint*));
 
 	island->m_allocator = allocator;
 }
@@ -162,7 +162,7 @@ void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& grav
 
 	for (int32 i = 0; i < island->m_jointCount; ++i)
 	{
-		island->m_joints[i]->PrepareVelocitySolver(island->m_joints[i]);
+		b2RevoluteJoint_PrepareVelocitySolver(island->m_joints[i]);
 	}
 
 	// Solve velocity constraints.
@@ -172,7 +172,7 @@ void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& grav
 	
 		for (int32 j = 0; j < island->m_jointCount; ++j)
 		{
-			island->m_joints[j]->SolveVelocityConstraints(island->m_joints[j], step);
+			b2RevoluteJoint_SolveVelocityConstraints(island->m_joints[j], step);
 		}
 	}
 
@@ -200,7 +200,7 @@ void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& grav
 			bool jointsOkay = true;
 			for (int i = 0; i < island->m_jointCount; ++i)
 			{
-				bool jointOkay = island->m_joints[i]->SolvePositionConstraints(island->m_joints[i]);
+				bool jointOkay = b2RevoluteJoint_SolvePositionConstraints(island->m_joints[i]);
 				jointsOkay = jointsOkay && jointOkay;
 			}
 

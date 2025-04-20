@@ -19,7 +19,7 @@
 #include <box2d/b2World.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2Island.h>
-#include <box2d/b2Joint.h>
+#include <box2d/b2RevoluteJoint.h>
 #include <box2d/b2Contact.h>
 #include <box2d/b2Collision.h>
 #include <box2d/b2BroadPhase.h>
@@ -154,9 +154,10 @@ void b2World_CleanBodyList(b2World *world)
 	world->m_contactManager.m_destroyImmediate = false;
 }
 
-b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def)
+b2RevoluteJoint* b2World_CreateJoint(b2World *world, const b2RevoluteJointDef* def)
 {
-	b2Joint* j = b2Joint_Create(def, &world->m_blockAllocator);
+	b2RevoluteJoint* j = (b2RevoluteJoint *)b2BlockAllocator_Allocate(&world->m_blockAllocator, sizeof(b2RevoluteJoint));
+	b2RevoluteJoint_ctor(j, def);
 
 	// Connect to the world list.
 	j->m_prev = NULL;
@@ -197,7 +198,7 @@ b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def)
 	return j;
 }
 
-void b2World_DestroyJoint(b2World *world, b2Joint* j)
+void b2World_DestroyJoint(b2World *world, b2RevoluteJoint* j)
 {
 	bool collideConnected = j->m_collideConnected;
 
@@ -263,7 +264,7 @@ void b2World_DestroyJoint(b2World *world, b2Joint* j)
 	j->m_node2.prev = NULL;
 	j->m_node2.next = NULL;
 
-	b2Joint_Destroy(j, &world->m_blockAllocator);
+	b2BlockAllocator_Free(&world->m_blockAllocator, j, sizeof(b2RevoluteJoint));
 
 	--world->m_jointCount;
 
@@ -315,7 +316,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	{
 		c->m_flags &= ~b2Contact_e_islandFlag;
 	}
-	for (b2Joint* j = world->m_jointList; j; j = j->m_next)
+	for (b2RevoluteJoint* j = world->m_jointList; j; j = j->m_next)
 	{
 		j->m_islandFlag = false;
 	}

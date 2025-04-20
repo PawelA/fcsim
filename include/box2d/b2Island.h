@@ -24,7 +24,7 @@
 class b2StackAllocator;
 class b2Contact;
 struct b2Body;
-struct b2Joint;
+struct b2RevoluteJoint;
 struct b2TimeStep;
 
 struct b2Island
@@ -33,7 +33,7 @@ struct b2Island
 
 	b2Body** m_bodies;
 	b2Contact** m_contacts;
-	b2Joint** m_joints;
+	b2RevoluteJoint** m_joints;
 
 	int32 m_bodyCount;
 	int32 m_jointCount;
@@ -68,7 +68,7 @@ static inline void b2Island_AddContact(b2Island *island, b2Contact* contact)
 	island->m_contacts[island->m_contactCount++] = contact;
 }
 
-static inline void b2Island_AddJoint(b2Island *island, b2Joint* joint)
+static inline void b2Island_AddJoint(b2Island *island, b2RevoluteJoint* joint)
 {
 	b2Assert(island->m_jointCount < island->m_jointCapacity);
 	island->m_joints[island->m_jointCount++] = joint;

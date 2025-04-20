@@ -22,7 +22,6 @@ SRC_BOX2D = \
 	box2d/b2ContactManager \
 	box2d/b2ContactSolver \
 	box2d/b2Island \
-	box2d/b2Joint \
 	box2d/b2PairManager \
 	box2d/b2PolyAndCircleContact \
 	box2d/b2PolyContact \
@@ -83,6 +82,6 @@ clean:
 $(OBJ_LINUX): | $(DIR:%=obj/linux/%)
 $(OBJ_WASM): | $(DIR:%=obj/wasm/%)
 
-OBJ = $(OBJ_LINX) $(OBJ_WASM)
+OBJ = $(OBJ_LINUX) $(OBJ_WASM)
 
 -include $(OBJ:%.o=%.d)

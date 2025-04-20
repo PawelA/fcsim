@@ -26,17 +26,17 @@
 
 typedef struct b2AABB b2AABB;
 typedef struct b2BodyDef b2BodyDef;
-typedef struct b2JointDef b2JointDef;
+typedef struct b2RevoluteJointDef b2RevoluteJointDef;
 typedef struct b2Body b2Body;
-typedef struct b2Joint b2Joint;
+typedef struct b2RevoluteJoint b2RevoluteJoint;
 typedef struct b2Shape b2Shape;
 typedef struct b2Contact b2Contact;
 typedef struct b2BroadPhase b2BroadPhase;
 struct b2AABB;
 struct b2BodyDef;
-struct b2JointDef;
+struct b2RevoluteJointDef;
 struct b2Body;
-struct b2Joint;
+struct b2RevoluteJoint;
 struct b2Shape;
 struct b2Contact;
 struct b2BroadPhase;
@@ -62,7 +62,7 @@ struct b2World
 
 	b2Body* m_bodyList;
 	b2Contact* m_contactList;
-	b2Joint* m_jointList;
+	b2RevoluteJoint* m_jointList;
 
 	int32 m_bodyCount;
 	int32 m_contactCount;
@@ -97,13 +97,13 @@ void b2World_SetFilter(b2World *world, b2CollisionFilter filter);
 b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def);
 void b2World_DestroyBody(b2World *world, b2Body* body);
 
-b2Joint* b2World_CreateJoint(b2World *world, const b2JointDef* def);
+b2RevoluteJoint* b2World_CreateJoint(b2World *world, const b2RevoluteJointDef* def);
 
-void b2World_DestroyJoint(b2World *world, b2Joint* joint);
+void b2World_DestroyJoint(b2World *world, b2RevoluteJoint* joint);
 
 void b2World_Step(b2World *world, float64 timeStep, int32 iterations);
 
-static inline b2Joint* b2World_GetJointList(b2World *world)
+static inline b2RevoluteJoint* b2World_GetJointList(b2World *world)
 {
 	return world->m_jointList;
 }

@@ -20,7 +20,7 @@
 #define B2_BODY_H
 
 #include <box2d/b2Vec.h>
-#include <box2d/b2Joint.h>
+#include <box2d/b2RevoluteJoint.h>
 #include <box2d/b2Shape.h>
 
 typedef struct b2Joint b2Joint;
