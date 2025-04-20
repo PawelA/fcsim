@@ -109,9 +109,6 @@ void b2RevoluteJointDef_ctor(b2RevoluteJointDef *rev_joint_def);
 b2Vec2 b2RevoluteJoint_GetAnchor1(b2RevoluteJoint *joint);
 b2Vec2 b2RevoluteJoint_GetAnchor2(b2RevoluteJoint *joint);
 
-b2Vec2 b2RevoluteJoint_GetReactionForce(b2RevoluteJoint *joint, float64 invTimeStep);
-float64 b2RevoluteJoint_GetReactionTorque(b2RevoluteJoint *joint, float64 invTimeStep);
-
 void b2RevoluteJoint_PrepareVelocitySolver(b2RevoluteJoint *joint);
 void b2RevoluteJoint_SolveVelocityConstraints(b2RevoluteJoint *joint, const b2TimeStep* step);
 

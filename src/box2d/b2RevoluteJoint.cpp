@@ -338,15 +338,3 @@ b2Vec2 b2RevoluteJoint_GetAnchor2(b2RevoluteJoint *joint)
 	b2Body* b2 = joint->m_body2;
 	return b2->m_position + b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
 }
-
-b2Vec2 b2RevoluteJoint_GetReactionForce(b2RevoluteJoint *joint, float64 invTimeStep)
-{
-	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
-	return invTimeStep * revoluteJoint->m_ptpImpulse;
-}
-
-float64 b2RevoluteJoint_GetReactionTorque(b2RevoluteJoint *joint, float64 invTimeStep)
-{
-	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
-	return invTimeStep * revoluteJoint->m_limitImpulse;
-}
