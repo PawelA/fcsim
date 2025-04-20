@@ -31,15 +31,6 @@ struct b2RevoluteJoint;
 typedef struct b2TimeStep b2TimeStep;
 struct b2TimeStep;
 
-enum b2LimitState
-{
-	e_inactiveLimit,
-	e_atLowerLimit,
-	e_atUpperLimit,
-	e_equalLimits
-};
-typedef enum b2LimitState b2LimitState;
-
 typedef struct b2RevoluteJointDef b2RevoluteJointDef;
 struct b2RevoluteJointDef
 {
@@ -49,11 +40,8 @@ struct b2RevoluteJointDef
 	bool collideConnected;
 
 	b2Vec2 anchorPoint;
-	float64 lowerAngle;
-	float64 upperAngle;
 	float64 motorTorque;
 	float64 motorSpeed;
-	bool enableLimit;
 	bool enableMotor;
 };
 
@@ -84,20 +72,13 @@ struct b2RevoluteJoint
 	b2Vec2 m_localAnchor2;
 	b2Vec2 m_ptpImpulse;
 	float64 m_motorImpulse;
-	float64 m_limitImpulse;
-	float64 m_limitPositionImpulse;
 
 	b2Mat22 m_ptpMass;		// effective mass for point-to-point constraint.
 	float64 m_motorMass;	// effective mass for motor/limit angular constraint.
-	float64 m_intialAngle;
-	float64 m_lowerAngle;
-	float64 m_upperAngle;
 	float64 m_maxMotorTorque;
 	float64 m_motorSpeed;
 
-	bool m_enableLimit;
 	bool m_enableMotor;
-	b2LimitState m_limitState;
 };
 
 #ifdef __cplusplus

@@ -42,11 +42,8 @@ void b2RevoluteJointDef_ctor(b2RevoluteJointDef *rev_joint_def)
 	rev_joint_def->body2 = NULL;
 	rev_joint_def->collideConnected = false;
 	b2Vec2_Set(&rev_joint_def->anchorPoint, 0.0, 0.0);
-	rev_joint_def->lowerAngle = 0.0;
-	rev_joint_def->upperAngle = 0.0;
 	rev_joint_def->motorTorque = 0.0;
 	rev_joint_def->motorSpeed = 0.0;
-	rev_joint_def->enableLimit = false;
 	rev_joint_def->enableMotor = false;
 }
 
@@ -63,18 +60,11 @@ void b2RevoluteJoint_ctor(b2RevoluteJoint *rev_joint, const b2RevoluteJointDef* 
 	rev_joint->m_localAnchor1 = b2MulT(rev_joint->m_body1->m_R, def->anchorPoint - rev_joint->m_body1->m_position);
 	rev_joint->m_localAnchor2 = b2MulT(rev_joint->m_body2->m_R, def->anchorPoint - rev_joint->m_body2->m_position);
 
-	rev_joint->m_intialAngle = rev_joint->m_body2->m_rotation - rev_joint->m_body1->m_rotation;
-
 	b2Vec2_Set(&rev_joint->m_ptpImpulse, 0.0, 0.0);
 	rev_joint->m_motorImpulse = 0.0;
-	rev_joint->m_limitImpulse = 0.0;
-	rev_joint->m_limitPositionImpulse = 0.0;
 
-	rev_joint->m_lowerAngle = def->lowerAngle;
-	rev_joint->m_upperAngle = def->upperAngle;
 	rev_joint->m_maxMotorTorque = def->motorTorque;
 	rev_joint->m_motorSpeed = def->motorSpeed;
-	rev_joint->m_enableLimit = def->enableLimit;
 	rev_joint->m_enableMotor = def->enableMotor;
 }
 
@@ -116,56 +106,19 @@ void b2RevoluteJoint_PrepareVelocitySolver(b2RevoluteJoint *joint)
 		revoluteJoint->m_motorImpulse = 0.0;
 	}
 
-	if (revoluteJoint->m_enableLimit)
-	{
-		float64 jointAngle = b2->m_rotation - b1->m_rotation - revoluteJoint->m_intialAngle;
-		if (b2Abs(revoluteJoint->m_upperAngle - revoluteJoint->m_lowerAngle) < 2.0 * b2_angularSlop)
-		{
-			revoluteJoint->m_limitState = e_equalLimits;
-		}
-		else if (jointAngle <= revoluteJoint->m_lowerAngle)
-		{
-			if (revoluteJoint->m_limitState != e_atLowerLimit)
-			{
-				revoluteJoint->m_limitImpulse = 0.0;
-			}
-			revoluteJoint->m_limitState = e_atLowerLimit;
-		}
-		else if (jointAngle >= revoluteJoint->m_upperAngle)
-		{
-			if (revoluteJoint->m_limitState != e_atUpperLimit)
-			{
-				revoluteJoint->m_limitImpulse = 0.0;
-			}
-			revoluteJoint->m_limitState = e_atUpperLimit;
-		}
-		else
-		{
-			revoluteJoint->m_limitState = e_inactiveLimit;
-			revoluteJoint->m_limitImpulse = 0.0;
-		}
-	}
-	else
-	{
-		revoluteJoint->m_limitImpulse = 0.0;
-	}
-
 	if (b2World_s_enableWarmStarting)
 	{
 		b1->m_linearVelocity -= invMass1 * revoluteJoint->m_ptpImpulse;
-		b1->m_angularVelocity -= invI1 * (b2Cross(r1, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse + revoluteJoint->m_limitImpulse);
+		b1->m_angularVelocity -= invI1 * (b2Cross(r1, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
 
 		b2->m_linearVelocity += invMass2 * revoluteJoint->m_ptpImpulse;
-		b2->m_angularVelocity += invI2 * (b2Cross(r2, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse + revoluteJoint->m_limitImpulse);
+		b2->m_angularVelocity += invI2 * (b2Cross(r2, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
 	}
 	else
 	{
 		b2Vec2_SetZero(&revoluteJoint->m_ptpImpulse);
 		revoluteJoint->m_motorImpulse = 0.0;
-		revoluteJoint->m_limitImpulse = 0.0;
 	}
-
-	revoluteJoint->m_limitPositionImpulse = 0.0;
 }
 
 void b2RevoluteJoint_SolveVelocityConstraints(b2RevoluteJoint *joint, const b2TimeStep* step)
@@ -189,7 +142,7 @@ void b2RevoluteJoint_SolveVelocityConstraints(b2RevoluteJoint *joint, const b2Ti
 	b2->m_linearVelocity += b2->m_invMass * ptpImpulse;
 	b2->m_angularVelocity += b2->m_invI * b2Cross(r2, ptpImpulse);
 
-	if (revoluteJoint->m_enableMotor && revoluteJoint->m_limitState != e_equalLimits)
+	if (revoluteJoint->m_enableMotor)
 	{
 		float64 motorCdot = b2->m_angularVelocity - b1->m_angularVelocity - revoluteJoint->m_motorSpeed;
 		float64 motorImpulse = -revoluteJoint->m_motorMass * motorCdot;
@@ -198,32 +151,6 @@ void b2RevoluteJoint_SolveVelocityConstraints(b2RevoluteJoint *joint, const b2Ti
 		motorImpulse = revoluteJoint->m_motorImpulse - oldMotorImpulse;
 		b1->m_angularVelocity -= b1->m_invI * motorImpulse;
 		b2->m_angularVelocity += b2->m_invI * motorImpulse;
-	}
-
-	if (revoluteJoint->m_enableLimit && revoluteJoint->m_limitState != e_inactiveLimit)
-	{
-		float64 limitCdot = b2->m_angularVelocity - b1->m_angularVelocity;
-		float64 limitImpulse = -revoluteJoint->m_motorMass * limitCdot;
-
-		if (revoluteJoint->m_limitState == e_equalLimits)
-		{
-			revoluteJoint->m_limitImpulse += limitImpulse;
-		}
-		else if (revoluteJoint->m_limitState == e_atLowerLimit)
-		{
-			float64 oldLimitImpulse = revoluteJoint->m_limitImpulse;
-			revoluteJoint->m_limitImpulse = b2Max(revoluteJoint->m_limitImpulse + limitImpulse, 0.0);
-			limitImpulse = revoluteJoint->m_limitImpulse - oldLimitImpulse;
-		}
-		else if (revoluteJoint->m_limitState == e_atUpperLimit)
-		{
-			float64 oldLimitImpulse = revoluteJoint->m_limitImpulse;
-			revoluteJoint->m_limitImpulse = b2Min(revoluteJoint->m_limitImpulse + limitImpulse, 0.0);
-			limitImpulse = revoluteJoint->m_limitImpulse - oldLimitImpulse;
-		}
-
-		b1->m_angularVelocity -= b1->m_invI * limitImpulse;
-		b2->m_angularVelocity += b2->m_invI * limitImpulse;
 	}
 }
 
@@ -276,53 +203,7 @@ bool b2RevoluteJoint_SolvePositionConstraints(b2RevoluteJoint *joint)
 	b2->m_rotation += b2->m_invI * b2Cross(r2, impulse);
 	b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 
-	// Handle limits.
-	float64 angularError = 0.0;
-
-	if (revoluteJoint->m_enableLimit && revoluteJoint->m_limitState != e_inactiveLimit)
-	{
-		float64 angle = b2->m_rotation - b1->m_rotation - revoluteJoint->m_intialAngle;
-		float64 limitImpulse = 0.0;
-
-		if (revoluteJoint->m_limitState == e_equalLimits)
-		{
-			// Prevent large angular corrections
-			float64 limitC = b2Clamp(angle, -b2_maxAngularCorrection, b2_maxAngularCorrection);
-			limitImpulse = -revoluteJoint->m_motorMass * limitC;
-			angularError = b2Abs(limitC);
-		}
-		else if (revoluteJoint->m_limitState == e_atLowerLimit)
-		{
-			float64 limitC = angle - revoluteJoint->m_lowerAngle;
-			angularError = b2Max(0.0, -limitC);
-
-			// Prevent large angular corrections and allow some slop.
-			limitC = b2Clamp(limitC + b2_angularSlop, -b2_maxAngularCorrection, 0.0);
-			limitImpulse = -revoluteJoint->m_motorMass * limitC;
-			float64 oldLimitImpulse = revoluteJoint->m_limitPositionImpulse;
-			revoluteJoint->m_limitPositionImpulse = b2Max(revoluteJoint->m_limitPositionImpulse + limitImpulse, 0.0);
-			limitImpulse = revoluteJoint->m_limitPositionImpulse - oldLimitImpulse;
-		}
-		else if (revoluteJoint->m_limitState == e_atUpperLimit)
-		{
-			float64 limitC = angle - revoluteJoint->m_upperAngle;
-			angularError = b2Max(0.0, limitC);
-
-			// Prevent large angular corrections and allow some slop.
-			limitC = b2Clamp(limitC - b2_angularSlop, 0.0, b2_maxAngularCorrection);
-			limitImpulse = -revoluteJoint->m_motorMass * limitC;
-			float64 oldLimitImpulse = revoluteJoint->m_limitPositionImpulse;
-			revoluteJoint->m_limitPositionImpulse = b2Min(revoluteJoint->m_limitPositionImpulse + limitImpulse, 0.0);
-			limitImpulse = revoluteJoint->m_limitPositionImpulse - oldLimitImpulse;
-		}
-
-		b1->m_rotation -= b1->m_invI * limitImpulse;
-		b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
-		b2->m_rotation += b2->m_invI * limitImpulse;
-		b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
-	}
-
-	return positionError <= b2_linearSlop && angularError <= b2_angularSlop;
+	return positionError <= b2_linearSlop;
 }
 
 b2Vec2 b2RevoluteJoint_GetAnchor1(b2RevoluteJoint *joint)
