@@ -22,7 +22,7 @@
 static void b2CircleContact_Evaluate(b2Contact *contact)
 {
 	b2CircleContact *circ_contact = (b2CircleContact *)contact;
-	b2CollideCircle(&circ_contact->m_manifold, (b2CircleShape*)contact->m_shape1, (b2CircleShape*)contact->m_shape2, false);
+	b2CollideCircle(&circ_contact->m_manifold, (b2CircleShape*)contact->m_shape1, (b2CircleShape*)contact->m_shape2);
 
 	if (circ_contact->m_manifold.pointCount > 0)
 	{

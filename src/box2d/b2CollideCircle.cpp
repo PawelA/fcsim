@@ -20,14 +20,14 @@
 #include <box2d/b2Collision.h>
 #include <box2d/b2Shape.h>
 
-void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape* circle2, bool conservative)
+void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape* circle2)
 {
 	manifold->pointCount = 0;
 
 	b2Vec2 d = circle2->m_shape.m_position - circle1->m_shape.m_position;
 	float64 distSqr = b2Dot(d, d);
 	float64 radiusSum = circle1->m_radius + circle2->m_radius;
-	if (distSqr > radiusSum * radiusSum && conservative == false)
+	if (distSqr > radiusSum * radiusSum)
 	{
 		return;
 	}
@@ -53,10 +53,8 @@ void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape
 	manifold->points[0].position = circle2->m_shape.m_position - circle2->m_radius * manifold->normal;
 }
 
-void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const b2CircleShape* circle, bool conservative)
+void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const b2CircleShape* circle)
 {
-	NOT_USED(conservative);
-
 	manifold->pointCount = 0;
 
 	// Compute circle position in the frame of the polygon.

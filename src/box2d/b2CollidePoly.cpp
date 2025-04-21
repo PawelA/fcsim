@@ -91,7 +91,7 @@ static float64 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2Pol
 }
 
 // Find the max separation between poly1 and poly2 using edge normals from poly1.
-static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, const b2PolyShape* poly2, bool conservative)
+static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, const b2PolyShape* poly2)
 {
 	int32 count1 = poly1->m_vertexCount;
 
@@ -114,7 +114,7 @@ static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 
 	// Get the separation for the edge normal.
 	float64 s = EdgeSeparation(poly1, edge, poly2);
-	if (s > 0.0 && conservative == false)
+	if (s > 0.0)
 	{
 		return s;
 	}
@@ -122,14 +122,14 @@ static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 	// Check the separation for the neighboring edges.
 	int32 prevEdge = edge - 1 >= 0 ? edge - 1 : count1 - 1;
 	float64 sPrev = EdgeSeparation(poly1, prevEdge, poly2);
-	if (sPrev > 0.0 && conservative == false)
+	if (sPrev > 0.0)
 	{
 		return sPrev;
 	}
 
 	int32 nextEdge = edge + 1 < count1 ? edge + 1 : 0;
 	float64 sNext = EdgeSeparation(poly1, nextEdge, poly2);
-	if (sNext > 0.0 && conservative == false)
+	if (sNext > 0.0)
 	{
 		return sNext;
 	}
@@ -164,7 +164,7 @@ static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 			edge = bestEdge + 1 < count1 ? bestEdge + 1 : 0;
 
 		s = EdgeSeparation(poly1, edge, poly2);
-		if (s > 0.0 && conservative == false)
+		if (s > 0.0)
 		{
 			return s;
 		}
@@ -243,20 +243,18 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 // Clip
 
 // The normal points from 1 to 2
-void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyShape* polyB, bool conservative)
+void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyShape* polyB)
 {
-	NOT_USED(conservative);
-
 	manifold->pointCount = 0;
 
 	int32 edgeA = 0;
-	float64 separationA = FindMaxSeparation(&edgeA, polyA, polyB, conservative);
-	if (separationA > 0.0 && conservative == false)
+	float64 separationA = FindMaxSeparation(&edgeA, polyA, polyB);
+	if (separationA > 0.0)
 		return;
 	
 	int32 edgeB = 0;
-	float64 separationB = FindMaxSeparation(&edgeB, polyB, polyA, conservative);
-	if (separationB > 0.0 && conservative == false)
+	float64 separationB = FindMaxSeparation(&edgeB, polyB, polyA);
+	if (separationB > 0.0)
 		return;
 
 	const b2PolyShape* poly1;	// reference poly
@@ -330,7 +328,7 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	{
 		float64 separation = b2Dot(frontNormal, clipPoints2[i].v) - frontOffset;
 
-		if (separation <= 0.0 || conservative == true)
+		if (separation <= 0.0)
 		{
 			b2ContactPoint* cp = manifold->points + pointCount;
 			cp->separation = separation;

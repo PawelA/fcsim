@@ -82,9 +82,9 @@ struct b2OBB
 extern "C" {
 #endif
 
-void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape* circle2, bool conservative);
-void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const b2CircleShape* circle, bool conservative);
-void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* poly1, const b2PolyShape* poly2, bool conservative);
+void b2CollideCircle(b2Manifold* manifold, b2CircleShape* circle1, b2CircleShape* circle2);
+void b2CollidePolyAndCircle(b2Manifold* manifold, const b2PolyShape* poly, const b2CircleShape* circle);
+void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* poly1, const b2PolyShape* poly2);
 
 #ifdef __cplusplus
 }
