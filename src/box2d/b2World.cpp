@@ -25,9 +25,6 @@
 #include <box2d/b2BroadPhase.h>
 #include <box2d/b2Shape.h>
 
-int32 b2World_s_enablePositionCorrection = 1;
-int32 b2World_s_enableWarmStarting = 1;
-
 void b2World_ctor(b2World *world, const b2AABB *worldAABB, b2Vec2 gravity, bool doSleep)
 {
 	b2BlockAllocator_ctor(&world->m_blockAllocator);

@@ -191,23 +191,20 @@ void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& grav
 	}
 
 	// Solve position constraints.
-	if (b2World_s_enablePositionCorrection)
+	for (int32 iter = 0; iter < step->iterations; ++iter)
 	{
-		for (int32 iter = 0; iter < step->iterations; ++iter)
+		bool contactsOkay = b2ContactSolver_SolvePositionConstraints(&contactSolver, b2_contactBaumgarte);
+
+		bool jointsOkay = true;
+		for (int i = 0; i < island->m_jointCount; ++i)
 		{
-			bool contactsOkay = b2ContactSolver_SolvePositionConstraints(&contactSolver, b2_contactBaumgarte);
+			bool jointOkay = b2RevoluteJoint_SolvePositionConstraints(island->m_joints[i]);
+			jointsOkay = jointsOkay && jointOkay;
+		}
 
-			bool jointsOkay = true;
-			for (int i = 0; i < island->m_jointCount; ++i)
-			{
-				bool jointOkay = b2RevoluteJoint_SolvePositionConstraints(island->m_joints[i]);
-				jointsOkay = jointsOkay && jointOkay;
-			}
-
-			if (contactsOkay && jointsOkay)
-			{
-				break;
-			}
+		if (contactsOkay && jointsOkay)
+		{
+			break;
 		}
 	}
 

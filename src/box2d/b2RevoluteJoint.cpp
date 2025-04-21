@@ -106,19 +106,11 @@ void b2RevoluteJoint_PrepareVelocitySolver(b2RevoluteJoint *joint)
 		revoluteJoint->m_motorImpulse = 0.0;
 	}
 
-	if (b2World_s_enableWarmStarting)
-	{
-		b1->m_linearVelocity -= invMass1 * revoluteJoint->m_ptpImpulse;
-		b1->m_angularVelocity -= invI1 * (b2Cross(r1, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
+	b1->m_linearVelocity -= invMass1 * revoluteJoint->m_ptpImpulse;
+	b1->m_angularVelocity -= invI1 * (b2Cross(r1, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
 
-		b2->m_linearVelocity += invMass2 * revoluteJoint->m_ptpImpulse;
-		b2->m_angularVelocity += invI2 * (b2Cross(r2, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
-	}
-	else
-	{
-		b2Vec2_SetZero(&revoluteJoint->m_ptpImpulse);
-		revoluteJoint->m_motorImpulse = 0.0;
-	}
+	b2->m_linearVelocity += invMass2 * revoluteJoint->m_ptpImpulse;
+	b2->m_angularVelocity += invI2 * (b2Cross(r2, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
 }
 
 void b2RevoluteJoint_SolveVelocityConstraints(b2RevoluteJoint *joint, const b2TimeStep* step)

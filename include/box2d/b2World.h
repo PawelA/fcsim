@@ -108,9 +108,6 @@ static inline b2RevoluteJoint* b2World_GetJointList(b2World *world)
 	return world->m_jointList;
 }
 
-extern int32 b2World_s_enablePositionCorrection;
-extern int32 b2World_s_enableWarmStarting;
-
 #ifdef __cplusplus
 }
 #endif

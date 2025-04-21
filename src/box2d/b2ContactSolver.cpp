@@ -139,32 +139,18 @@ void b2ContactSolver_PreSolve(b2ContactSolver *solver)
 		b2Vec2 normal = c->normal;
 		b2Vec2 tangent = b2Cross(normal, 1.0);
 
-		if (b2World_s_enableWarmStarting)
+		for (int32 j = 0; j < c->pointCount; ++j)
 		{
-			for (int32 j = 0; j < c->pointCount; ++j)
-			{
-				b2ContactConstraintPoint* ccp = c->points + j;
-				b2Vec2 P = ccp->normalImpulse * normal + ccp->tangentImpulse * tangent;
-				b2Vec2 r1 = b2Mul(b1->m_R, ccp->localAnchor1);
-				b2Vec2 r2 = b2Mul(b2->m_R, ccp->localAnchor2);
-				b1->m_angularVelocity -= invI1 * b2Cross(r1, P);
-				b1->m_linearVelocity -= invMass1 * P;
-				b2->m_angularVelocity += invI2 * b2Cross(r2, P);
-				b2->m_linearVelocity += invMass2 * P;
+			b2ContactConstraintPoint* ccp = c->points + j;
+			b2Vec2 P = ccp->normalImpulse * normal + ccp->tangentImpulse * tangent;
+			b2Vec2 r1 = b2Mul(b1->m_R, ccp->localAnchor1);
+			b2Vec2 r2 = b2Mul(b2->m_R, ccp->localAnchor2);
+			b1->m_angularVelocity -= invI1 * b2Cross(r1, P);
+			b1->m_linearVelocity -= invMass1 * P;
+			b2->m_angularVelocity += invI2 * b2Cross(r2, P);
+			b2->m_linearVelocity += invMass2 * P;
 
-				ccp->positionImpulse = 0.0;
-			}
-		}
-		else
-		{
-			for (int32 j = 0; j < c->pointCount; ++j)
-			{
-				b2ContactConstraintPoint* ccp = c->points + j;
-				ccp->normalImpulse = 0.0;
-				ccp->tangentImpulse = 0.0;
-
-				ccp->positionImpulse = 0.0;
-			}
+			ccp->positionImpulse = 0.0;
 		}
 	}
 }
