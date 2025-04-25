@@ -20,8 +20,6 @@
 #define B2_WORLD_H
 
 #include <box2d/b2Vec.h>
-#include <box2d/b2BlockAllocator.h>
-#include <box2d/b2StackAllocator.h>
 #include <box2d/b2ContactManager.h>
 
 typedef struct b2AABB b2AABB;
@@ -54,9 +52,6 @@ struct b2TimeStep
 typedef struct b2World b2World;
 struct b2World
 {
-	b2BlockAllocator m_blockAllocator;
-	b2StackAllocator m_stackAllocator;
-
 	b2BroadPhase* m_broadPhase;
 	b2ContactManager m_contactManager;
 

@@ -22,9 +22,6 @@
 #include <box2d/b2Collision.h>
 #include <box2d/b2Contact.h>
 
-typedef struct b2BlockAllocator b2BlockAllocator;
-struct b2BlockAllocator;
-
 typedef struct b2CircleContact b2CircleContact;
 struct b2CircleContact
 {
@@ -36,8 +33,8 @@ struct b2CircleContact
 extern "C" {
 #endif
 
-b2Contact* b2CircleContact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
-void b2CircleContact_Destroy(b2Contact* contact, b2BlockAllocator* allocator);
+b2Contact* b2CircleContact_Create(b2Shape* shape1, b2Shape* shape2);
+void b2CircleContact_Destroy(b2Contact* contact);
 
 #ifdef __cplusplus
 }

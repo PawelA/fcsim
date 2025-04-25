@@ -22,7 +22,6 @@
 #include <box2d/b2PolyContact.h>
 #include <box2d/b2Collision.h>
 #include <box2d/b2Shape.h>
-#include <box2d/b2BlockAllocator.h>
 #include <box2d/b2World.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2CMath.h>
@@ -57,7 +56,7 @@ static void AddType(b2ContactCreateFcn* createFcn,
 	}
 }
 
-b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
+b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2)
 {
 	if (s_initialized == false)
 	{
@@ -73,11 +72,11 @@ b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* 
 	{
 		if (s_registers[type1][type2].primary)
 		{
-			return createFcn(shape1, shape2, allocator);
+			return createFcn(shape1, shape2);
 		}
 		else
 		{
-			b2Contact* c = createFcn(shape2, shape1, allocator);
+			b2Contact* c = createFcn(shape2, shape1);
 			for (int32 i = 0; i < c->m_manifoldCount; ++i)
 			{
 				b2Manifold* m = c->GetManifolds(c) + i;
@@ -92,7 +91,7 @@ b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* 
 	}
 }
 
-void b2Contact_Destroy(b2Contact* contact, b2BlockAllocator* allocator)
+void b2Contact_Destroy(b2Contact* contact)
 {
 	if (contact->m_manifoldCount > 0)
 	{
@@ -104,7 +103,7 @@ void b2Contact_Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 	b2ShapeType type2 = contact->m_shape2->m_type;
 
 	b2ContactDestroyFcn* destroyFcn = s_registers[type1][type2].destroyFcn;
-	destroyFcn(contact, allocator);
+	destroyFcn(contact);
 }
 
 void b2Contact_ctor(b2Contact *contact, b2Shape* s1, b2Shape* s2)

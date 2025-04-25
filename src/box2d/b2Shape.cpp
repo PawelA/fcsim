@@ -16,12 +16,13 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <stdlib.h>
+
 #include <box2d/b2Math.h>
 #include <box2d/b2BroadPhase.h>
 #include <box2d/b2Shape.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2World.h>
-#include <box2d/b2BlockAllocator.h>
 
 // Polygon mass, centroid, and inertia.
 // Let rho be the polygon density in mass per unit area.
@@ -228,7 +229,7 @@ b2Shape* b2Shape_Create(const b2ShapeDef* def,
 	{
 	case e_circleShape:
 		{
-			b2CircleShape* mem = (b2CircleShape *)b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2CircleShape));
+			b2CircleShape* mem = (b2CircleShape *)malloc(sizeof(b2CircleShape));
 			b2CircleShape_ctor(mem, def, body, center);
 			return (b2Shape *)mem;
 		}
@@ -236,7 +237,7 @@ b2Shape* b2Shape_Create(const b2ShapeDef* def,
 	case e_boxShape:
 	case e_polyShape:
 		{
-			b2PolyShape* mem = (b2PolyShape *)b2BlockAllocator_Allocate(&body->m_world->m_blockAllocator, sizeof(b2PolyShape));
+			b2PolyShape* mem = (b2PolyShape *)malloc(sizeof(b2PolyShape));
 			b2PolyShape_ctor(mem, def, body, center);
 			return (b2Shape *)mem;
 		}
@@ -249,19 +250,8 @@ static void b2Shape_dtor(b2Shape *shape);
 
 void b2Shape_Destroy(b2Shape* shape)
 {
-	b2BlockAllocator& allocator = shape->m_body->m_world->m_blockAllocator;
 	b2Shape_dtor(shape);
-
-	switch (shape->m_type)
-	{
-	case e_circleShape:
-		b2BlockAllocator_Free(&allocator, shape, sizeof(b2CircleShape));
-		break;
-
-	case e_polyShape:
-		b2BlockAllocator_Free(&allocator, shape, sizeof(b2PolyShape));
-		break;
-	}
+	free(shape);
 }
 
 static void b2Shape_ctor(b2Shape *shape, const b2ShapeDef* def, b2Body* body)

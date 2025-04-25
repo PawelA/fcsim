@@ -17,8 +17,8 @@
 */
 
 #include <box2d/b2PolyContact.h>
-#include <box2d/b2BlockAllocator.h>
 #include <string.h>
+#include <stdlib.h>
 
 static void b2PolyContact_Evaluate(b2Contact *contact)
 {
@@ -82,14 +82,14 @@ static void b2PolyContact_ctor(b2PolyContact *poly_contact, b2Shape* s1, b2Shape
 	poly_contact->m_manifold.pointCount = 0;
 }
 
-b2Contact* b2PolyContact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
+b2Contact* b2PolyContact_Create(b2Shape* shape1, b2Shape* shape2)
 {
-	b2PolyContact *poly_contact = b2BlockAllocator_Allocate(allocator, sizeof(b2PolyContact));
+	b2PolyContact *poly_contact = malloc(sizeof(b2PolyContact));
 	b2PolyContact_ctor(poly_contact, shape1, shape2);
 	return &poly_contact->contact;
 }
 
-void b2PolyContact_Destroy(b2Contact* contact, b2BlockAllocator* allocator)
+void b2PolyContact_Destroy(b2Contact* contact)
 {
-	b2BlockAllocator_Free(allocator, contact, sizeof(b2PolyContact));
+	free(contact);
 }

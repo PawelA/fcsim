@@ -21,9 +21,6 @@
 
 #include <box2d/b2Contact.h>
 
-typedef struct b2BlockAllocator b2BlockAllocator;
-struct b2BlockAllocator;
-
 typedef struct b2PolyContact b2PolyContact;
 struct b2PolyContact {
 	b2Contact contact;
@@ -34,8 +31,8 @@ struct b2PolyContact {
 extern "C" {
 #endif
 
-b2Contact *b2PolyContact_Create(b2Shape *shape1, b2Shape *shape2, b2BlockAllocator *allocator);
-void b2PolyContact_Destroy(b2Contact *contact, b2BlockAllocator *allocator);
+b2Contact *b2PolyContact_Create(b2Shape *shape1, b2Shape *shape2);
+void b2PolyContact_Destroy(b2Contact *contact);
 
 #ifdef __cplusplus
 }

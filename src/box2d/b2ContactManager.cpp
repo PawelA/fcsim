@@ -62,7 +62,7 @@ void* b2ContactManager_PairAdded(b2PairCallback *callback, void* proxyUserData1,
 	}
 
 	// Call the factory.
-	b2Contact* contact = b2Contact_Create(shape1, shape2, &manager->m_world->m_blockAllocator);
+	b2Contact* contact = b2Contact_Create(shape1, shape2);
 
 	if (contact == NULL)
 	{
@@ -180,7 +180,7 @@ static void b2ContactManager_DestroyContact(b2ContactManager *manager, b2Contact
 	}
 
 	// Call the factory.
-	b2Contact_Destroy(c, &manager->m_world->m_blockAllocator);
+	b2Contact_Destroy(c);
 	--manager->m_world->m_contactCount;
 }
 

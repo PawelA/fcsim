@@ -16,8 +16,9 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <stdlib.h>
+
 #include <box2d/b2PolyAndCircleContact.h>
-#include <box2d/b2BlockAllocator.h>
 
 static void b2PolyAndCircleContact_Evaluate(b2Contact *contact)
 {
@@ -50,14 +51,14 @@ static void b2PolyAndCircleContact_ctor(b2PolyAndCircleContact *pc_contact, b2Sh
 	pc_contact->m_manifold.points[0].tangentImpulse = 0.0;
 }
 
-b2Contact* b2PolyAndCircleContact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator)
+b2Contact* b2PolyAndCircleContact_Create(b2Shape* shape1, b2Shape* shape2)
 {
-	b2PolyAndCircleContact *pc_contact = b2BlockAllocator_Allocate(allocator, sizeof(b2PolyAndCircleContact));
+	b2PolyAndCircleContact *pc_contact = malloc(sizeof(b2PolyAndCircleContact));
 	b2PolyAndCircleContact_ctor(pc_contact, shape1, shape2);
 	return &pc_contact->contact;
 }
 
-void b2PolyAndCircleContact_Destroy(b2Contact* contact, b2BlockAllocator* allocator)
+void b2PolyAndCircleContact_Destroy(b2Contact* contact)
 {
-	b2BlockAllocator_Free(allocator, contact, sizeof(b2PolyAndCircleContact));
+	free(contact);
 }

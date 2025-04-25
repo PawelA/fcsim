@@ -27,8 +27,6 @@
 
 void b2World_ctor(b2World *world, const b2AABB *worldAABB, b2Vec2 gravity, bool doSleep)
 {
-	b2BlockAllocator_ctor(&world->m_blockAllocator);
-	b2StackAllocator_ctor(&world->m_stackAllocator);
 	b2ContactManager_ctor(&world->m_contactManager);
 
 	world->m_filter = NULL;
@@ -48,7 +46,7 @@ void b2World_ctor(b2World *world, const b2AABB *worldAABB, b2Vec2 gravity, bool 
 	world->m_gravity = gravity;
 
 	world->m_contactManager.m_world = world;
-	world->m_broadPhase = (b2BroadPhase *)b2Alloc(sizeof(b2BroadPhase));
+	world->m_broadPhase = (b2BroadPhase *)malloc(sizeof(b2BroadPhase));
 	b2BroadPhase_ctor(world->m_broadPhase, *worldAABB, &world->m_contactManager.m_pairCallback);
 
 	b2BodyDef bd;
@@ -59,9 +57,7 @@ void b2World_ctor(b2World *world, const b2AABB *worldAABB, b2Vec2 gravity, bool 
 void b2World_dtor(b2World *world)
 {
 	b2World_DestroyBody(world, world->m_groundBody);
-	b2Free(world->m_broadPhase);
-
-	b2BlockAllocator_dtor(&world->m_blockAllocator);
+	free(world->m_broadPhase);
 }
 
 void b2World_SetFilter(b2World *world, b2CollisionFilter filter)
@@ -71,7 +67,7 @@ void b2World_SetFilter(b2World *world, b2CollisionFilter filter)
 
 b2Body* b2World_CreateBody(b2World *world, const b2BodyDef* def)
 {
-	b2Body* b = (b2Body *)b2BlockAllocator_Allocate(&world->m_blockAllocator, sizeof(b2Body));
+	b2Body* b = (b2Body *)malloc(sizeof(b2Body));
 	b2Body_ctor(b, def, world);
 	b->m_prev = NULL;
 
@@ -142,7 +138,7 @@ void b2World_CleanBodyList(b2World *world)
 		}
 
 		b2Body_dtor(b0);
-		b2BlockAllocator_Free(&world->m_blockAllocator, b0, sizeof(b2Body));
+		free(b0);
 	}
 
 	// Reset the list.
@@ -153,7 +149,7 @@ void b2World_CleanBodyList(b2World *world)
 
 b2RevoluteJoint* b2World_CreateJoint(b2World *world, const b2RevoluteJointDef* def)
 {
-	b2RevoluteJoint* j = (b2RevoluteJoint *)b2BlockAllocator_Allocate(&world->m_blockAllocator, sizeof(b2RevoluteJoint));
+	b2RevoluteJoint* j = (b2RevoluteJoint *)malloc(sizeof(b2RevoluteJoint));
 	b2RevoluteJoint_ctor(j, def);
 
 	// Connect to the world list.
@@ -261,7 +257,7 @@ void b2World_DestroyJoint(b2World *world, b2RevoluteJoint* j)
 	j->m_node2.prev = NULL;
 	j->m_node2.next = NULL;
 
-	b2BlockAllocator_Free(&world->m_blockAllocator, j, sizeof(b2RevoluteJoint));
+	free(j);
 
 	--world->m_jointCount;
 
@@ -302,7 +298,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 
 	// Size the island for the worst case.
 	b2Island island;
-	b2Island_ctor(&island, world->m_bodyCount, world->m_contactCount, world->m_jointCount, &world->m_stackAllocator);
+	b2Island_ctor(&island, world->m_bodyCount, world->m_contactCount, world->m_jointCount);
 
 	// Clear all the island flags.
 	for (b2Body* b = world->m_bodyList; b; b = b->m_next)
@@ -320,7 +316,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 	
 	// Build and simulate all awake islands.
 	int32 stackSize = world->m_bodyCount;
-	b2Body** stack = (b2Body**)b2StackAllocator_Allocate(&world->m_stackAllocator, stackSize * sizeof(b2Body*));
+	b2Body** stack = (b2Body**)malloc(stackSize * sizeof(b2Body*));
 	for (b2Body* seed = world->m_bodyList; seed; seed = seed->m_next)
 	{
 		if (seed->m_flags & (b2Body_e_staticFlag | b2Body_e_islandFlag | b2Body_e_sleepFlag | b2Body_e_frozenFlag))
@@ -413,7 +409,7 @@ void b2World_Step(b2World *world, float64 dt, int32 iterations)
 		}
 	}
 
-	b2StackAllocator_Free(&world->m_stackAllocator, stack);
+	free(stack);
 
 	b2BroadPhase_Commit(world->m_broadPhase);
 

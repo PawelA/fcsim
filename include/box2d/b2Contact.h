@@ -25,14 +25,12 @@
 typedef struct b2Body b2Body;
 typedef struct b2Contact b2Contact;
 typedef struct b2World b2World;
-typedef struct b2BlockAllocator b2BlockAllocator;
 struct b2Body;
 struct b2Contact;
 struct b2World;
-struct b2BlockAllocator;
 
-typedef b2Contact* b2ContactCreateFcn(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
-typedef void b2ContactDestroyFcn(b2Contact* contact, b2BlockAllocator* allocator);
+typedef b2Contact* b2ContactCreateFcn(b2Shape* shape1, b2Shape* shape2);
+typedef void b2ContactDestroyFcn(b2Contact* contact);
 
 typedef struct b2ContactNode b2ContactNode;
 struct b2ContactNode
@@ -87,8 +85,8 @@ struct b2Contact
 extern "C" {
 #endif
 
-b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2, b2BlockAllocator* allocator);
-void b2Contact_Destroy(b2Contact* contact, b2BlockAllocator* allocator);
+b2Contact* b2Contact_Create(b2Shape* shape1, b2Shape* shape2);
+void b2Contact_Destroy(b2Contact* contact);
 
 void b2Contact_ctor(b2Contact *contact, b2Shape* s1, b2Shape* s2);
 

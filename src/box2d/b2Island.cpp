@@ -16,13 +16,14 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <stdlib.h>
+
 #include <box2d/b2Island.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2World.h>
 #include <box2d/b2Contact.h>
 #include <box2d/b2ContactSolver.h>
 #include <box2d/b2RevoluteJoint.h>
-#include <box2d/b2StackAllocator.h>
 
 /*
 Position Correction Notes
@@ -103,7 +104,7 @@ probably default to the slower Full NGS and let the user select the faster
 Baumgarte method in performance critical scenarios.
 */
 
-void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity, b2StackAllocator* allocator)
+void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity)
 {
 	island->m_bodyCapacity = bodyCapacity;
 	island->m_contactCapacity = contactCapacity;
@@ -112,19 +113,16 @@ void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, 
 	island->m_contactCount = 0;
 	island->m_jointCount = 0;
 
-	island->m_bodies = (b2Body**)b2StackAllocator_Allocate(allocator, bodyCapacity * sizeof(b2Body*));
-	island->m_contacts = (b2Contact**)b2StackAllocator_Allocate(allocator, contactCapacity * sizeof(b2Contact*));
-	island->m_joints = (b2RevoluteJoint**)b2StackAllocator_Allocate(allocator, jointCapacity * sizeof(b2RevoluteJoint*));
-
-	island->m_allocator = allocator;
+	island->m_bodies = (b2Body**)malloc(bodyCapacity * sizeof(b2Body*));
+	island->m_contacts = (b2Contact**)malloc(contactCapacity * sizeof(b2Contact*));
+	island->m_joints = (b2RevoluteJoint**)malloc(jointCapacity * sizeof(b2RevoluteJoint*));
 }
 
 void b2Island_dtor(b2Island *island)
 {
-	// Warning: the order should reverse the constructor order.
-	b2StackAllocator_Free(island->m_allocator, island->m_joints);
-	b2StackAllocator_Free(island->m_allocator, island->m_contacts);
-	b2StackAllocator_Free(island->m_allocator, island->m_bodies);
+	free(island->m_joints);
+	free(island->m_contacts);
+	free(island->m_bodies);
 }
 
 void b2Island_Clear(b2Island *island)
@@ -155,7 +153,7 @@ void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& grav
 	}
 
 	b2ContactSolver contactSolver;
-	b2ContactSolver_ctor(&contactSolver, island->m_contacts, island->m_contactCount, island->m_allocator);
+	b2ContactSolver_ctor(&contactSolver, island->m_contacts, island->m_contactCount);
 
 	// Pre-solve
 	b2ContactSolver_PreSolve(&contactSolver);

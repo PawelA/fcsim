@@ -12,7 +12,6 @@ SRC_CORE = \
 	xml
 
 SRC_BOX2D = \
-	box2d/b2BlockAllocator \
 	box2d/b2Body \
 	box2d/b2BroadPhase \
 	box2d/b2CircleContact \
@@ -26,9 +25,7 @@ SRC_BOX2D = \
 	box2d/b2PolyAndCircleContact \
 	box2d/b2PolyContact \
 	box2d/b2RevoluteJoint \
-	box2d/b2Settings \
 	box2d/b2Shape \
-	box2d/b2StackAllocator \
 	box2d/b2World
 
 SRC_FPMATH = \

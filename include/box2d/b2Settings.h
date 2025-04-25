@@ -69,19 +69,4 @@ static const float64 b2_timeToSleep = 0.5;
 static const float64 b2_linearSleepTolerance = 0.3;
 static const float64 b2_angularSleepTolerance = 0.011111111111111112;
 
-
-// Memory Allocation
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern int32 b2_byteCount;
-void* b2Alloc(int32 size);
-void b2Free(void* mem);
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif

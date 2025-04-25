@@ -21,7 +21,6 @@
 
 #include <box2d/b2Math.h>
 
-class b2StackAllocator;
 class b2Contact;
 struct b2Body;
 struct b2RevoluteJoint;
@@ -29,8 +28,6 @@ struct b2TimeStep;
 
 struct b2Island
 {
-	b2StackAllocator* m_allocator;
-
 	b2Body** m_bodies;
 	b2Contact** m_contacts;
 	b2RevoluteJoint** m_joints;
@@ -46,7 +43,7 @@ struct b2Island
 	float64 m_positionError;
 };
 
-void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity, b2StackAllocator* allocator);
+void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity);
 void b2Island_dtor(b2Island *island);
 
 void b2Island_Clear(b2Island *island);

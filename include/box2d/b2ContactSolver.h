@@ -25,7 +25,6 @@
 class b2Contact;
 struct b2Body;
 class b2Island;
-class b2StackAllocator;
 
 struct b2ContactConstraintPoint
 {
@@ -54,12 +53,11 @@ struct b2ContactConstraint
 
 struct b2ContactSolver
 {
-	b2StackAllocator* m_allocator;
 	b2ContactConstraint* m_constraints;
 	int m_constraintCount;
 };
 
-void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount, b2StackAllocator* allocator);
+void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount);
 void b2ContactSolver_dtor(b2ContactSolver *solver);
 
 void b2ContactSolver_PreSolve(b2ContactSolver *solver);

@@ -16,23 +16,22 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <stdlib.h>
+
 #include <box2d/b2ContactSolver.h>
 #include <box2d/b2Contact.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2World.h>
-#include <box2d/b2StackAllocator.h>
 
-void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount, b2StackAllocator* allocator)
+void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount)
 {
-	solver->m_allocator = allocator;
-
 	solver->m_constraintCount = 0;
 	for (int32 i = 0; i < contactCount; ++i)
 	{
 		solver->m_constraintCount += contacts[i]->m_manifoldCount;
 	}
 
-	solver->m_constraints = (b2ContactConstraint*)b2StackAllocator_Allocate(solver->m_allocator, solver->m_constraintCount * sizeof(b2ContactConstraint));
+	solver->m_constraints = (b2ContactConstraint*)malloc(solver->m_constraintCount * sizeof(b2ContactConstraint));
 
 	int32 count = 0;
 	for (int32 i = 0; i < contactCount; ++i)
@@ -120,7 +119,7 @@ void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 c
 
 void b2ContactSolver_dtor(b2ContactSolver *solver)
 {
-	b2StackAllocator_Free(solver->m_allocator, solver->m_constraints);
+	free(solver->m_constraints);
 }
 
 void b2ContactSolver_PreSolve(b2ContactSolver *solver)
