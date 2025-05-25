@@ -6,3 +6,4 @@ html/fcsim.wasm
 tags
 .ninja_log
 .ninja_deps
+fcsim.vcxproj.user
