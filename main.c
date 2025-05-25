@@ -5,7 +5,7 @@
 
 bool running = true;
 
-LONG WINAPI WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 { 
 	switch(msg) {
 	case WM_CLOSE:
