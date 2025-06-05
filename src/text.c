@@ -7,7 +7,7 @@
 #include "gl.h"
 #include "text.h"
 
-static uint8_t font[];
+static uint8_t font[128 * 8];
 
 static GLuint font_tex;
 
