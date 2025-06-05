@@ -7,3 +7,6 @@ tags
 .ninja_log
 .ninja_deps
 fcsim.vcxproj.user
+Debug/
+Release/
+x64/

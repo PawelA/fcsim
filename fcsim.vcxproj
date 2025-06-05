@@ -31,14 +31,48 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
   <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <Link>
       <AdditionalDependencies>gdi32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.c" />
-    <ClCompile Include="gl.c" />
-    <ClCompile Include="gl_win32.c" />
+    <ClCompile Include="src/win32.c" />
+    <ClCompile Include="src/gl.c" />
+    <ClCompile Include="src/gl_win32.c" />
+    <ClCompile Include="src/arena.c" />
+    <ClCompile Include="src/button.c" />
+    <ClCompile Include="src/export.c" />
+    <ClCompile Include="src/core.c" />
+    <ClCompile Include="src/gen.c" />
+    <ClCompile Include="src/graph.c" />
+    <ClCompile Include="src/str.c" />
+    <ClCompile Include="src/text.c" />
+    <ClCompile Include="src/xml.c" />
+    <ClCompile Include="src/box2d/b2BlockAllocator.c" />
+    <ClCompile Include="src/box2d/b2Body.cpp" />
+    <ClCompile Include="src/box2d/b2BroadPhase.cpp" />
+    <ClCompile Include="src/box2d/b2CircleContact.c" />
+    <ClCompile Include="src/box2d/b2CollideCircle.cpp" />
+    <ClCompile Include="src/box2d/b2CollidePoly.cpp" />
+    <ClCompile Include="src/box2d/b2Contact.c" />
+    <ClCompile Include="src/box2d/b2ContactManager.cpp" />
+    <ClCompile Include="src/box2d/b2ContactSolver.cpp" />
+    <ClCompile Include="src/box2d/b2Island.cpp" />
+    <ClCompile Include="src/box2d/b2Joint.cpp" />
+    <ClCompile Include="src/box2d/b2PairManager.cpp" />
+    <ClCompile Include="src/box2d/b2PolyAndCircleContact.c" />
+    <ClCompile Include="src/box2d/b2PolyContact.c" />
+    <ClCompile Include="src/box2d/b2RevoluteJoint.cpp" />
+    <ClCompile Include="src/box2d/b2Settings.c" />
+    <ClCompile Include="src/box2d/b2Shape.cpp" />
+    <ClCompile Include="src/box2d/b2StackAllocator.c" />
+    <ClCompile Include="src/box2d/b2World.cpp" />
+    <ClCompile Include="src/fpmath/atan2.c" />
+    <ClCompile Include="src/fpmath/sincos.c" />
+    <ClCompile Include="src/fpmath/strtod.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
