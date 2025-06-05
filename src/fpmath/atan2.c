@@ -10,11 +10,11 @@
  #define  ESUB(x,y,z,zz)  \
             z=(x)-(y);  zz=(fabs(x)>fabs(y)) ? (((x)-(z))-(y)) : ((x)-((y)+(z)));
  # define  EMULV(x, y, z, zz)          \
-     ({  __typeof__ (x) __p, hx, tx, hy, ty;          \
+     do {double __p, hx, tx, hy, ty;          \
          __p = CN * (x);  hx = ((x) - __p) + __p;  tx = (x) - hx; \
          __p = CN * (y);  hy = ((y) - __p) + __p;  ty = (y) - hy; \
          z = (x) * (y); zz = (((hx * hy - z) + hx * ty) + tx * hy) + tx * ty; \
-     })
+     } while (0)
 
 /* mydefs.h */
 typedef int int4;
