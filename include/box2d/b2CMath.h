@@ -25,6 +25,7 @@
 
 #define MIN_VALUE 5e-324
 
+#define b2Min(a, b) ((a) < (b) ? (a) : (b))
 #define b2Max(a, b) ((a) > (b) ? (a) : (b))
 
 static void b2Vec2_SetZero(b2Vec2 *v)
@@ -113,6 +114,17 @@ static b2Vec2 b2MulT(b2Mat22 A, b2Vec2 v)
 	b2Vec2 u;
 	b2Vec2_Set(&u, b2Dot(v, A.col1), b2Dot(v, A.col2));
 	return u;
+}
+
+static float64 b2Clamp(float64 a, float64 low, float64 high)
+{
+	return b2Max(low, b2Min(a, high));
+}
+
+static b2Vec2 b2Cross(float64 s, b2Vec2 a)
+{
+	b2Vec2 v; b2Vec2_Set(&v, -s * a.y, s * a.x);
+	return v;
 }
 
 #endif

@@ -16,7 +16,8 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <box2d/b2Math.h>
+#include <box2d/b2Vec.h>
+#include <box2d/b2CMath.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2World.h>
 #include <box2d/b2Contact.h>
@@ -67,15 +68,20 @@ void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world)
 		b2MassData* massData = massDatas + i;
 		b2ShapeDef_ComputeMass(sd, massData);
 		body->m_mass += massData->mass;
-		body->m_center += massData->mass * (sd->localPosition + massData->center);
+		body->m_center.x += massData->mass * (sd->localPosition.x + massData->center.x);
+		body->m_center.y += massData->mass * (sd->localPosition.y + massData->center.y);
 		++body->m_shapeCount;
 	}
 
 	// Compute center of mass, and shift the origin to the COM.
 	if (body->m_mass > 0.0)
 	{
-		body->m_center *= 1.0 / body->m_mass;
-		body->m_position += b2Mul(body->m_R, body->m_center);
+		float64 inv_mass = 1.0 / body->m_mass;
+		body->m_center.x *= inv_mass;
+		body->m_center.y *= inv_mass;
+		b2Vec2 shift = b2Mul(body->m_R, body->m_center);
+		body->m_position.x += shift.x;
+		body->m_position.y += shift.y;
 	}
 	else
 	{
@@ -89,7 +95,9 @@ void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world)
 		const b2ShapeDef* sd = bd->shapes[i];
 		b2MassData* massData = massDatas + i;
 		body->m_I += massData->I;
-		b2Vec2 r = sd->localPosition + massData->center - body->m_center;
+		b2Vec2 r;
+		r.x = sd->localPosition.x + massData->center.x - body->m_center.x;
+		r.y = sd->localPosition.y + massData->center.y - body->m_center.y;
 		body->m_I += massData->mass * b2Dot(r, r);
 	}
 
@@ -113,7 +121,9 @@ void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world)
 	}
 
 	// Compute the center of mass velocity.
-	body->m_linearVelocity = bd->linearVelocity + b2Cross(bd->angularVelocity, body->m_center);
+	b2Vec2 c = b2Cross(bd->angularVelocity, body->m_center);
+	body->m_linearVelocity.x = bd->linearVelocity.x + c.x;
+	body->m_linearVelocity.y = bd->linearVelocity.y + c.y;
 	body->m_angularVelocity = bd->angularVelocity;
 
 	body->m_jointList = NULL;
@@ -164,7 +174,12 @@ void b2Body_dtor(b2Body *body)
 
 b2Vec2 b2Body_GetOriginPosition(const b2Body *body)
 {
-        return body->m_position - b2Mul(body->m_R, body->m_center);
+	b2Vec2 t = b2Mul(body->m_R, body->m_center);
+	b2Vec2 p;
+	p.x = body->m_position.x - t.x;
+	p.y = body->m_position.y - t.y;
+
+        return p;
 }
 
 void b2Body_SynchronizeShapes(b2Body *body)
