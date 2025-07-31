@@ -16,7 +16,6 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <box2d/b2Math.h>
 #include <box2d/b2ContactManager.h>
 #include <box2d/b2World.h>
 #include <box2d/b2Body.h>
@@ -57,8 +56,13 @@ void* b2ContactManager_PairAdded(b2PairCallback *callback, void* proxyUserData1,
 	// Ensure that body2 is dynamic (body1 is static or dynamic).
 	if (body2->m_invMass == 0.0)
 	{
-		b2Swap(shape1, shape2);
-		b2Swap(body1, body2);
+		b2Shape *ts = shape1;
+		shape1 = shape2;
+		shape2 = ts;
+
+		b2Body *tb = body1;
+		body1 = body2;
+		body2 = tb;
 	}
 
 	// Call the factory.
