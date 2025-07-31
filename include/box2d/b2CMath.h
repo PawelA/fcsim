@@ -96,4 +96,23 @@ static b2Vec2 b2Vec2_neg(b2Vec2 v)
 	return u;
 }
 
+static float64 b2Dot(b2Vec2 a, b2Vec2 b)
+{
+	return a.x * b.x + a.y * b.y;
+}
+
+static b2Vec2 b2Mul(b2Mat22 A, b2Vec2 v)
+{
+	b2Vec2 u;
+	b2Vec2_Set(&u, A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y);
+	return u;
+}
+
+static b2Vec2 b2MulT(b2Mat22 A, b2Vec2 v)
+{
+	b2Vec2 u;
+	b2Vec2_Set(&u, b2Dot(v, A.col1), b2Dot(v, A.col2));
+	return u;
+}
+
 #endif
