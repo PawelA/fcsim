@@ -16,9 +16,8 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <box2d/b2PairManager.h>
 #include <box2d/b2BroadPhase.h>
-#include <box2d/b2Math.h>
+#include <stddef.h>
 
 // Thomas Wang's hash, see: http://www.concentric.net/~Ttwang/tech/inthash.htm
 // This assumes proxyId1 and proxyId2 are 16-bit.
@@ -34,9 +33,9 @@ inline uint32 Hash(uint32 proxyId1, uint32 proxyId2)
 	return key;
 }
 
-inline bool Equals(const b2Pair& pair, int32 proxyId1, int32 proxyId2)
+inline bool Equals(const b2Pair* pair, int32 proxyId1, int32 proxyId2)
 {
-	return pair.proxyId1 == proxyId1 && pair.proxyId2 == proxyId2;
+	return pair->proxyId1 == proxyId1 && pair->proxyId2 == proxyId2;
 }
 
 void b2PairManager_ctor(b2PairManager *manager)
@@ -52,7 +51,7 @@ void b2PairManager_ctor(b2PairManager *manager)
 		manager->m_pairs[i].proxyId2 = b2_nullProxy;
 		manager->m_pairs[i].userData = NULL;
 		manager->m_pairs[i].status = 0;
-		manager->m_pairs[i].next = uint16(i + 1);
+		manager->m_pairs[i].next = (uint16)(i + 1);
 	}
 	manager->m_pairs[b2_maxPairs-1].next = b2_nullPair;
 	manager->m_pairCount = 0;
@@ -70,7 +69,7 @@ static b2Pair* b2PairManager_FindHash(b2PairManager *manager, int32 proxyId1, in
 {
 	int32 index = manager->m_hashTable[hash];
 
-	while (index != b2_nullPair && Equals(manager->m_pairs[index], proxyId1, proxyId2) == false)
+	while (index != b2_nullPair && Equals(&manager->m_pairs[index], proxyId1, proxyId2) == false)
 	{
 		index = manager->m_pairs[index].next;
 	}
@@ -85,7 +84,11 @@ static b2Pair* b2PairManager_FindHash(b2PairManager *manager, int32 proxyId1, in
 
 static b2Pair* b2PairManager_Find(b2PairManager *manager, int32 proxyId1, int32 proxyId2)
 {
-	if (proxyId1 > proxyId2) b2Swap(proxyId1, proxyId2);
+	if (proxyId1 > proxyId2) {
+		int32 t = proxyId1;
+		proxyId1 = proxyId2;
+		proxyId2 = t;
+	}
 
 	int32 hash = Hash(proxyId1, proxyId2) & b2_tableMask;
 
@@ -95,7 +98,11 @@ static b2Pair* b2PairManager_Find(b2PairManager *manager, int32 proxyId1, int32 
 // Returns existing pair or creates a new one.
 static b2Pair* b2PairManager_AddPair(b2PairManager *manager, int32 proxyId1, int32 proxyId2)
 {
-	if (proxyId1 > proxyId2) b2Swap(proxyId1, proxyId2);
+	if (proxyId1 > proxyId2) {
+		int32 t = proxyId1;
+		proxyId1 = proxyId2;
+		proxyId2 = t;
+	}
 
 	int32 hash = Hash(proxyId1, proxyId2) & b2_tableMask;
 
@@ -125,14 +132,18 @@ static b2Pair* b2PairManager_AddPair(b2PairManager *manager, int32 proxyId1, int
 // Removes a pair. The pair must exist.
 static void* b2PairManager_RemovePair(b2PairManager *manager, int32 proxyId1, int32 proxyId2)
 {
-	if (proxyId1 > proxyId2) b2Swap(proxyId1, proxyId2);
+	if (proxyId1 > proxyId2) {
+		int32 t = proxyId1;
+		proxyId1 = proxyId2;
+		proxyId2 = t;
+	}
 
 	int32 hash = Hash(proxyId1, proxyId2) & b2_tableMask;
 
 	uint16* node = &manager->m_hashTable[hash];
 	while (*node != b2_nullPair)
 	{
-		if (Equals(manager->m_pairs[*node], proxyId1, proxyId2))
+		if (Equals(&manager->m_pairs[*node], proxyId1, proxyId2))
 		{
 			uint16 index = *node;
 			*node = manager->m_pairs[*node].next;

@@ -33,8 +33,7 @@ Bullet (http:/www.bulletphysics.com).
 #include <limits.h>
 #include <stddef.h>
 
-const uint16 b2_invalid = USHRT_MAX;
-const uint16 b2_nullEdge = USHRT_MAX;
+#define b2_invalid USHRT_MAX
 
 typedef struct b2BoundValues b2BoundValues;
 struct b2BoundValues;
