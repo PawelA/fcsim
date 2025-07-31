@@ -143,6 +143,17 @@ static float64 b2Clamp(float64 a, float64 low, float64 high)
 	return b2Max(low, b2Min(a, high));
 }
 
+static b2Vec2 b2Clamp_v(b2Vec2 a, b2Vec2 low, b2Vec2 high)
+{
+	b2Vec2 min;
+	min.x = b2Min(a.x, high.x);
+	min.y = b2Min(a.y, high.y);
+	b2Vec2 max;
+	max.x = b2Max(low.x, min.x);
+	max.y = b2Max(low.y, min.y);
+	return max;
+}
+
 static b2Vec2 b2Cross(float64 s, b2Vec2 a)
 {
 	b2Vec2 v; b2Vec2_Set(&v, -s * a.y, s * a.x);

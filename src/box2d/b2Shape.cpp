@@ -304,9 +304,9 @@ static void b2CircleShape_ctor(b2CircleShape *circleShape, const b2ShapeDef* def
 	b2Vec2_Set(&aabb.maxVertex, circleShape->m_shape.m_position.x + circleShape->m_radius, circleShape->m_shape.m_position.y + circleShape->m_radius);
 
 	b2BroadPhase* broadPhase = circleShape->m_shape.m_body->m_world->m_broadPhase;
-	if (b2BroadPhase_InRange(broadPhase, aabb))
+	if (b2BroadPhase_InRange(broadPhase, &aabb))
 	{
-		circleShape->m_shape.m_proxyId = b2BroadPhase_CreateProxy(broadPhase, aabb, circleShape);
+		circleShape->m_shape.m_proxyId = b2BroadPhase_CreateProxy(broadPhase, &aabb, circleShape);
 	}
 	else
 	{
@@ -342,9 +342,9 @@ void b2CircleShape_Synchronize(b2Shape *shape,
 	b2Vec2_Set(&aabb.maxVertex, upper.x + circleShape->m_radius, upper.y + circleShape->m_radius);
 
 	b2BroadPhase* broadPhase = shape->m_body->m_world->m_broadPhase;
-	if (b2BroadPhase_InRange(broadPhase, aabb))
+	if (b2BroadPhase_InRange(broadPhase, &aabb))
 	{
-		b2BroadPhase_MoveProxy(broadPhase, shape->m_proxyId, aabb);
+		b2BroadPhase_MoveProxy(broadPhase, shape->m_proxyId, &aabb);
 	}
 	else
 	{
@@ -387,9 +387,9 @@ void b2CircleShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 	b2Vec2_Set(&aabb.minVertex, shape->m_position.x - circleShape->m_radius, shape->m_position.y - circleShape->m_radius);
 	b2Vec2_Set(&aabb.maxVertex, shape->m_position.x + circleShape->m_radius, shape->m_position.y + circleShape->m_radius);
 
-	if (b2BroadPhase_InRange(broadPhase, aabb))
+	if (b2BroadPhase_InRange(broadPhase, &aabb))
 	{
-		shape->m_proxyId = b2BroadPhase_CreateProxy(broadPhase, aabb, shape);
+		shape->m_proxyId = b2BroadPhase_CreateProxy(broadPhase, &aabb, shape);
 	}
 	else
 	{
@@ -502,9 +502,9 @@ void b2PolyShape_ctor(b2PolyShape *polyShape,
 		return;
 
 	b2BroadPhase* broadPhase = polyShape->m_shape.m_body->m_world->m_broadPhase;
-	if (b2BroadPhase_InRange(broadPhase, aabb))
+	if (b2BroadPhase_InRange(broadPhase, &aabb))
 	{
-		polyShape->m_shape.m_proxyId = b2BroadPhase_CreateProxy(broadPhase, aabb, polyShape);
+		polyShape->m_shape.m_proxyId = b2BroadPhase_CreateProxy(broadPhase, &aabb, polyShape);
 	}
 	else
 	{
@@ -558,9 +558,9 @@ void b2PolyShape_Synchronize(b2Shape *shape,
 	aabb.maxVertex = b2Max(aabb1.maxVertex, aabb2.maxVertex);
 
 	b2BroadPhase* broadPhase = shape->m_body->m_world->m_broadPhase;
-	if (b2BroadPhase_InRange(broadPhase, aabb))
+	if (b2BroadPhase_InRange(broadPhase, &aabb))
 	{
-		b2BroadPhase_MoveProxy(broadPhase, shape->m_proxyId, aabb);
+		b2BroadPhase_MoveProxy(broadPhase, shape->m_proxyId, &aabb);
 	}
 	else
 	{
@@ -626,9 +626,9 @@ void b2PolyShape_ResetProxy(b2Shape *shape, b2BroadPhase* broadPhase)
 	aabb.minVertex = position - h;
 	aabb.maxVertex = position + h;
 
-	if (b2BroadPhase_InRange(broadPhase, aabb))
+	if (b2BroadPhase_InRange(broadPhase, &aabb))
 	{
-		shape->m_proxyId = b2BroadPhase_CreateProxy(broadPhase, aabb, shape);
+		shape->m_proxyId = b2BroadPhase_CreateProxy(broadPhase, &aabb, shape);
 	}
 	else
 	{

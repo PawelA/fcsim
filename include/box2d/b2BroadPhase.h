@@ -27,10 +27,11 @@ Bullet (http:/www.bulletphysics.com).
 */
 
 #include <box2d/b2Settings.h>
-#include <box2d/b2Math.h>
+#include <box2d/b2Vec.h>
 #include <box2d/b2Collision.h>
 #include <box2d/b2PairManager.h>
 #include <limits.h>
+#include <stddef.h>
 
 const uint16 b2_invalid = USHRT_MAX;
 const uint16 b2_nullEdge = USHRT_MAX;
@@ -99,15 +100,15 @@ struct b2BroadPhase
 	uint16 m_timeStamp;
 };
 	
-void b2BroadPhase_ctor(b2BroadPhase *broad_phase, const b2AABB& worldAABB, b2PairCallback* callback);
-
 // Use this to see if your proxy is in range. If it is not in range,
 // it should be destroyed. Otherwise you may get O(m^2) pairs, where m
 // is the number of proxies that are out of range.
-static inline bool b2BroadPhase_InRange(const b2BroadPhase *broad_phase, const b2AABB& aabb)
+static inline bool b2BroadPhase_InRange(const b2BroadPhase *broad_phase, const b2AABB *aabb)
 {
-	b2Vec2 d = b2Max(aabb.minVertex - broad_phase->m_worldAABB.maxVertex, broad_phase->m_worldAABB.minVertex - aabb.maxVertex);
-	return b2Max(d.x, d.y) < 0.0;
+	return aabb->minVertex.x < broad_phase->m_worldAABB.maxVertex.x &&
+	       aabb->minVertex.y < broad_phase->m_worldAABB.maxVertex.y &&
+	       broad_phase->m_worldAABB.minVertex.x < aabb->maxVertex.x &&
+	       broad_phase->m_worldAABB.minVertex.y < aabb->maxVertex.y;
 }
 
 static inline b2Proxy* b2BroadPhase_GetProxy(b2BroadPhase *broad_phase, int32 proxyId)
@@ -120,15 +121,25 @@ static inline b2Proxy* b2BroadPhase_GetProxy(b2BroadPhase *broad_phase, int32 pr
 	return broad_phase->m_proxyPool + proxyId;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void b2BroadPhase_ctor(b2BroadPhase *broad_phase, const b2AABB *worldAABB, b2PairCallback* callback);
+
 // Create and destroy proxies. These call Flush first.
-uint16 b2BroadPhase_CreateProxy(b2BroadPhase *broad_phase, const b2AABB& aabb, void* userData);
+uint16 b2BroadPhase_CreateProxy(b2BroadPhase *broad_phase, const b2AABB *aabb, void *userData);
 
 void b2BroadPhase_DestroyProxy(b2BroadPhase *broad_phase, int32 proxyId);
 
 // Call MoveProxy as many times as you like, then when you are done
 // call Commit to finalized the proxy pairs (for your time step).
-void b2BroadPhase_MoveProxy(b2BroadPhase *broad_phase, int32 proxyId, const b2AABB& aabb);
+void b2BroadPhase_MoveProxy(b2BroadPhase *broad_phase, int32 proxyId, const b2AABB *aabb);
 
 void b2BroadPhase_Commit(b2BroadPhase *broad_phase);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif
