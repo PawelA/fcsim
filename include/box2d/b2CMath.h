@@ -91,6 +91,28 @@ static b2Mat22 b2Mat22_Invert(b2Mat22 *m)
 	return B;
 }
 
+static b2Vec2 b2Mat22_Solve(b2Mat22 *m, b2Vec2 b)
+{
+	float64 a11 = m->col1.x, a12 = m->col2.x, a21 = m->col1.y, a22 = m->col2.y;
+	float64 det = a11 * a22 - a12 * a21;
+	b2Assert(det != 0.0);
+	det = 1.0 / det;
+	b2Vec2 x;
+	x.x = det * (a22 * b.x - a12 * b.y);
+	x.y = det * (a11 * b.y - a21 * b.x);
+	return x;
+}
+
+static b2Mat22 b2Mat22_add(b2Mat22 A, b2Mat22 B)
+{
+	b2Mat22 C;
+	C.col1.x = A.col1.x + B.col1.x;
+	C.col1.y = A.col1.y + B.col1.y;
+	C.col2.x = A.col2.x + B.col2.x;
+	C.col2.y = A.col2.y + B.col2.y;
+	return C;
+}
+
 static b2Vec2 b2Vec2_neg(b2Vec2 v)
 {
 	b2Vec2 u = { -v.x, -v.y };
@@ -125,6 +147,17 @@ static b2Vec2 b2Cross(float64 s, b2Vec2 a)
 {
 	b2Vec2 v; b2Vec2_Set(&v, -s * a.y, s * a.x);
 	return v;
+}
+
+static b2Vec2 b2Cross_vs(b2Vec2 a, float64 s)
+{
+	b2Vec2 v; b2Vec2_Set(&v, s * a.y, -s * a.x);
+	return v;
+}
+
+static float64 b2Cross_vv(b2Vec2 a, b2Vec2 b)
+{
+	return a.x * b.y - a.y * b.x;
 }
 
 #endif

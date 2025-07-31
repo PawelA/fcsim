@@ -19,13 +19,21 @@
 #ifndef B2_ISLAND_H
 #define B2_ISLAND_H
 
-#include <box2d/b2Math.h>
+#include <box2d/b2Vec.h>
 
-class b2Contact;
+typedef struct b2Contact b2Contact;
+struct b2Contact;
+
+typedef struct b2Body b2Body;
 struct b2Body;
+
+typedef struct b2RevoluteJoint b2RevoluteJoint;
 struct b2RevoluteJoint;
+
+typedef struct b2TimeStep b2TimeStep;
 struct b2TimeStep;
 
+typedef struct b2Island b2Island;
 struct b2Island
 {
 	b2Body** m_bodies;
@@ -43,15 +51,23 @@ struct b2Island
 	float64 m_positionError;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity);
 void b2Island_dtor(b2Island *island);
 
 void b2Island_Clear(b2Island *island);
 
-void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& gravity);
+void b2Island_Solve(b2Island *island, const b2TimeStep* step, b2Vec2 gravity);
 
 
 void b2Island_UpdateSleep(b2Island *island, float64 dt);
+
+#ifdef __cplusplus
+}
+#endif
 
 static inline void b2Island_AddBody(b2Island *island, b2Body* body)
 {

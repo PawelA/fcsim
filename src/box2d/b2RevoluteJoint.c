@@ -21,6 +21,7 @@
 #include <box2d/b2World.h>
 
 #include <box2d/b2Island.h>
+#include <box2d/b2CMath.h>
 
 // Point-to-point constraint
 // C = p2 - p1
@@ -57,8 +58,14 @@ void b2RevoluteJoint_ctor(b2RevoluteJoint *rev_joint, const b2RevoluteJointDef* 
 	rev_joint->m_islandFlag = false;
 	rev_joint->m_userData = def->userData;
 
-	rev_joint->m_localAnchor1 = b2MulT(rev_joint->m_body1->m_R, def->anchorPoint - rev_joint->m_body1->m_position);
-	rev_joint->m_localAnchor2 = b2MulT(rev_joint->m_body2->m_R, def->anchorPoint - rev_joint->m_body2->m_position);
+	b2Vec2 diff1;
+	diff1.x = def->anchorPoint.x - rev_joint->m_body1->m_position.x;
+	diff1.y = def->anchorPoint.y - rev_joint->m_body1->m_position.y;
+	rev_joint->m_localAnchor1 = b2MulT(rev_joint->m_body1->m_R, diff1);
+	b2Vec2 diff2;
+	diff2.x = def->anchorPoint.x - rev_joint->m_body2->m_position.x;
+	diff2.y = def->anchorPoint.y - rev_joint->m_body2->m_position.y;
+	rev_joint->m_localAnchor2 = b2MulT(rev_joint->m_body2->m_R, diff2);
 
 	b2Vec2_Set(&rev_joint->m_ptpImpulse, 0.0, 0.0);
 	rev_joint->m_motorImpulse = 0.0;
@@ -96,7 +103,7 @@ void b2RevoluteJoint_PrepareVelocitySolver(b2RevoluteJoint *joint)
 	K3.col1.x =  invI2 * r2.y * r2.y;	K3.col2.x = -invI2 * r2.x * r2.y;
 	K3.col1.y = -invI2 * r2.x * r2.y;	K3.col2.y =  invI2 * r2.x * r2.x;
 
-	b2Mat22 K = K1 + K2 + K3;
+	b2Mat22 K = b2Mat22_add(b2Mat22_add(K1, K2), K3);
 	revoluteJoint->m_ptpMass = b2Mat22_Invert(&K);
 
 	revoluteJoint->m_motorMass = 1.0 / (invI1 + invI2);
@@ -106,11 +113,13 @@ void b2RevoluteJoint_PrepareVelocitySolver(b2RevoluteJoint *joint)
 		revoluteJoint->m_motorImpulse = 0.0;
 	}
 
-	b1->m_linearVelocity -= invMass1 * revoluteJoint->m_ptpImpulse;
-	b1->m_angularVelocity -= invI1 * (b2Cross(r1, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
+	b1->m_linearVelocity.x -= invMass1 * revoluteJoint->m_ptpImpulse.x;
+	b1->m_linearVelocity.y -= invMass1 * revoluteJoint->m_ptpImpulse.y;
+	b1->m_angularVelocity -= invI1 * (b2Cross_vv(r1, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
 
-	b2->m_linearVelocity += invMass2 * revoluteJoint->m_ptpImpulse;
-	b2->m_angularVelocity += invI2 * (b2Cross(r2, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
+	b2->m_linearVelocity.x += invMass2 * revoluteJoint->m_ptpImpulse.x;
+	b2->m_linearVelocity.y += invMass2 * revoluteJoint->m_ptpImpulse.y;
+	b2->m_angularVelocity += invI2 * (b2Cross_vv(r2, revoluteJoint->m_ptpImpulse) + revoluteJoint->m_motorImpulse);
 }
 
 void b2RevoluteJoint_SolveVelocityConstraints(b2RevoluteJoint *joint, const b2TimeStep* step)
@@ -124,15 +133,24 @@ void b2RevoluteJoint_SolveVelocityConstraints(b2RevoluteJoint *joint, const b2Ti
 	b2Vec2 r2 = b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
 
 	// Solve point-to-point constraint
-	b2Vec2 ptpCdot = b2->m_linearVelocity + b2Cross(b2->m_angularVelocity, r2) - b1->m_linearVelocity - b2Cross(b1->m_angularVelocity, r1);
-	b2Vec2 ptpImpulse = -b2Mul(revoluteJoint->m_ptpMass, ptpCdot);
-	revoluteJoint->m_ptpImpulse += ptpImpulse;
+	b2Vec2 c1 = b2Cross(b1->m_angularVelocity, r1);
+	b2Vec2 c2 = b2Cross(b2->m_angularVelocity, r2);
+	b2Vec2 ptpCdot;
+	ptpCdot.x = b2->m_linearVelocity.x + c2.x - b1->m_linearVelocity.x - c1.x;
+	ptpCdot.y = b2->m_linearVelocity.y + c2.y - b1->m_linearVelocity.y - c1.y;
+	b2Vec2 ptpImpulse = b2Mul(revoluteJoint->m_ptpMass, ptpCdot);
+	ptpImpulse.x = -ptpImpulse.x;
+	ptpImpulse.y = -ptpImpulse.y;
+	revoluteJoint->m_ptpImpulse.x += ptpImpulse.x;
+	revoluteJoint->m_ptpImpulse.y += ptpImpulse.y;
 
-	b1->m_linearVelocity -= b1->m_invMass * ptpImpulse;
-	b1->m_angularVelocity -= b1->m_invI * b2Cross(r1, ptpImpulse);
+	b1->m_linearVelocity.x -= b1->m_invMass * ptpImpulse.x;
+	b1->m_linearVelocity.y -= b1->m_invMass * ptpImpulse.y;
+	b1->m_angularVelocity -= b1->m_invI * b2Cross_vv(r1, ptpImpulse);
 
-	b2->m_linearVelocity += b2->m_invMass * ptpImpulse;
-	b2->m_angularVelocity += b2->m_invI * b2Cross(r2, ptpImpulse);
+	b2->m_linearVelocity.x += b2->m_invMass * ptpImpulse.x;
+	b2->m_linearVelocity.y += b2->m_invMass * ptpImpulse.y;
+	b2->m_angularVelocity += b2->m_invI * b2Cross_vv(r2, ptpImpulse);
 
 	if (revoluteJoint->m_enableMotor)
 	{
@@ -159,9 +177,15 @@ bool b2RevoluteJoint_SolvePositionConstraints(b2RevoluteJoint *joint)
 	b2Vec2 r1 = b2Mul(b1->m_R, revoluteJoint->m_localAnchor1);
 	b2Vec2 r2 = b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
 
-	b2Vec2 p1 = b1->m_position + r1;
-	b2Vec2 p2 = b2->m_position + r2;
-	b2Vec2 ptpC = p2 - p1;
+	b2Vec2 p1;
+	p1.x = b1->m_position.x + r1.x;
+	p1.y = b1->m_position.y + r1.y;
+	b2Vec2 p2;
+	p2.x = b2->m_position.x + r2.x;
+	p2.y = b2->m_position.y + r2.y;
+	b2Vec2 ptpC;
+	ptpC.x = p2.x - p1.x;
+	ptpC.y = p2.y - p1.y;
 
 	positionError = b2Vec2_Length(&ptpC);
 
@@ -184,15 +208,17 @@ bool b2RevoluteJoint_SolvePositionConstraints(b2RevoluteJoint *joint)
 	K3.col1.x =  invI2 * r2.y * r2.y;	K3.col2.x = -invI2 * r2.x * r2.y;
 	K3.col1.y = -invI2 * r2.x * r2.y;	K3.col2.y =  invI2 * r2.x * r2.x;
 
-	b2Mat22 K = K1 + K2 + K3;
-	b2Vec2 impulse = b2Mat22_Solve(&K, -ptpC);
+	b2Mat22 K = b2Mat22_add(b2Mat22_add(K1, K2), K3);
+	b2Vec2 impulse = b2Mat22_Solve(&K, b2Vec2_neg(ptpC));
 
-	b1->m_position -= b1->m_invMass * impulse;
-	b1->m_rotation -= b1->m_invI * b2Cross(r1, impulse);
+	b1->m_position.x -= b1->m_invMass * impulse.x;
+	b1->m_position.y -= b1->m_invMass * impulse.y;
+	b1->m_rotation -= b1->m_invI * b2Cross_vv(r1, impulse);
 	b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
 
-	b2->m_position += b2->m_invMass * impulse;
-	b2->m_rotation += b2->m_invI * b2Cross(r2, impulse);
+	b2->m_position.x += b2->m_invMass * impulse.x;
+	b2->m_position.y += b2->m_invMass * impulse.y;
+	b2->m_rotation += b2->m_invI * b2Cross_vv(r2, impulse);
 	b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 
 	return positionError <= b2_linearSlop;
@@ -202,12 +228,22 @@ b2Vec2 b2RevoluteJoint_GetAnchor1(b2RevoluteJoint *joint)
 {
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 	b2Body* b1 = joint->m_body1;
-	return b1->m_position + b2Mul(b1->m_R, revoluteJoint->m_localAnchor1);
+	b2Vec2 a1 = b2Mul(b1->m_R, revoluteJoint->m_localAnchor1);
+	b2Vec2 pos;
+	pos.x = b1->m_position.x + a1.x;
+	pos.y = b1->m_position.y + a1.y;
+
+	return pos;
 }
 
 b2Vec2 b2RevoluteJoint_GetAnchor2(b2RevoluteJoint *joint)
 {
 	b2RevoluteJoint *revoluteJoint = (b2RevoluteJoint *)joint;
 	b2Body* b2 = joint->m_body2;
-	return b2->m_position + b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
+	b2Vec2 a2 = b2Mul(b2->m_R, revoluteJoint->m_localAnchor2);
+	b2Vec2 pos;
+	pos.x = b2->m_position.x + a2.x;
+	pos.y = b2->m_position.y + a2.y;
+
+	return pos;
 }

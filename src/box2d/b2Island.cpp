@@ -132,7 +132,7 @@ void b2Island_Clear(b2Island *island)
 	island->m_jointCount = 0;
 }
 
-void b2Island_Solve(b2Island *island, const b2TimeStep* step, const b2Vec2& gravity)
+void b2Island_Solve(b2Island *island, const b2TimeStep* step, b2Vec2 gravity)
 {
 	for (int32 i = 0; i < island->m_bodyCount; ++i)
 	{
