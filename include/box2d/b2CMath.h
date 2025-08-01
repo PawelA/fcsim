@@ -103,6 +103,17 @@ static b2Vec2 b2Mat22_Solve(b2Mat22 *m, b2Vec2 b)
 	return x;
 }
 
+static b2Mat22 b2Abs(b2Mat22 A)
+{
+	b2Mat22 B;
+	B.col1.x = fabs(A.col1.x);
+	B.col1.y = fabs(A.col1.y);
+	B.col2.x = fabs(A.col2.x);
+	B.col2.y = fabs(A.col2.y);
+
+	return B;
+}
+
 static b2Mat22 b2Mat22_add(b2Mat22 A, b2Mat22 B)
 {
 	b2Mat22 C;
@@ -136,6 +147,15 @@ static b2Vec2 b2MulT(b2Mat22 A, b2Vec2 v)
 	b2Vec2 u;
 	b2Vec2_Set(&u, b2Dot(v, A.col1), b2Dot(v, A.col2));
 	return u;
+}
+
+static b2Mat22 b2Mul_mm(b2Mat22 A, b2Mat22 B)
+{
+	b2Mat22 C;
+	C.col1 = b2Mul(A, B.col1);
+	C.col2 = b2Mul(A, B.col2);
+
+	return C;
 }
 
 static float64 b2Clamp(float64 a, float64 low, float64 high)
