@@ -16,10 +16,12 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <box2d/b2Math.h>
+#include <box2d/b2CMath.h>
 #include <box2d/b2Collision.h>
 #include <box2d/b2Shape.h>
+#include <float.h>
 
+typedef struct ClipVertex ClipVertex;
 struct ClipVertex
 {
 	b2Vec2 v;
@@ -27,7 +29,7 @@ struct ClipVertex
 };
 
 static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
-					  const b2Vec2& normal, float64 offset)
+					  b2Vec2 normal, float64 offset)
 {
 	// Start with no output points
 	int32 numOut = 0;
@@ -45,7 +47,8 @@ static int32 ClipSegmentToLine(ClipVertex vOut[2], ClipVertex vIn[2],
 	{
 		// Find intersection point of edge and plane
 		float64 interp = distance0 / (distance0 - distance1);
-		vOut[numOut].v = vIn[0].v + interp * (vIn[1].v - vIn[0].v);
+		vOut[numOut].v.x = vIn[0].v.x + interp * (vIn[1].v.x - vIn[0].v.x);
+		vOut[numOut].v.y = vIn[0].v.y + interp * (vIn[1].v.y - vIn[0].v.y);
 		if (distance0 > 0.0)
 		{
 			vOut[numOut].id = vIn[0].id;
@@ -84,9 +87,16 @@ static float64 EdgeSeparation(const b2PolyShape* poly1, int32 edge1, const b2Pol
 		}
 	}
 
-	b2Vec2 v1 = poly1->m_shape.m_position + b2Mul(poly1->m_shape.m_R, vert1s[edge1]);
-	b2Vec2 v2 = poly2->m_shape.m_position + b2Mul(poly2->m_shape.m_R, vert2s[vertexIndex2]);
-	float64 separation = b2Dot(v2 - v1, normal);
+	b2Vec2 t1 = b2Mul(poly1->m_shape.m_R, vert1s[edge1]);
+	b2Vec2 t2 = b2Mul(poly2->m_shape.m_R, vert2s[vertexIndex2]);
+	b2Vec2 v1, v2, diff;
+	v1.x = poly1->m_shape.m_position.x + t1.x;
+	v1.y = poly1->m_shape.m_position.y + t1.y;
+	v2.x = poly2->m_shape.m_position.x + t2.x;
+	v2.y = poly2->m_shape.m_position.y + t2.y;
+	diff.x = v2.x - v1.x;
+	diff.y = v2.y - v1.y;
+	float64 separation = b2Dot(diff, normal);
 	return separation;
 }
 
@@ -96,7 +106,9 @@ static float64 FindMaxSeparation(int32* edgeIndex, const b2PolyShape* poly1, con
 	int32 count1 = poly1->m_vertexCount;
 
 	// Vector pointing from the origin of poly1 to the origin of poly2.
-	b2Vec2 d = poly2->m_shape.m_position - poly1->m_shape.m_position;
+	b2Vec2 d;
+	d.x = poly2->m_shape.m_position.x - poly1->m_shape.m_position.x;
+	d.y = poly2->m_shape.m_position.y - poly1->m_shape.m_position.y;
 	b2Vec2 dLocal1 = b2MulT(poly1->m_shape.m_R, d);
 
 	// Find edge normal on poly1 that has the largest projection onto d.
@@ -196,7 +208,10 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 	int32 vertex12 = edge1 + 1 == count1 ? 0 : edge1 + 1;
 
 	// Get the normal of edge1.
-	b2Vec2 normal1Local1 = b2Cross(vert1s[vertex12] - vert1s[vertex11], 1.0);
+	b2Vec2 local1;
+	local1.x = vert1s[vertex12].x - vert1s[vertex11].x;
+	local1.y = vert1s[vertex12].y - vert1s[vertex11].y;
+	b2Vec2 normal1Local1 = b2Cross_vs(local1, 1.0);
 	float64 normal1Local1LenInv = 1.0 / b2Vec2_Length(&normal1Local1);
 	normal1Local1.x *= normal1Local1LenInv;
 	normal1Local1.y *= normal1Local1LenInv;
@@ -211,7 +226,10 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 		int32 i1 = i;
 		int32 i2 = i + 1 < count2 ? i + 1 : 0;
 
-		b2Vec2 normal2Local2 = b2Cross(vert2s[i2] - vert2s[i1], 1.0);
+		b2Vec2 local2;
+		local2.x = vert2s[i2].x - vert2s[i1].x;
+		local2.y = vert2s[i2].y - vert2s[i1].y;
+		b2Vec2 normal2Local2 = b2Cross_vs(local2, 1.0);
 		float64 normal2Local2LenInv = 1.0 / b2Vec2_Length(&normal2Local2);
 		normal2Local2.x *= normal2Local2LenInv;
 		normal2Local2.y *= normal2Local2LenInv;
@@ -225,12 +243,16 @@ static void FindIncidentEdge(ClipVertex c[2], const b2PolyShape* poly1, int32 ed
 	}
 
 	// Build the clip vertices for the incident edge.
-	c[0].v = poly2->m_shape.m_position + b2Mul(poly2->m_shape.m_R, vert2s[vertex21]);
+	b2Vec2 t1 = b2Mul(poly2->m_shape.m_R, vert2s[vertex21]);
+	c[0].v.x = poly2->m_shape.m_position.x + t1.x;
+	c[0].v.y = poly2->m_shape.m_position.y + t1.y;
 	c[0].id.features.referenceFace = (uint8)edge1;
 	c[0].id.features.incidentEdge = (uint8)vertex21;
 	c[0].id.features.incidentVertex = (uint8)vertex21;
 
-	c[1].v = poly2->m_shape.m_position + b2Mul(poly2->m_shape.m_R, vert2s[vertex22]);
+	b2Vec2 t2 = b2Mul(poly2->m_shape.m_R, vert2s[vertex22]);
+	c[1].v.x = poly2->m_shape.m_position.x + t2.x;
+	c[1].v.y = poly2->m_shape.m_position.y + t2.y;
 	c[1].id.features.referenceFace = (uint8)edge1;
 	c[1].id.features.incidentEdge = (uint8)vertex21;
 	c[1].id.features.incidentVertex = (uint8)vertex22;
@@ -289,15 +311,21 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	b2Vec2 v11 = vert1s[edge1];
 	b2Vec2 v12 = edge1 + 1 < count1 ? vert1s[edge1+1] : vert1s[0];
 
-	b2Vec2 dv = v12 - v11;
-	b2Vec2 sideNormal = b2Mul(poly1->m_shape.m_R, v12 - v11);
+	b2Vec2 dv;
+	dv.x = v12.x - v11.x;
+	dv.y = v12.y - v11.y;
+	b2Vec2 sideNormal = b2Mul(poly1->m_shape.m_R, dv);
 	float64 sideNormalLenInv = 1.0 / b2Vec2_Length(&sideNormal);
 	sideNormal.x *= sideNormalLenInv;
 	sideNormal.y *= sideNormalLenInv;
-	b2Vec2 frontNormal = b2Cross(sideNormal, 1.0);
+	b2Vec2 frontNormal = b2Cross_vs(sideNormal, 1.0);
 
-	v11 = poly1->m_shape.m_position + b2Mul(poly1->m_shape.m_R, v11);
-	v12 = poly1->m_shape.m_position + b2Mul(poly1->m_shape.m_R, v12);
+	b2Vec2 t1 = b2Mul(poly1->m_shape.m_R, v11);
+	b2Vec2 t2 = b2Mul(poly1->m_shape.m_R, v12);
+	v11.x = poly1->m_shape.m_position.x + t1.x;
+	v11.y = poly1->m_shape.m_position.y + t1.y;
+	v12.x = poly1->m_shape.m_position.x + t2.x;
+	v12.y = poly1->m_shape.m_position.y + t2.y;
 
 	float64 frontOffset = b2Dot(frontNormal, v11);
 	float64 sideOffset1 = -b2Dot(sideNormal, v11);
@@ -309,7 +337,7 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 	int np;
 
 	// Clip to box side 1
-	np = ClipSegmentToLine(clipPoints1, incidentEdge, -sideNormal, sideOffset1);
+	np = ClipSegmentToLine(clipPoints1, incidentEdge, b2Vec2_neg(sideNormal), sideOffset1);
 
 	if (np < 2)
 		return;
@@ -321,7 +349,7 @@ void b2CollidePoly(b2Manifold* manifold, const b2PolyShape* polyA, const b2PolyS
 		return;
 	
 	// Now clipPoints2 contains the clipped points.
-	manifold->normal = flip ? -frontNormal : frontNormal;
+	manifold->normal = flip ? b2Vec2_neg(frontNormal) : frontNormal;
 
 	int32 pointCount = 0;
 	for (int32 i = 0; i < b2_maxManifoldPoints; ++i)
