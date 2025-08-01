@@ -1,78 +1,92 @@
-DIR = box2d/ fpmath/ arch/wasm/
+.POSIX:
+.SUFFIXES: .c .o .wasm
 
-SRC_CORE = \
-	arena \
-	button \
-	export \
-	core \
-	gen \
-	graph \
-	str \
-	text \
-	xml
+OBJ_COMMON = \
+	src/arena.o \
+	src/button.o \
+	src/core.o \
+	src/export.o \
+	src/gen.o \
+	src/graph.o \
+	src/str.o \
+	src/text.o \
+	src/xml.o \
+	src/box2d/b2Body.o \
+	src/box2d/b2BroadPhase.o \
+	src/box2d/b2CircleContact.o \
+	src/box2d/b2CollideCircle.o \
+	src/box2d/b2CollidePoly.o \
+	src/box2d/b2Contact.o \
+	src/box2d/b2ContactManager.o \
+	src/box2d/b2ContactSolver.o \
+	src/box2d/b2Island.o \
+	src/box2d/b2PairManager.o \
+	src/box2d/b2PolyAndCircleContact.o \
+	src/box2d/b2PolyContact.o \
+	src/box2d/b2RevoluteJoint.o \
+	src/box2d/b2Shape.o \
+	src/box2d/b2World.o \
+	src/fpmath/atan2.o \
+	src/fpmath/sincos.o \
+	src/fpmath/strtod.o
 
-SRC_BOX2D = \
-	box2d/b2Body \
-	box2d/b2BroadPhase \
-	box2d/b2CircleContact \
-	box2d/b2CollideCircle \
-	box2d/b2CollidePoly \
-	box2d/b2Contact \
-	box2d/b2ContactManager \
-	box2d/b2ContactSolver \
-	box2d/b2Island \
-	box2d/b2PairManager \
-	box2d/b2PolyAndCircleContact \
-	box2d/b2PolyContact \
-	box2d/b2RevoluteJoint \
-	box2d/b2Shape \
-	box2d/b2World
+OBJ = $(OBJ_COMMON) src/main.o
 
-SRC_FPMATH = \
-	fpmath/atan2 \
-	fpmath/sincos \
-	fpmath/strtod
+OBJ_WASM = $(OBJ_COMMON:.o=.wasm) \
+	src/arch/wasm/gl.wasm \
+	src/arch/wasm/malloc.wasm \
+	src/arch/wasm/math.wasm \
+	src/arch/wasm/string.wasm
 
-SRC_ARCH_WASM = \
-	arch/wasm/math \
-	arch/wasm/malloc \
-	arch/wasm/gl \
-	arch/wasm/string
+HDR = \
+	src/arena.h \
+	src/button.h \
+	src/gl.h \
+	src/graph.h \
+	src/interval.h \
+	src/poocs.h \
+	src/str.h \
+	src/text.h \
+	src/xml.h \
+	include/box2d/b2Body.h \
+	include/box2d/b2BroadPhase.h \
+	include/box2d/b2CircleContact.h \
+	include/box2d/b2CMath.h \
+	include/box2d/b2Collision.h \
+	include/box2d/b2Contact.h \
+	include/box2d/b2ContactManager.h \
+	include/box2d/b2ContactSolver.h \
+	include/box2d/b2Island.h \
+	include/box2d/b2NullContact.h \
+	include/box2d/b2PairManager.h \
+	include/box2d/b2PolyAndCircleContact.h \
+	include/box2d/b2PolyContact.h \
+	include/box2d/b2RevoluteJoint.h \
+	include/box2d/b2Settings.h \
+	include/box2d/b2Shape.h \
+	include/box2d/b2Vec.h \
+	include/box2d/b2World.h \
+	include/fpmath/fpmath.h
 
-# linux
+HDR_WASM = \
+	arch/wasm/include/stdlib.h \
+	arch/wasm/include/math.h \
+	arch/wasm/include/string.h
 
-SRC_LINUX = $(SRC_CORE) $(SRC_BOX2D) $(SRC_FPMATH) main
-OBJ_LINUX = $(SRC_LINUX:%=obj/linux/%.o)
+fcsim: $(OBJ)
+	$(CC) -o $@ $^ -lm -lX11 -lGL
 
-fcsim: $(OBJ_LINUX)
-	cc -o $@ $^ -lm -lX11 -lGL
-
-obj/linux/%.o: src/%.c
-	cc -O2 -MMD -Iinclude -c -o $@ $<
-
-# wasm
-
-SRC_WASM = $(SRC_CORE) $(SRC_BOX2D) $(SRC_FPMATH) $(SRC_ARCH_WASM)
-OBJ_WASM = $(SRC_WASM:%=obj/wasm/%.o)
-
-html/fcsim.wasm: $(OBJ_WASM)
+fcsim.wasm: $(OBJ_WASM)
 	wasm-ld --no-entry --export-all --allow-undefined -o $@ $^
 
-obj/wasm/%.o: src/%.c
-	clang -O2 -MMD -Iinclude -Iarch/wasm/include --target=wasm32 -nostdlib -c -o $@ $<
+.c.o:
+	$(CC) $(CFLAGS) -Iinclude -c -o $@ $<
 
-# misc
+.c.wasm:
+	clang $(CFLAGS) -Iinclude -Iarch/wasm/include --target=wasm32 -nostdlib -c -o $@ $<
+
+$(OBJ): $(HDR)
+$(OBJ_WASM): $(HDR) $(HDR_WASM)
 
 clean:
-	rm -rf obj/
-	rm -f fcsim html/fcsim.wasm
-
-%/:
-	mkdir -p $@
-
-$(OBJ_LINUX): | $(DIR:%=obj/linux/%)
-$(OBJ_WASM): | $(DIR:%=obj/wasm/%)
-
-OBJ = $(OBJ_LINUX) $(OBJ_WASM)
-
--include $(OBJ:%.o=%.d)
+	rm -f fcsim fcsim.wasm $(OBJ) $(OBJ_WASM)

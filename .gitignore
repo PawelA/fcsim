@@ -1,6 +1,3 @@
 *.o
-*.d
-*.xml
+*.wasm
 fcsim
-html/fcsim.wasm
-tags
