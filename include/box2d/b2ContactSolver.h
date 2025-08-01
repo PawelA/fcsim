@@ -19,13 +19,19 @@
 #ifndef CONTACT_SOLVER_H
 #define CONTACT_SOLVER_H
 
-#include <box2d/b2Math.h>
+#include <box2d/b2Vec.h>
 #include <box2d/b2Collision.h>
 
-class b2Contact;
-struct b2Body;
-class b2Island;
+typedef struct b2Contact b2Contact;
+struct b2Contact;
 
+typedef struct b2Body b2Body;
+struct b2Body;
+
+typedef struct b2Island b2Island;
+struct b2Island;
+
+typedef struct b2ContactConstraintPoint b2ContactConstraintPoint;
 struct b2ContactConstraintPoint
 {
 	b2Vec2 localAnchor1;
@@ -39,6 +45,7 @@ struct b2ContactConstraintPoint
 	float64 velocityBias;
 };
 
+typedef struct b2ContactConstraint b2ContactConstraint;
 struct b2ContactConstraint
 {
 	b2ContactConstraintPoint points[b2_maxManifoldPoints];
@@ -51,11 +58,16 @@ struct b2ContactConstraint
 	int32 pointCount;
 };
 
+typedef struct b2ContactSolver b2ContactSolver;
 struct b2ContactSolver
 {
 	b2ContactConstraint* m_constraints;
 	int m_constraintCount;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount);
 void b2ContactSolver_dtor(b2ContactSolver *solver);
@@ -67,5 +79,9 @@ void b2ContactSolver_SolveVelocityConstraints(b2ContactSolver *solver);
 bool b2ContactSolver_SolvePositionConstraints(b2ContactSolver *solver, float64 beta);
 
 void b2ContactSolver_PostSolve(b2ContactSolver *solver);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

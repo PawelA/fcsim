@@ -17,6 +17,7 @@
 */
 
 #include <stdlib.h>
+#include <float.h>
 
 #include <box2d/b2Island.h>
 #include <box2d/b2Body.h>
@@ -24,6 +25,7 @@
 #include <box2d/b2Contact.h>
 #include <box2d/b2ContactSolver.h>
 #include <box2d/b2RevoluteJoint.h>
+#include <box2d/b2CMath.h>
 
 /*
 Position Correction Notes
@@ -141,10 +143,12 @@ void b2Island_Solve(b2Island *island, const b2TimeStep* step, b2Vec2 gravity)
 		if (b->m_invMass == 0.0)
 			continue;
 
-		b->m_linearVelocity += step->dt * (gravity + b->m_invMass * b->m_force);
+		b->m_linearVelocity.x += step->dt * (gravity.x + b->m_invMass * b->m_force.x);
+		b->m_linearVelocity.y += step->dt * (gravity.y + b->m_invMass * b->m_force.y);
 		b->m_angularVelocity += step->dt * b->m_invI * b->m_torque;
 
-		b->m_linearVelocity *= b->m_linearDamping;
+		b->m_linearVelocity.x *= b->m_linearDamping;
+		b->m_linearVelocity.y *= b->m_linearDamping;
 		b->m_angularVelocity *= b->m_angularDamping;
 
 		// Store positions for conservative advancement.
@@ -182,7 +186,8 @@ void b2Island_Solve(b2Island *island, const b2TimeStep* step, b2Vec2 gravity)
 		if (b->m_invMass == 0.0)
 			continue;
 
-		b->m_position += step->dt * b->m_linearVelocity;
+		b->m_position.x += step->dt * b->m_linearVelocity.x;
+		b->m_position.y += step->dt * b->m_linearVelocity.y;
 		b->m_rotation += step->dt * b->m_angularVelocity;
 
 		b2Mat22_SetAngle(&b->m_R, b->m_rotation);

@@ -22,6 +22,7 @@
 #include <box2d/b2Contact.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2World.h>
+#include <box2d/b2Math.h>
 
 void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount)
 {
