@@ -45,13 +45,10 @@ SRC_LINUX = $(SRC_CORE) $(SRC_BOX2D) $(SRC_FPMATH) main
 OBJ_LINUX = $(SRC_LINUX:%=obj/linux/%.o)
 
 fcsim: $(OBJ_LINUX)
-	c++ -o $@ $^ -lX11 -lGL
+	cc -o $@ $^ -lm -lX11 -lGL
 
 obj/linux/%.o: src/%.c
 	cc -O2 -MMD -Iinclude -c -o $@ $<
-
-obj/linux/%.o: src/%.cpp
-	c++ -O2 -MMD -Iinclude -c -o $@ $<
 
 # wasm
 
@@ -63,9 +60,6 @@ html/fcsim.wasm: $(OBJ_WASM)
 
 obj/wasm/%.o: src/%.c
 	clang -O2 -MMD -Iinclude -Iarch/wasm/include --target=wasm32 -nostdlib -c -o $@ $<
-
-obj/wasm/%.o: src/%.cpp
-	clang++ -O2 -MMD -Iinclude -Iarch/wasm/include --target=wasm32 -nostdlib -fno-rtti -fno-exceptions -c -o $@ $<
 
 # misc
 
