@@ -65,10 +65,6 @@ struct b2ContactSolver
 	int m_constraintCount;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount);
 void b2ContactSolver_dtor(b2ContactSolver *solver);
 
@@ -79,9 +75,5 @@ void b2ContactSolver_SolveVelocityConstraints(b2ContactSolver *solver);
 bool b2ContactSolver_SolvePositionConstraints(b2ContactSolver *solver, float64 beta);
 
 void b2ContactSolver_PostSolve(b2ContactSolver *solver);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

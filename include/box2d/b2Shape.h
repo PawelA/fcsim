@@ -152,10 +152,6 @@ struct b2PolyShape
 	b2Vec2 m_normals[b2_maxPolyVertices];
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void b2ShapeDef_ctor(b2ShapeDef *def);
 
 static void b2CircleDef_ctor(b2CircleDef *circleDef)
@@ -207,9 +203,5 @@ b2Shape* b2Shape_Create(const b2ShapeDef* def,
 void b2Shape_Destroy(b2Shape* shape);
 
 void b2Shape_DestroyProxy(b2Shape *shape);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

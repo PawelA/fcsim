@@ -74,10 +74,6 @@ struct b2World
 	b2CollisionFilter m_filter;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void b2World_ctor(b2World *world, const b2AABB* worldAABB, b2Vec2 gravity, bool doSleep);
 
 void b2World_dtor(b2World *world);
@@ -102,9 +98,5 @@ static inline b2RevoluteJoint* b2World_GetJointList(b2World *world)
 {
 	return world->m_jointList;
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

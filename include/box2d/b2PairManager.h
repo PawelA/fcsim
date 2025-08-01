@@ -129,10 +129,6 @@ struct b2PairManager
 	uint16 m_hashTable[b2_tableCapacity];
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void b2PairManager_ctor(b2PairManager *manager);
 
 void b2PairManager_Initialize(b2PairManager *manager, b2BroadPhase* broadPhase, b2PairCallback* callback);
@@ -142,9 +138,5 @@ void b2PairManager_AddBufferedPair(b2PairManager *manager, int32 proxyId1, int32
 void b2PairManager_RemoveBufferedPair(b2PairManager *manager, int32 proxyId1, int32 proxyId2);
 
 void b2PairManager_Commit(b2PairManager *manager);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

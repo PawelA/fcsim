@@ -120,10 +120,6 @@ static inline b2Proxy* b2BroadPhase_GetProxy(b2BroadPhase *broad_phase, int32 pr
 	return broad_phase->m_proxyPool + proxyId;
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void b2BroadPhase_ctor(b2BroadPhase *broad_phase, const b2AABB *worldAABB, b2PairCallback* callback);
 
 // Create and destroy proxies. These call Flush first.
@@ -136,9 +132,5 @@ void b2BroadPhase_DestroyProxy(b2BroadPhase *broad_phase, int32 proxyId);
 void b2BroadPhase_MoveProxy(b2BroadPhase *broad_phase, int32 proxyId, const b2AABB *aabb);
 
 void b2BroadPhase_Commit(b2BroadPhase *broad_phase);
-
-#ifdef __cplusplus
-};
-#endif
 
 #endif

@@ -81,10 +81,6 @@ struct b2RevoluteJoint
 	bool m_enableMotor;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void b2RevoluteJointDef_ctor(b2RevoluteJointDef *rev_joint_def);
 
 b2Vec2 b2RevoluteJoint_GetAnchor1(b2RevoluteJoint *joint);
@@ -96,9 +92,5 @@ void b2RevoluteJoint_SolveVelocityConstraints(b2RevoluteJoint *joint, const b2Ti
 bool b2RevoluteJoint_SolvePositionConstraints(b2RevoluteJoint *joint);
 
 void b2RevoluteJoint_ctor(b2RevoluteJoint *joint, const b2RevoluteJointDef* def);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

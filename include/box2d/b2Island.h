@@ -51,10 +51,6 @@ struct b2Island
 	float64 m_positionError;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void b2Island_ctor(b2Island *island, int32 bodyCapacity, int32 contactCapacity, int32 jointCapacity);
 void b2Island_dtor(b2Island *island);
 
@@ -64,10 +60,6 @@ void b2Island_Solve(b2Island *island, const b2TimeStep* step, b2Vec2 gravity);
 
 
 void b2Island_UpdateSleep(b2Island *island, float64 dt);
-
-#ifdef __cplusplus
-}
-#endif
 
 static inline void b2Island_AddBody(b2Island *island, b2Body* body)
 {

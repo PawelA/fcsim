@@ -42,10 +42,6 @@ struct b2ContactManager
 	bool m_destroyImmediate;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // Implements PairCallback
 void* b2ContactManager_PairAdded(b2PairCallback *callback,
 				 void* proxyUserData1,
@@ -69,9 +65,5 @@ static void b2ContactManager_ctor(b2ContactManager *manager)
 void b2ContactManager_Collide(b2ContactManager *manager);
 
 void b2ContactManager_CleanContactList(b2ContactManager *manager);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -109,10 +109,6 @@ struct b2Body
 	void* m_userData;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void b2BodyDef_ctor(b2BodyDef *def);
 
 void b2Body_ctor(b2Body *body, const b2BodyDef* bd, b2World* world);
@@ -179,9 +175,5 @@ static inline bool b2Body_IsConnected(const b2Body *body, const b2Body* other)
 
 	return false;
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

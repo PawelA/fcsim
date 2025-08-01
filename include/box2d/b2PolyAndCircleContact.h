@@ -27,15 +27,7 @@ struct b2PolyAndCircleContact {
 	b2Manifold m_manifold;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 b2Contact *b2PolyAndCircleContact_Create(b2Shape *shape1, b2Shape *shape2);
 void b2PolyAndCircleContact_Destroy(b2Contact *contact);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

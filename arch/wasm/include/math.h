@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 double sin(double x);
 double cos(double x);
 double atan2(double y, double x);
@@ -26,7 +22,3 @@ double copysign(double x, double y);
 double rint(double x);
 
 double modf(double x, double *iptr);
-
-#ifdef __cplusplus
-}
-#endif
