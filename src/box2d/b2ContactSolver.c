@@ -22,7 +22,7 @@
 #include <box2d/b2Contact.h>
 #include <box2d/b2Body.h>
 #include <box2d/b2World.h>
-#include <box2d/b2Math.h>
+#include <box2d/b2CMath.h>
 
 void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 contactCount)
 {
@@ -76,8 +76,12 @@ void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 c
 				unsigned long long dupa = 0x7fffffffe0000000LLU;
 				ccp->positionImpulse = *(double *)&dupa;
 
-				b2Vec2 r1 = cp->position - b1->m_position;
-				b2Vec2 r2 = cp->position - b2->m_position;
+				b2Vec2 r1;
+				r1.x = cp->position.x - b1->m_position.x;
+				r1.y = cp->position.y - b1->m_position.y;
+				b2Vec2 r2;
+				r2.x = cp->position.x - b2->m_position.x;
+				r2.y = cp->position.y - b2->m_position.y;
 
 				ccp->localAnchor1 = b2MulT(b1->m_R, r1);
 				ccp->localAnchor2 = b2MulT(b2->m_R, r2);
@@ -91,7 +95,7 @@ void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 c
 				kNormal += b1->m_invI * (r1Sqr - rn1 * rn1) + b2->m_invI * (r2Sqr - rn2 * rn2);
 				ccp->normalMass = 1.0 / kNormal;
 
-				b2Vec2 tangent = b2Cross(normal, 1.0);
+				b2Vec2 tangent = b2Cross_vs(normal, 1.0);
 
 				float64 rt1 = b2Dot(r1, tangent);
 				float64 rt2 = b2Dot(r2, tangent);
@@ -106,7 +110,12 @@ void b2ContactSolver_ctor(b2ContactSolver *solver, b2Contact** contacts, int32 c
 					ccp->velocityBias = -60.0 * ccp->separation; // TODO_ERIN b2TimeStep
 				}
 
-				float64 vRel = b2Dot(c->normal, v2 + b2Cross(w2, r2) - v1 - b2Cross(w1, r1));
+				b2Vec2 c2 = b2Cross(w2, r2);
+				b2Vec2 c1 = b2Cross(w1, r1);
+				b2Vec2 v;
+				v.x = v2.x + c2.x - v1.x - c1.x;
+				v.y = v2.y + c2.y - v1.y - c1.y;
+				float64 vRel = b2Dot(c->normal, v);
 				if (vRel < -b2_velocityThreshold)
 				{
 					ccp->velocityBias += -c->restitution * vRel;
@@ -137,18 +146,22 @@ void b2ContactSolver_PreSolve(b2ContactSolver *solver)
 		float64 invMass2 = b2->m_invMass;
 		float64 invI2 = b2->m_invI;
 		b2Vec2 normal = c->normal;
-		b2Vec2 tangent = b2Cross(normal, 1.0);
+		b2Vec2 tangent = b2Cross_vs(normal, 1.0);
 
 		for (int32 j = 0; j < c->pointCount; ++j)
 		{
 			b2ContactConstraintPoint* ccp = c->points + j;
-			b2Vec2 P = ccp->normalImpulse * normal + ccp->tangentImpulse * tangent;
+			b2Vec2 P;
+			P.x = ccp->normalImpulse * normal.x + ccp->tangentImpulse * tangent.x;
+			P.y = ccp->normalImpulse * normal.y + ccp->tangentImpulse * tangent.y;
 			b2Vec2 r1 = b2Mul(b1->m_R, ccp->localAnchor1);
 			b2Vec2 r2 = b2Mul(b2->m_R, ccp->localAnchor2);
-			b1->m_angularVelocity -= invI1 * b2Cross(r1, P);
-			b1->m_linearVelocity -= invMass1 * P;
-			b2->m_angularVelocity += invI2 * b2Cross(r2, P);
-			b2->m_linearVelocity += invMass2 * P;
+			b1->m_angularVelocity -= invI1 * b2Cross_vv(r1, P);
+			b1->m_linearVelocity.x -= invMass1 * P.x;
+			b1->m_linearVelocity.y -= invMass1 * P.y;
+			b2->m_angularVelocity += invI2 * b2Cross_vv(r2, P);
+			b2->m_linearVelocity.x += invMass2 * P.x;
+			b2->m_linearVelocity.y += invMass2 * P.y;
 
 			ccp->positionImpulse = 0.0;
 		}
@@ -167,7 +180,7 @@ void b2ContactSolver_SolveVelocityConstraints(b2ContactSolver *solver)
 		float64 invMass2 = b2->m_invMass;
 		float64 invI2 = b2->m_invI;
 		b2Vec2 normal = c->normal;
-		b2Vec2 tangent = b2Cross(normal, 1.0);
+		b2Vec2 tangent = b2Cross_vs(normal, 1.0);
 
 		// Solver normal constraints
 		for (int32 j = 0; j < c->pointCount; ++j)
@@ -179,7 +192,11 @@ void b2ContactSolver_SolveVelocityConstraints(b2ContactSolver *solver)
 			b2Vec2 r2 = b2Mul(b2->m_R, ccp->localAnchor2);
 
 			// Relative velocity at contact
-			b2Vec2 dv = b2->m_linearVelocity + b2Cross(b2->m_angularVelocity, r2) - b1->m_linearVelocity - b2Cross(b1->m_angularVelocity, r1);
+			b2Vec2 c1 = b2Cross(b1->m_angularVelocity, r1);
+			b2Vec2 c2 = b2Cross(b2->m_angularVelocity, r2);
+			b2Vec2 dv;
+			dv.x = b2->m_linearVelocity.x + c2.x - b1->m_linearVelocity.x - c1.x;
+			dv.y = b2->m_linearVelocity.y + c2.y - b1->m_linearVelocity.y - c1.y;
 
 			// Compute normal impulse
 			float64 vn = b2Dot(dv, normal);
@@ -190,13 +207,17 @@ void b2ContactSolver_SolveVelocityConstraints(b2ContactSolver *solver)
 			lambda = newImpulse - ccp->normalImpulse;
 
 			// Apply contact impulse
-			b2Vec2 P = lambda * normal;
+			b2Vec2 P;
+			P.x = lambda * normal.x;
+			P.y = lambda * normal.y;
 
-			b1->m_linearVelocity -= invMass1 * P;
-			b1->m_angularVelocity -= invI1 * b2Cross(r1, P);
+			b1->m_linearVelocity.x -= invMass1 * P.x;
+			b1->m_linearVelocity.y -= invMass1 * P.y;
+			b1->m_angularVelocity -= invI1 * b2Cross_vv(r1, P);
 
-			b2->m_linearVelocity += invMass2 * P;
-			b2->m_angularVelocity += invI2 * b2Cross(r2, P);
+			b2->m_linearVelocity.x += invMass2 * P.x;
+			b2->m_linearVelocity.y += invMass2 * P.y;
+			b2->m_angularVelocity += invI2 * b2Cross_vv(r2, P);
 
 			ccp->normalImpulse = newImpulse;
 		}
@@ -209,7 +230,11 @@ void b2ContactSolver_SolveVelocityConstraints(b2ContactSolver *solver)
 			b2Vec2 r2 = b2Mul(b2->m_R, ccp->localAnchor2);
 
 			// Relative velocity at contact
-			b2Vec2 dv = b2->m_linearVelocity + b2Cross(b2->m_angularVelocity, r2) - b1->m_linearVelocity - b2Cross(b1->m_angularVelocity, r1);
+			b2Vec2 c1 = b2Cross(b1->m_angularVelocity, r1);
+			b2Vec2 c2 = b2Cross(b2->m_angularVelocity, r2);
+			b2Vec2 dv;
+			dv.x = b2->m_linearVelocity.x + c2.x - b1->m_linearVelocity.x - c1.x;
+			dv.y = b2->m_linearVelocity.y + c2.y - b1->m_linearVelocity.y - c1.y;
 
 			// Compute tangent impulse
 			float64 vt = b2Dot(dv, tangent);
@@ -221,13 +246,17 @@ void b2ContactSolver_SolveVelocityConstraints(b2ContactSolver *solver)
 			lambda = newImpulse - ccp->tangentImpulse;
 
 			// Apply contact impulse
-			b2Vec2 P = lambda * tangent;
+			b2Vec2 P;
+			P.x = lambda * tangent.x;
+			P.y = lambda * tangent.y;
 
-			b1->m_linearVelocity -= invMass1 * P;
-			b1->m_angularVelocity -= invI1 * b2Cross(r1, P);
+			b1->m_linearVelocity.x -= invMass1 * P.x;
+			b1->m_linearVelocity.y -= invMass1 * P.y;
+			b1->m_angularVelocity -= invI1 * b2Cross_vv(r1, P);
 
-			b2->m_linearVelocity += invMass2 * P;
-			b2->m_angularVelocity += invI2 * b2Cross(r2, P);
+			b2->m_linearVelocity.x += invMass2 * P.x;
+			b2->m_linearVelocity.y += invMass2 * P.y;
+			b2->m_angularVelocity += invI2 * b2Cross_vv(r2, P);
 
 			ccp->tangentImpulse = newImpulse;
 		}
@@ -249,7 +278,7 @@ bool b2ContactSolver_SolvePositionConstraints(b2ContactSolver *solver, float64 b
 		float64 invMass2 = b2->m_invMass;
 		float64 invI2 = b2->m_invI;
 		b2Vec2 normal = c->normal;
-		b2Vec2 tangent = b2Cross(normal, 1.0);
+		b2Vec2 tangent = b2Cross_vs(normal, 1.0);
 
 		// Solver normal constraints
 		for (int32 j = 0; j < c->pointCount; ++j)
@@ -259,9 +288,15 @@ bool b2ContactSolver_SolvePositionConstraints(b2ContactSolver *solver, float64 b
 			b2Vec2 r1 = b2Mul(b1->m_R, ccp->localAnchor1);
 			b2Vec2 r2 = b2Mul(b2->m_R, ccp->localAnchor2);
 
-			b2Vec2 p1 = b1->m_position + r1;
-			b2Vec2 p2 = b2->m_position + r2;
-			b2Vec2 dp = p2 - p1;
+			b2Vec2 p1;
+			p1.x = b1->m_position.x + r1.x;
+			p1.y = b1->m_position.y + r1.y;
+			b2Vec2 p2;
+			p2.x = b2->m_position.x + r2.x;
+			p2.y = b2->m_position.y + r2.y;
+			b2Vec2 dp;
+			dp.x = p2.x - p1.x;
+			dp.y = p2.y - p1.y;
 
 			// Approximate the current separation.
 			float64 separation = b2Dot(dp, normal) + ccp->separation;
@@ -280,14 +315,18 @@ bool b2ContactSolver_SolvePositionConstraints(b2ContactSolver *solver, float64 b
 			ccp->positionImpulse = b2Max(impulse0 + dImpulse, 0.0);
 			dImpulse = ccp->positionImpulse - impulse0;
 
-			b2Vec2 impulse = dImpulse * normal;
+			b2Vec2 impulse;
+			impulse.x = dImpulse * normal.x;
+			impulse.y = dImpulse * normal.y;
 
-			b1->m_position -= invMass1 * impulse;
-			b1->m_rotation -= invI1 * b2Cross(r1, impulse);
+			b1->m_position.x -= invMass1 * impulse.x;
+			b1->m_position.y -= invMass1 * impulse.y;
+			b1->m_rotation -= invI1 * b2Cross_vv(r1, impulse);
 			b2Mat22_SetAngle(&b1->m_R, b1->m_rotation);
 
-			b2->m_position += invMass2 * impulse;
-			b2->m_rotation += invI2 * b2Cross(r2, impulse);
+			b2->m_position.x += invMass2 * impulse.x;
+			b2->m_position.y += invMass2 * impulse.y;
+			b2->m_rotation += invI2 * b2Cross_vv(r2, impulse);
 			b2Mat22_SetAngle(&b2->m_R, b2->m_rotation);
 		}
 	}
